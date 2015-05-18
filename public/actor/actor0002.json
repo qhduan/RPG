@@ -1,0 +1,45 @@
+{
+  "name": "凌波",
+  "description": "丽",
+  "image": "resource\/actor0002.png",
+  "tileheight": 48,
+  "tilewidth": 32,
+  "animations": {
+    "walkdown": {
+      "frames": [0, 1, 2, 3],
+      "speed": 0.15
+    },
+    "walkleft": {
+      "frames": [4, 5, 6, 7],
+      "speed": 0.15
+    },
+    "walkright": {
+      "frames": [8, 9, 10, 11],
+      "speed": 0.15
+    },
+    "walkup": {
+      "frames": [12, 13, 14, 15],
+      "speed": 0.15
+    },
+    "rundown": {
+      "frames": [0, 1, 2, 3],
+      "speed": 0.3
+    },
+    "runleft": {
+      "frames": [4, 5, 6, 7],
+      "speed": 0.3
+    },
+    "runright": {
+      "frames": [8, 9, 10, 11],
+      "speed": 0.3
+    },
+    "runup": {
+      "frames": [12, 13, 14, 15],
+      "speed": 0.3
+    },
+    "facedown": 0,
+    "faceleft": 4,
+    "faceright": 8,
+    "faceup": 12
+  }
+}

@@ -1,0 +1,19 @@
+{
+  "name": "Game",
+  "version": "1.0.0",
+  "description": "RPG Game made by HTML5",
+  "main": "game.js",
+  "scripts": {
+    "test": "node game.js"
+  },
+  "keywords": [
+    "RPG",
+    "Game"
+  ],
+  "dependencies": {
+    "express": "latest",
+    "socket.io": "latest"
+  },
+  "author": "qhduan.com",
+  "license": "ISC"
+}
