@@ -8,26 +8,53 @@
   <meta name="author" content="longinus">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>Dream RPG</title>
-</head>
-<body style="background-color: gray;">
 
-<div style="width: 100%; height: 100%; text-align: center;">
-  <canvas id="canvas"></canvas>
+  <link href="style/semantic.min.css" rel='stylesheet'>
+
+</head>
+<body>
+
+<div class="ui grid page">
+  <div class="row">
+    <div class="column">
+      <div class="ui segment">
+        <div class="ui form">
+          <div class="field">
+            <label>Name:</label>
+            <input name="name" type="text">
+          </div>
+          <div class="field">
+            <label>Password:</label>
+            <input name="password" type="password">
+          </div>
+          <button onclick="Submit()" class="ui button" type="submit">Login</button>
+          <a class="ui button" href="/create">Register</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
+<script src="lib/jquery-2.1.4.min.js"></script>
+<script src="lib/semantic.min.js"></script>
 
+<script>
+  function Submit () {
+    var name = $("input[name=name]").val();
+    var password = $("input[name=password]").val();
 
-<script src="/lib/socket.io-1.3.5.js"></script>
-<script src="/lib/tweenjs-0.6.0.min.js"></script>
-<script src="/lib/preloadjs-0.6.0.min.js"></script>
-<script src="/lib/soundjs-0.6.0.min.js"></script>
-<script src="/lib/easeljs-0.8.0.min.js"></script>
-<script src="/game/game.js"></script>
-<script src="/game/io.js"></script>
-<script src="/game/map.js"></script>
-<script src="/game/actor.js"></script>
-<script src="/game/input.js"></script>
-<script src="/game/app.js"></script>
+    $.post("/hero/login", {
+      name: name,
+      password: password
+    }).done(function (ret) {
+      if (ret.session) {
+        window.location.href = "/play?session=" + ret.session;
+      } else {
+        alert(ret.error || "Unknown Error");
+      }
+    });
+  }
+</script>
 
 </body>
 </html>

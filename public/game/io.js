@@ -1,13 +1,39 @@
+/*
 
-~function () {
+Online A-RPG Game, Built using Node.js + createjs
+Copyright (C) 2015 qhduan(http://qhduan.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+(function () {
   "use strict";
 
   Game.io = {}; // 封装socket.io client的一些功能
 
   var ioGetCallback = {};
 
-  ~function ConnectSocketServer () {
-    Game.io.socket = io(document.URL);
+  (function ConnectSocketServer () {
+
+    var a = document.createElement("a");
+    a.href = document.URL;
+    var url = "http://" + a.hostname;
+    if (a.port && a.port.length) {
+      url += ":" + a.port;
+    }
+
+    Game.io.socket = io(url);
 
     Game.io.socket.on("connect", function (socket) {
       console.log("Socket Connected");
@@ -35,61 +61,6 @@
       }
     });
 
-  }();
+  })();
 
-  // 从服务器直接获取某类的某个id的资源
-  Game.io.get = function (type, id, callback) {
-    if (ioGetCallback[id]) {
-      ioGetCallback[id].push(callback);
-    } else {
-      ioGetCallback[id] = [callback];
-    }
-    Game.io.socket.emit("get", {
-      type: type,
-      id: id
-    });
-  };
-
-
-  Game.load = function (id, src, callback) {
-    var queue = new createjs.LoadQueue();
-    queue.on("complete", callback, queue);
-    queue.loadFile({
-      id: id,
-      src: src
-    });
-  }
-
-  var loadResourceTypeList = {};
-
-  Game.loadTypeReg = function (type, callback) {
-    loadResourceTypeList[type] = callback;
-  }
-
-  Game.loads = function (list, callback) {
-    var count = 0 - list.length;
-    var result = {};
-
-    console.log("load", "0%");
-
-    list.forEach(function (element, index, array) {
-      var type = element.type;
-      var id = element.id;
-      loadResourceTypeList[type](id, function (obj) {
-        result[id] = obj;
-        count++;
-
-        var progress = (count + list.length) / list.length;
-        progress *= 100;
-        progress = progress.toFixed(0) + "%";
-
-        console.log("load", progress);
-
-        if (count >= 0) {
-          if (callback) callback(result);
-        }
-      });
-    });
-  };
-
-}();
+})();

@@ -1,45 +1,47 @@
 {
-  "name": "凌波",
-  "description": "丽",
+  "name": "黑猫",
+  "description": "很可爱的黑猫哦",
   "image": "resource\/actor0002.png",
-  "tileheight": 48,
+  "hitpoint": 100,
+  "manapoint": 100,
+  "tileheight": 32,
   "tilewidth": 32,
   "animations": {
     "walkdown": {
-      "frames": [0, 1, 2, 3],
+      "frames": [0, 1, 2],
       "speed": 0.15
     },
     "walkleft": {
-      "frames": [4, 5, 6, 7],
+      "frames": [3, 4, 5],
       "speed": 0.15
     },
     "walkright": {
-      "frames": [8, 9, 10, 11],
+      "frames": [6, 7, 8],
       "speed": 0.15
     },
     "walkup": {
-      "frames": [12, 13, 14, 15],
+      "frames": [9, 10, 11],
       "speed": 0.15
     },
     "rundown": {
-      "frames": [0, 1, 2, 3],
+      "frames": [0, 1, 2],
       "speed": 0.3
     },
     "runleft": {
-      "frames": [4, 5, 6, 7],
+      "frames": [3, 4, 5],
       "speed": 0.3
     },
     "runright": {
-      "frames": [8, 9, 10, 11],
+      "frames": [6, 7, 8],
       "speed": 0.3
     },
     "runup": {
-      "frames": [12, 13, 14, 15],
+      "frames": [9, 10, 11],
       "speed": 0.3
     },
-    "facedown": 0,
+    "facedown": 1,
     "faceleft": 4,
-    "faceright": 8,
-    "faceup": 12
+    "faceright": 7,
+    "faceup": 10
   }
 }

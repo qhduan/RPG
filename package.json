@@ -12,7 +12,10 @@
   ],
   "dependencies": {
     "express": "latest",
-    "socket.io": "latest"
+    "body-parser": "latest",
+    "socket.io": "latest",
+    "nedb": "latest",
+    "compression": "latest"
   },
   "author": "qhduan.com",
   "license": "ISC"

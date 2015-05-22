@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="description" content="RPG">
+  <meta name="author" content="longinus">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <title>Actor Creator</title>
+
+  <link href="style/semantic.min.css" rel='stylesheet'>
+</head>
+<body>
+
+<div class="ui grid page">
+  <div class="row">
+    <div class="column">
+      <div class="ui segment"><!--display-->
+        <h3>Preview</h3>
+        <canvas id="display"></canvas>
+        <canvas id="avatar" style="display: none;"></canvas>
+      </div>
+    </div>
+  </div>
+  <div class="row">
+    <div class="column">
+
+      <div class="ui top attached tabular menu">
+        <a class="active item" data-tab="main">Main</a>
+        <a class="item" data-tab="hair">Hair</a>
+        <a class="item" data-tab="clothes">Clothes</a>
+        <a class="item" data-tab="armor">Armor</a>
+      </div>
+
+      <div class="ui bottom attached active tab segment" data-tab="main">
+
+        <div class="ui form">
+          <div class="field">
+            <label>Username (游戏角色名+登录名)</label>
+            <input name="name" type="text">
+          </div>
+          <div class="field">
+            <label>Password (密码功能还未完善，绝对不要输入常用密码)</label>
+            <input name="password" type="password">
+          </div>
+        </div>
+
+        <br>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Sex
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="sex" data-option="male">Male</a>
+            <a class="item" href="" onclick="Set(event)" data-type="sex" data-option="female">Female</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Body
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="body" data-option="light">Light</a>
+            <a class="item" href="" onclick="Set(event)" data-type="body" data-option="dark">Dark</a>
+            <a class="item" href="" onclick="Set(event)" data-type="body" data-option="dark2">Dark 2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="body" data-option="tanned">Tanned</a>
+            <a class="item" href="" onclick="Set(event)" data-type="body" data-option="tanned2">Tanned 2</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Eyes
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="blue">Blue</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="brown">Brown</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="gray">Gray</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="green">Green</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="orange">Orange</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="purple">Purple</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="red">Red</a>
+            <a class="item" href="" onclick="Set(event)" data-type="eyes" data-option="yellow">Yellow</a>
+          </div>
+        </div>
+
+        <br>
+        <br>
+
+        <button onclick="Submit()" type="submit" class="ui primary button">Finish</button>
+
+      </div>
+
+      <div class="ui bottom attached tab segment" data-tab="hair">
+
+        <div id="malehair" class="ui simple dropdown item">
+          <span class="ui button">
+            Hair Style
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="bedhead">Bedhead</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="long">Long</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="longhawk">Longhawk</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="messy1">Messy1</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="messy2">Messy2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="mohawk">Mohawk</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="page">Page</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="parted">Parted</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="plain">Plain</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="shorthawk">Shorthawk</a>
+          </div>
+        </div>
+
+        <div id="femalehair" class="ui simple dropdown item">
+          <span class="ui button">
+            Hair Style
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="bangs">bangs</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="bangslong">bangslong</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="bangslong2">bangslong2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="bunches">bunches</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="loose">loose</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="pixie">pixie</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="ponytail">ponytail</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="ponytail2">ponytail2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="princess">princess</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="shoulderl">shoulderl</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="shoulderr">shoulderr</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="swoop">swoop</a>
+            <a class="item" href="" onclick="Set(event)" data-type="hair" data-option="unkempt">unkempt</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Hair Color
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="black">Black</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="blonde">Blonde</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="blonde2">blonde2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="blue">blue</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="blue2">blue2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="brown">brown</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="brown2">brown2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="brunette">brunette</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="brunette2">brunette2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="dark-blonde">dark-blonde</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="gold">gold</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="gray">gray</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="gray2">gray2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="green">green</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="green2">green2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="light-blonde">light-blonde</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="light-blonde2">light-blonde2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="pink">pink</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="pink2">pink2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="purple">purple</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="raven">raven</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="raven2">raven2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="redhead">redhead</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="redhead2">redhead2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="ruby-red">ruby-red</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="white">white</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="white-blonde">white-blonde</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="white-blonde2">white-blonde2</a>
+            <a class="item" href="" onclick="Set(event)" data-type="haircolor" data-option="white-cyan">white-cyan</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ui bottom attached tab segment" data-tab="clothes">
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Head
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="chainhat">chainhat</a>
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="chain_hood">chain_hood</a>
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="cloth_hood">cloth_hood</a>
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="leather_cap">leather_cap</a>
+            <a class="item" href="" onclick="Set(event)" data-type="head" data-option="red">red</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Shirts
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="shirts" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shirts" data-option="brown">brown</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shirts" data-option="maroon">maroon</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shirts" data-option="teal">teal</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shirts" data-option="white">white</a>
+          </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Pants
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="pants" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="pants" data-option="magenta">magenta</a>
+            <a class="item" href="" onclick="Set(event)" data-type="pants" data-option="red">red</a>
+            <a class="item" href="" onclick="Set(event)" data-type="pants" data-option="teal">teal</a>
+            <a class="item" href="" onclick="Set(event)" data-type="pants" data-option="white">white</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Shoes
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="shoes" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shoes" data-option="black">black</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shoes" data-option="brown">brown</a>
+            <a class="item" href="" onclick="Set(event)" data-type="shoes" data-option="maroon">maroon</a>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="ui bottom attached tab segment" data-tab="armor">
+
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Armor Helms
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="armorhelms" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorhelms" data-option="golden">golden</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorhelms" data-option="metal">metal</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Armor Chest
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="armorchest" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorchest" data-option="golden">golden</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorchest" data-option="metal">metal</a>
+          </div>
+        </div>
+
+        <br>
+        <br>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Armor Arm
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="armorarm" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorarm" data-option="golden">golden</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorarm" data-option="metal">metal</a>
+          </div>
+        </div>
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Armor Legs
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="armorlegs" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorlegs" data-option="golden">golden</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorlegs" data-option="metal">metal</a>
+          </div>
+        </div>
+
+
+
+        <div class="ui simple dropdown item">
+          <span class="ui button">
+            Armor Feet
+            <i class="dropdown icon"></i>
+          </span>
+          <div class="menu">
+            <a class="item" href="" onclick="Set(event)" data-type="armorfeet" data-option="">None</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorfeet" data-option="golden">golden</a>
+            <a class="item" href="" onclick="Set(event)" data-type="armorfeet" data-option="metal">metal</a>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script src="lib/jquery-2.1.4.min.js"></script>
+<script src="lib/semantic.min.js"></script>
+<script>
+  $(".menu .item").tab();
+
+  var hero = {
+    sex: "male",
+    body: "light",
+    eyes: "blue",
+    hair: "",
+    haircolor: "black",
+
+    head: "",
+    shirts: "",
+    pants: "",
+    shoes: "",
+
+    armorchest: "",
+    armorarm: "",
+    armorlegs: "",
+    armorhelms: "",
+    armorfeet: "",
+
+    tilewidth: -1,
+    tileheight: -1,
+    height: -1,
+    width: -1,
+  };
+
+  // 提交并创建人物
+  function Submit () {
+    var name = $("input[name=name]").val();
+    var password = $("input[name=password]").val();
+    var avatar = document.getElementById("avatar").toDataURL();
+
+    $.post("/hero/create", {
+      name: name,
+      password: password,
+      custom: JSON.stringify(hero)
+    }).done(function (ret) {
+      if (ret.session) {
+        window.location.href = "/play?session=" + ret.session;
+      } else {
+        alert(ret.error || "Unknown Error");
+      }
+    });
+  }
+
+  var displayCanvas = document.getElementById("display");
+  displayCanvas.width = 256;
+  displayCanvas.height = 256;
+  var displayContext = displayCanvas.getContext("2d");
+
+  // 13x21
+  var avatarCanvas = document.getElementById("avatar");
+  avatarCanvas.width = 624; // 75% of 832
+  avatarCanvas.height = 1176; // 87.5% of 1344
+  hero.width = avatarCanvas.width;
+  hero.height = avatarCanvas.height;
+  hero.tilewidth = parseInt(avatarCanvas.width / 13);
+  hero.tileheight = parseInt(avatarCanvas.height / 21);
+  var avatarContext = avatarCanvas.getContext("2d");
+
+  function Draw (images, callback) {
+    displayContext.clearRect(0, 0, 256, 256);
+    avatarContext.clearRect(0, 0, avatarCanvas.width, avatarCanvas.height);
+
+    function DrawOne () {
+      var img = new Image();
+
+      function ImageComplete () {
+        displayContext.drawImage(img, 0, 512, 256, 256, 0, 0, 256, 256);
+        avatarContext.drawImage(
+          img, 0, 0, img.width, img.height,
+          0, 0, avatarCanvas.width, avatarCanvas.height);
+
+        images.splice(0, 1);
+        if (images.length) {
+          DrawOne();
+        } else {
+          if (callback) callback();
+        }
+      };
+
+      img.src = images[0];
+
+      if (img.complete) {
+        ImageComplete();
+      } else {
+        img.onload = ImageComplete();
+      }
+    }
+
+    DrawOne();
+  }
+
+  function GetHero () {
+    if (hero.sex == "male") {
+      $("#malehair").show();
+      $("#femalehair").hide();
+    } else {
+      $("#malehair").hide();
+      $("#femalehair").show();
+    }
+
+    $(".ui.dropdown").addClass("disabled");
+    $(".ui.button").addClass("disabled");
+
+    $.post("/hero/generate", hero)
+    .done(function (data) {
+
+      var images = [];
+
+      images.push(data.body);
+      images.push(data.eyes);
+      images.push(data.hair);
+      images.push(data.head);
+      images.push(data.shirts);
+      images.push(data.pants);
+      images.push(data.shoes);
+      images.push(data.armorchest);
+      images.push(data.armorarm);
+      images.push(data.armorlegs);
+      images.push(data.armorhelms);
+      images.push(data.armorfeet);
+      images = images.filter(function (element) {
+        if (typeof element != "string" || element.length <= 0)
+          return false;
+        return true;
+      });
+
+      Draw(images, function () {
+        $(".ui.dropdown").removeClass("disabled");
+        $(".ui.button").removeClass("disabled");
+      });
+
+    });
+  }
+
+  function Set (event) {
+    event.preventDefault();
+    var type = $(event.target).data("type");
+    var option = $(event.target).data("option");
+    if (hero[type] != option) {
+      hero[type] = option;
+      GetHero();
+    }
+  }
+
+  GetHero();
+</script>
+
+</body>
+</html>
