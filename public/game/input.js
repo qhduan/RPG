@@ -129,43 +129,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var moved = false;
       // 计算八个方向角色的动画和面向
       if (Game.key.isPressed("up") && Game.key.isPressed("right")) {
-        moved = Game.hero.go(state + "up", skew);
-        moved = Game.hero.go(state + "right", skew, false) || moved;
-        if (!moved) Game.hero.face("up");
+        moved = Game.hero.go(state, "upright", skew);
+        //moved = Game.hero.go(state + "right", skew);
       } else if (Game.key.isPressed("down") && Game.key.isPressed("right")) {
-        moved = Game.hero.go(state + "down", skew);
-        moved = Game.hero.go(state + "right", skew, false) || moved;
-        if (!moved) Game.hero.face("down");
+        moved = Game.hero.go(state, "downright", skew);
+        //moved = Game.hero.go(state + "right", skew);
       } else if (Game.key.isPressed("down") && Game.key.isPressed("left")) {
-        moved = Game.hero.go(state + "down", skew);
-        moved = Game.hero.go(state + "left", skew, false) || moved;
-        if (!moved) Game.hero.face("down");
+        moved = Game.hero.go(state, "downleft", skew);
+        //moved = Game.hero.go(state + "left", skew);
       } else if (Game.key.isPressed("up") && Game.key.isPressed("left")) {
-        moved = Game.hero.go(state + "up", skew);
-        moved = Game.hero.go(state + "left", skew, false) || moved;
-        if (!moved) Game.hero.face("up");
+        moved = Game.hero.go(state, "upleft", skew);
+        //moved = Game.hero.go(state + "left", skew);
       } else if (Game.key.isPressed("left")) {
-        moved = Game.hero.go(state + "left", speed);
-        if (!moved) Game.hero.face("left");
+        moved = Game.hero.go(state, "left", speed);
       } else if (Game.key.isPressed("up")) {
-        moved = Game.hero.go(state + "up", speed);
-        if (!moved) Game.hero.face("up");
+        moved = Game.hero.go(state, "up", speed);
       } else if (Game.key.isPressed("right")) {
-        moved = Game.hero.go(state + "right", speed);
-        if (!moved) Game.hero.face("right");
+        moved = Game.hero.go(state, "right", speed);
       } else if (Game.key.isPressed("down")) {
-        moved = Game.hero.go(state + "down", speed);
-        if (!moved) Game.hero.face("down");
+        moved = Game.hero.go(state, "down", speed);
       } else {
         Game.hero.stop();
       }
 
-      if (Game.hero.spells && Game.hero.spells.length) {
-        if (Game.key.isPressed("z")) {
-          if (Game.hero.spells[0]) {
-            Game.hero.fire(Game.hero.spells[0]);
-          }
-        }
+      if (Game.key.isPressed("z")) {
+        Game.hero.fire(0);
+      }
+
+      if (Game.key.isPressed("x")) {
+        Game.hero.fire(1);
+      }
+
+      if (Game.key.isPressed("c")) {
+        Game.hero.fire(2);
       }
 
       Game.hero.focus();

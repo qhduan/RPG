@@ -52,34 +52,40 @@ var areas = {};
 
     var resources = [];
 
+    // 把所有地图图块的地址都转换分析出来
     mapData.tilesets.forEach(function (element) {
       element.image = "/map/" + element.image;
       resources.push(element.image);
     });
 
+    // entry是地图入口的坐标，entry.x entry.y
     if (mapExtra.entry) {
       mapData.entry = mapExtra.entry;
     }
 
+    // 如果有bgm，则转换地址
     if (mapExtra.bgm) {
       mapData.bgm = "/sound/bgm/" + mapExtra.bgm + ".ogg";
       resources.push(mapData.bgm);
     }
 
+    // 读取地图相关角色的数据，这里是固定的角色，即固定的npc或怪物
     if (mapExtra.actors) {
       mapData.actors = {};
 
       mapExtra.actors.forEach(function (element) {
         var actorId = element.id;
+
         var actorData = fs.readFileSync(
           __dirname + "/data/actor/" + actorId + ".json",
           {encoding: "utf8"});
 
         actorData = JSON.parse(actorData);
 
-        actorData.id = actorId;
-        actorData.x = element.x;
-        actorData.y = element.y;
+        // 把map.actors中的属性复制到actor
+        for (var key in element) {
+          actorData[key] = element[key];
+        }
 
         actorData.image = "/actor/" + actorData.image;
         resources.push(actorData.image);
@@ -88,6 +94,30 @@ var areas = {};
       });
     }
 
+    // 读取地图相关的物品
+    if (mapExtra.items) {
+      mapData.items = {};
+
+      mapExtra.items.forEach(function (element) {
+        var itemId = element;
+
+        var itemData = fs.readFileSync(
+          __dirname + "/data/item/" + itemId + ".json",
+          {encoding: "utf8"});
+
+        itemData = JSON.parse(itemData);
+
+        itemData.image = "data:image/png;base64," +
+          fs.readFileSync(__dirname + "/data/item/" + itemData.image)
+          .toString("base64");
+
+        itemData.id = itemId;
+        mapData.items[itemId] = itemData;
+
+      });
+    }
+
+    // resources当中是需要 客户端 预先加载的图片和声音文件
     mapData.resources = resources;
 
     areas[mapId] = mapData;

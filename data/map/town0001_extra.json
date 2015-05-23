@@ -9,12 +9,17 @@
     {
       "id": "actor0001",
       "x": 600,
-      "y": 700
+      "y": 650,
+      "mode": "randomwalk"
     },
     {
       "id": "actor0002",
       "x": 600,
-      "y": 750
+      "y": 750,
+      "mode": "randomwalk"
     }
+  ],
+  "items": [
+    "item0001"
   ]
 }

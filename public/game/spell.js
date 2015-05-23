@@ -21,27 +21,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
 
-  var SpellClass = Game.SpellClass = function (spellData) {
+  var SpellClass = Game.SpellClass = function (spellData, callback) {
     var self = this;
 
-    for (var key in spellData) {
-      self[key] = spellData[key];
+    self.data = spellData;
+    self.id = self.data.id;
+
+    var image = null;
+
+    function ImageComplete () {
+      self.sheet = new createjs.SpriteSheet({
+        images: [image],
+        frames: {
+          width: self.data.tilewidth,
+          height: self.data.tileheight
+        },
+        animations: self.data.animations
+      });
+
+      if (callback) callback();
     }
 
-    var image = new Image();
-    image.src = self.image;
-    self.image = image;
-
-    self.sheet = new createjs.SpriteSheet({
-      images: [self.image],
-      frames: {
-        width: self.tilewidth,
-        height: self.tileheight
-      },
-      animations: self.animations
-    });
-
-    if (self.onload) self.onload();
+    if (Game.resources.hasOwnProperty(self.id)) {
+      image = Game.resources[self.id];
+    } else {
+      image = new Image();
+      image.onload = ImageComplete;
+      image.src = self.data.image;
+    }
 
   };
 
@@ -49,38 +56,99 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var self = this;
 
     var now = new Date().getTime();
-    if (typeof self.firing == "number" && (now - self.firing) < self.cooldown)
+    if (typeof self.firing == "number" && (now - self.firing) < self.data.cooldown)
       return;
 
     self.firing = new Date().getTime();
 
-    createjs.Sound.play(self.sound);
+    createjs.Sound.play(self.data.sound);
 
     var sprite = new createjs.Sprite(self.sheet);
 
-    var listener = createjs.Ticker.on("tick", function () {
+    function UpdateLocation () {
       sprite.x = actor.sprite.x - 32;
       sprite.y = actor.sprite.y - 32;
 
-      if (self.animations[animation].x) {
-        sprite.x += self.animations[animation].x;
+      if (self.data.animations[animation].x) {
+        sprite.x += self.data.animations[animation].x;
       }
 
-      if (self.animations[animation].y) {
-        sprite.y += self.animations[animation].y;
+      if (self.data.animations[animation].y) {
+        sprite.y += self.data.animations[animation].y;
       }
+    }
+
+    UpdateLocation();
+
+    var hitted= {};
+
+    var distance = 0;
+
+    var listener = createjs.Ticker.on("tick", function () {
+
+      distance += self.data.flyspeed;
+
+      UpdateLocation();
+
+      switch (animation) {
+        case "attackdown":
+          sprite.y += distance;
+          break;
+        case "attackleft":
+          sprite.x -= distance;
+          break;
+        case "attackright":
+          sprite.x += distance;
+          break;
+        case "attackup":
+          sprite.y -= distance;
+          break;
+      }
+
+      // 碰撞检测
+      for (var key in Game.currentArea.data.actors) {
+        if (Game.currentArea.data.actors[key].id == actor.id) continue;
+        var c = Game.spellCollision(sprite, Game.currentArea.data.actors[key].sprite);
+        if (c) {
+          hitted[key] = true;
+        }
+      }
+
       Game.updateStage();
+
+      // 如果是远程攻击
+      if (self.data.distance > 0) {
+        // 如果攻击距离已经过了，或者命中了一个敌人
+        if (distance >= self.data.distance || Object.keys(hitted).length > 0)
+          Stop();
+      }
     });
 
-    sprite.on("animationend", function () {
-      sprite.gotoAndStop(0);
+    // 攻击结束时运行Stop函数
+    function Stop () {
       createjs.Ticker.off("tick", listener);
       Game.stage.removeChild(sprite);
       Game.updateStage();
+
+      // 判断应该受伤的角色
+      for (var key in hitted) {
+        Game.currentArea.data.actors[key].damage(self.data.type, self.data.attack);
+      }
+    }
+
+    sprite.on("animationend", function () {
+      if (self.data.distance == 0 && self.data.flyspeed == 0) {
+        Stop();
+      }
     });
 
     Game.stage.addChild(sprite);
     sprite.gotoAndPlay(animation);
+
+    if ( self.data.animations[animation].actor
+      && actor.data.animations[self.data.animations[animation].actor] ) {
+      actor.play(self.data.animations[animation].actor, 3);
+    }
   };
 
 })();

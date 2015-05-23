@@ -1,0 +1,10 @@
+{
+  "id": "item0001",
+  "name": "bag",
+  "description": "一个小袋子",
+  "image": "resource\/item0001.png",
+  "width": 32,
+  "height": 32,
+  "tilewidth": 32,
+  "tileheight":32
+}

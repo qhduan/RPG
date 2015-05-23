@@ -29,11 +29,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Game.hero = hero;
 
-        Game.hero.draw(area.entry.x, area.entry.y);
+        Game.hero.draw(area.data.entry.x, area.data.entry.y);
         Game.hero.focus();
         Game.updateStage();
 
-        createjs.Ticker.on("tick", Game.stage);
+        //createjs.Ticker.on("tick", Game.stage);
 
       });
 
@@ -54,15 +54,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Game.drawHero(ret.hero, function (heroImage) {
           ret.hero.image = heroImage;
+          ret.hero.id = "hero";
           delete ret.hero.images;
 
           var hero = new Game.ActorClass(ret.hero);
 
-          if (hero.spellData) {
+          if (hero.data.spellData) {
             var spellSound = [];
             hero.spellObj = {};
-            for (var key in hero.spellData) {
-              var spellData = hero.spellData[key];
+            for (var key in hero.data.spellData) {
+              var spellData = hero.data.spellData[key];
               hero.spellObj[spellData.id] = new Game.SpellClass(spellData);
               spellSound.push(spellData.sound);
             }

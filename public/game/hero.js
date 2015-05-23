@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  // 合并图片
+  // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
   function Draw (images, width, height, callback) {
     var canvas = document.createElement("canvas");
     canvas.height = height;
@@ -56,6 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     DrawOne();
   }
 
+  // 把多张图片合成一张，并返回
   Game.drawHero = function drawHero (heroData, callback) {
     var data = heroData.images;
 
