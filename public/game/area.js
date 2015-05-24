@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
 
-  var AreaClass = function (areaData, callback) {
+  var AreaClass = function (areaData) {
     var self = this;
 
     self.data = areaData;
@@ -89,8 +89,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       self.data.height * self.data.tileheight);
 
     Game.areas[self.id] = self;
-    if (callback) callback(self);
 
+    // 完成事件
+    self.complete = true;
+    if (self.listeners && self.listeners["complete"]) {
+      for (var key in self.listeners["complete"]) {
+        self.listeners["complete"][key](self);
+      }
+    }
+
+  };
+
+  AreaClass.prototype.on = function (event, listener) {
+    var self = this;
+
+    if (!self.listeners)
+      self.listeners = {};
+
+    if (!self.listeners[event])
+      self.listeners[event] = {};
+
+    var id = Math.random().toString(16).substr(2);
+    self.listeners[event][id] = listener;
+  };
+
+  AreaClass.prototype.off = function (event, id) {
+    var self = this;
+
+    if (self.listeners[event] && self.listeners[event][id]) {
+      delete self.listeners[event][id];
+    }
+  };
+
+  AreaClass.prototype.oncomplete = function (callback) {
+    var self = this;
+
+    if (self.complete) {
+      callback(self);
+    } else {
+      self.on("complete", callback);
+    }
   };
 
   // 返回某个坐标点所在的地格
@@ -113,7 +151,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     if (self.data.actors && Object.keys(self.data.actors).length) {
       for (var key in self.data.actors) {
-        self.data.actors[key].draw();
+        var actorObj = self.data.actors[key];
+        if (actorObj.data.x && actorObj.data.y) {
+          actorObj.draw();
+        } else {
+          actorObj.draw(self.data.entry.x, self.data.entry. y);
+        }
       }
     }
 
@@ -145,22 +188,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               element.image = Game.resources[element.image];
             });
 
+            var count = 0;
+            // 当area的actors和items都加载完成后回调
+            var AreaComplete = function () {
+              count++;
+              if (count >= 0){
+                var areaObj = new AreaClass(areaData);
+                areaObj.oncomplete(callback);
+              }
+            };
+
             // 处理地图角色（NPC或怪物）
             if (areaData.actors && Object.keys(areaData.actors).length) {
+              count -= Object.keys(areaData.actors).length;
               for (var key in areaData.actors) {
-                var actorObj = new Game.ActorClass(areaData.actors[key]);
-                areaData.actors[key] = actorObj;
+
+                if (areaData.actors[key].type == "hero") {
+                  var DrawHero = function (actorData) {
+                    Game.drawHero(actorData, function (heroImage) {
+                      actorData.image = heroImage;
+                      actorData.id = "hero_" + actorData.name;
+                      delete actorData.images;
+                      var hero = new Game.ActorClass(actorData);
+                      areaData.actors[actorData.id] = hero;
+                      hero.oncomplete(AreaComplete);
+                    });
+                  };
+                  DrawHero(areaData.actors[key]);
+                } else {
+                  var actorObj = new Game.ActorClass(areaData.actors[key]);
+                  areaData.actors[key] = actorObj;
+                  actorObj.oncomplete(AreaComplete);
+                }
               }
             }
 
             // 处理地图物品，可能出现的物品
-            if (areaData.items || Object.keys(areaData.items).length) {
+            if (areaData.items && Object.keys(areaData.items).length) {
+              count -= Object.keys(areaData.items).length;
               for (var key in areaData.items) {
                 var itemObj = new Game.ItemClass(areaData.items[key]);
+                itemObj.oncomplete(AreaComplete);
               }
             }
-
-            new AreaClass(areaData, callback);
 
           });
 

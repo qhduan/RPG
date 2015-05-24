@@ -117,6 +117,17 @@ var areas = {};
       });
     }
 
+    // 读取地图相关的效果音
+    if (mapExtra.effects) {
+      mapData.effects = {};
+
+      mapExtra.effects.forEach(function (element) {
+        var url = "/sound/effect/" + element + ".ogg";
+        resources.push(url);
+        mapData.effects[element] = url;
+      });
+    }
+
     // resources当中是需要 客户端 预先加载的图片和声音文件
     mapData.resources = resources;
 
@@ -143,5 +154,9 @@ function GetArea (req, res) {
   }
 }
 
+function AddHero (heroData) {
+  areas[heroData.area].actors["hero_" + heroData.name] = heroData;
+}
 
 exports.get = GetArea;
+exports.add = AddHero;

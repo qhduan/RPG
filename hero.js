@@ -22,6 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 var fs = require("fs");
 
 var herodb = require("./db").hero;
+var area = require("./area");
 
 var spell = require("./spell");
 
@@ -322,7 +323,8 @@ function CreateHero (req, res) {
         "dexterity": 10, // 敏捷
         "intelligence": 10, // 智力
         "constitution": 10, // 体质
-        "map": "", // 当前所在地图
+        "area": "town0001", // 当前所在地图
+        "type": "hero",
         "spells": [ // 招式，魔法
           "spell0001" // 普通攻击
         ],
@@ -374,6 +376,8 @@ function GetHero (req, res) {
       obj.hero.images = ret;
       obj.hero.spellData = spell.get(obj.hero.spells);
       res.json({hero: obj.hero});
+
+      area.add(obj.hero);
     });
   } else {
     res.json({error: "Invalid Session"})

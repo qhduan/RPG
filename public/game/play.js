@@ -23,15 +23,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.oninit(function () {
 
     InitHero(function (hero) {
+      var heroId = "hero_" + hero.name;
 
-      Game.loadArea("town0001", function (area) {
+      Game.loadArea(hero.area, function (area) {
         area.draw();
 
-        Game.hero = hero;
-
-        Game.hero.draw(area.data.entry.x, area.data.entry.y);
-        Game.hero.focus();
-        Game.updateStage();
+        for (var key in area.data.actors) {
+          if (heroId == key) {
+            Game.hero = area.data.actors[key];
+            Game.hero.draw(area.data.entry.x, area.data.entry.y);
+            Game.hero.focus();
+            Game.updateStage();
+            break;
+          }
+        }
 
         //createjs.Ticker.on("tick", Game.stage);
 
@@ -52,9 +57,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     $.post("/hero/get", {session: session}).done(function (ret) {
       if (ret.hero) {
 
+        callback(ret.hero);
+
+        /*
         Game.drawHero(ret.hero, function (heroImage) {
           ret.hero.image = heroImage;
-          ret.hero.id = "hero";
+          ret.hero.id = "hero_" + ret.hero.name;
           delete ret.hero.images;
 
           var hero = new Game.ActorClass(ret.hero);
@@ -80,6 +88,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
           callback(hero);
         });
+
+        */
 
       } else {
         alert(ret.error || "Unknown Error");

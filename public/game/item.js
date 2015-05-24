@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var ItemClass = Game.ItemClass = function (itemData, callback) {
+  var ItemClass = Game.ItemClass = function (itemData) {
     var self = this;
 
     self.data = itemData;
@@ -34,7 +34,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       self.bitmap.regX = image.height / 2;
       Game.items[self.data.id] = self;
       Game.resources[self.data.id] = image;
-      if (callback) callback(self);
+
+      // 完成事件
+      self.complete = true;
+      if (self.listeners && self.listeners["complete"]) {
+        for (var key in self.listeners["complete"]) {
+          self.listeners["complete"][key](self);
+        }
+      }
     }
 
     if (Game.resources.hasOwnProperty(self.data.id)) {
@@ -47,18 +54,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
+  ItemClass.prototype.on = function (event, listener) {
+    var self = this;
+
+    if (!self.listeners)
+      self.listeners = {};
+
+    if (!self.listeners[event])
+      self.listeners[event] = {};
+
+    var id = Math.random().toString(16).substr(2);
+    self.listeners[event][id] = listener;
+  };
+
+  ItemClass.prototype.off = function (event, id) {
+    var self = this;
+
+    if (self.listeners[event] && self.listeners[event][id]) {
+      delete self.listeners[event][id];
+    }
+  };
+
+  ItemClass.prototype.oncomplete = function (callback) {
+    var self = this;
+
+    if (self.complete) {
+      callback(self);
+    } else {
+      self.on("complete", callback);
+    }
+  };
+
+  ItemClass.prototype.clone = function (callback) {
+    var self = this;
+
+    var itemObj = new ItemClass(self.data);
+    itemObj.oncomplete(callback);
+  };
+
   ItemClass.prototype.draw = function (x, y) {
     self.bitmap.x = x;
     self.bitmap.y = y;
 
     Game.stage.addChild(self.bitmap);
     Game.updateStage();
-  };
-
-  ItemClass.prototype.clone = function (callback) {
-    var self = this;
-
-    new ItemClass(self.data, callback);
   };
 
 })();

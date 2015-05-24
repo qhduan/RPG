@@ -20,8 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-
-  var SpellClass = Game.SpellClass = function (spellData, callback) {
+  var SpellClass = Game.SpellClass = function (spellData) {
     var self = this;
 
     self.data = spellData;
@@ -39,7 +38,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         animations: self.data.animations
       });
 
-      if (callback) callback();
+      // 完成事件
+      self.complete = true;
+      if (self.listeners && self.listeners["complete"]) {
+        for (var key in self.listeners["complete"]) {
+          self.listeners["complete"][key](self);
+        }
+      }
     }
 
     if (Game.resources.hasOwnProperty(self.id)) {
@@ -50,6 +55,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       image.src = self.data.image;
     }
 
+  };
+
+  SpellClass.prototype.on = function (event, listener) {
+    var self = this;
+
+    if (!self.listeners)
+      self.listeners = {};
+
+    if (!self.listeners[event])
+      self.listeners[event] = {};
+
+    var id = Math.random().toString(16).substr(2);
+    self.listeners[event][id] = listener;
+  };
+
+  SpellClass.prototype.off = function (event, id) {
+    var self = this;
+
+    if (self.listeners[event] && self.listeners[event][id]) {
+      delete self.listeners[event][id];
+    }
+  };
+
+  SpellClass.prototype.oncomplete = function (callback) {
+    var self = this;
+
+    if (self.complete) {
+      callback(self);
+    } else {
+      self.on("complete", callback);
+    }
   };
 
   SpellClass.prototype.fire = function (actor, animation) {
@@ -133,6 +169,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 判断应该受伤的角色
       for (var key in hitted) {
         Game.currentArea.data.actors[key].damage(self.data.type, self.data.attack);
+      }
+
+      if (Object.keys(hitted).length) {
+        createjs.Sound.play(Game.currentArea.data.effects.hurt);
       }
     }
 

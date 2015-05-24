@@ -10,16 +10,21 @@
       "id": "actor0001",
       "x": 600,
       "y": 650,
-      "mode": "randomwalk"
+      "mode": "randomwalk",
+      "type": "monster"
     },
     {
       "id": "actor0002",
       "x": 600,
       "y": 750,
-      "mode": "randomwalk"
+      "mode": "randomwalk",
+      "type": "monster"
     }
   ],
   "items": [
     "item0001"
+  ],
+  "effects":[
+    "hurt"
   ]
 }

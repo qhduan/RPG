@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       self.animation 当前精灵动作
       self.sprite 精灵
   */
-  var ActorClass = Game.ActorClass = function (actorData, callback) {
+  var ActorClass = Game.ActorClass = function (actorData) {
     var self = this;
 
     self.data = actorData;
@@ -143,7 +143,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         self.sprite.y = 0;
         Game.updateStage();
 
-        if (callback) callback();
+        // 完成事件
+        self.complete = true;
+        if (self.listeners && self.listeners["complete"]) {
+          for (var key in self.listeners["complete"]) {
+            self.listeners["complete"][key](self);
+          }
+        }
       }
 
       if (sheet.complete) {
@@ -159,12 +165,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       image.onload = ImageComplete();
     }
 
+    if (self.data.spellData) {
+      var spellSound = [];
+      self.spellObj = {};
+
+      var queue = new createjs.LoadQueue(true);
+      queue.installPlugin(createjs.Sound);
+
+      for (var key in self.data.spellData) {
+        var spellData = self.data.spellData[key];
+        self.spellObj[spellData.id] = new Game.SpellClass(spellData);
+        queue.loadFile({
+          src: spellData.sound
+        });
+      }
+    }
+
+  };
+
+  ActorClass.prototype.on = function (event, listener) {
+    var self = this;
+
+    if (!self.listeners)
+      self.listeners = {};
+
+    if (!self.listeners[event])
+      self.listeners[event] = {};
+
+    var id = Math.random().toString(16).substr(2);
+    self.listeners[event][id] = listener;
+  };
+
+  ActorClass.prototype.off = function (event, id) {
+    var self = this;
+
+    if (self.listeners[event] && self.listeners[event][id]) {
+      delete self.listeners[event][id];
+    }
+  };
+
+  ActorClass.prototype.oncomplete = function (callback) {
+    var self = this;
+
+    if (self.complete) {
+      callback(self);
+    } else {
+      self.on("complete", callback);
+    }
   };
 
   ActorClass.prototype.clone = function (callback) {
     var self = this;
 
-    new ActorClass(self.data, callback);
+    var actorObj = new ActorClass(self.data);
+    actorObj.oncomplete(callback);
   };
 
   ActorClass.prototype.decreaseHitpoint = function (hp) {
@@ -407,6 +461,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   ActorClass.prototype.go = function (state, direction, step, collisionTest) {
     var self = this;
 
+    // 如果正在战斗动画，则不走
+    if (self.sprite.paused == false && self.sprite.currentAnimation.match(/spellcast|thrust|slash|shoot/)) {
+      return false;
+    }
+
     if (typeof collisionTest == "undefined") {
       collisionTest = true;
     }
@@ -418,7 +477,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 参数t中记录了某个方格的方位xy，测试这个方格是否和玩家有冲突
     var CheckCollision = function (t) {
-      if (t.x < 0 || t.y < 0 || t.x >= Game.currentArea.width || t.y >= Game.currentArea.height)
+      if (t.x < 0 || t.y < 0 || t.x >= Game.currentArea.data.width || t.y >= Game.currentArea.data.height)
         return true;
 
       var i = t.x + "-" + t.y;
@@ -568,8 +627,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       y = self.data.y;
 
     if (typeof x != "number" || typeof y != "number") {
-      console.log("ActorClass.draw Invalid Arguments");
-      return;
+      console.log(self);
+      throw "ActorClass.draw Invalid Arguments";
     }
 
     self.infoBox.x = x;
@@ -581,10 +640,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.stage.addChild(self.sprite);
     Game.stage.addChild(self.infoBox);
 
-    if (self.mode && self.mode.length) {
+    if (self.data.mode && self.data.mode.length) {
 
-      if (self.mode == "randomwalk") {
-        function RandomWalk () {
+      if (self.data.mode == "randomwalk") {
+        var RandomWalk = function () {
           var x = parseInt(Math.random() * 50 - 25);
           var y = parseInt(Math.random() * 50 - 25);
 
