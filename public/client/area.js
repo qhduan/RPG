@@ -162,8 +162,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     if (self.data.bgm) {
       // set loop = -1, 无限循环
-      var bgm = createjs.Sound.play(self.data.bgm, undefined, undefined, undefined, -1);
-      bgm.setVolume(0.2);
+      //var bgm = createjs.Sound.play(self.data.bgm, undefined, undefined, undefined, -1);
+      //bgm.setVolume(0.2);
     }
   };
 
@@ -176,13 +176,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       callback(Game.maps[id]);
       return;
     } else {
-      $.post("/area/get", {
+      Game.io.get("/area/get", {
         id: id
-      }).done(function (ret) {
-        if (ret.area) {
-          var areaData = ret.area;
+      }, function (ret) {
+        if (ret.map) {
+          var areaData = ret.map;
 
-          Game.preload(areaData.resources, function () {
+          Game.preload(ret.resources, function () {
 
             areaData.tilesets.forEach(function (element) {
               element.image = Game.resources[element.image];
@@ -198,38 +198,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               }
             };
 
-            // 处理地图角色（NPC或怪物）
-            if (areaData.actors && Object.keys(areaData.actors).length) {
-              count -= Object.keys(areaData.actors).length;
-              for (var key in areaData.actors) {
+            count = 0;
+            count -= Object.keys(ret.heros).length;
+            count -= Object.keys(areaData.actors).length;
+            count -= Object.keys(areaData.items).length;
 
-                if (areaData.actors[key].type == "hero") {
-                  var DrawHero = function (actorData) {
-                    Game.drawHero(actorData, function (heroImage) {
-                      actorData.image = heroImage;
-                      actorData.id = "hero_" + actorData.name;
-                      delete actorData.images;
-                      var hero = new Game.ActorClass(actorData);
-                      areaData.actors[actorData.id] = hero;
-                      hero.oncomplete(AreaComplete);
-                    });
-                  };
-                  DrawHero(areaData.actors[key]);
-                } else {
-                  var actorObj = new Game.ActorClass(areaData.actors[key]);
-                  areaData.actors[key] = actorObj;
-                  actorObj.oncomplete(AreaComplete);
-                }
-              }
+            // 处理地图中的hero
+            for (var key in ret.heros) {
+              (function (heroData) {
+                Game.drawHero(heroData.custom, function (heroImage) {
+                  heroData.image = heroImage;
+                  var hero = new Game.ActorClass(heroData);
+                  areaData.actors[heroData.id] = hero;
+                  hero.oncomplete(AreaComplete);
+                });
+              })(ret.heros[key]);
+            }
+
+            // 处理地图角色（NPC或怪物）
+            for (var key in areaData.actors) {
+              var actorObj = new Game.ActorClass(areaData.actors[key]);
+              areaData.actors[key] = actorObj;
+              actorObj.oncomplete(AreaComplete);
             }
 
             // 处理地图物品，可能出现的物品
-            if (areaData.items && Object.keys(areaData.items).length) {
-              count -= Object.keys(areaData.items).length;
-              for (var key in areaData.items) {
-                var itemObj = new Game.ItemClass(areaData.items[key]);
-                itemObj.oncomplete(AreaComplete);
-              }
+            for (var key in areaData.items) {
+              var itemObj = new Game.ItemClass(areaData.items[key]);
+              itemObj.oncomplete(AreaComplete);
             }
 
           });

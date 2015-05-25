@@ -97,7 +97,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     self.firing = new Date().getTime();
 
-    createjs.Sound.play(self.data.sound);
+    if (Game.resources[self.data.sound])
+      createjs.Sound.play(self.data.sound);
 
     var sprite = new createjs.Sprite(self.sheet);
 
@@ -172,7 +173,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (Object.keys(hitted).length) {
-        createjs.Sound.play(Game.currentArea.data.effects.hurt);
+        createjs.Sound.play("/sound/effect/hurt.ogg");
       }
     }
 

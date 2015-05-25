@@ -1,11 +1,11 @@
 {
-  "id": "actor0001",
-  "name": "白猫",
-  "description": "很可爱的白猫哦",
-  "image": "resource\/actor0001.png",
+  "id": "actor0004",
+  "name": "黑猫",
+  "description": "很可爱的黑猫哦",
+  "image": "resource\/actor0004.png",
   "hitpoint": 100,
   "manapoint": 100,
-  "tileheight": 32,
+  "tileheight": 48,
   "tilewidth": 32,
   "spells": [],
   "animations": {

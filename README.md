@@ -69,6 +69,10 @@ preload.js 自动加载
 
 /data/spell/resource/spell0001.png
 /data/spell/resource/spell0001.xcf
+/data/spell/resource/spell0002.png
+/data/spell/resource/spell0002.xcf
+/data/spell/resource/spell0003.png
+/data/spell/resource/spell0003.xcf
 
 ### credits 鸣谢
 
@@ -78,14 +82,16 @@ Universal-LPC-spritesheet by makrohn
 
 ---
 
-/data/sound/bgm/DarkChamber.mp3
-/data/sound/bgm/DarkChamber.ogg
-Dark Chamber Marcelo Fernandez (http://marcelofernandez.tk/)
+/data/spell/resource/spell0001.ogg
+/data/spell/resource/spell0002.ogg
+/data/spell/resource/spell0003.ogg
+/data/sound/effetc/hurt.ogg
+Philippe Groarke (http://opengameart.org/content/punches-hits-swords-and-squishes)
 
 ---
 
-/data/spell/resource/spell0001.ogg
-Philippe Groarke (http://opengameart.org/content/punches-hits-swords-and-squishes)
+/data/item/resource/item0001.png
+Jorge Avila (http://opengameart.org/content/georgui-icon-set)
 
 ---
 

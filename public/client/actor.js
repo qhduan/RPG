@@ -112,72 +112,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var image = null;
 
-    if (Game.resources.hasOwnProperty(self.data.image)) {
+    if (self.data.image instanceof Image) {
+      image = self.data.image;
+    } else if (Game.resources.hasOwnProperty(self.data.image)) {
       image = Game.resources[self.data.image];
-    } else if (self.data.image) {
-      image = new Image();
-      image.src = self.data.image;
     } else {
       console.log("ActorClass Invalid Image");
     }
 
-    function ImageComplete () {
+    var sheet = new createjs.SpriteSheet({
+      images: [image],
+      frames: {
+        width: self.data.tilewidth,
+        height: self.data.tileheight,
+        regX: parseInt(self.data.tilewidth / 2), // regX和regY把角色中间设定为中间
+        regY: parseInt(self.data.tileheight / 2)
+      },
+      animations: self.data.animations
+    });
+    //self.sprite = new createjs.Sprite(sheet);
 
-      Game.resources[self.data.image] = image;
+    self.sprite = new createjs.Sprite(sheet, "facedown");
 
-      var sheet = new createjs.SpriteSheet({
-        images: [image],
-        frames: {
-          width: self.data.tilewidth,
-          height: self.data.tileheight,
-          regX: parseInt(self.data.tilewidth / 2), // regX和regY把角色中间设定为中间
-          regY: parseInt(self.data.tileheight / 2)
-        },
-        animations: self.data.animations
-      });
+    function SheetComplete () {
+      self.sprite.x = 0;
+      self.sprite.y = 0;
+      Game.updateStage();
 
-      self.sprite = new createjs.Sprite(sheet, "facedown");
-
-      function SheetComplete () {
-        self.sprite.x = 0;
-        self.sprite.y = 0;
-        Game.updateStage();
-
-        // 完成事件
-        self.complete = true;
-        if (self.listeners && self.listeners["complete"]) {
-          for (var key in self.listeners["complete"]) {
-            self.listeners["complete"][key](self);
-          }
+      // 完成事件
+      self.complete = true;
+      if (self.listeners && self.listeners["complete"]) {
+        for (var key in self.listeners["complete"]) {
+          self.listeners["complete"][key](self);
         }
       }
-
-      if (sheet.complete) {
-        SheetComplete()
-      } else {
-        sheet.on("complete", SheetComplete);
-      }
-    } // ImageComplete
-
-    if (image.complete) {
-      ImageComplete();
-    } else {
-      image.onload = ImageComplete();
     }
 
-    if (self.data.spellData) {
-      var spellSound = [];
-      self.spellObj = {};
+    if (sheet.complete) {
+      SheetComplete()
+    } else {
+      sheet.on("complete", SheetComplete);
+    }
 
-      var queue = new createjs.LoadQueue(true);
-      queue.installPlugin(createjs.Sound);
-
-      for (var key in self.data.spellData) {
-        var spellData = self.data.spellData[key];
-        self.spellObj[spellData.id] = new Game.SpellClass(spellData);
-        queue.loadFile({
-          src: spellData.sound
-        });
+    if (self.data.spells) {
+      for (var key in self.data.spells) {
+        self.data.spells[key] = new Game.SpellClass(self.data.spells[key]);
       }
     }
 
@@ -288,6 +267,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   ActorClass.prototype.play = function (animation, priority) {
     var self = this;
 
+    var direction = animation.match(/down|left|right|up/)[0];
+
     // 新动画默认优先级为0
     if (typeof priority == "undefined")
       priority = 0;
@@ -331,10 +312,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   ActorClass.prototype.fire = function (num) {
     var self = this;
 
-    var spell = self.data.spells[num];
+    var spell = Object.keys(self.data.spells)[num];
     if (spell) {
       var direction = self.sprite.currentAnimation.match(/up|left|down|right/)[0];
-      self.spellObj[spell].fire(self, "attack" + direction);
+      self.data.spells[spell].fire(self, "attack" + direction);
     }
   };
 
@@ -466,6 +447,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
+    if (self.data.weapons) {
+      if (self.bowSprite.paused == false || self.daggerSprite.paused == false || self.spearSprite.paused == false || self.woodwandSprite.paused == false)
+        return false;
+    }
+
     if (typeof collisionTest == "undefined") {
       collisionTest = true;
     }
@@ -541,7 +527,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return false;
       } else {
         self.infoBox.x = self.sprite.x;
-        self.infoBox.y = self.sprite.y - 35;
+        self.infoBox.y = self.sprite.y - 45;
         return true;
       }
     }
@@ -632,13 +618,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     self.infoBox.x = x;
-    self.infoBox.y = y - 35;
+    self.infoBox.y = y - 45;
 
     self.sprite.x = x;
     self.sprite.y = y;
 
     Game.stage.addChild(self.sprite);
     Game.stage.addChild(self.infoBox);
+
+    if (self.data.weapons) {
+      Game.stage.addChild(self.bowSprite);
+      Game.stage.addChild(self.daggerSprite);
+      Game.stage.addChild(self.spearSprite);
+      Game.stage.addChild(self.woodwandSprite);
+    }
 
     if (self.data.mode && self.data.mode.length) {
 
@@ -675,7 +668,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var self = this;
 
     self.infoBox.x = self.sprite.x;
-    self.infoBox.y = self.sprite.y - 35;
+    self.infoBox.y = self.sprite.y - 45;
 
     Game.stage.setTransform(0, 0,
       Game.stage.scaleX,

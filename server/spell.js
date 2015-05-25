@@ -21,47 +21,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var fs = require("fs");
 
-var spells = {};
+var SPELLS = {};
 
 (function LoadSpell () {
-  var path = __dirname + "/data/spell/";
+  var path = global.DATA_DIR + "/spell";
   var files = fs.readdirSync(path);
 
-  files = files.filter(function (element) {
-    if (element.indexOf(".json") != -1)
-      return true;
-    return false;
-  });
-
   files.forEach(function (element) {
+    if (element.indexOf(".json") == -1)
+      return;
 
-    var spellId = element.substr(0, element.length - 5);
+    var id = element.substr(0, element.length - 5);
 
-    var spell = fs.readFileSync(path + element, {encoding: "utf8"});
-    spell = JSON.parse(spell);
+    var spellFile = fs.readFileSync(path + "/" + element, {encoding: "utf8"});
 
-    spell.image = "data:image/png;base64," + fs.readFileSync(path + spell.image).toString("base64");
+    var spellData = JSON.parse(spellFile);
 
-    spell.sound = "/spell/" + spell.sound;
+    spellData.image = "/spell/" + spellData.image;
 
-    spell.id = spellId;
+    spellData.sound = "/spell/" + spellData.sound;
 
-    spells[spellId] = spell;
+    SPELLS[spellData.id] = spellData;
   });
 
-  console.log("loaded", Object.keys(spells).length, "spells");
+  console.log("Spell loaded ", Object.keys(SPELLS).length);
 })();
 
 
-function GetSpell (list) {
-  var ret = {};
-
-  list.forEach(function (element) {
-    ret[element] = spells[element]
-  });
-
-  return ret;
+function GetSpell (id) {
+  if (typeof id == "string") {
+    return SPELLS[id];
+  } else if (id instanceof Array) {
+    var ret = {};
+    for (var i = 0; i < id.length; i++) {
+      ret[id[i]] = SPELLS[id[i]];
+    }
+    return ret;
+  } else {
+    throw "Invalid Argument";
+  }
 }
 
+function ListSpell () {
+  return Object.keys(SPELLS);
+}
 
 exports.get = GetSpell;
+exports.list = ListSpell;

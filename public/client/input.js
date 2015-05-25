@@ -164,6 +164,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.hero.fire(2);
       }
 
+      if (Game.key.isPressed("v")) {
+        Game.hero.fire(3);
+      }
+
       Game.hero.focus();
     });
   }); // Game.oninit

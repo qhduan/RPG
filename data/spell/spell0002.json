@@ -1,11 +1,11 @@
 {
   "id": "spell0002",
-  "name": "bow",
-  "description": "普通的弓箭攻击",
+  "name": "spear",
+  "description": "普通的枪攻击",
   "image": "resource\/spell0002.png",
   "sound": "resource\/spell0002.ogg",
-  "distance": 200,
-  "flyspeed": 10,
+  "distance": 0,
+  "flyspeed": 0,
   "cooldown": 500,
   "type": "normal",
   "attack": 20,
@@ -13,32 +13,32 @@
   "tilewidth": 64,
   "animations": {
     "attackdown": {
-      "frames": [0],
+      "frames": [0, 1, 2],
       "speed": 0.3,
       "x": 0,
-      "y": 10,
-      "actor": "shootdown"
+      "y": 30,
+      "actor": "thrustdown"
     },
     "attackleft": {
-      "frames": [1],
+      "frames": [3, 4, 5],
       "speed": 0.3,
-      "x": -10,
+      "x": -30,
       "y": 0,
-      "actor": "shootleft"
+      "actor": "thrustleft"
     },
     "attackright": {
-      "frames": [2],
+      "frames": [6, 7, 8],
       "speed": 0.3,
-      "x": 10,
+      "x": 30,
       "y": 0,
-      "actor": "shootright"
+      "actor": "thrustright"
     },
     "attackup": {
-      "frames": [3],
+      "frames": [9, 10, 11],
       "speed": 0.3,
       "x": 0,
-      "y": -10,
-      "actor": "shootup"
+      "y": -30,
+      "actor": "thrustup"
     }
   }
 }

@@ -9,52 +9,366 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <title>Dream RPG</title>
 
-  <link href="style/semantic.min.css" rel='stylesheet'>
+  <style>
+    html {
+      overflow: hidden;
+    }
 
+    body {
+      background-color: gray;
+    }
+
+    #game {
+      position: absolute;
+      top: 0;
+      left: 0;
+    }
+
+    #ProgressBar {
+      opacity: 0;
+      z-index: -999;
+      position: fixed;
+      top: 45%;
+      left: 25%;
+      height: 25px;
+      width: 50%;
+      background-color: #f7f7f7;
+      padding: 5px;
+      margin: 50px 0;
+      border-radius: 4px;
+      border: 1px solid rgba(39, 41, 43, 0.15);
+    }
+
+    #ProgressBarInner {
+      display: inline-block;
+      height: 100%;
+      border-radius: 4px;
+      background-color: #888888;
+      text-align: center;
+      color: green;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .login {
+      width: 400px;
+      height: 400px;
+      margin: auto;
+      margin-top: 100px;
+      background-color: white;
+      text-align: center;
+    }
+
+    .button {
+      color: blue;
+    }
+
+    .register {
+      width: 400px;
+      height: 400px;
+      margin: auto;
+      margin-top: 100px;
+      background-color: white;
+      text-align: center;
+      display: none;
+    }
+
+    td, tr, table {
+      text-align: center;
+    }
+
+  </style>
 </head>
 <body>
 
-<div class="ui grid page">
-  <div class="row">
-    <div class="column">
-      <div class="ui segment">
-        <div class="ui form">
-          <div class="field">
-            <label>Name:</label>
-            <input name="name" type="text">
-          </div>
-          <div class="field">
-            <label>Password:</label>
-            <input name="password" type="password">
-          </div>
-          <button onclick="Submit()" class="ui button" type="submit">Login</button>
-          <a class="ui button" href="/create">Register</a>
+<div id="ProgressBar">
+  <div id="ProgressBarInner"></div>
+</div>
+
+<canvas id="game"></canvas>
+
+<div id="register" class="register">
+  <h4>预览：</h4>
+  <canvas id="preveiw" width="256" height="64"></canvas>
+
+  <table>
+    <tr>
+      <td>
+        <div>
+          <span class="ui button">
+          Sex
+          </span>
+          <select onchange="SelectHero(event)" data-type="sex" class="">
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
         </div>
-      </div>
-    </div>
+
+        <div>
+          <span class="ui button">
+          Body
+          </span>
+          <select onchange="SelectHero(event)" data-type="body" class="">
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+            <option value="dark2">Dark 2</option>
+            <option value="tanned">Tanned</option>
+            <option value="tanned2">Tanned 2</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Eyes
+          </span>
+          <select onchange="SelectHero(event)" data-type="eyes" class="">
+            <option value="blue">Blue</option>
+            <option value="brown">Brown</option>
+            <option value="gray">Gray</option>
+            <option value="green">Green</option>
+            <option value="orange">Orange</option>
+            <option value="purple">Purple</option>
+            <option value="red">Red</option>
+            <option value="yellow">Yellow</option>
+          </select>
+        </div>
+      </td><!--左上-->
+      <td>
+
+        <div id="customMaleHair">
+          <span class="ui button">
+          Hair Style
+          </span>
+          <select onchange="SelectHero(event)" data-type="hair" class="">
+            <option value="">None</option>
+            <option value="bedhead">Bedhead</option>
+            <option value="long">Long</option>
+            <option value="longhawk">Longhawk</option>
+            <option value="messy1">Messy1</option>
+            <option value="messy2">Messy2</option>
+            <option value="mohawk">Mohawk</option>
+            <option value="page">Page</option>
+            <option value="parted">Parted</option>
+            <option value="plain">Plain</option>
+            <option value="shorthawk">Shorthawk</option>
+          </select>
+        </div>
+
+        <div id="customFemaleHair" style="display: none;">
+          <span class="ui button">
+          Hair Style
+          </span>
+          <select onchange="SelectHero(event)" data-type="hair" class="">
+            <option value="">None</option>
+            <option value="bangs">bangs</option>
+            <option value="bangslong">bangslong</option>
+            <option value="bangslong2">bangslong2</option>
+            <option value="bunches">bunches</option>
+            <option value="loose">loose</option>
+            <option value="pixie">pixie</option>
+            <option value="ponytail">ponytail</option>
+            <option value="ponytail2">ponytail2</option>
+            <option value="princess">princess</option>
+            <option value="shoulderl">shoulderl</option>
+            <option value="shoulderr">shoulderr</option>
+            <option value="swoop">swoop</option>
+            <option value="unkempt">unkempt</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Hair Color
+          </span>
+          <select onchange="SelectHero(event)" data-type="haircolor" class="">
+            <option value="black">Black</option>
+            <option value="blonde">Blonde</option>
+            <option value="blonde2">blonde2</option>
+            <option value="blue">blue</option>
+            <option value="blue2">blue2</option>
+            <option value="brown">brown</option>
+            <option value="brown2">brown2</option>
+            <option value="brunette">brunette</option>
+            <option value="brunette2">brunette2</option>
+            <option value="dark-blonde">dark-blonde</option>
+            <option value="gold">gold</option>
+            <option value="gray">gray</option>
+            <option value="gray2">gray2</option>
+            <option value="green">green</option>
+            <option value="green2">green2</option>
+            <option value="light-blonde">light-blonde</option>
+            <option value="light-blonde2">light-blonde2</option>
+            <option value="pink">pink</option>
+            <option value="pink2">pink2</option>
+            <option value="purple">purple</option>
+            <option value="raven">raven</option>
+            <option value="raven2">raven2</option>
+            <option value="redhead">redhead</option>
+            <option value="redhead2">redhead2</option>
+            <option value="ruby-red">ruby-red</option>
+            <option value="white">white</option>
+            <option value="white-blonde">white-blonde</option>
+            <option value="white-blonde2">white-blonde2</option>
+            <option value="white-cyan">white-cyan</option>
+          </select>
+        </div>
+      </td><!--右上-->
+    </tr>
+    <tr>
+      <td>
+        <div>
+          <span class="ui button">
+          Head
+          </span>
+          <select onchange="SelectHero(event)" data-type="head" class="">
+            <option value="">None</option>
+            <option value="chainhat">chainhat</option>
+            <option value="chain_hood">chain_hood</option>
+            <option value="cloth_hood">cloth_hood</option>
+            <option value="leather_cap">leather_cap</option>
+            <option value="red">red</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Shirts
+          </span>
+          <select onchange="SelectHero(event)" data-type="shirts" class="">
+            <option value="">None</option>
+            <option value="brown">brown</option>
+            <option value="maroon">maroon</option>
+            <option value="teal">teal</option>
+            <option value="white">white</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Pants
+          </span>
+          <select onchange="SelectHero(event)" data-type="pants" class="">
+            <option value="">None</option>
+            <option value="magenta">magenta</option>
+            <option value="red">red</option>
+            <option value="teal">teal</option>
+            <option value="white">white</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Shoes
+          </span>
+          <select onchange="SelectHero(event)"  data-type="shoes" class="">
+            <option value="">None</option>
+            <option value="black">black</option>
+            <option value="brown">brown</option>
+            <option value="maroon">maroon</option>
+          </select>
+        </div>
+      </td><!--左下-->
+      <td>
+
+        <div>
+          <span class="ui button">
+          Armor Helms
+          </span>
+          <select onchange="SelectHero(event)" data-type="armorhelms" class="">
+            <option value="">None</option>
+            <option value="golden">golden</option>
+            <option value="metal">metal</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Armor Chest
+          </span>
+          <select onchange="SelectHero(event)" data-type="armorchest" class="">
+            <option value="">None</option>
+            <option value="golden">golden</option>
+            <option value="metal">metal</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Armor Arm
+          </span>
+          <select onchange="SelectHero(event)" data-type="armorarm" class="">
+            <option value="">None</option>
+            <option value="golden">golden</option>
+            <option value="metal">metal</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Armor Legs
+          </span>
+          <select onchange="SelectHero(event)" data-type="armorlegs" class="">
+            <option value="">None</option>
+            <option value="golden">golden</option>
+            <option value="metal">metal</option>
+          </select>
+        </div>
+
+        <div>
+          <span class="ui button">
+          Armor Feet
+          </span>
+          <select onchange="SelectHero(event)" data-type="armorfeet" class="">
+            <option value="">None</option>
+            <option value="golden">golden</option>
+            <option value="metal">metal</option>
+          </select>
+        </div>
+
+      </td><!--右上-->
+    </tr>
+  </table>
+
+  <br>
+  <input id="regName" placeholder="角色名" type="text">
+  <br>
+  <input id="regPassword" placeholder="密码" type="password">
+  <br>
+  <input id="regRepeat" placeholder="密码确认" type="password">
+  <br>
+  <button onclick="RegSubmit()" class="button">注册</button>
+  <button onclick="ReturnLogin()" class="button">返回</button>
+
+</div><!--Register Box-->
+
+<div id="login" class="login">
+  <div>
+    <h1>2D A-RPG Game</h1>
+    <br>
+    <input id="name" name="name" placeholder="角色名" type="text">
+    <br><br>
+    <input id="password" name="password" placeholder="密码" type="password">
+    <br><br>
+    <button onclick="Login()" class="button">登录</button>
+    <button onclick="Register()" class="button">注册</button>
   </div>
 </div>
 
-<script src="lib/jquery-2.1.4.min.js"></script>
-<script src="lib/semantic.min.js"></script>
+<script src="lib/socket.io-1.3.5.js"></script>
+<script src="lib/createjs-2014.12.12.min.js"></script>
 
-<script>
-  function Submit () {
-    var name = $("input[name=name]").val();
-    var password = $("input[name=password]").val();
-
-    $.post("/hero/login", {
-      name: name,
-      password: password
-    }).done(function (ret) {
-      if (ret.session) {
-        window.location.href = "/play?session=" + ret.session;
-      } else {
-        alert(ret.error || "Unknown Error");
-      }
-    });
-  }
-</script>
+<script src="client/game.js"></script>
+<script src="client/collision.js"></script>
+<script src="client/io.js"></script>
+<script src="client/area.js"></script>
+<script src="client/item.js"></script>
+<script src="client/actor.js"></script>
+<script src="client/hero.js"></script>
+<script src="client/spell.js"></script>
+<script src="client/input.js"></script>
+<script src="client/dialogue.js"></script>
+<script src="client/bootstrap.js"></script>
+<script src="client/register.js"></script>
 
 </body>
 </html>

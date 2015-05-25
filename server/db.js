@@ -21,8 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var Datastore = require("nedb");
 
-var path = {
-  "hero": __dirname + "/db/hero.db"
-}
-
-exports.hero = new Datastore({ filename: path.hero, autoload: true });
+exports.hero = new Datastore({
+  filename: global.DB_DIR + "/hero.db",
+  autoload: true
+});

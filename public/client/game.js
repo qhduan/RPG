@@ -51,16 +51,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.preload = function (resources, callback) {
 
-    var con = document.getElementById("TopLoadingBarCon");
-    var bar = document.getElementById("TopLoadingBarInner");
+    var con = document.getElementById("ProgressBar");
+    var bar = document.getElementById("ProgressBarInner");
     var second = 0;
     var opacity = 100;
     var start = new Date().getTime();
     con.style.zIndex = 999;
     con.style.opacity = 1;
+    bar.style.width = "20%";
+    bar.innerHTML = "";
 
+    resources = Object.keys(resources);
     resources = resources.filter(function (element) {
-      if (Game.resources.hasOwnProperty(element.src))
+      if (Game.resources.hasOwnProperty(element))
         return false;
       return true;
     });
@@ -77,7 +80,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       var second = (now - start) / 1000;
 
-      progress *= 100;
+      progress *= 80;
+      progress += 20;
       progress = progress.toFixed(0) + "%";
 
       // 更新进度条
