@@ -81,6 +81,7 @@ function Init (io) {
 
     socket.on("disconnect", function () {
       var heroId = SOCKET_HERO[socket.id];
+      if (!heroId) return;
 
       var heroObj = hero.get(heroId);
 
