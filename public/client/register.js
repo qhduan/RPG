@@ -22,20 +22,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var loginBox = document.getElementById("loginBox");
   var registerBox = document.getElementById("registerBox");
-  var previewBox = document.getElementById("previewBox");
 
   // 注册模块
   window.Register = function () {
     loginBox.style.display = "none";
     registerBox.style.display = "block";
-    previewBox.style.display = "block";
     Init();
   };
 
   window.ReturnLogin = function () {
     loginBox.style.display = "block";
     registerBox.style.display = "none";
-    previewBox.style.display = "none";
   };
 
   window.RegSubmit = function () {
