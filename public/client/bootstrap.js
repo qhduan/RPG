@@ -44,20 +44,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // 用socket登录
     Game.io.get("/login", {name: name, password: password}, function (data) {
       if (data.success) {
-        document.getElementById("login").style.display = "none";
+        document.getElementById("loginBox").style.display = "none";
         // 登录成功后
         Game.oninit(function () {
-          console.log("gameinited")
-          console.log(data.success);
           Game.loadArea(data.success.areaId, function (area) {
-            console.log("maploaded")
-            area.draw();
+            Game.area = area;
 
-            for (var key in area.data.actors) {
+            area.map.draw(Game.mapLayer);
+
+            for (var key in area.actors) {
+              area.actors[key].draw(Game.actorLayer);
+            }
+
+            for (var key in area.heros) {
+              if (key == data.success.heroId)
+                area.heros[key].draw(
+                  Game.playerLayer,
+                  area.map.data.entry.x,
+                  area.map.data.entry.y
+                );
+              else
+                area.heros[key].draw(
+                  Game.heroLayer,
+                  area.map.data.entry.x,
+                  area.map.data.entry.y
+                );
+            }
+
+            for (var key in area.heros) {
               if (key == data.success.heroId) {
-                Game.hero = area.data.actors[key];
+                Game.hero = area.heros[key];
                 Game.hero.focus();
-                Game.updateStage();
+
+                (function () {
+                  var index = 0;
+                  for (var key in Game.hero.data.spells) {
+                    (function (spellId, spellObj) {
+                      spellObj.icon.x = 170 + index * 50 + 20;
+                      spellObj.icon.y = 400 + 20;
+                      index++;
+                      Game.ui.toolbar.addChild(spellObj.icon);
+                    })(key, Game.hero.data.spells[key]);
+                  }
+                })();
+
+                Game.update();
                 break;
               }
             }

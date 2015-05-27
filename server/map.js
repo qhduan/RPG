@@ -22,11 +22,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var fs = require("fs");
 
-var spell = require("./spell");
-var actor = require("./actor");
-var hero = require("./hero");
-var item = require("./item");
-
 var MAPS = {};
 
 (function LoadArea () {
@@ -53,25 +48,6 @@ var MAPS = {};
       mapData[key] = extra[key];
     }
     mapData.id = id;
-
-    // 替换mapData中的actors
-    var actors = {};
-    mapData.actors.forEach(function (element) {
-      var actorData = actor.get(element.id);
-      for (var key in element) {
-        actorData[key] = element[key];
-      }
-      actors[actorData.id] = actorData;
-    });
-    mapData.actors = actors;
-
-    // 替换mapData中的items
-    var items = {};
-    mapData.items.forEach(function (element) {
-      var itemData = item.get(element);
-      items[itemData.id] = itemData;
-    });
-    mapData.items = items;
 
     // 把所有地图图块的地址转换
     mapData.tilesets.forEach(function (element) {
@@ -105,7 +81,7 @@ function GetMap (id) {
     }
     return ret;
   } else {
-    throw "Invalid Argument";
+    throw "GetMap Invalid Argument";
   }
 }
 

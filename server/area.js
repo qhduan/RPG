@@ -23,6 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 var fs = require("fs");
 
 var map = require("./map");
+var actor = require("./actor");
+var item = require("./item");
 var hero = require("./hero");
 
 var AREAS = {};
@@ -32,6 +34,31 @@ var AREAS = {};
     var id = element;
 
     var mapData = map.get(id);
+
+    var result = {
+      map: mapData,
+      heros: {}
+    };
+
+    // 获取mapData中的actors
+    var actors = {};
+    mapData.actors.forEach(function (element) {
+      var actorData = actor.get(element.id);
+      for (var key in element) {
+        actorData[key] = element[key];
+      }
+      actors[actorData.id] = actorData;
+    });
+    result.actors = actors;
+
+    // 获取mapData中的items
+    var items = {};
+    mapData.items.forEach(function (element) {
+      var itemData = item.get(element);
+      items[itemData.id] = itemData;
+    });
+    result.items = items;
+
 
     // 处理地图中加载的资源
     var resources = {};
@@ -46,14 +73,13 @@ var AREAS = {};
       resources[mapData.bgm] = "sound";
     }
 
-    // actors's image
-    for (var key in mapData.actors) {
-      var actor = mapData.actors[key];
+    // actors' images
+    for (var key in actors) {
+      resources[actors[key].image] = "image";
 
-      resources[actor.image] = "image";
-
-      for (var key in actor.spells) {
-        var spell = actor.spells[key];
+      // actors' spells' images
+      for (var key in actors[key].spells) {
+        var spell = actors[key].spells[key];
 
         resources[spell.image] = "image";
         resources[spell.sound] = "sound";
@@ -61,21 +87,16 @@ var AREAS = {};
     }
 
     // items' image
-    for (var key in mapData.items) {
-      var item = mapData.items[key];
-
-      resources[item.image] = "image;"
+    for (var key in items) {
+      resources[items[key].image] = "image;"
     }
 
     mapData.effects.forEach(function (element) {
       resources[element] = "sound";
     });
 
-    AREAS[id] = {
-      map: mapData,
-      resources: resources,
-      heros: {}
-    };
+    result.resources = resources;
+    AREAS[id] = result;
   });
 
   console.log("Areas loaded ", Object.keys(AREAS).length);

@@ -39,6 +39,8 @@ var SPELLS = {};
 
     spellData.image = "/spell/" + spellData.image;
 
+    spellData.icon = "/spell/" + spellData.icon;
+
     spellData.sound = "/spell/" + spellData.sound;
 
     SPELLS[spellData.id] = spellData;
@@ -58,7 +60,7 @@ function GetSpell (id) {
     }
     return ret;
   } else {
-    throw "Invalid Argument";
+    throw "GameSpell Invalid Argument";
   }
 }
 

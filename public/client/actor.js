@@ -24,12 +24,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     createjs.Ticker.on("tick", function () {
 
-      if (Game.stage) {
-        for (var i = 0; i < Game.stage.children.length; i++) {
-          if (Game.stage.children[i].paused == false) {
-            Game.updateStage();
-            break;
-          }
+      for (var i = 0; i < Game.actorLayer.children.length; i++) {
+        if (Game.actorLayer.children[i].paused == false) {
+          Game.update();
+          break;
+        }
+      }
+      for (var i = 0; i < Game.heroLayer.children.length; i++) {
+        if (Game.heroLayer.children[i].paused == false) {
+          Game.update();
+          break;
+        }
+      }
+      for (var i = 0; i < Game.playerLayer.children.length; i++) {
+        if (Game.playerLayer.children[i].paused == false) {
+          Game.update();
+          break;
         }
       }
 
@@ -137,7 +147,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     function SheetComplete () {
       self.sprite.x = 0;
       self.sprite.y = 0;
-      Game.updateStage();
+      Game.update();
 
       // 完成事件
       self.complete = true;
@@ -209,21 +219,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // item0001是物品掉落之后出现的小布袋
       Game.items.item0001.clone(function (dead) {
-        dead.bitmap.x = self.sprite.x;
-        dead.bitmap.y = self.sprite.y;
-        Game.stage.addChild(dead.bitmap);
-        // 因为sprite在hero下面，而如果直接加那么dead就会出现在hero上面，所以swap一下，保证dead不会在hero之上
-        Game.stage.swapChildren(dead.bitmap, self.sprite);
+        dead.draw(Game.itemLayer, self.sprite.x, self.sprite.y);
       });
 
-      //Game.stage.removeChild(self.infoBox);
-      //Game.stage.removeChild(self.sprite);
+      Game.actorLayer.removeChild(self.infoBox);
+      Game.actorLayer.removeChild(self.sprite);
 
-      // 没有removeChild而是设置visible是因为easeljs似乎有bug，会导致tick事件一个error
-      self.sprite.visible = 0;
-      self.infoBox.visible = 0;
-
-      delete Game.currentArea.data.actors[self.id];
+      delete Game.area.actors[self.id];
 
     } else {
       var hpcolor = "green";
@@ -239,7 +241,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
 
-    Game.updateStage();
+    Game.update();
   };
 
   ActorClass.prototype.decreaseManapoint = function (mp) {
@@ -252,7 +254,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       .beginFill("blue")
       .drawRect(0, 0, parseInt((self.currentManapoint / self.data.manapoint) * 30), 3);
 
-    Game.updateStage();
+    Game.update();
   };
 
   // 计算某个type类型，攻击力attack的技能对本角色的伤害
@@ -309,53 +311,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  ActorClass.prototype.fire = function (num) {
+  ActorClass.prototype.fire = function (num, direction) {
     var self = this;
+
+    // 同一时间只能施展一个spell
+    if (self.attacking)
+      return;
 
     var spell = Object.keys(self.data.spells)[num];
-    if (spell) {
-      var direction = self.sprite.currentAnimation.match(/up|left|down|right/)[0];
-      self.data.spells[spell].fire(self, "attack" + direction);
+    if (!spell)
+      return;
+    // 只有当这个spell的cooldown结
+    var now = new Date().getTime();
+    if ( typeof self.lastAttack == "number"
+      && typeof self.lastAttackCooldown == "number"
+      && (now - self.lastAttack) < self.lastAttackCooldown)
+      return;
+
+    self.lastAttack = now;
+    self.lastAttackCooldown = self.data.spells[spell].data.cooldown;
+    self.attacking = true;
+
+    if (!direction) {
+      direction = self.sprite.currentAnimation.match(/up|left|down|right/)[0];
     }
-  };
 
-  ActorClass.prototype.followHero = function () {
-    var self = this;
-
-    self.stopFollowHero();
-
-    var DistanceToHero = function () {
-      var distance = 0;
-      distance += Math.pow(self.sprite.x - Game.hero.sprite.x, 2);
-      distance += Math.pow(self.sprite.y - Game.hero.sprite.y, 2);
-      distance = Math.sqrt(distance);
-      return distance;
-    };
-
-    var walking = false;
-
-    self.followHerolistener = createjs.Ticker.on("tick", function () {
-      if (walking == false) {
-        if (DistanceToHero() > 100) {
-          walking = true;
-          self.gotoXY(Game.hero.sprite.x, Game.hero.sprite.y, "walk", function () {
-            walking = false;
-          });
-        }
-      }
+    self.data.spells[spell].fire(self, "attack" + direction, function () {
+      self.attacking = false;
+      self.face(direction);
     });
-  };
 
-  ActorClass.prototype.stopFollowHero = function () {
-    var self = this;
-
-    if (self.followHerolistener) {
-      createjs.Ticket.off("tick", self.followHerolistener);
-      self.followHerolistener = null;
+    if (self.id == Game.hero.id) {
+      Game.io.sync("attack", {
+        num: num,
+        direction: direction
+      });
     }
   };
 
-  ActorClass.prototype.gotoXY = function (x, y, state, callback) {
+  ActorClass.prototype.gotoXY = function (x, y, speed, collisionTest, callback) {
     var self = this;
 
     if (self.gotoXYListener) {
@@ -366,22 +360,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     x -= self.sprite.x;
     y -= self.sprite.y;
 
-    state = state || "walk";
+    var state = "walk";
 
-    var speed = Game.config.walk;
-    if (state == "run") {
-      speed = Game.config.run;
-    }
-
-    var limit = 5;
+    var limit = speed;
 
     self.gotoXYListener = createjs.Ticker.on("tick", toXY);
 
     function toXY () {
 
-      if (Math.abs(x) > limit && Math.abs(y) > limit) {
+      if (x == 0 && y == 0) {
+        if (self.gotoXYListener) {
+          createjs.Ticker.off("tick", self.gotoXYListener);
+          self.gotoXYListener = null;
+        }
+        self.stop();
+        if (callback) callback();
+      } else if (Math.abs(x) > limit && Math.abs(y) > limit) {
         var skew = speed / 1.4;
-
         var direction = "";
         if (y < 0) {
           direction = "up"
@@ -390,40 +385,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           direction = "down";
           y -= skew;
         }
-
         if (x < 0) {
-          direction += "right";
+          direction += "left";
           x += skew;
         } else {
-          direction += "left";
+          direction += "right";
           x -= skew;
         }
-
-        self.go(state, direction, skew);
+        self.go(state, direction, skew, collisionTest);
       } else if (Math.abs(x) > limit) {
         if (x > 0) {
-          self.go(state, "right", speed);
+          self.go(state, "right", speed, collisionTest);
           x -= speed;
         } else {
-          self.go(state, "left", speed);
+          self.go(state, "left", speed, collisionTest);
           x += speed;
         }
-
       } else if (Math.abs(y) > limit) {
         if (y > 0) {
-          self.go(state, "down", speed);
+          self.go(state, "down", speed, collisionTest);
           y -= speed;
         } else {
-          self.go(state, "up", speed);
+          self.go(state, "up", speed, collisionTest);
           y += speed;
         }
-      } else {
-        if (self.gotoXYListener) {
-          createjs.Ticker.off("tick", self.gotoXYListener);
-          self.gotoXYListener = null;
+      } else if (Math.abs(y) != 0) {
+        if (y > 0) {
+          self.go(state, "down", y, collisionTest);
+          y = 0;
+        } else {
+          self.go(state, "up", -y, collisionTest);
+          y = 0;
         }
-        self.stop();
-        if (callback) callback();
+      } else if (Math.abs(x) != 0) {
+        if (x > 0) {
+          self.go(state, "right", x, collisionTest);
+          x = 0;
+        } else {
+          self.go(state, "left", -x, collisionTest);
+          x = 0;
+        }
       }
     }
 
@@ -435,7 +436,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var animation = "face" + direction;
     if (self.animation != animation) {
       self.sprite.gotoAndStop(animation);
-      Game.updateStage();
+      Game.update();
     }
   };
 
@@ -463,15 +464,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 参数t中记录了某个方格的方位xy，测试这个方格是否和玩家有冲突
     var CheckCollision = function (t) {
-      if (t.x < 0 || t.y < 0 || t.x >= Game.currentArea.data.width || t.y >= Game.currentArea.data.height)
+      if (t.x < 0 || t.y < 0 || t.x >= Game.area.map.data.width || t.y >= Game.area.map.data.height)
         return true;
 
       var i = t.x + "-" + t.y;
       if (tested.hasOwnProperty(i))
         return tested[i];
 
-      if (Game.currentArea.blockedMap[t.y] && Game.currentArea.blockedMap[t.y][t.x]) {
-        if (Game.actorCollision(self.sprite, Game.currentArea.blockedMap[t.y][t.x])) {
+      if (Game.area.map.blockedMap[t.y] && Game.area.map.blockedMap[t.y][t.x]) {
+        if (Game.actorCollision(self.sprite, Game.area.map.blockedMap[t.y][t.x])) {
           tested[i] = true;
           return true;
         }
@@ -482,6 +483,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 这个函数是测试某个方向能否走，能移动则移动
     // direction的值有up，down，left，right四种可能
+    // 建立这个函数是因为一次行走虽然是一次，但是也可以潮四个角方向走，实际就要执行两次CheckDirection
     function CheckDirection (direction) {
 
       var oldX = sprite.x;
@@ -502,7 +504,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
-      var t = Game.currentArea.tile(sprite.x, sprite.y);
+      var t = Game.area.map.tile(sprite.x, sprite.y);
 
       var collision = false;
 
@@ -528,6 +530,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else {
         self.infoBox.x = self.sprite.x;
         self.infoBox.y = self.sprite.y - 45;
+
         return true;
       }
     }
@@ -593,17 +596,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         break;
     }
+
+    if (self.id == Game.hero.id) {
+      Game.io.sync("move", {
+        x: self.sprite.x,
+        y: self.sprite.y,
+        speed: step
+      });
+    }
   };
 
-  ActorClass.prototype.randomWalk = function () {
+  ActorClass.prototype.remove = function (layer) {
+    var self = this;
 
+    layer.removeChild(self.sprite);
+    layer.removeChild(self.infoBox);
+    Game.update();
   };
 
-  ActorClass.prototype.stopRandomWalk = function () {
-
-  };
-
-  ActorClass.prototype.draw = function (x, y) {
+  ActorClass.prototype.draw = function (layer, x, y) {
     var self = this;
 
     if (typeof x != "number")
@@ -623,45 +634,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     self.sprite.x = x;
     self.sprite.y = y;
 
-    Game.stage.addChild(self.sprite);
-    Game.stage.addChild(self.infoBox);
+    layer.addChild(self.sprite);
+    layer.addChild(self.infoBox);
 
-    if (self.data.weapons) {
-      Game.stage.addChild(self.bowSprite);
-      Game.stage.addChild(self.daggerSprite);
-      Game.stage.addChild(self.spearSprite);
-      Game.stage.addChild(self.woodwandSprite);
-    }
-
-    if (self.data.mode && self.data.mode.length) {
-
-      if (self.data.mode == "randomwalk") {
-        var RandomWalk = function () {
-          var x = parseInt(Math.random() * 50 - 25);
-          var y = parseInt(Math.random() * 50 - 25);
-
-        //  console.log(x, y)
-
-          x += self.sprite.x;
-          y += self.sprite.y;
-
-          var distance = 0;
-          distance += Math.pow(x - self.data.x, 2);
-          distance += Math.pow(y - self.data.y, 2);
-          distance = Math.sqrt(distance);
-        //            console.log(distance)
-
-          if (distance < 100) {
-            self.gotoXY(x, y);
-          }
-
-          setTimeout(RandomWalk, 3000 + parseInt(Math.random() * 1000 - 500));
-        };
-        RandomWalk();
-      }
-    }
-
-    Game.updateStage()
+    Game.update()
   };
 
   ActorClass.prototype.focus = function () {
@@ -677,6 +653,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       parseInt(self.sprite.x - Game.config.width / 2),
       parseInt(self.sprite.y - Game.config.height / 2)
     );
+  };
+
+  ActorClass.prototype.distance = function (x, y) {
+    var d = 0;
+    d += Math.pow(self.sprite.x - x, 2);
+    d += Math.pow(self.sprite.y - y, 2);
+    return Math.sqrt(d);
   };
 
 })();

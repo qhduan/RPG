@@ -3,6 +3,7 @@
   "name": "sword",
   "description": "普通的剑攻击",
   "image": "resource\/spell0001.png",
+  "icon": "resource\/icon0001.png",
   "sound": "resource\/spell0001.ogg",
   "distance": 0,
   "flyspeed": 0,

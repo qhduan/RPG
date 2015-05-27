@@ -61,7 +61,7 @@ function GetActor(id) {
     }
     return ret;
   } else {
-    throw "Invalid Argument";
+    throw "GetActor Invalid Argument";
   }
 }
 

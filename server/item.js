@@ -56,7 +56,7 @@ function GetItem (id) {
     }
     return ret;
   } else {
-    throw "Invalid Argument";
+    throw "GetItem Invalid Argument";
   }
 }
 

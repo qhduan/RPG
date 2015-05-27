@@ -3,6 +3,7 @@
   "name": "bow",
   "description": "普通的弓箭攻击",
   "image": "resource\/spell0003.png",
+  "icon": "resource\/icon0003.png",
   "sound": "resource\/spell0003.ogg",
   "distance": 300,
   "flyspeed": 10,

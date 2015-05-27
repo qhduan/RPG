@@ -3,6 +3,7 @@
   "name": "spear",
   "description": "普通的枪攻击",
   "image": "resource\/spell0002.png",
+  "icon": "resource\/icon0002.png",
   "sound": "resource\/spell0002.ogg",
   "distance": 0,
   "flyspeed": 0,

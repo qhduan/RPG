@@ -28,8 +28,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     config: { // 保存所有设置（默认设置）
       walk: 4, // 角色行走速度
       run: 8, // 角色跑动速度
-      getSpeed: function () {
-      },
       width: 800, // 渲染窗口的大小，更大的大小是经过收缩的
       height: 450
     }
@@ -37,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 如果为true，则在下一次tick事件后会调用stage.update，然后再自动置为false
   var updateStageNextTick = false;
 
-  Game.updateStage = function () {
+  Game.update = function () {
     updateStageNextTick = true;
   };
 
@@ -51,6 +49,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.preload = function (resources, callback) {
 
+    resources = Object.keys(resources);
+    resources = resources.filter(function (element) {
+      if (Game.resources.hasOwnProperty(element))
+        return false;
+      return true;
+    });
+
+    if (resources.length <= 0) {
+      return callback();
+    }
+
     var con = document.getElementById("ProgressBar");
     var bar = document.getElementById("ProgressBarInner");
     var second = 0;
@@ -60,16 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     con.style.opacity = 1;
     bar.style.width = "20%";
     bar.innerHTML = "";
-
-    resources = Object.keys(resources);
-    resources = resources.filter(function (element) {
-      if (Game.resources.hasOwnProperty(element))
-        return false;
-      return true;
-    });
-
-    if (resources.length <= 0)
-      return callback();
 
     var queue = new createjs.LoadQueue(true);
     queue.installPlugin(createjs.Sound);
@@ -141,6 +140,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     canvasObj.height = Game.config.height;
     Game.stage = new createjs.Stage(canvasObj);
 
+    Game.mapLayer = new createjs.Container();
+    Game.actorLayer = new createjs.Container();
+    Game.itemLayer = new createjs.Container();
+    Game.heroLayer = new createjs.Container();
+    Game.playerLayer = new createjs.Container();
+    Game.spellLayer = new createjs.Container();
+    Game.dialogueLayer = new createjs.Container();
+    Game.uiLayer = new createjs.Container();
+
+    Game.stage.addChild(Game.mapLayer);
+    Game.stage.addChild(Game.actorLayer);
+    Game.stage.addChild(Game.itemLayer);
+    Game.stage.addChild(Game.heroLayer);
+    Game.stage.addChild(Game.playerLayer);
+    Game.stage.addChild(Game.spellLayer);
+    Game.stage.addChild(Game.dialogueLayer);
+    Game.stage.addChild(Game.uiLayer);
+
     createjs.Ticker.on("tick", function () {
       if (updateStageNextTick) {
         Game.stage.update();
@@ -160,7 +177,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     console.log("RPG Game Flying!");
   };
-
 
   // 当窗口大小改变时改变游戏窗口大小
   function CalculateWindowSize () {
@@ -192,6 +208,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       w / Game.config.width,
       h / Game.config.height
     );
+
+    if (w < 800 || h < 450) {
+      w = 800;
+      h = 450;
+      scale = 1;
+    }
 
     Game.stage.setTransform(0, 0, scale, scale);
     Game.stage.canvas.width = w;

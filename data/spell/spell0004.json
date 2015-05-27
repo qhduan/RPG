@@ -3,6 +3,7 @@
   "name": "fireball",
   "description": "普通的火球攻击",
   "image": "resource\/spell0004.png",
+  "icon": "resource\/icon0004.png",
   "sound": "resource\/spell0004.ogg",
   "distance": 200,
   "flyspeed": 6,

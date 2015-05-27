@@ -21,6 +21,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var SOCKET_ROUTE = {};
 
+var HERO_SOCKET = {};
+var SOCKET_HERO = {};
+
+var hero = require("./hero");
+var area = require("./area");
+var herodb = require("./db").hero;
+
 function RegisterGetRoute (path, handler) {
   console.log("reg ", path);
   SOCKET_ROUTE[path] = handler;
@@ -72,9 +79,73 @@ function Init (io) {
       GetRoute(socket, data);
     });
 
-    // 聊天消息
-    socket.on("message", function () {
+    socket.on("disconnect", function () {
+      var heroId = SOCKET_HERO[socket.id];
 
+      var heroObj = hero.get(heroId);
+
+      area.remove(heroObj.area, heroId);
+
+      delete SOCKET_HERO[socket.id];
+      delete HERO_SOCKET[heroId];
+
+      for (var key in HERO_SOCKET) {
+        if (hero.get(key).area == heroObj.area) {
+          HERO_SOCKET[key].emit("removeHero", {
+            id: heroId
+          });
+        }
+      }
+    });
+
+    // 聊天消息
+    socket.on("message", function (data) {
+      var heroId = SOCKET_HERO[socket.id];
+      if (!heroId) return;
+
+      var heroObj = hero.get(heroId);
+
+      for (var key in HERO_SOCKET) {
+        if (hero.get(key).area == heroObj.area) {
+          HERO_SOCKET[key].emit("message", data);
+        }
+      }
+    });
+
+    socket.on("move", function (data) {
+      var heroId = SOCKET_HERO[socket.id];
+      if (!heroId) return;
+
+      var heroObj = hero.get(heroId);
+      heroObj.x = data.x;
+      heroObj.y = data.y;
+
+      for (var key in HERO_SOCKET) {
+        var h = hero.get(key);
+        if (h.id != heroObj.id) {
+          HERO_SOCKET[key].emit("move", {
+            id: heroObj.id,
+            data: data
+          });
+        }
+      }
+    });
+
+    socket.on("attack", function (data) {
+      var heroId = SOCKET_HERO[socket.id];
+      if (!heroId) return;
+
+      var heroObj = hero.get(heroId);
+
+      for (var key in HERO_SOCKET) {
+        var h = hero.get(key);
+        if (h.id != heroObj.id) {
+          HERO_SOCKET[key].emit("attack", {
+            id: heroObj.id,
+            data: data
+          });
+        }
+      }
     });
 
   });
@@ -88,15 +159,13 @@ function Init (io) {
 
 
 
-var area = require("./area");
-var herodb = require("./db").hero;
 
 
 function GetArea (req) {
   var id = req.data.id;
 
   if (typeof id != "string") {
-    return req.send({error: "Invalid Argument"});
+    return req.send({error: "GetArea Invalid Argument"});
   }
 
   var data = area.get(id);
@@ -109,19 +178,22 @@ function GetArea (req) {
 
     // 因为一个区域的heros是动态的，所以动态的加载已有的英雄的资源（包括玩家自己英雄的资源）
     for (var key in data.heros) {
-      var hero = data.heros[key];
+      var heroData = data.heros[key];
 
-      for (var key in hero.spells) {
-        var spell = hero.spells[key];
+      for (var key in heroData.spells) {
+        var spellData = heroData.spells[key];
 
-        resources[spell.image] = "image";
-        resources[spell.sound] = "sound";
+        resources[spellData.image] = "image";
+        resources[spellData.icon] = "image";
+        resources[spellData.sound] = "sound";
       }
     }
 
     req.send({
       map: data.map,
       heros: data.heros,
+      actors: data.actors,
+      items: data.items,
       resources: resources
     });
   } else {
@@ -131,7 +203,7 @@ function GetArea (req) {
 
 RegisterGetRoute("/area/get", GetArea);
 
-var CLIENTS = {};
+
 
 function Login (req) {
   var name = req.data.name;
@@ -143,27 +215,36 @@ function Login (req) {
   if (typeof password != "string" || password.length <= 0)
     return req.send({error: "Invalid Password"});
 
-  herodb.find({"name": name}, function (err, docs) {
+  herodb.findOne({"name": name, "password": password}, function (err, doc) {
     if (err) {
       console.log("Login", err);
       req.send({error: "Server Error"});
     }
-    if (docs.length <= 0) {
-      req.send({error: "No Hero Found"});
-    } else {
-      var hero = docs[0];
 
-      if (hero.password != password) {
-        req.send({error: "Wrong Password"});
-      } else {
-        area.add(hero.area, hero.id);
-        req.send({success: {
-          heroId: hero.id,
-          areaId: hero.area
-        }});
-        CLIENTS[hero.id] = req.socket;
+    if (doc) {
+      area.add(doc.area, doc.id);
+      var heroObj = hero.get(doc.id);
+
+      for (var key in HERO_SOCKET) {
+        if (hero.get(key).area == heroObj.area) {
+          HERO_SOCKET[key].emit("addHero", {
+            hero: heroObj
+          });
+        }
       }
+
+      HERO_SOCKET[doc.id] = req.socket;
+      SOCKET_HERO[req.socket.id] = doc.id;
+
+
+      req.send({success: {
+        heroId: doc.id,
+        areaId: doc.area
+      }});
+    } else {
+      req.send({error: "Invalid Name or Password"});
     }
+
   });
 
 }
@@ -206,53 +287,41 @@ function GenerateHero (req) {
   var BASE = "/hero";
   var ret = {};
   // 身体
-  if (hero.body && hero.body.length) {
+  if (hero.body && hero.body.length)
     ret.body = BASE + "/body/" + hero.sex + "/" + hero.body + ".png";
-  }
   // 眼睛
-  if (hero.eyes && hero.eyes.length) {
+  if (hero.eyes && hero.eyes.length)
     ret.eyes = BASE + "/body/" + hero.sex + "/eyes/" + hero.eyes + ".png";
-  }
   // 头发 & 头发颜色
-  if (hero.hair && hero.hair.length && hero.haircolor && hero.haircolor.length) {
+  if (hero.hair && hero.hair.length && hero.haircolor && hero.haircolor.length)
     ret.hair = BASE + "/hair/" + hero.sex + "/" + hero.hair + "/" + hero.haircolor + ".png";
-  }
   // 帽子（头盔）
-  if (hero.head && hero.head.length) {
+  if (hero.head && hero.head.length)
     ret.head = BASE + "/head/" + hero.sex + "/" + hero.head + ".png";
-  }
   // 衬衫
-  if (hero.shirts && hero.shirts.length) {
+  if (hero.shirts && hero.shirts.length)
     ret.shirts = BASE + "/shirts/" + hero.sex + "/" + hero.shirts + ".png";
-  }
   // 裤子
-  if (hero.pants && hero.pants.length) {
+  if (hero.pants && hero.pants.length)
     ret.pants = BASE + "/pants/" + hero.sex + "/" + hero.pants + ".png";
-  }
   // 鞋
-  if (hero.shoes && hero.shoes.length) {
+  if (hero.shoes && hero.shoes.length)
     ret.shoes = BASE + "/shoes/" + hero.sex + "/" + hero.shoes + ".png";
-  }
   // 胸甲
-  if (hero.armorchest && hero.armorchest.length) {
+  if (hero.armorchest && hero.armorchest.length)
     ret.armorchest = BASE + "/armor/chest/" + hero.sex + "/" + hero.armorchest + ".png";
-  }
   // 臂甲
-  if (hero.armorarm && hero.armorarm.length) {
+  if (hero.armorarm && hero.armorarm.length)
     ret.armorarm = BASE + "/armor/arm/" + hero.sex + "/" + hero.armorarm + ".png";
-  }
   // 腿甲
-  if (hero.armorlegs && hero.armorlegs.length) {
+  if (hero.armorlegs && hero.armorlegs.length)
     ret.armorlegs = BASE + "/armor/legs/" + hero.sex + "/" + hero.armorlegs + ".png";
-  }
   // 头盔
-  if (hero.armorhelms && hero.armorhelms.length) {
+  if (hero.armorhelms && hero.armorhelms.length)
     ret.armorhelms = BASE + "/armor/helms/" + hero.sex + "/" + hero.armorhelms + ".png";
-  }
   // 足甲
-  if (hero.armorfeet && hero.armorfeet.length) {
+  if (hero.armorfeet && hero.armorfeet.length)
     ret.armorfeet = BASE + "/armor/feet/" + hero.sex + "/" + hero.armorfeet + ".png";
-  }
 
   ret.weapons = BASE + "/weapons/" + hero.sex + "/weapons.png";
 
@@ -307,6 +376,8 @@ function CreateHero (req, res) {
         "intelligence": 10, // 智力
         "constitution": 10, // 体质
         "area": "town0001", // 当前所在地图
+        "x": -1,
+        "y": -1,
         "type": "hero",
         "spells": [ // 招式，魔法
           "spell0001", // 普通剑攻击

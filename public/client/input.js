@@ -110,7 +110,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     createjs.Ticker.on("tick", function () {
 
       if (!Game.hero) return;
-      if (!Game.currentArea) return;
+      if (!Game.area) return;
+      if (!Game.area.map) return;
 
       var speed = Game.config.walk;
       var skew = Game.config.walk / 1.4;

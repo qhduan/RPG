@@ -99,7 +99,8 @@ function GetHero (id) {
     }
     return ret;
   } else {
-    throw "Invalid Argument";
+    console.log(typeof id, id);
+    throw "GetHero Invalid Argument";
   }
 }
 

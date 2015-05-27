@@ -10,18 +10,23 @@
   <title>Dream RPG</title>
 
   <style>
+
     html {
-      overflow: hidden;
+      overflow: auto;
     }
 
-    body {
+    .disabled-user-select {
       background-color: gray;
+      -webkit-user-select: none; /* Chrome all / Safari all */
+      -moz-user-select: none; /* Firefox all */
+      -ms-user-select: none; /* IE 10+ */
+      -o-user-select: none;
+      user-select: none;
     }
 
-    #game {
+    .game-canvas {
       position: absolute;
       top: 0;
-      left: 0;
     }
 
     #ProgressBar {
@@ -50,7 +55,7 @@
       font-weight: bold;
     }
 
-    .login {
+    .login-box {
       width: 400px;
       height: 400px;
       margin: auto;
@@ -59,11 +64,7 @@
       text-align: center;
     }
 
-    .button {
-      color: blue;
-    }
-
-    .register {
+    .register-box {
       width: 400px;
       height: 400px;
       margin: auto;
@@ -73,23 +74,22 @@
       display: none;
     }
 
-    td, tr, table {
-      text-align: center;
-    }
-
   </style>
 </head>
-<body>
+<body class="disabled-user-select">
 
+<!--资源加载进度条-->
 <div id="ProgressBar">
   <div id="ProgressBarInner"></div>
 </div>
 
-<canvas id="game"></canvas>
+<!--游戏主canvas-->
+<canvas id="game" class="game-canvas"></canvas>
 
-<div id="register" class="register">
+<!--注册窗口-->
+<div id="registerBox" class="register-box">
   <h4>预览：</h4>
-  <canvas id="preveiw" width="256" height="64"></canvas>
+  <canvas id="preview" width="256" height="64"></canvas>
 
   <table>
     <tr>
@@ -336,23 +336,26 @@
   <br>
   <input id="regRepeat" placeholder="密码确认" type="password">
   <br>
-  <button onclick="RegSubmit()" class="button">注册</button>
-  <button onclick="ReturnLogin()" class="button">返回</button>
+  <button onclick="RegSubmit()" class="button" type="button">注册</button>
+  <button onclick="ReturnLogin()" class="button" type="button">返回</button>
+</div>
+<!--注册窗口结束-->
 
-</div><!--Register Box-->
-
-<div id="login" class="login">
+<!--登录窗口-->
+<div id="loginBox" class="login-box">
   <div>
     <h1>2D A-RPG Game</h1>
     <br>
-    <input id="name" name="name" placeholder="角色名" type="text">
+    <input id="name" name="name" placeholder="角色名" type="text" value="aaa">
     <br><br>
-    <input id="password" name="password" placeholder="密码" type="password">
+    <input id="password" name="password" placeholder="密码" type="password" value="aaa">
     <br><br>
-    <button onclick="Login()" class="button">登录</button>
-    <button onclick="Register()" class="button">注册</button>
+    <button onclick="Login()" class="" type="button">登录</button>
+    <button onclick="Register()" class="" type="button">注册</button>
   </div>
 </div>
+<!--登录窗口结束-->
+
 
 <script src="lib/socket.io-1.3.5.js"></script>
 <script src="lib/createjs-2014.12.12.min.js"></script>
@@ -360,7 +363,9 @@
 <script src="client/game.js"></script>
 <script src="client/collision.js"></script>
 <script src="client/io.js"></script>
+<script src="client/ui.js"></script>
 <script src="client/area.js"></script>
+<script src="client/map.js"></script>
 <script src="client/item.js"></script>
 <script src="client/actor.js"></script>
 <script src="client/hero.js"></script>

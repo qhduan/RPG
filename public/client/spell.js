@@ -26,33 +26,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     self.data = spellData;
     self.id = self.data.id;
 
-    var image = null;
+    var image = Game.resources[self.data.image];
+    var icon = Game.resources[self.data.icon];
 
-    function ImageComplete () {
-      self.sheet = new createjs.SpriteSheet({
-        images: [image],
-        frames: {
-          width: self.data.tilewidth,
-          height: self.data.tileheight
-        },
-        animations: self.data.animations
-      });
+    self.icon = new createjs.Bitmap(icon);
+    self.icon.regX = icon.width / 2;
+    self.icon.regY = icon.height / 2;
 
-      // 完成事件
-      self.complete = true;
-      if (self.listeners && self.listeners["complete"]) {
-        for (var key in self.listeners["complete"]) {
-          self.listeners["complete"][key](self);
-        }
+    self.sheet = new createjs.SpriteSheet({
+      images: [image],
+      frames: {
+        width: self.data.tilewidth,
+        height: self.data.tileheight
+      },
+      animations: self.data.animations
+    });
+
+    // 完成事件
+    self.complete = true;
+    if (self.listeners && self.listeners["complete"]) {
+      for (var key in self.listeners["complete"]) {
+        self.listeners["complete"][key](self);
       }
-    }
-
-    if (Game.resources.hasOwnProperty(self.id)) {
-      image = Game.resources[self.id];
-    } else {
-      image = new Image();
-      image.onload = ImageComplete;
-      image.src = self.data.image;
     }
 
   };
@@ -88,14 +83,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  SpellClass.prototype.fire = function (actor, animation) {
+  SpellClass.prototype.fire = function (actor, animation, callback) {
     var self = this;
-
-    var now = new Date().getTime();
-    if (typeof self.firing == "number" && (now - self.firing) < self.data.cooldown)
-      return;
-
-    self.firing = new Date().getTime();
 
     if (Game.resources[self.data.sound])
       createjs.Sound.play(self.data.sound);
@@ -143,18 +132,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       // 碰撞检测
-      for (var key in Game.currentArea.data.actors) {
-        if (Game.currentArea.data.actors[key].id == actor.id) continue;
-        var c = Game.spellCollision(sprite, Game.currentArea.data.actors[key].sprite);
+      for (var key in Game.area.actors) {
+        if (Game.area.actors[key].id == actor.id) continue;
+        var c = Game.spellCollision(sprite, Game.area.actors[key].sprite);
         if (c) {
           hitted[key] = true;
         }
       }
 
-      Game.updateStage();
+      Game.update();
 
       // 如果是远程攻击
-      if (self.data.distance > 0) {
+      if (self.data.distance == 0) {
+      } else {
         // 如果攻击距离已经过了，或者命中了一个敌人
         if (distance >= self.data.distance || Object.keys(hitted).length > 0)
           Stop();
@@ -164,26 +154,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // 攻击结束时运行Stop函数
     function Stop () {
       createjs.Ticker.off("tick", listener);
-      Game.stage.removeChild(sprite);
-      Game.updateStage();
+      Game.spellLayer.removeChild(sprite);
+      Game.update();
 
       // 判断应该受伤的角色
       for (var key in hitted) {
-        Game.currentArea.data.actors[key].damage(self.data.type, self.data.attack);
+        Game.area.actors[key].damage(self.data.type, self.data.attack);
       }
 
       if (Object.keys(hitted).length) {
         createjs.Sound.play("/sound/effect/hurt.ogg");
       }
+
+      if (callback) callback();
     }
 
     sprite.on("animationend", function () {
-      if (self.data.distance == 0 && self.data.flyspeed == 0) {
+      if (self.data.distance == 0) {
         Stop();
       }
     });
 
-    Game.stage.addChild(sprite);
+    Game.spellLayer.addChild(sprite);
     sprite.gotoAndPlay(animation);
 
     if ( self.data.animations[animation].actor

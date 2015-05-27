@@ -20,18 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  var loginBox = document.getElementById("loginBox");
+  var registerBox = document.getElementById("registerBox");
+  var previewBox = document.getElementById("previewBox");
+
   // 注册模块
   window.Register = function () {
-    document.getElementById("login").style.display = "none";
-    document.getElementById("register").style.display = "block";
-    document.getElementById("preview").style.display = "block";
+    loginBox.style.display = "none";
+    registerBox.style.display = "block";
+    previewBox.style.display = "block";
     Init();
   };
 
   window.ReturnLogin = function () {
-    document.getElementById("login").style.display = "block";
-    document.getElementById("register").style.display = "none";
-    document.getElementById("preview").style.display = "none";
+    loginBox.style.display = "block";
+    registerBox.style.display = "none";
+    previewBox.style.display = "none";
   };
 
   window.RegSubmit = function () {
@@ -67,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   };
 
+  // 英雄组件数据
   var heroCustom = {
     sex: "male",
     body: "light",
@@ -112,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     };
 
-    var heroDisplay = new createjs.Stage("preveiw");
+    var heroDisplay = new createjs.Stage("preview");
     DisplayHero();
 
     function DisplayHero () {

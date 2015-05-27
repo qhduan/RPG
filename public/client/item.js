@@ -92,12 +92,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     itemObj.oncomplete(callback);
   };
 
-  ItemClass.prototype.draw = function (x, y) {
+  ItemClass.prototype.draw = function (layer, x, y) {
+    var self = this;
+    
     self.bitmap.x = x;
     self.bitmap.y = y;
 
-    Game.stage.addChild(self.bitmap);
-    Game.updateStage();
+    layer.addChild(self.bitmap);
+    Game.update();
   };
 
 })();
