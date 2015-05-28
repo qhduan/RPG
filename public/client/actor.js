@@ -316,17 +316,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 同一时间只能施展一个spell
     if (self.attacking)
-      return;
+      return 0;
 
-    var spell = Object.keys(self.data.spells)[num];
+    var spell = self.data.spellbar[num];
     if (!spell)
-      return;
+      return 0;
+
     // 只有当这个spell的cooldown结
     var now = new Date().getTime();
     if ( typeof self.lastAttack == "number"
       && typeof self.lastAttackCooldown == "number"
       && (now - self.lastAttack) < self.lastAttackCooldown)
-      return;
+      return 0;
 
     self.lastAttack = now;
     self.lastAttackCooldown = self.data.spells[spell].data.cooldown;
@@ -347,6 +348,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         direction: direction
       });
     }
+
+    return self.data.spells[spell].data.cooldown;
   };
 
   ActorClass.prototype.gotoXY = function (x, y, speed, collisionTest, callback) {
@@ -504,6 +507,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
+      sprite.x = parseInt(sprite.x);
+      sprite.y = parseInt(sprite.y);
+
       var t = Game.area.map.tile(sprite.x, sprite.y);
 
       var collision = false;
@@ -646,13 +652,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     self.infoBox.x = self.sprite.x;
     self.infoBox.y = self.sprite.y - 45;
 
-    Game.stage.setTransform(0, 0,
-      Game.stage.scaleX,
-      Game.stage.scaleY,
-      0, 0, 0,
-      parseInt(self.sprite.x - Game.config.width / 2),
-      parseInt(self.sprite.y - Game.config.height / 2)
-    );
+    Game.stage.regX = parseInt(self.sprite.x - Game.config.width / 2);
+    Game.stage.regY = parseInt(self.sprite.y - Game.config.height / 2);
   };
 
   ActorClass.prototype.distance = function (x, y) {

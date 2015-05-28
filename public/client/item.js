@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     function ImageComplete () {
       self.bitmap = new createjs.Bitmap(image);
       self.bitmap.regX = image.width / 2;
-      self.bitmap.regX = image.height / 2;
+      self.bitmap.regY = image.height / 2;
       Game.items[self.data.id] = self;
       Game.resources[self.data.id] = image;
 
@@ -94,7 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   ItemClass.prototype.draw = function (layer, x, y) {
     var self = this;
-    
+
     self.bitmap.x = x;
     self.bitmap.y = y;
 

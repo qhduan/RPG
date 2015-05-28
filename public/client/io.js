@@ -25,6 +25,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var getList = {};
 
+  Game.io.updateHero = function (object) {
+    Game.io.socket.emit("updateHero", {
+      object: object
+    });
+  };
+
   Game.io.get = function (path, data, callback) {
     var id = Math.random().toString(16).substr(2);
     getList[id] = callback;

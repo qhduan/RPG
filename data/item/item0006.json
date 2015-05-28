@@ -1,0 +1,14 @@
+{
+  "id": "item0006",
+  "name": "一般鞋子",
+  "description": "普通的一双鞋子",
+  "value": 5,
+  "effect": 1,
+  "type": "armor",
+  "equip": "feet",
+  "image": "resource\/item0006.png",
+  "width": 32,
+  "height": 32,
+  "tilewidth": 32,
+  "tileheight":32
+}

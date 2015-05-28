@@ -32,6 +32,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 450
     }
   };
+
+  var gameDefaultResources = [
+    "/image/information.png", // 底栏信息按钮
+    "/image/item.png", // 底栏物品按钮
+    "/image/map.png", // 底栏地图按钮
+    "/image/setting.png", // 底栏设置按钮
+    "/image/use.png",
+    "/image/drop.png",
+    "/image/up.png",
+    "/image/down.png",
+
+    "/image/head.png",
+    "/image/neck.png",
+    "/image/body.png",
+    "/image/feet.png",
+    "/image/righthand.png",
+    "/image/lefthand.png",
+    "/image/ring.png",
+
+    "/image/skill.png",
+    "/image/spell.png"
+  ];
+
   // 如果为true，则在下一次tick事件后会调用stage.update，然后再自动置为false
   var updateStageNextTick = false;
 
@@ -49,7 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.preload = function (resources, callback) {
 
-    resources = Object.keys(resources);
+    resources = gameDefaultResources.concat(Object.keys(resources));
+
     resources = resources.filter(function (element) {
       if (Game.resources.hasOwnProperty(element))
         return false;

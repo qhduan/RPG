@@ -79,6 +79,13 @@ function Init (io) {
       GetRoute(socket, data);
     });
 
+    socket.on("updateHero", function (data) {
+      var heroId = SOCKET_HERO[socket.id];
+      if (!heroId) return;
+
+      hero.update(heroId, data.object);
+    });
+
     socket.on("disconnect", function () {
       var heroId = SOCKET_HERO[socket.id];
       if (!heroId) return;
@@ -188,6 +195,20 @@ function GetArea (req) {
         resources[spellData.icon] = "image";
         resources[spellData.sound] = "sound";
       }
+
+      for (var key in heroData.items) {
+        var itemData = heroData.items[key];
+        if (itemData)
+          resources[itemData.image] = "image";
+      }
+
+      for (var key in heroData.equipment) {
+        var equipmentData = heroData.equipment[key];
+        if (equipmentData) {
+          resources[equipmentData.image] = "image";
+        }
+      }
+
     }
 
     req.send({
@@ -355,14 +376,14 @@ function CreateHero (req, res) {
     return req.send({error: "Invalid Custom"});
   }
 
-  herodb.find({"name": name}, function (err, docs) {
+  herodb.findOne({"name": name}, function (err, doc) {
     if (err) {
       console.log("CreateHero", err);
       req.send({error: "System Error"});
       return;
     }
 
-    if (docs.length > 0) {
+    if (doc) {
       req.send({error: "Name Conflict"});
     } else {
       herodb.insert([{
@@ -370,30 +391,60 @@ function CreateHero (req, res) {
         "name": name,
         "password": password,
         "custom": custom, // 保存用户纸娃娃的配置
+
         "hitpoint": 100, //生命
         "manapoint": 100, // 魔法
         "strength": 10, // 力量
         "dexterity": 10, // 敏捷
         "intelligence": 10, // 智力
         "constitution": 10, // 体质
+        "attack": 10, // 攻击力
+        "defense": 10, // 防御力
+        "magicAttack": 10, // 魔法攻击
+        "magicDefense": 10, // 魔法防御
+
         "area": "town0001", // 当前所在地图
-        "x": -1,
-        "y": -1,
-        "type": "hero",
+        "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
+
         "spells": [ // 招式，魔法
           "spell0001", // 普通剑攻击
           "spell0002", // 普通枪攻击
           "spell0003", // 普通弓攻击
           "spell0004" // 火球术
         ],
-        "skill": { // 技能，例如生活技能
-        }
+
+        "spellcount": 14, // 一共能学习多少招式
+
+        "spellbar": [ // 技能快捷方式列表
+          "spell0001"
+        ],
+
+        "skill": { // 技能，例如生活技能，说服技能，交易技能
+        },
+
+        "equipment": {
+          "head": null,
+          "neck": null,
+          "body": "item0005",
+          "feet": "item0006",
+          "righthand": "item0002",
+          "lefthand": null,
+          "leftring": null,
+          "rightring": null
+        },
+
+        "items": [
+          "item0003",
+          "item0004"
+        ],
+        "gold": 0
       }], function (err, newDocs) {
         if (err) {
           console.log(err);
           return req.send({error: "System Error"});
         }
-        var hero = newDocs[0];
+        var heroData = newDocs[0];
+        hero.add(heroData);
         req.send({success: "ok"});
       });
     }

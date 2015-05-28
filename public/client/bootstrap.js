@@ -76,17 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.hero = area.heros[key];
                 Game.hero.focus();
 
-                (function () {
-                  var index = 0;
-                  for (var key in Game.hero.data.spells) {
-                    (function (spellId, spellObj) {
-                      spellObj.icon.x = 170 + index * 50 + 20;
-                      spellObj.icon.y = 400 + 20;
-                      index++;
-                      Game.ui.toolbar.addChild(spellObj.icon);
-                    })(key, Game.hero.data.spells[key]);
-                  }
-                })();
+                Game.ui.initBottomBar();
 
                 Game.update();
                 break;

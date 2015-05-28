@@ -56,7 +56,8 @@ function GetSpell (id) {
   } else if (id instanceof Array) {
     var ret = {};
     for (var i = 0; i < id.length; i++) {
-      ret[id[i]] = SPELLS[id[i]];
+      if (SPELLS[id[i]])
+        ret[id[i]] = SPELLS[id[i]];
     }
     return ret;
   } else {

@@ -154,19 +154,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (Game.key.isPressed("z")) {
-        Game.hero.fire(0);
+        Game.ui.clickSpell(0)
       }
 
       if (Game.key.isPressed("x")) {
-        Game.hero.fire(1);
+        Game.ui.clickSpell(1)
       }
 
       if (Game.key.isPressed("c")) {
-        Game.hero.fire(2);
+        Game.ui.clickSpell(2)
       }
 
       if (Game.key.isPressed("v")) {
-        Game.hero.fire(3);
+        Game.ui.clickSpell(3)
+      }
+
+      if (Game.key.isPressed("b")) {
+        Game.ui.clickSpell(4)
+      }
+
+      if (Game.key.isPressed("n")) {
+        Game.ui.clickSpell(5)
+      }
+
+      if (Game.key.isPressed("m")) {
+        Game.ui.clickSpell(6)
+      }
+
+      if (Game.key.isPressed(",")) {
+        Game.ui.clickSpell(7)
       }
 
       Game.hero.focus();

@@ -82,11 +82,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     });
 
+
+    self.width = self.data.width * self.data.tilewidth;
+    self.height = self.data.height * self.data.tileheight;
+
     // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
     // 这个cache会让createjs创建一个看不到的canvas
-    self.container.cache(0, 0,
-      self.data.width * self.data.tilewidth,
-      self.data.height * self.data.tileheight);
+    self.container.cache(0, 0, self.width, self.height);
+
+    var ratio = self.width / self.height;
+    var maxMinimapWidth = 740;
+    var maxMinimapHeight = 330;
+    var minimapWidth = 740;
+    var minimapHeight = 740 / ratio;
+    if (minimapHeight > maxMinimapHeight) {
+      minimapHeight = 330;
+      minimapWidth = 330 * ratio;
+    }
+    var minimapCanvas = document.createElement("canvas");
+    minimapCanvas.width = minimapWidth;
+    minimapCanvas.height = minimapHeight;
+    var minimapContext = minimapCanvas.getContext("2d");
+    minimapContext.drawImage(self.container.cacheCanvas, 0, 0,
+      self.width, self.height, 0, 0, minimapWidth, minimapHeight);
+
+    var minimap = new Image();
+    minimap.onload = function () {
+      self.minimap = new createjs.Bitmap(minimap);
+      self.minimap.regX = parseInt(minimap.width / 2);
+      self.minimap.regY = parseInt(minimap.height / 2);
+    };
+    minimap.src = minimapCanvas.toDataURL();
 
     Game.areas[self.id] = self;
 

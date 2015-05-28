@@ -64,6 +64,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   heroData.image = heroImage;
                   var heroObj = new Game.ActorClass(heroData);
                   ret.heros[key] = heroObj;
+
+                  for (var i = 0; i < heroObj.data.items.length; i++) {
+                    if (heroObj.data.items[i])
+                      heroObj.data.items[i] = new Game.ItemClass(heroObj.data.items[i]);
+                  }
+
+                  for (var equipment in heroObj.data.equipment) {
+                    if (heroObj.data.equipment[equipment])
+                      heroObj.data.equipment[equipment] = new Game.ItemClass(heroObj.data.equipment[equipment]);
+                  }
+
                   heroObj.oncomplete(AreaComplete);
                 });
               })(key, ret.heros[key]);

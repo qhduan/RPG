@@ -20,9 +20,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  Game.dialogue = {};
+
   // Textplit函数用来把文字分行，因为easeljs的lineWidth的wrap机制不支持中文
-  function TextSplit (text) {
-    var lineMax = 78; // 一行最多的字符数（中文和中文标点算两个字符）
+  Game.dialogue.textSplit = function (text, lineMax) {
+    //var lineMax = 78; // 一行最多的字符数（中文和中文标点算两个字符）
     var result = [];
     var realLength = 0;
     var breakPoint = 0;
@@ -45,48 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   var DialogueClass = Game.DialogueClass = function (text, color, bgColor) {
-    var self = this;
-
-    text = TextSplit(text);
-
-    self.color = color;
-    self.bgColor = bgColor;
-
-    var graphics = new createjs.Graphics()
-      .beginFill(self.bgColor)
-      .drawRect(20, Game.config.height - 120, Game.config.width - 40, 100);
-    self.shape = new createjs.Shape(graphics);
-
-    self.text = new createjs.Text(text, "18px Arial", color);
-    self.text.lineHeight = 12;
-    self.text.x = 20 + 10;
-    self.text.y = Game.config.height - 100;
-    self.text.lineWidth = Game.config.width - 40 - 20;
-    self.text.textBaseline = "alphabetic";
-
-    //shape.x = Game.stage.regX;
-    //shape.y = Game.stage.regY;
-    self.shape.alpha = 0.3;
-
-    self.container = new createjs.Container();
-    self.container.addChild(self.shape);
-    self.container.addChild(self.text);
-    //    Game.stage.addChild(text);
-
-    Game.stage.addChild(self.container);
-    //Game.stage.addChild(shape);
-    //Game.stage.addChild(text);
-
-    self.listener = createjs.Ticker.on("tick", function () {
-      self.container.x = Game.stage.regX;
-      self.container.y = Game.stage.regY;
-    });
   }
 
-  Game.dialogue = {
-    create: function (text, color, bgColor) {
-      return new DialogueClass(text, color, bgColor);
-    }
-  };
 
 })();

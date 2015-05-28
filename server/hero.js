@@ -66,28 +66,54 @@ var herodb = require("./db").hero;
 
 var spell = require("./spell");
 
+var item = require("./item");
+
 var HEROS = {};
 
 (function LoadHero () {
   herodb.find({}, function (err, heros) {
     heros.forEach(function (element) {
-      var id = "hero_" + element.name;
-
-      HEROS[id] = element;
-
-      HEROS[id].id = id;
-      HEROS[id].animations = HERO_ANIMATIONS;
-      HEROS[id].width = HEROS[id].custom.width;
-      HEROS[id].height = HEROS[id].custom.height;
-      HEROS[id].tilewidth = HEROS[id].custom.tilewidth;
-      HEROS[id].tileheight = HEROS[id].custom.tileheight;
-      // 读取角色技能
-      HEROS[id].spells = spell.get(HEROS[id].spells);
+      var id = element.id;
+      AddHero(element);
     });
 
     console.log("Heros loaded ", Object.keys(HEROS).length);
   });
 })();
+
+function AddHero (element) {
+  var id = element.id;
+  HEROS[id] = element;
+  HEROS[id].animations = HERO_ANIMATIONS;
+  HEROS[id].width = HEROS[id].custom.width;
+  HEROS[id].height = HEROS[id].custom.height;
+  HEROS[id].tilewidth = HEROS[id].custom.tilewidth;
+  HEROS[id].tileheight = HEROS[id].custom.tileheight;
+  // 读取角色技能
+  HEROS[id].spells = spell.get(HEROS[id].spells);
+  // 读取角色物品
+  HEROS[id].items.forEach(function (element, index, array) {
+    if (element)
+      array[index] = item.get(element)
+  });
+  // 读取角色装备（物品）
+  if (HEROS[id].equipment.head)
+    HEROS[id].equipment.head = item.get(HEROS[id].equipment.head);
+  if (HEROS[id].equipment.neck)
+    HEROS[id].equipment.neck = item.get(HEROS[id].equipment.neck);
+  if (HEROS[id].equipment.body)
+    HEROS[id].equipment.body = item.get(HEROS[id].equipment.body);
+  if (HEROS[id].equipment.feet)
+    HEROS[id].equipment.feet = item.get(HEROS[id].equipment.feet);
+  if (HEROS[id].equipment.righthand)
+    HEROS[id].equipment.righthand = item.get(HEROS[id].equipment.righthand);
+  if (HEROS[id].equipment.lefthand)
+    HEROS[id].equipment.lefthand = item.get(HEROS[id].equipment.lefthand);
+  if (HEROS[id].equipment.leftring)
+    HEROS[id].equipment.leftring = item.get(HEROS[id].equipment.leftring);
+  if (HEROS[id].equipment.rightring)
+    HEROS[id].equipment.rightring = item.get(HEROS[id].equipment.rightring);
+}
 
 function GetHero (id) {
   if (typeof id == "string") {
@@ -104,9 +130,25 @@ function GetHero (id) {
   }
 }
 
+function UpdateHero (id, object) {
+  var obj = {
+    "$set": object
+  };
+  herodb.update({id: id}, obj, {}, function (err) {
+    if (err) {
+      console.log("hero.UpdateHero ", err);
+    }
+    herodb.findOne({id: id}, function (err, doc) {
+      AddHero(doc);
+    });
+  });
+}
+
 function ListHero () {
   return Object.keys(HEROS);
 }
 
+exports.add = AddHero;
 exports.get = GetHero;
+exports.update = UpdateHero;
 exports.list = ListHero;
