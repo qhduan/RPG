@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 			}, 0);
 		}, false );
 	}
-})( this );
+})( window );
 
   // root级别api入口
   var Game = window.Game = {
