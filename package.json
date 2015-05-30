@@ -35,10 +35,9 @@
     "compression": "latest",
     "node-uuid": "latest",
     "grunt": "latest",
-    "grunt-contrib-jshint": "latest",
-    "grunt-contrib-nodeunit": "latest",
     "grunt-contrib-watch": "latest",
-    "grunt-babel": "latest"
+    "grunt-babel": "latest",
+    "babel-core": "latest"
   },
   "keywords": [
     "RPG",

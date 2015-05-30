@@ -5,9 +5,6 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     babel: {
-      options: {
-        sourceMap: true
-      },
       dist: {
         files: [{
           expand: true,
@@ -21,7 +18,7 @@ module.exports = function (grunt) {
     watch: {
       scrpites: {
         files: "public/src/*.js",
-        tasks: ["babel:dist"],
+        //tasks: ["babel:dist"],
         options: {
           spawn: false
         }

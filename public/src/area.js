@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
                 for (var i = 0; i < heroObj.data.items.length; i++) {
                   if (heroObj.data.items[i])
-                    heroObj.data.items[i] = new Game.ItemClass(heroObj.data.items[i]);
+                    heroObj.data.items[i].item = new Game.ItemClass(heroObj.data.items[i].item);
                 }
 
                 for (var equipment in heroObj.data.equipment) {

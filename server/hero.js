@@ -93,8 +93,9 @@ function AddHero (element) {
   HEROS[id].spells = SpellModule.get(HEROS[id].spells);
   // 读取角色物品
   HEROS[id].items.forEach(function (element, index, array) {
-    if (element)
-      array[index] = ItemModule.get(element)
+    if (element) {
+      element.item = ItemModule.get(element.id);
+    }
   });
   // 读取角色装备（物品）
   if (HEROS[id].equipment.head)

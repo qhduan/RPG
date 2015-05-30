@@ -65,7 +65,7 @@ SocketModule.on("disconnect", function (socket, data) {
 });
 
 // 聊天消息
-SocketModule.on("message", function (data) {
+SocketModule.on("talk", function (socket, data) {
   var heroId = SOCKET_HERO[socket.id];
   if (!heroId) return;
 
@@ -73,7 +73,10 @@ SocketModule.on("message", function (data) {
 
   for (var key in HERO_SOCKET) {
     if (HeroModule.get(key).area == heroObj.area) {
-      HERO_SOCKET[key].emit("message", data);
+      HERO_SOCKET[key].emit("talk", {
+        id: heroId,
+        talk: data
+      });
     }
   }
 });
@@ -195,9 +198,10 @@ function GetArea (sock) {
 
       // 统计英雄的物品图片
       for (var key in heroData.items) {
-        var itemData = heroData.items[key];
-        if (itemData)
+        if (heroData.items[key]) {
+          var itemData = heroData.items[key].item;
           resources[itemData.image] = "image";
+        }
       }
 
       // 统计英雄的装备图片
@@ -434,8 +438,8 @@ function CreateHero (sock) {
         },
 
         "items": [
-          "item0003",
-          "item0004"
+          {id: "item0003", count: 1},
+          {id: "item0004", count: 1}
         ],
         "gold": 0
       }], function (err, newDocs) {

@@ -164,6 +164,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 发送完成事件，第二个参数代表一次性事件
       super.emit("complete", true);
+
+      super.on("move", () => {
+        if (this.popupBox && this.popupBox.length) {
+          this.popupBox.forEach(() => {
+            this.popupBox.x = this.x;
+            this.popupBox.y = this.y - this.sprite.spriteSheet.getFrame(0).regY;
+          });
+        }
+      });
     }
 
     get x () {
@@ -183,75 +192,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.sprite.y = v;
       Game.update();
     }
-/*
-    on (event, listener) {
-      if (this[event])
-        return listener(this);
 
-      if (!this.listeners)
-        this.listeners = {};
-
-      if (!this.listeners[event])
-        this.listeners[event] = {};
-
-      var id = uuid.v4();
-      this.listeners[event][id] = listener;
-    }
-
-    off  (event, id) {
-      if (this.listeners[event] && this.listeners[event][id]) {
-        delete this.listeners[event][id];
-      }
-    }
-
-    emit (event, data) {
-      if (this.listeners && this.listeners[event]) {
-        for (let key in this.listeners[event]) {
-          this.listeners[event][key](data);
-        }
-      }
-    }
- */
     clone  (callback) {
       var actorObj = new ActorClass(this.data);
       actorObj.oncomplete(callback);
     }
 
+    popup (text) {
+      text = Game.dialogue.textSplit(text, 200);
+      var dialogueText = new createjs.Text(text);
+      var w = Math.min(200 + 8, dialogueText.getMeasuredWidth());
+      var h = dialogueText.getMeasuredHeight();
+      var dialogueBox = new createjs.Shape();
+      dialogueBox.graphics
+      .beginStroke("black")
+      .beginFill("white")
+      .drawRoundRect(0, 0, w + 10, h + 10, 5);
+
+      var middle = parseInt((w + 10) / 2);
+
+      dialogueBox.graphics
+      .beginFill("white")
+      .moveTo(middle - 5, h + 9)
+      .lineTo(middle, h + 15)
+      .lineTo(middle + 5, h + 9)
+      .beginStroke("white")
+      .lineTo(middle - 5, h + 9);
+
+      var dialogueContainer = new createjs.Container();
+      dialogueContainer.addChild(dialogueBox, dialogueText);
+      dialogueText.x = 5;
+      dialogueText.y = 5;
+      dialogueContainer.x = this.x;
+      dialogueContainer.y = this.y - this.sprite.spriteSheet.getFrame(0).regY;
+      dialogueContainer.regX = middle;
+      dialogueContainer.regY = h + 15;
+      dialogueContainer.height = h + 15;
+      dialogueContainer.width = w + 10;
+
+      if (!this.popupBox) {
+        this.popupBox = {};
+      }
+
+      if (Object.keys(this.popupBox).length > 0) {
+        for (var key in this.popupBox) {
+          this.popupBox[key].regY += this.popupBox[key].height;
+        }
+      }
+
+      var id = uuid.v4();
+
+      this.popupBox[id] = dialogueContainer;
+      Game.dialogueLayer.addChild(this.popupBox[id]);
+      Game.update();
+
+      setTimeout(() => {
+        if (this.popupBox[id]) {
+          Game.dialogueLayer.removeChild(this.popupBox[id]);
+          delete this.popupBox[id];
+        }
+        Game.update();
+      }, 4000);
+    }
+
     use () {
       if (this.data.use) {
         if (this.data.use.type == "talk") {
-          var dialogueText = new createjs.Text(this.data.use.content);
-          var w = dialogueText.getMeasuredWidth();
-          var h = dialogueText.getMeasuredHeight();
-          var dialogueBox = new createjs.Shape();
-          dialogueBox.graphics
-          .beginStroke("black")
-          .beginFill("white")
-          .drawRoundRect(0, 0, w + 10, h + 10, 5);
-
-          dialogueBox.graphics
-          .beginFill("white")
-          .moveTo(w + 5, h + 8)
-          .lineTo(w, h + 15)
-          .lineTo(w - 5, h + 8)
-          .beginStroke("white")
-          .lineTo(w + 5, h + 8);
-
-          var dialogueContainer = new createjs.Container();
-          dialogueContainer.addChild(dialogueBox, dialogueText);
-          dialogueText.x = 5;
-          dialogueText.y = 5;
-          dialogueContainer.x = this.x;
-          dialogueContainer.y = this.y - this.sprite.spriteSheet.getFrame(0).regY;
-          dialogueContainer.regX = w - 5;
-          dialogueContainer.regY = h + 8;
-
-          Game.dialogueLayer.addChild(dialogueContainer);
-          setTimeout(() => {
-            Game.dialogueLayer.removeChild(dialogueContainer);
-            Game.update();
-          }, 5000);
-          Game.update();
+          this.popup(this.data.use.content);
         }
       }
     }
@@ -270,7 +277,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // item0001是物品掉落之后出现的小布袋
         Game.items.item0001.clone((dead) => {
-          dead.draw(Game.itemLayer, this.sprite.x, this.sprite.y);
+          dead.draw(Game.itemLayer, this.x, this.y);
         });
 
         Game.actorLayer.removeChild(this.infoBox);
@@ -318,8 +325,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     play (animation, priority) {
-      var self = this;
-
       var direction = animation.match(/down|left|right|up/)[0];
 
       // 新动画默认优先级为0
@@ -342,6 +347,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var self = this;
 
       if (!this.sprite.currentAnimation) return;
+
+      if (this.gotoListener) return;
 
       if ((this.sprite.paused && !this.sprite.currentAnimation.match(/face/))
         || this.sprite.currentAnimation.match(/walk|run/)) {
@@ -405,90 +412,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return this.data.spells[spell].data.cooldown;
     }
 
-    gotoXY (x, y, speed, collisionTest, callback) {
-      var self = this;
+    goto (x, y, speed, collisionTest, callback) {
 
-      if (this.gotoXYListener) {
-        createjs.Ticker.off("tick", this.gotoXYListener);
-        this.gotoXYListener = null;
+      if (this.gotoListener) {
+        createjs.Ticker.off("tick", this.gotoListener);
+        this.gotoListener = null;
       }
 
-      x -= this.sprite.x;
-      y -= this.sprite.y;
+      x -= this.x;
+      y -= this.y;
 
       var state = "walk";
+      var limit = 20;
+      var skew = speed / 1.4;
 
-      var limit = speed;
+      this.gotoListener = createjs.Ticker.on("tick", () => toXY());
 
-      this.gotoXYListener = createjs.Ticker.on("tick", () => toXY());
+      var leftright = "";
+      var updown = "";
+      if (x > 0) {
+        leftright = "right";
+      } else if (x < 0) {
+        leftright = "left";
+      }
+      if (y > 0) {
+        updown = "down";
+      } else if (y < 0) {
+        updown = "up";
+      }
+      var X = x = Math.abs(x);
+      var Y = y = Math.abs(y);
 
       var toXY = () => {
-
-        if (x == 0 && y == 0) {
-          if (this.gotoXYListener) {
-            createjs.Ticker.off("tick", this.gotoXYListener);
-            this.gotoXYListener = null;
+        if (x <= limit && y <= limit) {
+          if (this.gotoListener) {
+            createjs.Ticker.off("tick", this.gotoListener);
+            this.gotoListener = null;
           }
-          this.stop();
+          if (X > Y) {
+            this.face(leftright);
+          } else {
+            this.face(updown);
+          }
           if (callback) callback();
-        } else if (Math.abs(x) > limit && Math.abs(y) > limit) {
-          var skew = speed / 1.4;
-          var direction = "";
-          if (y < 0) {
-            direction = "up"
-            y += skew;
-          } else {
-            direction = "down";
-            y -= skew;
-          }
-          if (x < 0) {
-            direction += "left";
-            x += skew;
-          } else {
-            direction += "right";
-            x -= skew;
-          }
-          this.go(state, direction, skew, collisionTest);
-        } else if (Math.abs(x) > limit) {
-          if (x > 0) {
-            this.go(state, "right", speed, collisionTest);
+        } else if (x > limit && y > limit) {
+          if (X > Y) {
+            this.go(state, leftright, speed, collisionTest);
             x -= speed;
           } else {
-            this.go(state, "left", speed, collisionTest);
-            x += speed;
-          }
-        } else if (Math.abs(y) > limit) {
-          if (y > 0) {
-            this.go(state, "down", speed, collisionTest);
+            this.go(state, updown, speed, collisionTest);
             y -= speed;
-          } else {
-            this.go(state, "up", speed, collisionTest);
-            y += speed;
           }
-        } else if (Math.abs(y) != 0) {
-          if (y > 0) {
-            this.go(state, "down", y, collisionTest);
-            y = 0;
-          } else {
-            this.go(state, "up", -y, collisionTest);
-            y = 0;
-          }
-        } else if (Math.abs(x) != 0) {
-          if (x > 0) {
-            this.go(state, "right", x, collisionTest);
-            x = 0;
-          } else {
-            this.go(state, "left", -x, collisionTest);
-            x = 0;
-          }
+          if (x < 0) x = 0;
+          if (y < 0) y = 0;
+        } else if (x > limit) {
+          this.go(state, leftright, speed, collisionTest);
+          x -= speed;
+          if (x < 0) x = 0;
+        } else if (y > limit) {
+          this.go(state, updown, speed, collisionTest);
+          y -= speed;
+          if (y < 0) y = 0;
         }
       }
 
     }
 
     face (direction) {
-      var self = this;
-
       var animation = "face" + direction;
       if (this.animation != animation) {
         this.sprite.gotoAndStop(animation);
@@ -496,36 +486,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-
-
-
     // 这个函数是测试某个方向能否走，能移动则移动
     // direction的值有up，down，left，right四种可能
     // 建立这个函数是因为一次行走虽然是一次，但是也可以潮四个角方向走，实际就要执行两次CheckDirection
     CheckDirection (direction, step, collisionTest) {
 
-      var oldX = this.sprite.x;
-      var oldY = this.sprite.y;
+      var oldX = this.x;
+      var oldY = this.y;
 
       switch (direction) {
         case "up":
-          this.sprite.y += -step;
+          this.y += -step;
           break;
         case "down":
-          this.sprite.y += step;
+          this.y += step;
           break;
         case "left":
-          this.sprite.x += -step;
+          this.x += -step;
           break;
         case "right":
-          this.sprite.x += step;
+          this.x += step;
           break;
       }
 
-      this.sprite.x = parseInt(this.sprite.x);
-      this.sprite.y = parseInt(this.sprite.y);
+      this.x = parseInt(this.x);
+      this.y = parseInt(this.y);
 
-      var t = Game.area.map.tile(this.sprite.x, this.sprite.y);
+      var t = Game.area.map.tile(this.x, this.y);
 
       var tested = {};
 
@@ -566,12 +553,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 碰撞了
       if (collision) {
-        this.sprite.x = oldX;
-        this.sprite.y = oldY;
+        this.x = oldX;
+        this.y = oldY;
         return false;
       } else {
-        this.infoBox.x = this.sprite.x;
-        this.infoBox.y = this.sprite.y - this.sprite.spriteSheet.getFrame(0).regY - 20;
+        this.infoBox.x = this.x;
+        this.infoBox.y = this.y - this.sprite.spriteSheet.getFrame(0).regY - 20;
 
         return true;
       }
@@ -654,10 +641,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
+      super.emit("move");
+
       if (this.id == Game.hero.id) {
         Game.io.sync("move", {
-          x: this.sprite.x,
-          y: this.sprite.y,
+          x: this.x,
+          y: this.y,
           speed: step
         });
       }
@@ -681,8 +670,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.infoBox.x = x;
       this.infoBox.y = y - this.sprite.spriteSheet.getFrame(0).regY - 20;
 
-      this.sprite.x = x;
-      this.sprite.y = y;
+      this.x = x;
+      this.y = y;
 
       layer.addChild(this.sprite);
       layer.addChild(this.infoBox);
@@ -693,11 +682,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     focus () {
       var self = this;
 
-      this.infoBox.x = this.sprite.x;
-      this.infoBox.y = this.sprite.y - this.sprite.spriteSheet.getFrame(0).regY - 20
+      this.infoBox.x = this.x;
+      this.infoBox.y = this.y - this.sprite.spriteSheet.getFrame(0).regY - 20
 
-      Game.stage.regX = parseInt(this.sprite.x - Game.config.width / 2);
-      Game.stage.regY = parseInt(this.sprite.y - Game.config.height / 2);
+      Game.stage.regX = parseInt(this.x - Game.config.width / 2);
+      Game.stage.regY = parseInt(this.y - Game.config.height / 2);
     }
 
   } // ActorClass

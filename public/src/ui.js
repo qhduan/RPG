@@ -34,12 +34,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       box.y = y;
     }
 
+    draw (container) {
+      container.addChild(this.box);
+      Game.update();
+    }
+
     get x () {
       return this.box.x;
     }
 
     set x (v) {
       this.box.x = v;
+      Game.update();
     }
 
     get y () {
@@ -48,6 +54,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set y (v) {
       this.box.y = v;
+      Game.update();
+    }
+
+    set color (v) {
+      this.box.graphics
+      .clear()
+      .beginFill(v)
+      .drawRect(0, 0, 50, 50);
+      Game.update();
+    }
+
+    on () {
+      this.box.on.apply(this.box, arguments);
+    }
+
+    off () {
+      this.box.off.apply(this.box, arguments);
+    }
+  }
+
+  class BitmapBoxClass {
+    constructor (bitmap, x, y) {
+      this.bitmap = bitmap.clone();
+      this.bitmap.x = x;
+      this.bitmap.y = y;
+
+      var box = new createjs.Shape();
+      this.box = box;
+
+      box.graphics
+      .beginFill("gray")
+      .drawRect(0, 0, 50, 50);
+      box.regX = 25;
+      box.regY = 25;
+      box.x = x;
+      box.y = y;
+    }
+
+    draw (container) {
+      container.addChild(this.box);
+      container.addChild(this.bitmap);
+      Game.update();
+    }
+
+    get x () {
+      return this.box.x;
+    }
+
+    set x (v) {
+      this.box.x = v;
+      this.bitmap.x = v;
+      Game.update();
+    }
+
+    get y () {
+      return this.box.y;
+    }
+
+    set y (v) {
+      this.box.y = v;
+      this.bitmap.y = v;
+      Game.update();
     }
 
     set color (v) {
@@ -79,12 +147,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       icon.y = y;
     }
 
+    draw (container) {
+      container.addChild(this.icon);
+      Game.update();
+    }
+
     get x () {
       return this.icon.x;
     }
 
     set x (v) {
       this.icon.x = v;
+      Game.update();
     }
 
     get y () {
@@ -93,14 +167,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set y (v) {
       this.icon.y = v;
+      Game.update();
     }
 
     on (event, callback) {
-      this.icon.on.apply(this.icon, arguments);
+      this.box.on.apply(this.icon, arguments);
     }
 
     off () {
-      this.icon.off.apply(this.icon, arguments);
+      this.box.off.apply(this.icon, arguments);
     }
   }
 
@@ -121,12 +196,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       button.shadow = new createjs.Shadow("black", 2, 2, 2);
     }
 
+    draw (container) {
+      container.addChild(this.button);
+      Game.update();
+    }
+
     get x () {
       return this.button.x;
     }
 
     set x (v) {
       this.button.x = v;
+      Game.update();
     }
 
     get y () {
@@ -135,6 +216,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set y (v) {
       this.button.y = v;
+      Game.update();
     }
 
     set color (v) {
@@ -154,13 +236,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-
+  // 调整窗口跟随玩家
   Game.oninit(function () {
     Game.stage.on("drawstart", function () {
       if (Game.uiLayer.numChildren) {
         Game.uiLayer.children.forEach(function (element) {
-          element.x = parseInt(Game.hero.sprite.x);
-          element.y = parseInt(Game.hero.sprite.y);
+          element.x = parseInt(Game.hero.x);
+          element.y = parseInt(Game.hero.y);
         });
 
         if (Game.ui.redPoint) {
@@ -185,7 +267,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var cooldown = Game.hero.fire(num);
       if (cooldown > 0) {
 
-        var spellIcon = Game.ui.spellBar[num];
+        var spellIcon = Game.ui.spellIcon[num];
         spellIcon.color = "green";
 
         cooldown -= 100;
@@ -201,9 +283,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
   };
-
-  var lastItemSelectIndex = -1;
-  var lastItemSelectType = null;
 
   var indexToEquipment = {
     "0": "head",
@@ -221,7 +300,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     items.length = Game.hero.data.items.length;
     for (var i = 0; i < items.length; i++) {
       if (Game.hero.data.items[i])
-        items[i] = Game.hero.data.items[i].id;
+        items[i] = {
+          id: Game.hero.data.items[i].id,
+          count: Game.hero.data.items[i].count
+        };
     }
 
     var equipment = {};
@@ -239,6 +321,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   }
 
+  // 物品选择，弹出物品信息
   function ItemSelect (type, index) {
     var itemObj = null;
 
@@ -248,179 +331,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     if (type == "item") {
-      itemObj = Game.hero.data.items[index];
+      itemObj = Game.hero.data.items[index].item;
       if (!itemObj) return;
     }
 
     // 分割，每行最多22个字符宽度
-    var text = Game.dialogue.textSplit(itemObj.data.description, 22);
+    var text = Game.dialogue.textSplit(itemObj.data.description, 150);
 
     if (Game.ui.itemText) {
       Game.ui.itemWindow.removeChild(Game.ui.itemText);
       Game.ui.itemText = null;
     }
 
+    //.drawRect(0, 0, 170, 110);
+    //itemText.x = 755;
+    //itemText.y = 25;
+
     var itemText = new createjs.Text(text);
-    itemText.x = 770;
-    itemText.y = 40;
+    itemText.x = 760;
+    itemText.y = 30;
     Game.ui.itemWindow.addChild(itemText);
     Game.ui.itemText = itemText;
 
-    lastItemSelectType = type;
-    lastItemSelectIndex = index;
-
-    Game.ui.armorBox.forEach(function (element) {
-      element.color = "gray";
-    });
-
-    Game.ui.itemBox.forEach(function (element) {
-      element.color = "gray";
-    });
-
-    if (type == "equipment") {
-      Game.ui.armorBox[index].color = "green";
-    } else if (type == "item") {
-      Game.ui.itemBox[index].color = "green";
-    }
     Game.update();
   }
-/*
-  ItemSelect = function (type, index) {
-    if (lastItemSelectType == null) {
 
-      var itemObj = null;
+  // 物品改变，装备，卸下装备，物品调整顺序等
+  function ItemExchange (lastType, lastIndex, type, index) {
 
-      if (type == "equipment") {
-        itemObj = Game.hero.data.equipment[indexToEquipment[index]];
-        if (!itemObj) return;
-      }
+    if (lastType == "equipment" && type == "equipment") {
 
-      if (type == "item") {
-        itemObj = Game.hero.data.items[index];
-        if (!itemObj) return;
-      }
+      Game.ui.armorBox[lastIndex].color = "gray";
 
-      // 分割，每行最多22个字符宽度
-      var text = Game.dialogue.textSplit(itemObj.data.description, 22);
-
-      if (Game.ui.itemText) {
-        Game.ui.itemWindow.removeChild(Game.ui.itemText);
-        Game.ui.itemText = null;
-      }
-
-      var itemText = new createjs.Text(text);
-      itemText.x = 770;
-      itemText.y = 40;
-      Game.ui.itemWindow.addChild(itemText);
-      Game.ui.itemText = itemText;
-
-      lastItemSelectType = type;
-      lastItemSelectIndex = index;
-
-      if (type == "equipment") {
-        Game.ui.armorBox[index].color = "green";
-      } else if (type == "item") {
-        Game.ui.itemBox[index].color = "green";
-      }
-      Game.update();
-    } else {
-
-      if (lastItemSelectType == "equipment" && type == "equipment") {
-
-        Game.ui.armorBox[lastItemSelectIndex].color = "gray";
-
-        if (lastItemSelectIndex != index) {
-          lastItemSelectIndex = -1;
-          lastItemSelectType = null;
-
-          return ItemSelect(type, index);
-        }
-      }
-
-      if (lastItemSelectType == "item" && type == "item") {
-        if (lastItemSelectIndex == index) {
-          Game.ui.itemBox[index].color = "gray";
-        } else {
-          var t = Game.hero.data.items[lastItemSelectIndex];
-          Game.hero.data.items[lastItemSelectIndex] = Game.hero.data.items[index];
-          Game.hero.data.items[index] = t;
-
-          ItemChanged();
-
-          Game.uiLayer.removeChild(Game.ui.itemWindow);
-          Game.ui.itemWindow = null;
-          Game.ui.openItem();
-        }
-      }
-
-      if (lastItemSelectType == "equipment" && type == "item") {
-        if (Game.hero.data.items[index]) {
-          Game.ui.armorBox[lastItemSelectIndex].color = "gray";
-        } else {
-          Game.hero.data.items[index] = Game.hero.data.equipment[indexToEquipment[lastItemSelectIndex]];
-          Game.hero.data.equipment[indexToEquipment[lastItemSelectIndex]] = null;
-
-          ItemChanged();
-
-          Game.uiLayer.removeChild(Game.ui.itemWindow);
-          Game.ui.itemWindow = null;
-          Game.ui.openItem();
-        }
-      }
-
-      if (lastItemSelectType == "item" && type == "equipment") {
-        var CheckFit = function (itemIndex, equipmentIndex) {
-          var itemType = Game.hero.data.items[itemIndex].data.equip;
-          var equipmentType = indexToEquipment[equipmentIndex];
-          if (itemType == equipmentType)
-            return true;
-          if (itemType == "onehand" && (equipmentType == "righthand" || equipmentType == "lefthand"))
-            return true;
-          if (itemType == "twohand" && equipmentType == "righthand")
-            return true;
-          return false;
-        }
-
-        if (CheckFit(lastItemSelectIndex, index)) {
-          var t = Game.hero.data.equipment[indexToEquipment[index]];
-          Game.hero.data.equipment[indexToEquipment[index]] = Game.hero.data.items[lastItemSelectIndex];
-          Game.hero.data.items[lastItemSelectIndex] = t;
-
-          ItemChanged();
-
-          Game.uiLayer.removeChild(Game.ui.itemWindow);
-          Game.ui.itemWindow = null;
-          Game.ui.openItem();
-        } else {
-          Game.ui.itemBox[lastItemSelectIndex].color = "gray";
-        }
-      }
-
-      lastItemSelectIndex = -1;
-      lastItemSelectType = null;
-    }
-  };
-*/
-  function ItemExchange (lastItemSelectType, lastItemSelectIndex, type, index) {
-
-    if (lastItemSelectType == "equipment" && type == "equipment") {
-
-      Game.ui.armorBox[lastItemSelectIndex].color = "gray";
-
-      if (lastItemSelectIndex != index) {
-        lastItemSelectIndex = -1;
-        lastItemSelectType = null;
+      if (lastIndex != index) {
+        lastIndex = -1;
+        lastType = null;
 
         return ItemSelect(type, index);
       }
     }
 
-    if (lastItemSelectType == "item" && type == "item") {
-      if (lastItemSelectIndex == index) {
+    if (lastType == "item" && type == "item") {
+      if (lastIndex == index) {
         Game.ui.itemBox[index].color = "gray";
       } else {
-        var t = Game.hero.data.items[lastItemSelectIndex];
-        Game.hero.data.items[lastItemSelectIndex] = Game.hero.data.items[index];
+        var t = Game.hero.data.items[lastIndex];
+        Game.hero.data.items[lastIndex] = Game.hero.data.items[index];
         Game.hero.data.items[index] = t;
 
         ItemChanged();
@@ -431,12 +387,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    if (lastItemSelectType == "equipment" && type == "item") {
+    if (lastType == "equipment" && type == "item") {
       if (Game.hero.data.items[index]) {
-        Game.ui.armorBox[lastItemSelectIndex].color = "gray";
+        Game.ui.armorBox[lastIndex].color = "gray";
       } else {
-        Game.hero.data.items[index] = Game.hero.data.equipment[indexToEquipment[lastItemSelectIndex]];
-        Game.hero.data.equipment[indexToEquipment[lastItemSelectIndex]] = null;
+        if (!Game.hero.data.items[index])
+          Game.hero.data.items[index] = {};
+        Game.hero.data.items[index].id = Game.hero.data.equipment[indexToEquipment[lastIndex]].id;
+        Game.hero.data.items[index].item = Game.hero.data.equipment[indexToEquipment[lastIndex]];
+        Game.hero.data.items[index].count = 1;
+        Game.hero.data.equipment[indexToEquipment[lastIndex]] = null;
 
         ItemChanged();
 
@@ -446,9 +406,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    if (lastItemSelectType == "item" && type == "equipment") {
+    if (lastType == "item" && type == "equipment") {
       var CheckFit = function (itemIndex, equipmentIndex) {
-        var itemType = Game.hero.data.items[itemIndex].data.equip;
+        var itemType = Game.hero.data.items[itemIndex].item.data.equip;
         var equipmentType = indexToEquipment[equipmentIndex];
         if (itemType == equipmentType)
           return true;
@@ -459,10 +419,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return false;
       }
 
-      if (CheckFit(lastItemSelectIndex, index)) {
+      if (CheckFit(lastIndex, index)) {
         var t = Game.hero.data.equipment[indexToEquipment[index]];
-        Game.hero.data.equipment[indexToEquipment[index]] = Game.hero.data.items[lastItemSelectIndex];
-        Game.hero.data.items[lastItemSelectIndex] = t;
+        Game.hero.data.equipment[indexToEquipment[index]] = Game.hero.data.items[lastIndex].item;
+        if (t) {
+          Game.hero.data.items[lastIndex] = {
+            id: t.id,
+            item: t,
+            count: 1
+          };
+        } else {
+          Game.hero.data.items[lastIndex] = null;
+        }
 
         ItemChanged();
 
@@ -470,14 +438,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.ui.itemWindow = null;
         Game.ui.openItem();
       } else {
-        Game.ui.itemBox[lastItemSelectIndex].color = "gray";
+        Game.ui.itemBox[lastIndex].color = "gray";
       }
     }
 
-    lastItemSelectIndex = -1;
-    lastItemSelectType = null;
   }
 
+  // 打开物品栏（玩家口袋）
   Game.ui.openItem = function () {
     var heroObj = Game.hero;
     if (!heroObj) return;
@@ -486,8 +453,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.uiLayer.removeChild(Game.ui.itemWindow);
       Game.ui.itemWindow = null;
       Game.ui.initBottomBar();
-      lastItemSelectIndex = -1;
-      lastItemSelectType = null;
       return;
     }
 
@@ -509,11 +474,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       for (var j = 0; j < armorBoxWidth; j++) {
         (function (i, j) {
           var index = i * armorBoxWidth + j;
-          var armorIcon = armorBox[index] = new BoxClass(540 + j * 60, 50 + i * 60);
-
-          armorIcon.on("click", function () {
-            ItemSelect("equipment", index);
-          });
+          armorBox[index] = new BoxClass(540 + j * 60, 50 + i * 60);
         })(i, j);
       }
     }
@@ -529,11 +490,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       for (var j = 0; j < itemBoxWidth; j++) {
         (function (i, j) {
           var index = i * itemBoxWidth + j;
-          var itemIcon = itemBox[index] = new BoxClass(540 + j * 60, 170 + i * 60);
-
-          itemIcon.on("click", function () {
-            ItemSelect("item", index);
-          });
+          itemBox[index] = new BoxClass(540 + j * 60, 170 + i * 60);
         })(i, j);
       }
     }
@@ -572,7 +529,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var leftringIcon = new IconClass("/image/ring.png", armorBox[6].x, armorBox[6].y);
     var rightringIcon = new IconClass("/image/ring.png", armorBox[7].x, armorBox[7].y);
 
-
     var itemWindow = new createjs.Container();
     itemWindow.regX = 480;
     itemWindow.regY = 270;
@@ -593,10 +549,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     armorBox.forEach(function (element) {
      itemWindow.addChild(element.box);
+     itemWindow.addChild(element.box.clone());
     });
 
     itemBox.forEach(function (element) {
-     itemWindow.addChild(element.box);
+      itemWindow.addChild(element.box);
+      itemWindow.addChild(element.box.clone());
     });
 
     itemWindow.addChild(headIcon.icon);
@@ -608,52 +566,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     itemWindow.addChild(leftringIcon.icon);
     itemWindow.addChild(rightringIcon.icon);
 
-    function CopyIcon (item, icon) {
-      var t = item.bitmap.clone();
-      t.x = icon.x;
-      t.y = icon.y;
-      itemWindow.addChild(t);
+    function CopyIcon (item, box, type, index) {
+      var t = new BitmapBoxClass(item.bitmap, box.x, box.y);
+      t.draw(itemWindow);
 
-      var X = icon.x;
-      var Y = icon.y;
+      var X = t.x;
+      var Y = t.y;
 
-      icon.on("mousedown", function (event) {
-        icon.offset = {
-          x: icon.x - event.stageX / Game.stage.scaleX,
-          y: icon.y - event.stageY / Game.stage.scaleY
+      t.on("click", function () {
+        ItemSelect(type, index);
+      });
+
+      t.on("mousedown", function (event) {
+        t.offset = {
+          x: t.x - event.stageX / Game.stage.scaleX,
+          y: t.y - event.stageY / Game.stage.scaleY
         };
-        t.offset = icon.offset;
-        Game.update();
       });
 
-      icon.on("pressmove", function (event) {
-        icon.x = event.stageX / Game.stage.scaleX + icon.offset.x;
-        icon.y = event.stageY / Game.stage.scaleY + icon.offset.y;
-        t.x = icon.x;
-        t.y = icon.y;
-        Game.update();
+      t.on("pressmove", function (event) {
+        t.x = event.stageX / Game.stage.scaleX + t.offset.x;
+        t.y = event.stageY / Game.stage.scaleY + t.offset.y;
       });
 
-      icon.on("pressup", function (event) {
-        var x = event.stageX / Game.stage.scaleX + icon.offset.x;
-        var y = event.stageY / Game.stage.scaleY + icon.offset.y;
+      t.on("pressup", function (event) {
+        var x = event.stageX / Game.stage.scaleX + t.offset.x;
+        var y = event.stageY / Game.stage.scaleY + t.offset.y;
 
-        var iconType = null;
-        var iconIndex = -1;
+        var lastType = null;
+        var lastIndex = -1;
 
         var minDistance = 9999;
         var minType = null;
         var minIndex = -1;
 
         itemBox.forEach(function (element, index) {
-          if (element == icon) {
-            iconType = "item";
-            iconIndex = index;
+          if (element == box) {
+            lastType = "item";
+            lastIndex = index;
             return;
           }
           var d = 0;
-          d += Math.pow(element.x - icon.x, 2);
-          d += Math.pow(element.y - icon.y, 2);
+          d += Math.pow(element.x - t.x, 2);
+          d += Math.pow(element.y - t.y, 2);
           d = Math.sqrt(d);
           if (d < minDistance) {
             minDistance = d;
@@ -663,14 +618,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
 
         armorBox.forEach(function (element, index) {
-          if (element == icon) {
-            iconType = "equipment";
-            iconIndex = index;
+          if (element == box) {
+            lastType = "equipment";
+            lastIndex = index;
             return;
           }
           var d = 0;
-          d += Math.pow(element.x - icon.x, 2);
-          d += Math.pow(element.y - icon.y, 2);
+          d += Math.pow(element.x - t.x, 2);
+          d += Math.pow(element.y - t.y, 2);
           d = Math.sqrt(d);
           if (d < minDistance) {
             minDistance = d;
@@ -679,42 +634,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         });
 
-        icon.x = X;
-        icon.y = Y;
-        t.x = icon.x;
-        t.y = icon.y;
+        t.x = X;
+        t.y = Y;
 
-        if (iconType && minType && minDistance < 20) {
-          ItemExchange(iconType, iconIndex, minType, minIndex);
-          //console.log(minType, minDistance, minIndex);
+        if (lastType && minType && minDistance < 30) {
+          ItemExchange(lastType, lastIndex, minType, minIndex);
         }
-
-        Game.update();
 
       });
 
     }
 
     if (heroObj.data.equipment.head)
-      CopyIcon(heroObj.data.equipment.head, armorBox[0]);
+      CopyIcon(heroObj.data.equipment.head, armorBox[0], "equipment", 0);
     if (heroObj.data.equipment.neck)
-      CopyIcon(heroObj.data.equipment.neck, armorBox[1]);
+      CopyIcon(heroObj.data.equipment.neck, armorBox[1], "equipment", 1);
     if (heroObj.data.equipment.body)
-      CopyIcon(heroObj.data.equipment.body, armorBox[2]);
+      CopyIcon(heroObj.data.equipment.body, armorBox[2], "equipment", 2);
     if (heroObj.data.equipment.feet)
-      CopyIcon(heroObj.data.equipment.feet, armorBox[3]);
+      CopyIcon(heroObj.data.equipment.feet, armorBox[3], "equipment", 3);
     if (heroObj.data.equipment.righthand)
-      CopyIcon(heroObj.data.equipment.righthand, armorBox[4]);
+      CopyIcon(heroObj.data.equipment.righthand, armorBox[4], "equipment", 4);
     if (heroObj.data.equipment.lefthand)
-      CopyIcon(heroObj.data.equipment.lefthand, armorBox[5]);
+      CopyIcon(heroObj.data.equipment.lefthand, armorBox[5], "equipment", 5);
     if (heroObj.data.equipment.leftring)
-      CopyIcon(heroObj.data.equipment.leftring, armorBox[6]);
+      CopyIcon(heroObj.data.equipment.leftring, armorBox[6], "equipment", 6);
     if (heroObj.data.equipment.rightring)
-      CopyIcon(heroObj.data.equipment.rightring, armorBox[7]);
+      CopyIcon(heroObj.data.equipment.rightring, armorBox[7], "equipment", 7);
 
     heroObj.data.items.forEach(function (element, index) {
       if (element)
-        CopyIcon(element, itemBox[index]);
+        CopyIcon(element.item, itemBox[index], "item", index);
     });
 
     Game.uiLayer.addChild(itemWindow);
@@ -724,7 +674,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
 
-
+  // 打开技能栏
   Game.ui.openSkill = function () {
     var heroObj = Game.hero;
     if (!heroObj) return;
@@ -758,100 +708,70 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.ui.openInformation();
   };
 
-  var lastSpellSelectIndex = -1;
-  var lastSpellSelectType = null;
+  // 在招式窗口打开时，点击一个技能，则弹出技能介绍
+  function SpellSelect (type, index) {
+    var spellId = "";
 
-  Game.ui.spellSelect = function (type, index) {
-    if (lastSpellSelectType == null) {
-
-      var spellId = "";
-
-      if (type == "book") {
-        spellId = Object.keys(Game.hero.data.spells)[index];
-        if (!spellId) return;
-      }
-
-      if (type == "bar") {
-        spellId = Game.hero.data.spellbar[index];
-        if (!spellId) return;
-      }
-
-      // 分割，每行最多40个字符宽度
-      var text = Game.dialogue.textSplit(Game.hero.data.spells[spellId].data.description, 40);
-
-      if (Game.ui.spellText) {
-        Game.ui.spellWindow.removeChild(Game.ui.spellText);
-        Game.ui.spellText = null;
-      }
-
-      var spellText = new createjs.Text(text);
-      spellText.x = 50;
-      spellText.y = 340;
-      Game.ui.spellWindow.addChild(spellText);
-      Game.ui.spellText = spellText;
-
-      lastSpellSelectType = type;
-      lastSpellSelectIndex = index;
-      if (type == "bar") {
-        Game.ui.spellBar[index].color = "green";
-      } else if (type == "book") {
-        Game.ui.spellBook[index].color = "green";
-      }
-      Game.update();
-    } else {
-      if (lastSpellSelectType == "book" && type == "bar") {
-        var spellBookSelect = Object.keys(Game.hero.data.spells)[lastSpellSelectIndex];
-        var spellBarSelect = Game.hero.data.spellbar[index];
-        if (spellBookSelect != spellBarSelect) {
-          if (Game.hero.data.spellbar.indexOf(spellBookSelect) == -1) {
-            Game.hero.data.spellbar[index] = spellBookSelect;
-
-            Game.ui.spellBook[lastSpellSelectIndex].color = "green";
-
-            Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-
-            Game.ui.initBottomBar();
-          } else {
-            Game.ui.spellBook[lastSpellSelectIndex].color = "green";
-          }
-        } else {
-          Game.ui.spellBook[lastSpellSelectIndex].color = "gray";
-        }
-      }
-
-      if (lastSpellSelectType == "book" && type == "book") {
-        Game.ui.spellBook[lastSpellSelectIndex].color = "gray";
-
-        if (lastSpellSelectIndex != index) {
-          lastSpellSelectIndex = -1;
-          lastSpellSelectType = null;
-
-          return Game.ui.spellSelect(type, index);
-        }
-      }
-
-      if (lastSpellSelectType == "bar" && type == "bar") {
-
-        if (lastSpellSelectIndex == index) {
-          Game.hero.data.spellbar[index] = undefined;
-          Game.ui.initBottomBar();
-        } else {
-          var spellBarSelect1 = Game.hero.data.spellbar[lastSpellSelectIndex];
-          var spellBarSelect2 = Game.hero.data.spellbar[index];
-          var t = spellBarSelect1;
-          Game.hero.data.spellbar[lastSpellSelectIndex] = spellBarSelect2;
-          Game.hero.data.spellbar[index] = t;
-
-          Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-          Game.ui.initBottomBar();
-        }
-
-      }
-
-      lastSpellSelectIndex = -1;
-      lastSpellSelectType = null;
+    if (type == "book") {
+      spellId = Object.keys(Game.hero.data.spells)[index];
+      if (!spellId) return;
     }
-  };
+
+    if (type == "bar") {
+      spellId = Game.hero.data.spellbar[index];
+      if (!spellId) return;
+    }
+
+    // 分割，每行最多40个字符宽度
+    var text = Game.dialogue.textSplit(Game.hero.data.spells[spellId].data.description, 330);
+
+    if (Game.ui.spellText) {
+      Game.ui.spellWindow.removeChild(Game.ui.spellText);
+      Game.ui.spellText = null;
+    }
+
+    var spellText = new createjs.Text(text);
+    spellText.x = 40;
+    spellText.y = 330;
+    Game.ui.spellWindow.addChild(spellText);
+    Game.ui.spellText = spellText;
+
+    //.drawRect(0, 0, 350, 110);
+    //spellText.x = 35;
+    //spellText.y = 325;
+
+    Game.update();
+  }
+
+  // 在招式栏和招式书之间交换技能快捷方式
+  function SpellExchange (lastType, lastIndex, type, index) {
+    if (lastType == "book" && type == "bar") {
+      var spellBookSelect = Object.keys(Game.hero.data.spells)[lastIndex];
+      var spellBarSelect = Game.hero.data.spellbar[index];
+      if (spellBookSelect != spellBarSelect) {
+        Game.hero.data.spellbar[index] = spellBookSelect;
+        Game.io.updateHero({spellbar: Game.hero.data.spellbar});
+        Game.ui.initBottomBar();
+      }
+    }
+
+    if (lastType == "bar" && type == "bar") {
+
+      if (lastIndex == index) {
+        Game.hero.data.spellbar[index] = undefined;
+        Game.ui.initBottomBar();
+      } else {
+        var spellBarSelect1 = Game.hero.data.spellbar[lastIndex];
+        var spellBarSelect2 = Game.hero.data.spellbar[index];
+        var t = spellBarSelect1;
+        Game.hero.data.spellbar[lastIndex] = spellBarSelect2;
+        Game.hero.data.spellbar[index] = t;
+        Game.io.updateHero({spellbar: Game.hero.data.spellbar});
+        Game.ui.initBottomBar();
+      }
+
+    }
+  }
 
   Game.ui.openSpell = function () {
     var heroObj = Game.hero;
@@ -881,10 +801,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             return;
           var index = i * spellBookWidth + j;
           spellBook[index] = new BoxClass(60 + j * 60, 50 + i * 60);
-
-          spellBook[index].on("click", function () {
-            Game.ui.spellSelect("book", index);
-          });
           spellCount++;
         })(i, j);
       }
@@ -913,18 +829,94 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     spellBook.forEach(function (element) {
       spellWindow.addChild(element.box);
+      spellWindow.addChild(element.box.clone());
     });
 
     (function AddHeroSpellIcon () {
       var index = 0;
       for (var key in Game.hero.data.spells) {
-        (function (element) {
-          var t = element.icon.clone();
-          t.x = Game.ui.spellBook[index].x;
-          t.y = Game.ui.spellBook[index].y;
-          spellWindow.addChild(t);
-          index++;
-        })(Game.hero.data.spells[key]);
+        (function (element, index) {
+
+          var box = Game.ui.spellBook[index];
+          var t = new BitmapBoxClass(element.icon, box.x, box.y);
+          t.draw(spellWindow);
+
+          var X = t.x;
+          var Y = t.y;
+
+          t.on("click", function () {
+            SpellSelect("book", index);
+          });
+
+          t.on("mousedown", function (event) {
+            t.offset = {
+              x: t.x - event.stageX / Game.stage.scaleX,
+              y: t.y - event.stageY / Game.stage.scaleY
+            };
+          });
+
+          t.on("pressmove", function (event) {
+            t.x = event.stageX / Game.stage.scaleX + t.offset.x;
+            t.y = event.stageY / Game.stage.scaleY + t.offset.y;
+          });
+
+          t.on("pressup", function (event) {
+            var x = event.stageX / Game.stage.scaleX + t.offset.x;
+            var y = event.stageY / Game.stage.scaleY + t.offset.y;
+
+            var lastType = null;
+            var lastIndex = -1;
+
+            var minDistance = 9999;
+            var minType = null;
+            var minIndex = -1;
+
+            Game.ui.spellBar.forEach(function (element, index) {
+              if (element == box) {
+                lastType = "bar";
+                lastIndex = index;
+                return;
+              }
+
+              var d = 0;
+              d += Math.pow(element.x - t.x, 2);
+              d += Math.pow(element.y - t.y, 2);
+              d = Math.sqrt(d);
+              if (d < minDistance) {
+                minDistance = d;
+                minType = "bar";
+                minIndex = index;
+              }
+            });
+
+            Game.ui.spellBook.forEach(function (element, index) {
+              if (element == box) {
+                lastType = "book";
+                lastIndex = index;
+                return;
+              }
+
+              var d = 0;
+              d += Math.pow(element.x - t.x, 2);
+              d += Math.pow(element.y - t.y, 2);
+              d = Math.sqrt(d);
+              if (d < minDistance) {
+                minDistance = d;
+                minType = "book";
+                minIndex = index;
+              }
+            });
+
+            if (lastType && minType && minDistance < 30) {
+              SpellExchange(lastType, lastIndex, minType, minIndex);
+            }
+
+            t.x = X;
+            t.y = Y;
+          });
+
+        })(Game.hero.data.spells[key], index);
+        index++;
       }
     })();
 
@@ -1002,13 +994,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.graphics
     .beginStroke("black")
     .beginFill("grey")
-    .drawRoundRect(0, 0, 950, 450, 5);
+    .drawRoundRect(0, 0, 470, 450, 5);
     background.x = 5;
     background.y = 5;
     background.alpha = 0.6;
 
     var settingWindow = new createjs.Container();
-    settingWindow.regX = 480;
+    settingWindow.regX = 235;
     settingWindow.regY = 270;
 
     settingWindow.addChild(background);
@@ -1139,31 +1131,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.y = 465;
     background.alpha = 0.6;
 
+    var barMax = 110;
+
     var hpbarBox = new createjs.Shape();
     hpbarBox.graphics
     .beginStroke("black")
-    .drawRoundRect(0, 0, 110, 20, 3);
+    .drawRoundRect(0, 0, barMax, 20, 3);
     hpbarBox.x = 15;
     hpbarBox.y = 475;
 
     var hpbar = new createjs.Shape();
     hpbar.graphics
     .beginFill("green")
-    .drawRoundRect(0, 0, 100, 20, 3);
+    .drawRoundRect(0, 0, parseInt(Game.hero.currentHitpoint / Game.hero.data.hitpoint * barMax), 20, 3);
     hpbar.x = 15;
     hpbar.y = 475;
 
     var mpbarBox = new createjs.Shape();
     mpbarBox.graphics
     .beginStroke("black")
-    .drawRoundRect(0, 0, 110, 20, 3);
+    .drawRoundRect(0, 0, barMax, 20, 3);
     mpbarBox.x = 15;
     mpbarBox.y = 505;
 
     var mpbar = new createjs.Shape();
     mpbar.graphics
     .beginFill("blue")
-    .drawRoundRect(0, 0, 80, 20, 3);
+    .drawRoundRect(0, 0, parseInt(Game.hero.currentManapoint / Game.hero.data.manapoint * barMax), 20, 3);
     mpbar.x = 15;
     mpbar.y = 505;
 
@@ -1172,15 +1166,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     for (var i = 0; i < spellBar.length; i++) {
       (function (element, index, array) {
-        var spellIcon = spellBar[index] = new BoxClass(180 + index * 60, 500);
-
-        spellIcon.on("click", function () {
-          if (Game.ui.spellWindow) {
-            Game.ui.spellSelect("bar", index);
-          } else {
-            Game.ui.clickSpell(index);
-          }
-        });
+        spellBar[index] = new BoxClass(180 + index * 60, 500);
       })(spellBar[i], i, spellBar);
     }
 
@@ -1236,14 +1222,116 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.uiLayer.addChild(toolbar);
     Game.ui.toolbar = toolbar;
 
+    Game.ui.spellIcon = [];
+
     (function AddHeroSpellBarIcon () {
       Game.hero.data.spellbar.forEach(function (element, index) {
         if (!Game.hero.data.spells[element])
           return;
-        var t = Game.hero.data.spells[element].icon.clone();
-        t.x = Game.ui.spellBar[index].x;
-        t.y = Game.ui.spellBar[index].y;
-        Game.ui.toolbar.addChild(t);
+
+        var box = Game.ui.spellBar[index];
+        var t = new BitmapBoxClass(Game.hero.data.spells[element].icon, box.x, box.y);
+        t.draw(Game.ui.toolbar);
+
+        Game.ui.spellIcon[index] = t;
+
+        var X = t.x;
+        var Y = t.y;
+
+        t.on("click", function (event) {
+          event.stopImmediatePropagation();
+          if (Game.ui.spellWindow) {
+            SpellSelect("bar", index);
+          } else {
+            Game.ui.clickSpell(index);
+          }
+        });
+
+        t.on("mousedown", function (event) {
+          if (!Game.ui.spellBook) return;
+
+          t.offset = {
+            x: t.x - event.stageX / Game.stage.scaleX,
+            y: t.y - event.stageY / Game.stage.scaleY
+          };
+        });
+
+        t.on("pressmove", function (event) {
+          if (!Game.ui.spellBook) return;
+
+          t.x = event.stageX / Game.stage.scaleX + t.offset.x;
+          t.y = event.stageY / Game.stage.scaleY + t.offset.y;
+        });
+
+        t.on("pressup", function (event) {
+          if (!Game.ui.spellBook) return;
+
+          var x = event.stageX / Game.stage.scaleX + t.offset.x;
+          var y = event.stageY / Game.stage.scaleY + t.offset.y;
+
+          var lastType = null;
+          var lastIndex = -1;
+
+          var minDistance = 9999;
+          var minType = null;
+          var minIndex = -1;
+
+          Game.ui.spellBar.forEach(function (element, index) {
+            if (element == box) {
+              lastType = "bar";
+              lastIndex = index;
+              return;
+            }
+
+            var d = 0;
+            d += Math.pow(element.x - t.x, 2);
+            d += Math.pow(element.y - t.y, 2);
+            d = Math.sqrt(d);
+            if (d < minDistance) {
+              minDistance = d;
+              minType = "bar";
+              minIndex = index;
+            }
+          });
+
+          Game.ui.spellBook.forEach(function (element, index) {
+            if (element == box) {
+              lastType = "book";
+              lastIndex = index;
+              return;
+            }
+
+            var d = 0;
+            d += Math.pow(element.x - t.x, 2);
+            d += Math.pow(element.y - t.y, 2);
+            d = Math.sqrt(d);
+            if (d < minDistance) {
+              minDistance = d;
+              minType = "book";
+              minIndex = index;
+            }
+          });
+
+          if (lastType && minType) {
+            if (minDistance < 30) {
+              SpellExchange(lastType, lastIndex, minType, minIndex);
+            } else {
+              var d = 0;
+              d += Math.pow(X - t.x, 2);
+              d += Math.pow(Y - t.y, 2);
+              d = Math.sqrt(d);
+              if (d >= 30) {
+                Game.hero.data.spellbar[lastIndex] = null;
+                Game.io.updateHero({spellbar: Game.hero.data.spellbar});
+                Game.ui.initBottomBar();
+              }
+            }
+          }
+
+          t.x = X;
+          t.y = Y;
+        });
+
       });
     })();
 

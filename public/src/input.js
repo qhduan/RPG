@@ -77,6 +77,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   function HotKey (keyCode) {
+
+    if (Game.dialogue.talkBox && Game.dialogue.talkBox.visible)
+      return;
+
     if (keyCode == keyTable["m"]) { // map
       Game.ui.openMap();
     }
@@ -98,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.stage.on("stagemousedown", function (event) {
       pressed["mouse"] = true;
       //Game.hero.gotoXY(x, y);
-      //console.log(event.stageX / Game.stage.scaleX, event.stageY / Game.stage.scaleY);
+      //console.log();
     });
 
     Game.stage.on("stagemouseup", function (event) {
@@ -146,28 +150,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       else
         state = "walk";
 
-      var moved = false;
       // 计算八个方向角色的动画和面向
       if (Game.key.isPressed("up") && Game.key.isPressed("right")) {
-        moved = Game.hero.go(state, "upright", skew);
-        //moved = Game.hero.go(state + "right", skew);
+        Game.hero.go(state, "upright", skew);
       } else if (Game.key.isPressed("down") && Game.key.isPressed("right")) {
-        moved = Game.hero.go(state, "downright", skew);
-        //moved = Game.hero.go(state + "right", skew);
+        Game.hero.go(state, "downright", skew);
       } else if (Game.key.isPressed("down") && Game.key.isPressed("left")) {
-        moved = Game.hero.go(state, "downleft", skew);
-        //moved = Game.hero.go(state + "left", skew);
+        Game.hero.go(state, "downleft", skew);
       } else if (Game.key.isPressed("up") && Game.key.isPressed("left")) {
-        moved = Game.hero.go(state, "upleft", skew);
-        //moved = Game.hero.go(state + "left", skew);
+        Game.hero.go(state, "upleft", skew);
       } else if (Game.key.isPressed("left")) {
-        moved = Game.hero.go(state, "left", speed);
+        Game.hero.go(state, "left", speed);
       } else if (Game.key.isPressed("up")) {
-        moved = Game.hero.go(state, "up", speed);
+        Game.hero.go(state, "up", speed);
       } else if (Game.key.isPressed("right")) {
-        moved = Game.hero.go(state, "right", speed);
+        Game.hero.go(state, "right", speed);
       } else if (Game.key.isPressed("down")) {
-        moved = Game.hero.go(state, "down", speed);
+        Game.hero.go(state, "down", speed);
+      } else if (Game.key.isPressed("mouse")) {
+        if (Game.uiLayer.numChildren > 1) {
+          return;
+        }
+        var x = Game.stage.regX + Game.stage.mouseX / Game.stage.scaleX;
+        var y = Game.stage.regY + Game.stage.mouseY / Game.stage.scaleY;
+        if (Game.uiLayer.hitTest(x, y)) {
+          return;
+        }
+        Game.hero.goto(x, y, speed, true);
       } else {
         Game.hero.stop();
       }
@@ -215,6 +224,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       FindHint();
+
+
+
+
 
       if (Game.key.isPressed("1")) {
         Game.ui.clickSpell(0)

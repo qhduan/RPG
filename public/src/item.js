@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.bitmap = new createjs.Bitmap(image);
         this.bitmap.regX = image.width / 2;
         this.bitmap.regY = image.height / 2;
-        Game.items[this.data.id] = self;
+        Game.items[this.data.id] = this;
         Game.resources[this.data.id] = image;
 
         // 发送完成事件，第二个参数代表一次性事件
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var self = this;
 
       var itemObj = new ItemClass(this.data);
-      itemObj.oncomplete(callback);
+      itemObj.on("complete", callback);
     }
 
     draw (layer, x, y) {

@@ -3,6 +3,10 @@ html {
   overflow: auto;
 }
 
+html, body {
+  margin: 0;
+}
+
 .disabled-user-select {
   background-color: gray;
   -webkit-user-select: none; /* Chrome all / Safari all */
@@ -61,4 +65,16 @@ html {
   background-color: white;
   text-align: center;
   display: none;
+}
+
+#talkBox {
+  visibility: hidden;
+  z-index: 101;
+  position: fixed;
+}
+
+#talkInput {
+  width: 600px;
+  height: 40px;
+  font-size: 24px;
 }

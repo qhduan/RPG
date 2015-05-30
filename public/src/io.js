@@ -69,8 +69,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  Game.io.sendMessage = function (message) {
-    Game.io.socket.emit("message", message);
+  Game.io.talk = function (talk) {
+    Game.io.socket.emit("talk", talk);
   };
 
   Game.io.sync = function (type, data) {
@@ -100,8 +100,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         window.location.href = "/";
       });
 
-      socket.on("message", function (data) {
-        Game.ui.showMessage(data);
+      socket.on("talk", function (data) {
+        var id = data.id;
+        if (Game.area.actors[id]) {
+          Game.area.actors[id].popup(data.talk);
+        }
+        if (Game.area.heros[id]) {
+          Game.area.heros[id].popup(data.talk);
+        }
       });
 
       socket.on("damage", DamageHandle);
@@ -111,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 有角色（玩家，怪物，NPC）移动时的事件
       socket.on("move", function (data) {
         if (Game.area.heros[data.id]) {
-          Game.area.heros[data.id].gotoXY(
+          Game.area.heros[data.id].goto(
             data.data.x,
             data.data.y,
             data.data.speed,
@@ -158,7 +164,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             var heroObj = new Game.ActorClass(heroData);
             Game.area.heros[heroObj.id] = heroObj;
-            heroObj.oncomplete(function () {
+            heroObj.on("complete", function () {
               heroObj.draw(Game.heroLayer);
             });
           });

@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.width, this.height, 0, 0, minimapWidth, minimapHeight);
 
       var minimap = new Image();
-      minimap.onload = function () {
+      minimap.onload = () => {
         this.minimap = new createjs.Bitmap(minimap);
         this.minimap.regX = parseInt(minimap.width / 2);
         this.minimap.regY = parseInt(minimap.height / 2);
