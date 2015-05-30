@@ -62,16 +62,16 @@ var HERO_ANIMATIONS = {
 
 var fs = require("fs");
 
-var herodb = require("./db").hero;
+var HeroDB = require("./db").hero;
 
-var spell = require("./spell");
+var SpellModule = require("./spell");
 
-var item = require("./item");
+var ItemModule = require("./item");
 
 var HEROS = {};
 
 (function LoadHero () {
-  herodb.find({}, function (err, heros) {
+  HeroDB.find({}, function (err, heros) {
     heros.forEach(function (element) {
       var id = element.id;
       AddHero(element);
@@ -90,29 +90,29 @@ function AddHero (element) {
   HEROS[id].tilewidth = HEROS[id].custom.tilewidth;
   HEROS[id].tileheight = HEROS[id].custom.tileheight;
   // 读取角色技能
-  HEROS[id].spells = spell.get(HEROS[id].spells);
+  HEROS[id].spells = SpellModule.get(HEROS[id].spells);
   // 读取角色物品
   HEROS[id].items.forEach(function (element, index, array) {
     if (element)
-      array[index] = item.get(element)
+      array[index] = ItemModule.get(element)
   });
   // 读取角色装备（物品）
   if (HEROS[id].equipment.head)
-    HEROS[id].equipment.head = item.get(HEROS[id].equipment.head);
+    HEROS[id].equipment.head = ItemModule.get(HEROS[id].equipment.head);
   if (HEROS[id].equipment.neck)
-    HEROS[id].equipment.neck = item.get(HEROS[id].equipment.neck);
+    HEROS[id].equipment.neck = ItemModule.get(HEROS[id].equipment.neck);
   if (HEROS[id].equipment.body)
-    HEROS[id].equipment.body = item.get(HEROS[id].equipment.body);
+    HEROS[id].equipment.body = ItemModule.get(HEROS[id].equipment.body);
   if (HEROS[id].equipment.feet)
-    HEROS[id].equipment.feet = item.get(HEROS[id].equipment.feet);
+    HEROS[id].equipment.feet = ItemModule.get(HEROS[id].equipment.feet);
   if (HEROS[id].equipment.righthand)
-    HEROS[id].equipment.righthand = item.get(HEROS[id].equipment.righthand);
+    HEROS[id].equipment.righthand = ItemModule.get(HEROS[id].equipment.righthand);
   if (HEROS[id].equipment.lefthand)
-    HEROS[id].equipment.lefthand = item.get(HEROS[id].equipment.lefthand);
+    HEROS[id].equipment.lefthand = ItemModule.get(HEROS[id].equipment.lefthand);
   if (HEROS[id].equipment.leftring)
-    HEROS[id].equipment.leftring = item.get(HEROS[id].equipment.leftring);
+    HEROS[id].equipment.leftring = ItemModule.get(HEROS[id].equipment.leftring);
   if (HEROS[id].equipment.rightring)
-    HEROS[id].equipment.rightring = item.get(HEROS[id].equipment.rightring);
+    HEROS[id].equipment.rightring = ItemModule.get(HEROS[id].equipment.rightring);
 }
 
 function GetHero (id) {
@@ -134,11 +134,11 @@ function UpdateHero (id, object) {
   var obj = {
     "$set": object
   };
-  herodb.update({id: id}, obj, {}, function (err) {
+  HeroDB.update({id: id}, obj, {}, function (err) {
     if (err) {
       console.log("hero.UpdateHero ", err);
     }
-    herodb.findOne({id: id}, function (err, doc) {
+    HeroDB.findOne({id: id}, function (err, doc) {
       AddHero(doc);
     });
   });
@@ -152,3 +152,4 @@ exports.add = AddHero;
 exports.get = GetHero;
 exports.update = UpdateHero;
 exports.list = ListHero;
+exports.db = HeroDB;

@@ -16,6 +16,7 @@
     "attackdown": {
       "frames": [0],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": 10,
       "actor": "shootdown"
@@ -23,6 +24,7 @@
     "attackleft": {
       "frames": [1],
       "speed": 0.3,
+      "next": "",
       "x": -10,
       "y": 0,
       "actor": "shootleft"
@@ -30,6 +32,7 @@
     "attackright": {
       "frames": [2],
       "speed": 0.3,
+      "next": "",
       "x": 10,
       "y": 0,
       "actor": "shootright"
@@ -37,6 +40,7 @@
     "attackup": {
       "frames": [3],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": -10,
       "actor": "shootup"

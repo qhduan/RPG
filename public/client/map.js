@@ -17,168 +17,168 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) subClass.__proto__ = superClass; }
+
 (function () {
   "use strict";
 
+  Game.MapClass = (function (_Game$EventClass) {
+    function MapClass(mapData) {
+      var _this = this;
 
-  var MapClass = Game.MapClass = function (mapData) {
-    var self = this;
+      _classCallCheck(this, MapClass);
 
-    self.data = mapData;
-    self.id = self.data.id;
+      _get(Object.getPrototypeOf(MapClass.prototype), "constructor", this).call(this);
 
-    var images = [];
+      this.data = mapData;
+      this.id = this.data.id;
 
-    self.data.tilesets.forEach(function (element) {
-      images.push(element.image);
-    });
+      var images = [];
+      this.data.tilesets.forEach(function (element) {
+        images.push(element.image);
+      });
 
-    self.sheet = new createjs.SpriteSheet({
-      images: images,
-      frames: {
-        width: self.data.tilewidth,
-        height: self.data.tileheight
+      this.sheet = new createjs.SpriteSheet({
+        images: images,
+        frames: {
+          width: this.data.tilewidth,
+          height: this.data.tileheight
+        }
+      });
+
+      // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
+      this.blockedMap = [];
+      this.blockedMap.length = this.data.height;
+
+      for (var i = 0; i < this.blockedMap.length; i++) {
+        this.blockedMap[i] = [];
+        this.blockedMap[i].length = this.data.width;
       }
-    });
 
-    // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
-    self.blockedMap = [];
-    self.blockedMap.length = self.data.height;
+      // 保存这个地图的所有地图块
+      this.container = new createjs.Container();
 
-    for(var i = 0; i < self.blockedMap.length; i++) {
-      self.blockedMap[i] = [];
-      self.blockedMap[i].length = self.data.width;
-    }
+      this.data.layers.forEach(function (element, index, array) {
+        var layer = element;
 
-    // 保存这个地图的所有地图块
-    self.container = new createjs.Container();
+        if (layer.data) {
+          // 渲染普通层
+          var sprite = new createjs.Sprite(_this.sheet);
+          for (var y = 0; y < layer.height; y++) {
+            for (var x = 0; x < layer.width; x++) {
+              var position = x + y * layer.width;
+              var picture = layer.data[position] - 1;
+              if (picture >= 0) {
+                var spriteClone = sprite.clone();
+                spriteClone.x = x * _this.data.tilewidth;
+                spriteClone.y = y * _this.data.tileheight;
+                spriteClone.gotoAndStop(picture);
 
-    self.data.layers.forEach(function (element, index, array) {
-      var layer = element;
+                if (layer.properties && layer.properties.blocked) {
+                  _this.blockedMap[y][x] = spriteClone;
+                }
 
-      if (layer.data) { // 渲染普通层
-        var sprite = new createjs.Sprite(self.sheet);
-        for (var y = 0; y < layer.height; y++) {
-          for (var x = 0; x < layer.width; x++) {
-            var position = x + y * layer.width;
-            var picture = layer.data[position] - 1;
-            if (picture >= 0) {
-              var spriteClone = sprite.clone();
-              spriteClone.x = x * self.data.tilewidth;
-              spriteClone.y = y * self.data.tileheight;
-              spriteClone.gotoAndStop(picture);
-
-              if (layer.properties && layer.properties.blocked) {
-                self.blockedMap[y][x] = spriteClone;
+                _this.container.addChild(spriteClone);
               }
-
-              self.container.addChild(spriteClone);
             }
           }
+        } else {}
+      });
+
+      this.width = this.data.width * this.data.tilewidth;
+      this.height = this.data.height * this.data.tileheight;
+
+      // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
+      // 这个cache会让createjs创建一个看不到的canvas
+      this.container.cache(0, 0, this.width, this.height);
+
+      // 开始计算迷你地图
+      var ratio = this.width / this.height;
+      var maxMinimapWidth = 940;
+      var maxMinimapHeight = 440;
+      var minimapWidth = 940;
+      var minimapHeight = 940 / ratio;
+      if (minimapHeight > maxMinimapHeight) {
+        minimapHeight = 440;
+        minimapWidth = 440 * ratio;
+      }
+      var minimapCanvas = document.createElement("canvas");
+      minimapCanvas.width = minimapWidth;
+      minimapCanvas.height = minimapHeight;
+      var minimapContext = minimapCanvas.getContext("2d");
+      minimapContext.drawImage(this.container.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimapWidth, minimapHeight);
+
+      var minimap = new Image();
+      minimap.onload = function () {
+        this.minimap = new createjs.Bitmap(minimap);
+        this.minimap.regX = parseInt(minimap.width / 2);
+        this.minimap.regY = parseInt(minimap.height / 2);
+      };
+      minimap.src = minimapCanvas.toDataURL();
+
+      // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
+      var rgb = { r: 0, g: 0, b: 0 };
+      var minimapData = minimapContext.getImageData(0, 0, minimap.width, minimap.height).data;
+
+      for (var i = 0; i < minimapData.length; i += 4) {
+        rgb.r += minimapData[i];
+        rgb.g += minimapData[i + 1];
+        rgb.b += minimapData[i + 2];
+      }
+
+      // 把颜色取平均值然后转换为16进制，最后到css格式
+      rgb.r = Math.floor(rgb.r / (minimapData.length / 4)).toString(16);
+      rgb.g = Math.floor(rgb.g / (minimapData.length / 4)).toString(16);
+      rgb.b = Math.floor(rgb.b / (minimapData.length / 4)).toString(16);
+      this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
+
+      // 发送完成事件，第二个参数代表一次性事件
+      this.emit("complete", true);
+    }
+
+    _inherits(MapClass, _Game$EventClass);
+
+    _createClass(MapClass, [{
+      key: "tile",
+
+      // 返回某个坐标点所在的地格
+      value: function tile(x, y) {
+        x = x / this.data.tilewidth;
+        y = y / this.data.tileheight;
+        return {
+          x: Math.floor(x),
+          y: Math.floor(y)
+        };
+      }
+    }, {
+      key: "draw",
+
+      // 绘制图片，会改变Game.currentArea
+      value: function draw(layer) {
+        layer.addChild(this.container);
+
+        if (this.averageColor) {
+          document.body.style.backgroundColor = this.averageColor;
         }
-      } else { // 渲染对象层
 
+        if (this.data.bgm) {}
       }
+    }]);
 
-    });
-
-
-    self.width = self.data.width * self.data.tilewidth;
-    self.height = self.data.height * self.data.tileheight;
-
-    // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
-    // 这个cache会让createjs创建一个看不到的canvas
-    self.container.cache(0, 0, self.width, self.height);
-
-    var ratio = self.width / self.height;
-    var maxMinimapWidth = 740;
-    var maxMinimapHeight = 330;
-    var minimapWidth = 740;
-    var minimapHeight = 740 / ratio;
-    if (minimapHeight > maxMinimapHeight) {
-      minimapHeight = 330;
-      minimapWidth = 330 * ratio;
-    }
-    var minimapCanvas = document.createElement("canvas");
-    minimapCanvas.width = minimapWidth;
-    minimapCanvas.height = minimapHeight;
-    var minimapContext = minimapCanvas.getContext("2d");
-    minimapContext.drawImage(self.container.cacheCanvas, 0, 0,
-      self.width, self.height, 0, 0, minimapWidth, minimapHeight);
-
-    var minimap = new Image();
-    minimap.onload = function () {
-      self.minimap = new createjs.Bitmap(minimap);
-      self.minimap.regX = parseInt(minimap.width / 2);
-      self.minimap.regY = parseInt(minimap.height / 2);
-    };
-    minimap.src = minimapCanvas.toDataURL();
-
-    Game.areas[self.id] = self;
-
-    // 完成事件
-    self.complete = true;
-    if (self.listeners && self.listeners["complete"]) {
-      for (var key in self.listeners["complete"]) {
-        self.listeners["complete"][key](self);
-      }
-    }
-
-  };
-
-  MapClass.prototype.on = function (event, listener) {
-    var self = this;
-
-    if (!self.listeners)
-      self.listeners = {};
-
-    if (!self.listeners[event])
-      self.listeners[event] = {};
-
-    var id = Math.random().toString(16).substr(2);
-    self.listeners[event][id] = listener;
-  };
-
-  MapClass.prototype.off = function (event, id) {
-    var self = this;
-
-    if (self.listeners[event] && self.listeners[event][id]) {
-      delete self.listeners[event][id];
-    }
-  };
-
-  MapClass.prototype.oncomplete = function (callback) {
-    var self = this;
-
-    if (self.complete) {
-      callback(self);
-    } else {
-      self.on("complete", callback);
-    }
-  };
-
-  // 返回某个坐标点所在的地格
-  MapClass.prototype.tile = function (x, y) {
-    var self = this;
-    x = x / self.data.tilewidth;
-    y = y / self.data.tileheight;
-    return {
-      x: Math.floor(x),
-      y: Math.floor(y)
-    };
-  }
-
-  // 绘制图片，会改变Game.currentArea
-  MapClass.prototype.draw = function (layer) {
-    var self = this;
-
-    layer.addChild(self.container);
-
-    if (self.data.bgm) {
-      // set loop = -1, 无限循环
-      //var bgm = createjs.Sound.play(self.data.bgm, undefined, undefined, undefined, -1);
-      //bgm.setVolume(0.2);
-    }
-  };
-
+    return MapClass;
+  })(Game.EventClass);
 })();
+// 渲染对象层
+
+// set loop = -1, 无限循环
+//var bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
+//bgm.setVolume(0.2);
+//# sourceMappingURL=map.js.map

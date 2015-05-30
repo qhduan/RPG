@@ -25,38 +25,35 @@ var http = require("http");
 var express = require("express");
 var bodyParser = require("body-parser");
 var compression = require("compression");
-var socketIO = require("socket.io");
 
 var app = express();
-var server = http.Server(app)
-var io = socketIO(server);
 
 app.use(bodyParser.json({limit: "1mb"}));
 app.use(bodyParser.urlencoded({extended: true, limit: "1mb"}));
 app.use(compression());
 
+var server = http.Server(app);
+
 exports.init = function () {
 
-  require("./socket").init(io);
+  require("./socket").init(server);
 
-  //app.post("/hero/generate", require("./hero").generate);
-  //app.post("/hero/create", require("./hero").create);
-
-  //app.post("/area/get", require("./area").get);
-  //app.post("/session/get", require("./session").getHandle);
-  //app.post("/session/login", require("./session").loginHandle);
-
-  app.get("/create", function (req, res) {
-    res.sendFile(global.PUBLIC_DIR + "/create.html");
-  });
-
-  app.get("/play", function (req, res) {
-    res.sendFile(global.PUBLIC_DIR + "/play.html");
-  });
-
+  require("./communication");
 
   app.use(express.static(global.PUBLIC_DIR));
   app.use(express.static(global.DATA_DIR));
+
+  app.get("/image.json", function (req, res) {
+    var imagedir = fs.readdirSync(global.DATA_DIR + "/image");
+    var files = {};
+    imagedir.forEach(function (element) {
+      if (element.match(/\.png$/)) {
+        var imagefile = "data:image/png;base64," + fs.readFileSync(global.DATA_DIR + "/image/" + element).toString("base64");
+        files["/image/" + element] = imagefile;
+      }
+    });
+    res.json(files);
+  });
 
   var PORT = 9000;
 

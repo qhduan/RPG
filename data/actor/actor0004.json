@@ -1,11 +1,15 @@
 {
   "id": "actor0004",
-  "name": "黑猫",
-  "description": "很可爱的黑猫哦",
+  "name": "蜜蜂",
+  "description": "如果群体出动的话，是很危险的存在",
+  "type": "monster",
+  "drop": {
+    "gold": "0-1"
+  },
   "image": "resource\/actor0004.png",
   "hitpoint": 100,
   "manapoint": 100,
-  "tileheight": 48,
+  "tileheight": 32,
   "tilewidth": 32,
   "spells": [],
   "animations": {

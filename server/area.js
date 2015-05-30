@@ -22,28 +22,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var fs = require("fs");
 
-var map = require("./map");
-var actor = require("./actor");
-var item = require("./item");
-var hero = require("./hero");
+var MapModule = require("./map");
+var ActorModule = require("./actor");
+var ItemModule = require("./item");
+var HeroModule = require("./hero");
 
 var AREAS = {};
 
 (function LoadArea () {
-  map.list().forEach(function (element) {
+  MapModule.list().forEach(function (element) {
     var id = element;
 
-    var mapData = map.get(id);
+    var mapData = MapModule.get(id);
 
     var result = {
       map: mapData,
+      drops: {},
       heros: {}
     };
 
     // 获取mapData中的actors
     var actors = {};
     mapData.actors.forEach(function (element) {
-      var actorData = actor.get(element.id);
+      var actorData = ActorModule.get(element.id);
       for (var key in element) {
         actorData[key] = element[key];
       }
@@ -54,7 +55,7 @@ var AREAS = {};
     // 获取mapData中的items
     var items = {};
     mapData.items.forEach(function (element) {
-      var itemData = item.get(element);
+      var itemData = ItemModule.get(element);
       items[itemData.id] = itemData;
     });
     result.items = items;
@@ -104,7 +105,7 @@ var AREAS = {};
 
 
 function AddHero (areaId, heroId) {
-  AREAS[areaId].heros[heroId] = hero.get(heroId);
+  AREAS[areaId].heros[heroId] = HeroModule.get(heroId);
 }
 
 function RemoveHero (areaId, heroId) {

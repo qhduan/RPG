@@ -19,10 +19,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
 
-var game = require("./server/game")
-
 global.PUBLIC_DIR = __dirname + "/public";
 global.DATA_DIR = __dirname + "/data";
 global.DB_DIR = __dirname + "/db";
 
-game.init();
+
+var grunt = require("grunt");
+
+grunt.tasks(["babel"], {}, function () {
+  grunt.tasks(["watch"]);
+  console.log("\nGrunt Done, Game Starting...\n");
+
+  var game = require("./server/game");
+  game.init();
+});

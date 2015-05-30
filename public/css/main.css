@@ -1,0 +1,64 @@
+
+html {
+  overflow: auto;
+}
+
+.disabled-user-select {
+  background-color: gray;
+  -webkit-user-select: none; /* Chrome all / Safari all */
+  -moz-user-select: none; /* Firefox all */
+  -ms-user-select: none; /* IE 10+ */
+  -o-user-select: none;
+  user-select: none;
+}
+
+.game-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+#ProgressBar {
+  opacity: 0;
+  z-index: -999;
+  position: fixed;
+  top: 45%;
+  left: 25%;
+  height: 25px;
+  width: 50%;
+  background-color: #f7f7f7;
+  padding: 5px;
+  margin: 50px 0;
+  border-radius: 4px;
+  border: 1px solid rgba(39, 41, 43, 0.15);
+}
+
+#ProgressBarInner {
+  display: inline-block;
+  height: 100%;
+  border-radius: 4px;
+  background-color: #888888;
+  text-align: center;
+  color: green;
+  font-size: 20px;
+  font-weight: bold;
+}
+
+.login-box {
+  width: 400px;
+  height: 400px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: white;
+  text-align: center;
+}
+
+.register-box {
+  width: 400px;
+  height: 400px;
+  margin: auto;
+  margin-top: 100px;
+  background-color: white;
+  text-align: center;
+  display: none;
+}

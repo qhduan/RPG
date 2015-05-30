@@ -2,6 +2,11 @@
   "id": "actor0002",
   "name": "黑猫",
   "description": "很可爱的黑猫哦",
+  "type": "npc",
+  "use": {
+    "type": "talk",
+    "content": "我是黑猫，我会说人话，哈哈哈哈哈哈哈哈哈哈"
+  },
   "image": "resource\/actor0002.png",
   "hitpoint": 100,
   "manapoint": 100,

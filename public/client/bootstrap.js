@@ -17,17 +17,17 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+"use strict";
+
 (function () {
   "use strict";
-
-  var session = null;
 
   Game.io.init(function () {
     console.log("Socket Connected");
   });
 
   // 登录模块
-  window.Login = function Login (event) {
+  window.Login = function Login(event) {
     var name = document.getElementById("name").value;
     var password = document.getElementById("password").value;
 
@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // 用socket登录
-    Game.io.get("/login", {name: name, password: password}, function (data) {
+    Game.io.get("/login", { name: name, password: password }, function (data) {
       if (data.success) {
         document.getElementById("loginBox").style.display = "none";
         // 登录成功后
@@ -51,24 +51,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.area = area;
 
             area.map.draw(Game.mapLayer);
+            console.log(11);
 
             for (var key in area.actors) {
               area.actors[key].draw(Game.actorLayer);
             }
 
             for (var key in area.heros) {
-              if (key == data.success.heroId)
-                area.heros[key].draw(
-                  Game.playerLayer,
-                  area.map.data.entry.x,
-                  area.map.data.entry.y
-                );
-              else
-                area.heros[key].draw(
-                  Game.heroLayer,
-                  area.map.data.entry.x,
-                  area.map.data.entry.y
-                );
+              if (key == data.success.heroId) area.heros[key].draw(Game.playerLayer);else area.heros[key].draw(Game.heroLayer);
             }
 
             for (var key in area.heros) {
@@ -86,11 +76,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
 
         Game.init();
-
       } else {
         alert(data.error || "Unknown Error");
       }
     });
   };
-
 })();
+//# sourceMappingURL=bootstrap.js.map

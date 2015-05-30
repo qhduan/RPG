@@ -17,12 +17,14 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+"use strict";
+
 (function () {
   "use strict";
 
   // 合并图片
   // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
-  function CombineHeroImage (images, address, width, height, callback) {
+  function CombineHeroImage(images, address, width, height, callback) {
     var canvas = document.createElement("canvas");
     canvas.height = height;
     canvas.width = width;
@@ -31,10 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     for (var i = 0; i < images.length; i++) {
       var img = images[i];
-      context.drawImage(
-        img, 0, 0, img.width, img.height,
-        0, 0, width, height
-      );
+      context.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
     }
 
     var img = new Image();
@@ -55,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      function ImageComplete () {
+      function ImageComplete() {
         var images = [];
 
         if (ret.body) images.push(Game.resources[ret.body]);
@@ -84,12 +83,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           ImageComplete();
         });
         need.forEach(function (element) {
-          queue.loadFile({src: element});
+          queue.loadFile({ src: element });
         });
       } else {
         ImageComplete();
       }
     });
   };
-
 })();
+//# sourceMappingURL=hero.js.map

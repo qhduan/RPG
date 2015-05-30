@@ -10,29 +10,25 @@
       "id": "actor0001",
       "x": 600,
       "y": 650,
-      "mode": "randomwalk",
-      "type": "monster"
+      "mode": "randomwalk"
     },
     {
       "id": "actor0002",
       "x": 600,
       "y": 750,
-      "mode": "randomwalk",
-      "type": "monster"
+      "mode": "randomwalk"
     },
     {
       "id": "actor0003",
       "x": 500,
       "y": 750,
-      "mode": "",
-      "type": "monster"
+      "mode": ""
     },
     {
       "id": "actor0004",
       "x": 400,
       "y": 750,
-      "mode": "",
-      "type": "monster"
+      "mode": ""
     }
   ],
   "items": [

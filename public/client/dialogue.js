@@ -17,6 +17,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+"use strict";
+
 (function () {
   "use strict";
 
@@ -30,9 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var breakPoint = 0;
     for (var i = 0; i < text.length; i++) {
       if (text.charCodeAt(i) > 128) // 大于128，则不是ascii字符，假定为是中文
-        realLength += 2;
-      else
-        realLength += 1;
+        realLength += 2;else realLength += 1;
       if (realLength > lineMax) {
         realLength = 0;
         result.push(text.substring(breakPoint, i));
@@ -44,10 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     return result.join("\n\n");
-  }
-
-  var DialogueClass = Game.DialogueClass = function (text, color, bgColor) {
-  }
-
-
+  };
 })();
+//# sourceMappingURL=dialogue.js.map

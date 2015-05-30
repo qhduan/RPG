@@ -8,7 +8,7 @@
   "distance": 200,
   "flyspeed": 6,
   "cooldown": 500,
-  "type": "normal",
+  "type": "magic",
   "attack": 20,
   "tileheight": 64,
   "tilewidth": 64,
@@ -16,6 +16,7 @@
     "attackdown": {
       "frames": [0],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": 10,
       "actor": "spellcastdown"
@@ -23,6 +24,7 @@
     "attackleft": {
       "frames": [1],
       "speed": 0.3,
+      "next": "",
       "x": -10,
       "y": 0,
       "actor": "spellcastleft"
@@ -30,6 +32,7 @@
     "attackright": {
       "frames": [2],
       "speed": 0.3,
+      "next": "",
       "x": 10,
       "y": 0,
       "actor": "spellcastright"
@@ -37,9 +40,15 @@
     "attackup": {
       "frames": [3],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": -10,
       "actor": "spellcastup"
+    },
+    "hitted": {
+      "frames": [4, 5, 6],
+      "speed": 0.3,
+      "next": ""
     }
   }
 }

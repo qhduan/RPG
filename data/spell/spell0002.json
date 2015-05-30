@@ -16,6 +16,7 @@
     "attackdown": {
       "frames": [0, 1, 2],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": 30,
       "actor": "thrustdown"
@@ -23,6 +24,7 @@
     "attackleft": {
       "frames": [3, 4, 5],
       "speed": 0.3,
+      "next": "",
       "x": -30,
       "y": 0,
       "actor": "thrustleft"
@@ -30,6 +32,7 @@
     "attackright": {
       "frames": [6, 7, 8],
       "speed": 0.3,
+      "next": "",
       "x": 30,
       "y": 0,
       "actor": "thrustright"
@@ -37,6 +40,7 @@
     "attackup": {
       "frames": [9, 10, 11],
       "speed": 0.3,
+      "next": "",
       "x": 0,
       "y": -30,
       "actor": "thrustup"

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var fs = require("fs");
 
-var spell = require("./spell");
+var SpellModule = require("./spell");
 
 var ACTORS = {};
 
@@ -43,7 +43,7 @@ var ACTORS = {};
     actorData.image = "/actor/" + actorData.image;
 
     // 读取角色技能
-    actorData.spells = spell.get(actorData.spells);
+    actorData.spells = SpellModule.get(actorData.spells);
 
     ACTORS[actorData.id] = actorData;
   });
