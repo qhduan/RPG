@@ -21,20 +21,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   class BoxClass {
-    constructor (x, y) {
+    constructor (x, y, width, height) {
       var box = new createjs.Shape();
       this.box = box;
+      this.defaultColor = "gray";
+
+      if (typeof width == "undefined")
+        width = 50;
+      if (typeof height == "undefined")
+        height = 50;
+
+      this.width = width;
+      this.height = height;
 
       box.graphics
-      .beginFill("gray")
-      .drawRect(0, 0, 50, 50);
-      box.regX = 25;
-      box.regY = 25;
+      .beginFill(this.defaultColor)
+      .drawRect(0, 0, width, height);
+      box.regX = Math.floor(width / 2);
+      box.regY = Math.floor(height / 2);
       box.x = x;
       box.y = y;
     }
 
-    draw (container) {
+    drawOn (container) {
       container.addChild(this.box);
       Game.update();
     }
@@ -57,12 +66,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.update();
     }
 
+    get color () {
+      return this.defaultColor;
+    }
+
     set color (v) {
+      this.defaultColor = v;
       this.box.graphics
       .clear()
       .beginFill(v)
       .drawRect(0, 0, 50, 50);
       Game.update();
+    }
+
+    distance (x, y) {
+      var d = 0;
+      d += Math.pow(this.box.x - x, 2);
+      d += Math.pow(this.box.y - y, 2);
+      return Math.sqrt(d);
     }
 
     on () {
@@ -74,25 +95,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-  class BitmapBoxClass {
+  class BoxBitmapClass extends BoxClass {
     constructor (bitmap, x, y) {
-      this.bitmap = bitmap.clone();
+      super(x, y);
+
+      if (bitmap instanceof createjs.Bitmap) {
+        this.bitmap = bitmap.clone();
+      } else if (bitmap instanceof Image) {
+        this.bitmap = new createjs.Bitmap(bitmap);
+        this.bitmap.regX = Math.floor(this.bitmap.image.width/2);
+        this.bitmap.regY = Math.floor(this.bitmap.image.height/2);
+      } else if (typeof bitmap == "string" && Game.resources.hasOwnProperty(bitmap)) {
+        this.bitmap = new createjs.Bitmap(Game.resources[bitmap]);
+        this.bitmap.regX = Math.floor(this.bitmap.image.width/2);
+        this.bitmap.regY = Math.floor(this.bitmap.image.height/2);
+      } else {
+        throw new TypeError("BoxBitmapClass Invalid Arguments");
+      }
+
       this.bitmap.x = x;
       this.bitmap.y = y;
-
-      var box = new createjs.Shape();
-      this.box = box;
-
-      box.graphics
-      .beginFill("gray")
-      .drawRect(0, 0, 50, 50);
-      box.regX = 25;
-      box.regY = 25;
-      box.x = x;
-      box.y = y;
     }
 
-    draw (container) {
+    drawOn (container) {
       container.addChild(this.box);
       container.addChild(this.bitmap);
       Game.update();
@@ -117,122 +142,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.bitmap.y = v;
       Game.update();
     }
+  }
 
-    set color (v) {
-      this.box.graphics
-      .clear()
-      .beginFill(v)
-      .drawRect(0, 0, 50, 50);
-      Game.update();
-    }
-
-    on () {
-      this.box.on.apply(this.box, arguments);
-    }
-
-    off () {
-      this.box.off.apply(this.box, arguments);
+  class BoxBitmapButtonClass extends BoxBitmapClass {
+    constructor (bitmap, x, y) {
+      super(bitmap, x, y);
+      this.box.shadow = new createjs.Shadow("black", 1, 1, 1);
     }
   }
 
-
-  class IconClass {
-    constructor (url, x, y) {
-      var icon = new createjs.Bitmap(Game.resources[url]);
-      this.icon = icon;
-
-      icon.regX = icon.image.width / 2;
-      icon.regY = icon.image.height / 2;
-      icon.x = x;
-      icon.y = y;
-    }
-
-    draw (container) {
-      container.addChild(this.icon);
-      Game.update();
-    }
-
-    get x () {
-      return this.icon.x;
-    }
-
-    set x (v) {
-      this.icon.x = v;
-      Game.update();
-    }
-
-    get y () {
-      return this.icon.y;
-    }
-
-    set y (v) {
-      this.icon.y = v;
-      Game.update();
-    }
-
-    on (event, callback) {
-      this.box.on.apply(this.icon, arguments);
-    }
-
-    off () {
-      this.box.off.apply(this.icon, arguments);
-    }
-  }
-
-
-  class ButtonClass {
+  class BoxButtonClass extends BoxClass {
     constructor (x, y) {
-      var button = new createjs.Shape();
-      this.button = button;
+      super(x, y);
+      this.box.shadow = new createjs.Shadow("black", 1, 1, 1);
+    }
+  }
 
-      button.graphics
-      .clear()
-      .beginFill("gray")
-      .drawRect(0, 0, 50, 50);
-      button.regX = 25;
-      button.regY = 25;
-      button.x = x;
-      button.y = y;
-      button.shadow = new createjs.Shadow("black", 2, 2, 2);
+  class BoxTextButtonClass extends BoxClass {
+    constructor (text, x, y, width, height) {
+      super(x, y, width, height);
+      this.box.shadow = new createjs.Shadow("black", 1, 1, 1);
+      var text = new createjs.Text(text, "25px Arial", "white");
+      text.regX = Math.floor(text.getMeasuredWidth() / 2);
+      text.regY = Math.floor(text.getMeasuredHeight() / 2);
+      text.x = x;
+      text.y = y;
+      this.text = text;
     }
 
-    draw (container) {
-      container.addChild(this.button);
-      Game.update();
+    drawOn (container) {
+      container.addChild(this.box);
+      container.addChild(this.text);
+      Game.update;
     }
 
     get x () {
-      return this.button.x;
+      return this.box.x;
     }
 
     set x (v) {
-      this.button.x = v;
+      this.text.x = v;
+      this.box.x = v;
       Game.update();
     }
 
     get y () {
-      return this.button.y;
+      return this.box.y;
     }
 
     set y (v) {
-      this.button.y = v;
+      this.text.y = v;
+      this.box.y = v;
       Game.update();
-    }
-
-    set color (v) {
-      this.button.graphics
-      .clear()
-      .beginFill(v)
-      .drawRect(0, 0, 50, 50);
-      Game.update();
-    }
-
-    on () {
-      this.button.on.apply(this.button, arguments);
-    }
-
-    off () {
-      this.button.off.apply(this.button, arguments);
     }
   }
 
@@ -256,11 +217,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 
-  Game.ui = {};
 
-  Game.ui.showMessage = function (data) {
-    console.log("message", data);
-  };
+  Game.ui = {};
 
   Game.ui.clickSpell = function (num) {
     if (Game.hero && Game.hero.fire) {
@@ -470,11 +428,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var armorBoxHeight = 2;
     armorBox.length = armorBoxWidth * armorBoxHeight;
 
+    var armorImageList = [
+      "/image/head.png",
+      "/image/neck.png",
+      "/image/body.png",
+      "/image/feet.png",
+      "/image/righthand.png",
+      "/image/lefthand.png",
+      "/image/ring.png",
+      "/image/ring.png"
+    ];
+
     for (var i = 0; i < armorBoxHeight; i++) {
       for (var j = 0; j < armorBoxWidth; j++) {
         (function (i, j) {
           var index = i * armorBoxWidth + j;
-          armorBox[index] = new BoxClass(540 + j * 60, 50 + i * 60);
+          armorBox[index] = new BoxBitmapClass(armorImageList[index], 540 + j * 60, 50 + i * 60);
         })(i, j);
       }
     }
@@ -497,14 +466,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Game.ui.itemBox = itemBox;
 
-    var itemUseButton = new ButtonClass(900, 170);
-    var itemDropButton = new ButtonClass(900, 230);
-    var itemPrevButton = new ButtonClass(900, 290);
-    var itemNextButton = new ButtonClass(900, 350);
-    var useIcon = new IconClass("/image/use.png", itemUseButton.x, itemUseButton.y);
-    var dropIcon = new IconClass("/image/drop.png", itemDropButton.x, itemDropButton.y);
-    var prevIcon = new IconClass("/image/up.png", itemPrevButton.x, itemPrevButton.y);
-    var nextIcon = new IconClass("/image/down.png", itemNextButton.x, itemNextButton.y);
+    var itemUseButton = new BoxBitmapButtonClass("/image/use.png", 900, 170);
+    var itemDropButton = new BoxBitmapButtonClass("/image/drop.png", 900, 230);
+    var itemPrevButton = new BoxBitmapButtonClass("/image/up.png", 900, 290);
+    var itemNextButton = new BoxBitmapButtonClass("/image/down.png", 900, 350);
 
     var itemGoldBox = new createjs.Text("10000000G");
     itemGoldBox.color = "gold";
@@ -520,14 +485,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 装备栏的8个空
 
-    var headIcon = new IconClass("/image/head.png", armorBox[0].x, armorBox[0].y);
-    var neckIcon = new IconClass("/image/neck.png", armorBox[1].x, armorBox[1].y);
-    var bodyIcon = new IconClass("/image/body.png", armorBox[2].x, armorBox[2].y);
-    var feetIcon = new IconClass("/image/feet.png", armorBox[3].x, armorBox[3].y);
-    var righthandIcon = new IconClass("/image/righthand.png", armorBox[4].x, armorBox[4].y);
-    var lefthandIcon = new IconClass("/image/lefthand.png", armorBox[5].x, armorBox[5].y);
-    var leftringIcon = new IconClass("/image/ring.png", armorBox[6].x, armorBox[6].y);
-    var rightringIcon = new IconClass("/image/ring.png", armorBox[7].x, armorBox[7].y);
+    var headIcon = new BoxBitmapClass("/image/head.png", armorBox[0].x, armorBox[0].y);
+    var neckIcon = new BoxBitmapClass("/image/neck.png", armorBox[1].x, armorBox[1].y);
+    var bodyIcon = new BoxBitmapClass("/image/body.png", armorBox[2].x, armorBox[2].y);
+    var feetIcon = new BoxBitmapClass("/image/feet.png", armorBox[3].x, armorBox[3].y);
+    var righthandIcon = new BoxBitmapClass("/image/righthand.png", armorBox[4].x, armorBox[4].y);
+    var lefthandIcon = new BoxBitmapClass("/image/lefthand.png", armorBox[5].x, armorBox[5].y);
+    var leftringIcon = new BoxBitmapClass("/image/ring.png", armorBox[6].x, armorBox[6].y);
+    var rightringIcon = new BoxBitmapClass("/image/ring.png", armorBox[7].x, armorBox[7].y);
 
     var itemWindow = new createjs.Container();
     itemWindow.regX = 480;
@@ -537,38 +502,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     itemWindow.addChild(itemGoldBox);
     itemWindow.addChild(itemText);
 
-    itemWindow.addChild(itemUseButton.button);
-    itemWindow.addChild(itemDropButton.button);
-    itemWindow.addChild(itemPrevButton.button);
-    itemWindow.addChild(itemNextButton.button);
-
-    itemWindow.addChild(useIcon.icon);
-    itemWindow.addChild(dropIcon.icon);
-    itemWindow.addChild(prevIcon.icon);
-    itemWindow.addChild(nextIcon.icon);
+    itemUseButton.drawOn(itemWindow);
+    itemDropButton.drawOn(itemWindow);
+    itemPrevButton.drawOn(itemWindow);
+    itemNextButton.drawOn(itemWindow);
 
     armorBox.forEach(function (element) {
-     itemWindow.addChild(element.box);
-     itemWindow.addChild(element.box.clone());
-    });
-
-    itemBox.forEach(function (element) {
-      itemWindow.addChild(element.box);
+      element.drawOn(itemWindow);
       itemWindow.addChild(element.box.clone());
     });
 
-    itemWindow.addChild(headIcon.icon);
-    itemWindow.addChild(neckIcon.icon);
-    itemWindow.addChild(bodyIcon.icon);
-    itemWindow.addChild(feetIcon.icon);
-    itemWindow.addChild(righthandIcon.icon);
-    itemWindow.addChild(lefthandIcon.icon);
-    itemWindow.addChild(leftringIcon.icon);
-    itemWindow.addChild(rightringIcon.icon);
+    itemBox.forEach(function (element) {
+      element.drawOn(itemWindow);
+      itemWindow.addChild(element.box.clone());
+    });
+
+    headIcon.drawOn(itemWindow);
+    neckIcon.drawOn(itemWindow);
+    bodyIcon.drawOn(itemWindow);
+    feetIcon.drawOn(itemWindow);
+    righthandIcon.drawOn(itemWindow);
+    lefthandIcon.drawOn(itemWindow);
+    leftringIcon.drawOn(itemWindow);
+    rightringIcon.drawOn(itemWindow);
 
     function CopyIcon (item, box, type, index) {
-      var t = new BitmapBoxClass(item.bitmap, box.x, box.y);
-      t.draw(itemWindow);
+      var t = new BoxBitmapClass(item.bitmap, box.x, box.y);
+      t.drawOn(itemWindow);
 
       var X = t.x;
       var Y = t.y;
@@ -605,13 +565,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             lastType = "item";
             lastIndex = index;
             return;
-          }
-          var d = 0;
-          d += Math.pow(element.x - t.x, 2);
-          d += Math.pow(element.y - t.y, 2);
-          d = Math.sqrt(d);
-          if (d < minDistance) {
-            minDistance = d;
+          } else if (t.distance(element.x, element.y) < minDistance) {
+            minDistance = t.distance(element.x, element.y);
             minType = "item";
             minIndex = index;
           }
@@ -622,13 +577,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             lastType = "equipment";
             lastIndex = index;
             return;
-          }
-          var d = 0;
-          d += Math.pow(element.x - t.x, 2);
-          d += Math.pow(element.y - t.y, 2);
-          d = Math.sqrt(d);
-          if (d < minDistance) {
-            minDistance = d;
+          } else if (t.distance(element.x, element.y) < minDistance) {
+            minDistance = t.distance(element.x, element.y);
             minType = "equipment";
             minIndex = index;
           }
@@ -808,8 +758,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Game.ui.spellBook = spellBook;
 
-    var releaseButton = new ButtonClass(420, 350);
-    var releaseIcon = new IconClass("/image/release.png", releaseButton.x, releaseButton.y);
+    var releaseButton = new BoxButtonClass(420, 350);
+    var releaseIcon = new BoxBitmapClass("/image/release.png", releaseButton.x, releaseButton.y);
 
     var spellText = new createjs.Shape();
     spellText.graphics
@@ -823,8 +773,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     spellWindow.regY = 270;
 
     spellWindow.addChild(background);
-    spellWindow.addChild(releaseButton.button);
-    spellWindow.addChild(releaseIcon.icon);
+
+    releaseButton.drawOn(spellWindow);
+    releaseIcon.drawOn(spellWindow);
     spellWindow.addChild(spellText);
 
     spellBook.forEach(function (element) {
@@ -838,8 +789,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         (function (element, index) {
 
           var box = Game.ui.spellBook[index];
-          var t = new BitmapBoxClass(element.icon, box.x, box.y);
-          t.draw(spellWindow);
+          var t = new BoxBitmapClass(element.icon, box.x, box.y);
+          t.drawOn(spellWindow);
 
           var X = t.x;
           var Y = t.y;
@@ -876,14 +827,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 lastType = "bar";
                 lastIndex = index;
                 return;
-              }
-
-              var d = 0;
-              d += Math.pow(element.x - t.x, 2);
-              d += Math.pow(element.y - t.y, 2);
-              d = Math.sqrt(d);
-              if (d < minDistance) {
-                minDistance = d;
+              } else if (t.distance(element.x, element.y) < minDistance) {
+                minDistance = t.distance(element.x, element.y);
                 minType = "bar";
                 minIndex = index;
               }
@@ -894,14 +839,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 lastType = "book";
                 lastIndex = index;
                 return;
-              }
-
-              var d = 0;
-              d += Math.pow(element.x - t.x, 2);
-              d += Math.pow(element.y - t.y, 2);
-              d = Math.sqrt(d);
-              if (d < minDistance) {
-                minDistance = d;
+              } else if (t.distance(element.x, element.y) < minDistance) {
+                minDistance = t.distance(element.x, element.y);
                 minType = "book";
                 minIndex = index;
               }
@@ -999,11 +938,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.y = 5;
     background.alpha = 0.6;
 
+    var enterTalk = new BoxTextButtonClass("聊天", 240, 60, 400, 50);
+    enterTalk.on("click", Game.dialogue.talk);
+
     var settingWindow = new createjs.Container();
     settingWindow.regX = 235;
     settingWindow.regY = 270;
 
     settingWindow.addChild(background);
+    enterTalk.drawOn(settingWindow);
 
     Game.uiLayer.addChild(settingWindow);
     Game.ui.settingWindow = settingWindow;
@@ -1078,12 +1021,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     magicDefense.x = 40;
     magicDefense.y = 220;
 
-    var skillButton = new ButtonClass(60, 400);
-    var skillIcon = new IconClass("/image/skill.png", skillButton.x, skillButton.y);
+    var skillButton = new BoxBitmapButtonClass("/image/skill.png", 60, 400);
     skillButton.on("click", Game.ui.openSkill);
 
-    var spellButton = new ButtonClass(120, 400);
-    var spellIcon = new IconClass("/image/spell.png", spellButton.x, spellButton.y);
+    var spellButton = new BoxBitmapButtonClass("/image/spell.png", 120, 400);
     spellButton.on("click", Game.ui.openSpell);
 
     var informationWindow = new createjs.Container();
@@ -1103,10 +1044,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     informationWindow.addChild(magicAttack);
     informationWindow.addChild(magicDefense);
 
-    informationWindow.addChild(skillButton.button);
-    informationWindow.addChild(spellButton.button);
-    informationWindow.addChild(skillIcon.icon);
-    informationWindow.addChild(spellIcon.icon);
+    skillButton.drawOn(informationWindow);
+    spellButton.drawOn(informationWindow);
 
     Game.uiLayer.addChild(informationWindow);
 
@@ -1174,26 +1113,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 四个按钮：
 
-    var informationButton = new ButtonClass(740, 500);
-    var informationIcon = new IconClass("/image/information.png", informationButton.x, informationButton.y);
+    var informationButton = new BoxBitmapButtonClass("/image/information.png", 740, 500);
     informationButton.on("click", Game.ui.openInformation);
     Game.ui.informationButton = informationButton;
 
-    var itemButton = new ButtonClass(800, 500);
-    var itemIcon = new IconClass("/image/item.png", itemButton.x, itemButton.y);
+    var itemButton = new BoxBitmapButtonClass("/image/item.png", 800, 500);
     itemButton.on("click", Game.ui.openItem);
     Game.ui.itemButton = itemButton;
 
-    var mapButton = new ButtonClass(860, 500);
-    var mapIcon = new IconClass("/image/map.png", mapButton.x, mapButton.y);
+    var mapButton = new BoxBitmapButtonClass("/image/map.png", 860, 500);
     mapButton.on("click", Game.ui.openMap);
     Game.ui.mapButton = mapButton;
 
-    var settingButton = new ButtonClass(920, 500);
-    var settingIcon = new IconClass("/image/setting.png", settingButton.x, settingButton.y);
+    var settingButton = new BoxBitmapButtonClass("/image/setting.png", 920, 500);
     settingButton.on("click", Game.ui.openSetting);
     Game.ui.settingButton = settingButton;
-
 
     var toolbar = new createjs.Container();
     toolbar.regX = 480;
@@ -1205,21 +1139,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     toolbar.addChild(hpbar);
     toolbar.addChild(mpbar);
 
-    toolbar.addChild(informationButton.button);
-    toolbar.addChild(itemButton.button);
-    toolbar.addChild(mapButton.button);
-    toolbar.addChild(settingButton.button);
-
-    toolbar.addChild(informationIcon.icon);
-    toolbar.addChild(itemIcon.icon);
-    toolbar.addChild(mapIcon.icon);
-    toolbar.addChild(settingIcon.icon);
+    informationButton.drawOn(toolbar);
+    itemButton.drawOn(toolbar);
+    mapButton.drawOn(toolbar);
+    settingButton.drawOn(toolbar);
 
     for (var i = 0; i < spellBar.length; i++) {
       toolbar.addChild(spellBar[i].box);
     }
 
-    Game.uiLayer.addChild(toolbar);
+    // 让底部栏总在最下面
+    Game.uiLayer.addChildAt(toolbar, 0);
     Game.ui.toolbar = toolbar;
 
     Game.ui.spellIcon = [];
@@ -1230,8 +1160,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           return;
 
         var box = Game.ui.spellBar[index];
-        var t = new BitmapBoxClass(Game.hero.data.spells[element].icon, box.x, box.y);
-        t.draw(Game.ui.toolbar);
+        var t = new BoxBitmapClass(Game.hero.data.spells[element].icon, box.x, box.y);
+        t.drawOn(Game.ui.toolbar);
 
         Game.ui.spellIcon[index] = t;
 
@@ -1281,14 +1211,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               lastType = "bar";
               lastIndex = index;
               return;
-            }
-
-            var d = 0;
-            d += Math.pow(element.x - t.x, 2);
-            d += Math.pow(element.y - t.y, 2);
-            d = Math.sqrt(d);
-            if (d < minDistance) {
-              minDistance = d;
+            } else if (t.distance(element.x, element.y) < minDistance) {
+              minDistance = t.distance(element.x, element.y);
               minType = "bar";
               minIndex = index;
             }
@@ -1299,14 +1223,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               lastType = "book";
               lastIndex = index;
               return;
-            }
-
-            var d = 0;
-            d += Math.pow(element.x - t.x, 2);
-            d += Math.pow(element.y - t.y, 2);
-            d = Math.sqrt(d);
-            if (d < minDistance) {
-              minDistance = d;
+            } else if (t.distance(element.x, element.y) < minDistance) {
+              minDistance = t.distance(element.x, element.y);
               minType = "book";
               minIndex = index;
             }
@@ -1315,16 +1233,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (lastType && minType) {
             if (minDistance < 30) {
               SpellExchange(lastType, lastIndex, minType, minIndex);
-            } else {
-              var d = 0;
-              d += Math.pow(X - t.x, 2);
-              d += Math.pow(Y - t.y, 2);
-              d = Math.sqrt(d);
-              if (d >= 30) {
-                Game.hero.data.spellbar[lastIndex] = null;
-                Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-                Game.ui.initBottomBar();
-              }
+            } else if (t.distance(X, Y) >= 30) {
+              Game.hero.data.spellbar[lastIndex] = null;
+              Game.io.updateHero({spellbar: Game.hero.data.spellbar});
+              Game.ui.initBottomBar();
             }
           }
 
@@ -1354,20 +1266,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.update();
 
   } // Game.ui.InitBottomBar
-
-  Game.oninit(function () {
-
-
-
-    window.addEventListener("keydown", function (event) {
-      event = event || window.event;
-      var keyCode = event.keyCode;
-
-    });
-
-
-
-  });
 
 
 }());

@@ -5,6 +5,9 @@ module.exports = function (grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON("package.json"),
     babel: {
+      options: {
+        sourceMap: true
+      },
       dist: {
         files: [{
           expand: true,

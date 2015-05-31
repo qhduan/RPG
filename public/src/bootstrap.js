@@ -49,7 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.area = area;
 
             area.map.draw(Game.mapLayer);
-            console.log(11);
 
             for (var key in area.actors) {
               area.actors[key].draw(Game.actorLayer);

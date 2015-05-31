@@ -163,14 +163,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       // 发送完成事件，第二个参数代表一次性事件
-      super.emit("complete", true);
+      this.emit("complete", true);
 
-      super.on("move", () => {
-        if (this.popupBox && this.popupBox.length) {
-          this.popupBox.forEach(() => {
-            this.popupBox.x = this.x;
-            this.popupBox.y = this.y - this.sprite.spriteSheet.getFrame(0).regY;
-          });
+      this.on("move", () => {
+        if (this.popupBox && Object.keys(this.popupBox).length) {
+          for (let key in this.popupBox) {
+            this.popupBox[key].x = this.x;
+            this.popupBox[key].y = this.y - this.sprite.spriteSheet.getFrame(0).regY;
+          }
         }
       });
     }
@@ -549,6 +549,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y + 1});
         if (collision == false) collision = CheckCollision({x: t.x - 1, y: t.y - 1});
         if (collision == false) collision = CheckCollision({x: t.x - 1, y: t.y + 1});
+
+        // 判断和地图上角色的碰撞
+        if (collision == false) {
+          for (var key in Game.area.actors) {
+            collision = Game.actorCollision(this.sprite, Game.area.actors[key].sprite);
+            if (collision) break;
+          }
+        }
       }
 
       // 碰撞了

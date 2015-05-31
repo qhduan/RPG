@@ -99,6 +99,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         minimapHeight = 440;
         minimapWidth = 440 * ratio;
       }
+      minimapHeight = Math.floor(minimapHeight);
+      minimapWidth = Math.floor(minimapWidth);
       var minimapCanvas = document.createElement("canvas");
       minimapCanvas.width = minimapWidth;
       minimapCanvas.height = minimapHeight;
@@ -116,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
       var rgb = { r: 0, g: 0, b: 0 };
-      var minimapData = minimapContext.getImageData(0, 0, minimap.width, minimap.height).data;
+      var minimapData = minimapContext.getImageData(0, 0, minimapCanvas.width, minimapCanvas.height).data;
 
       for (var i = 0; i < minimapData.length; i += 4) {
         rgb.r += minimapData[i];

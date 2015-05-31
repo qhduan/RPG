@@ -104,9 +104,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var id = data.id;
         if (Game.area.actors[id]) {
           Game.area.actors[id].popup(data.talk);
-        }
-        if (Game.area.heros[id]) {
+          Game.dialogue.talkHistory.push({
+            id: id,
+            name: Game.area.actors[id].data.name,
+            time: new Date().toISOString().substr(0, 19).replace("T", " "),
+            talk: data.talk
+          });
+        } else if (Game.area.heros[id]) {
           Game.area.heros[id].popup(data.talk);
+          Game.dialogue.talkHistory.push({
+            id: id,
+            name: Game.area.heros[id].data.name,
+            time: new Date().toISOString().substr(0, 19).replace("T", " "),
+            talk: data.talk
+          });
         }
       });
 

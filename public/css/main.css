@@ -48,23 +48,102 @@ html, body {
   font-weight: bold;
 }
 
+.btn {
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-shadow: 1px 1px 3px #666666;
+  -webkit-box-shadow: 0px 1px 3px #666666;
+  -moz-box-shadow: 0px 1px 3px #666666;
+  box-shadow: 0px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 25px;
+  padding: 12px;
+  background: #825a23;
+  text-decoration: none;
+  margin: 10px;
+}
+
+.btn:hover {
+  background: #ab7d3e;
+  text-decoration: none;
+}
+
 .login-box {
   width: 400px;
-  height: 400px;
+  height: 340px;
   margin: auto;
-  margin-top: 100px;
-  background-color: white;
+  background-color: #666666;
   text-align: center;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+}
+
+.login-box input {
+  width: 300px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
 }
 
 .register-box {
   width: 400px;
-  height: 400px;
+  height: 1440px;
   margin: auto;
-  margin-top: 100px;
-  background-color: white;
+  background-color: #666666;
+  text-align: center;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
   text-align: center;
   display: none;
+}
+
+.register-box input {
+  width: 300px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+.register-box label {
+  font-size: 25px;
+  color: white;
+}
+
+.register-box select {
+  width: 200px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+.register-box #previewBox {
+  position: fixed;
+  left: 50%;
+  margin-left: -200px;
+  width: 400px;
+  background-color: #666666;
+  text-align: center;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
 }
 
 #talkBox {

@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.oninit(function () {
     var talkBox = Game.dialogue.talkBox = new createjs.DOMElement("talkBox");
     Game.dialogueLayer.addChild(talkBox);
-    talkBox.regX = 150;
+    talkBox.regX = 300;
     talkBox.regY = 20;
     talkBox.visible = 0;
 
@@ -38,31 +38,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   });
 
+  Game.dialogue.talkHistory = [];
+
   Game.dialogue.talk = function () {
-  };
+    // 发送聊天信息
+    if (Game.dialogue.talkBox)  {
+      if (Game.dialogue.talkBox.visible) {
+        Game.dialogue.talkBox.visible = 0;
+        var text = document.getElementById("talkInput").value;
+        document.getElementById("talkInput").value = "";
+        if (text.trim().length) {
+          Game.io.talk(text.trim());
+        }
+      } else {
+        Game.dialogue.talkBox.visible = 1;
+        document.getElementById("talkInput").focus();
+        setTimeout(function () {
+          document.getElementById("talkInput").focus()
+        }, 100);
+      }
+      Game.update();
+    }
+  }
 
   document.addEventListener("keydown", function (event) {
     event = event || window.event;
     var keyCode = event.keyCode;
 
     if (keyCode == 13) { // Enter
-      if (Game.dialogue.talkBox)  {
-        if (Game.dialogue.talkBox.visible) {
-          Game.dialogue.talkBox.visible = 0;
-          var text = document.getElementById("talkInput").value;
-          document.getElementById("talkInput").value = "";
-          if (text.trim().length) {
-            Game.io.talk(text.trim());
-          }
-        } else {
-          Game.dialogue.talkBox.visible = 1;
-          document.getElementById("talkInput").focus();
-          setTimeout(function () {
-            document.getElementById("talkInput").focus()
-          }, 100);
-        }
-        Game.update();
-      }
+      Game.dialogue.talk();
     }
   });
 
