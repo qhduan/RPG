@@ -945,8 +945,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.y = 5;
     background.alpha = 0.6;
 
-    var enterTalk = new BoxTextButtonClass("聊天", 240, 60, 400, 50);
+    var enterTalk = new BoxTextButtonClass("聊天", 200, 60, 360, 50);
     enterTalk.on("click", Game.dialogue.talk);
+
+    var talkHistory = new BoxTextButtonClass("历史", 600, 60, 360, 50);
+
+    var fullScreen = new BoxTextButtonClass("全屏", 200, 120, 360, 50);
+    fullScreen.on("click", function () {
+      if (
+        !document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement &&
+        !document.msFullscreenElement )
+      {  // current working methods
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        } else if (document.documentElement.msRequestFullscreen) {
+          document.documentElement.msRequestFullscreen();
+        } else if (document.documentElement.mozRequestFullScreen) {
+          document.documentElement.mozRequestFullScreen();
+        } else if (document.documentElement.webkitRequestFullscreen) {
+          document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        } else if (document.msExitFullscreen) {
+          document.msExitFullscreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitExitFullscreen) {
+          document.webkitExitFullscreen();
+        }
+      }
+    });
 
     var settingWindow = new createjs.Container();
     settingWindow.regX = 400;
@@ -954,6 +986,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     settingWindow.addChild(background);
     enterTalk.drawOn(settingWindow);
+    talkHistory.drawOn(settingWindow);
+    fullScreen.drawOn(settingWindow);
 
     Game.uiLayer.addChild(settingWindow);
     Game.ui.settingWindow = settingWindow;
