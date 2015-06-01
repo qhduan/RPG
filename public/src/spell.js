@@ -46,6 +46,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
       this.sprite = new createjs.Sprite(sheet);
+      this.sprite.name = this.id;
 
       // 发送完成事件，第二个参数代表一次性事件
       this.emit("complete", true);

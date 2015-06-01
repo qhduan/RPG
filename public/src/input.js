@@ -176,7 +176,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (Game.uiLayer.hitTest(x, y)) {
           return;
         }
-        Game.hero.goto(x, y, speed, true);
+        x -= Game.hero.x;
+        y -= Game.hero.y;
+
+        if (Math.abs(Math.abs(x) - Math.abs(y)) < 40) {
+          if (x < 0 && y < 0) { // left up
+            Game.hero.go(state, "upleft", skew);
+          } else if (x > 0 && y < 0) { // right up
+            Game.hero.go(state, "upright", skew);
+          } else if (x < 0 && y > 0) { // left down
+            Game.hero.go(state, "downleft", skew);
+          } else if (x > 0 && y > 0) { // right down
+            Game.hero.go(state, "downright", skew);
+          }
+        } else if (Math.abs(x) > Math.abs(y)) { // left or right
+          if (x < 0) { // left
+            Game.hero.go(state, "left", speed);
+          } else { // right
+            Game.hero.go(state, "right", speed);
+          }
+        } else if (Math.abs(x) < Math.abs(y)) { // up or down
+          if (y < 0) { // up
+            Game.hero.go(state, "up", speed);
+          } else { // down
+            Game.hero.go(state, "down", speed);
+          }
+        }
       } else {
         Game.hero.stop();
       }
@@ -202,6 +227,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.dialogueLayer.removeChild(Game.hintFlag);
             Game.hintFlag = null;
             Game.hintObject = null;
+            if (Game.ui.useButton) {
+              Game.ui.useButton.visible = false;
+            }
           }
         }
 
@@ -218,6 +246,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.hintFlag.regX = 0;
             Game.hintFlag.regY = Game.hintFlag.image.height;
             Game.dialogueLayer.addChild(Game.hintFlag);
+            if (Game.ui.useButton) {
+              Game.ui.useButton.visible = true;
+            }
           }
         }
 

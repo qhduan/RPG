@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 保存这个地图的所有地图块
       this.container = new createjs.Container();
+      this.container.name = this.id;
 
       this.data.layers.forEach((element, index, array) => {
         var layer = element;

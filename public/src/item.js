@@ -27,27 +27,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.data = itemData;
       this.id = this.data.id;
 
-      var image = null;
-
-      var ImageComplete = () => {
-        this.bitmap = new createjs.Bitmap(image);
-        this.bitmap.regX = image.width / 2;
-        this.bitmap.regY = image.height / 2;
-        Game.items[this.data.id] = this;
-        Game.resources[this.data.id] = image;
-
-        // 发送完成事件，第二个参数代表一次性事件
-        this.emit("complete", true);
+      if (!Game.resources[this.data.image]) {
+        console.log(this.id, this.data.image);
+        throw new TypeError("Invalid Item Image");
       }
 
-      if (Game.resources.hasOwnProperty(this.data.id)) {
-        image = Game.resources[this.data.id];
-        ImageComplete();
-      } else {
-        image = new Image();
-        image.onload = ImageComplete;
-        image.src = this.data.image;
-      }
+      var image = Game.resources[this.data.image];
+      this.bitmap = new createjs.Bitmap(image);
+      this.bitmap.regX = image.width / 2;
+      this.bitmap.regY = image.height / 2;
+      this.bitmap.name = this.id;
+      Game.items[this.id] = this;
+
+      // 发送完成事件，第二个参数代表一次性事件
+      this.emit("complete", true);
     }
 
     clone (callback) {

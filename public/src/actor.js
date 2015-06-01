@@ -133,7 +133,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else if (Game.resources.hasOwnProperty(this.data.image)) {
         image = Game.resources[this.data.image];
       } else {
-        console.log("ActorClass Invalid Image");
+        console.log(this.id, this.data.image);
+        throw new TypeError("Invalid Actor Image");
       }
 
       var sheet = new createjs.SpriteSheet({
@@ -149,9 +150,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       //this.sprite = new createjs.Sprite(sheet);
 
       this.sprite = new createjs.Sprite(sheet, "facedown");
-
       this.sprite.x = 0;
       this.sprite.y = 0;
+      this.sprite.name = this.id;
 
       if (this.data.spells) {
         this.spells = {};

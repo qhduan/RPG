@@ -66,6 +66,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.update();
     }
 
+    get visible () {
+      return this.box.visible;
+    }
+
+    set visible (v) {
+      this.box.visible = v;
+      Game.update();
+    }
+
     get color () {
       return this.defaultColor;
     }
@@ -161,6 +170,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.bitmap.regX = Math.floor(this.bitmap.image.width/2);
         this.bitmap.regY = Math.floor(this.bitmap.image.height/2);
       } else {
+        console.log(bitmap, typeof bitmap);
         throw new TypeError("BoxBitmapClass Invalid Arguments");
       }
 
@@ -276,7 +286,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var cooldown = Game.hero.fire(num);
       if (cooldown > 0) {
 
-        var spellIcon = Game.ui.spellIcon[num];
+        var spellIcon = Game.ui.spellBarIcon[num];
         spellIcon.color = "green";
 
         cooldown -= 100;
@@ -551,6 +561,97 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   }
 
+  function SpellIconCopy (spell, box, type, index) {
+    var t = new BoxBitmapClass(spell, box.x, box.y);
+
+    if (Game.ui.spellBarIcon) {
+      Game.ui.spellBarIcon[index] = t;
+    }
+
+    if (type == "book") {
+      t.drawOn(Game.ui.spellWindow);
+    } else if (type == "bar") {
+      t.drawOn(Game.ui.spellBarWindow);
+    }
+
+    var X = t.x;
+    var Y = t.y;
+
+    t.on("click", function () {
+      if (Game.ui.spellWindow) {
+        SpellSelect("book", index);
+      } else if (type == "bar") {
+        Game.ui.clickSpell(index);
+      }
+    });
+
+    t.on("mousedown", function (event) {
+      if (!Game.ui.spellWindow) return;
+      t.offset = {
+        x: t.x - event.stageX / Game.stage.scaleX,
+        y: t.y - event.stageY / Game.stage.scaleY
+      };
+    });
+
+    t.on("pressmove", function (event) {
+      if (!Game.ui.spellWindow) return;
+      t.x = event.stageX / Game.stage.scaleX + t.offset.x;
+      t.y = event.stageY / Game.stage.scaleY + t.offset.y;
+    });
+
+    t.on("pressup", function (event) {
+      if (!Game.ui.spellWindow) return;
+      var x = event.stageX / Game.stage.scaleX + t.offset.x;
+      var y = event.stageY / Game.stage.scaleY + t.offset.y;
+
+      var lastType = null;
+      var lastIndex = -1;
+
+      var minDistance = 9999;
+      var minType = null;
+      var minIndex = -1;
+
+      if (Game.ui.spellBar) {
+        Game.ui.spellBar.forEach(function (element, index) {
+          if (element == box) {
+            lastType = "bar";
+            lastIndex = index;
+            return;
+          } else if (t.distance(element.x, element.y) < minDistance) {
+            minDistance = t.distance(element.x, element.y);
+            minType = "bar";
+            minIndex = index;
+          }
+        });
+      }
+
+      if (Game.ui.spellBook) {
+        Game.ui.spellBook.forEach(function (element, index) {
+          if (element == box) {
+            lastType = "book";
+            lastIndex = index;
+            return;
+          } else if (t.distance(element.x, element.y) < minDistance) {
+            minDistance = t.distance(element.x, element.y);
+            minType = "book";
+            minIndex = index;
+          }
+        });
+      }
+
+      if (lastType && minType && minDistance < 30) {
+        SpellExchange(lastType, lastIndex, minType, minIndex);
+      } else if (lastType == "bar" && minDistance > 100) {
+        Game.hero.data.spellbar[lastIndex] = null;
+        Game.io.updateHero({spellbar: Game.hero.data.spellbar});
+        Game.ui.openSpellbar();
+      }
+
+      t.x = X;
+      t.y = Y;
+    });
+  }
+
   // 打开物品栏（玩家口袋）
   Game.ui.openItem = function () {
     var heroObj = Game.hero;
@@ -670,6 +771,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   // 在招式窗口打开时，点击一个技能，则弹出技能介绍
   function SpellSelect (type, index) {
+
     var spellId = "";
 
     if (type == "book") {
@@ -704,13 +806,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   // 在招式栏和招式书之间交换技能快捷方式
   function SpellExchange (lastType, lastIndex, type, index) {
+
     if (lastType == "book" && type == "bar") {
-      var spellBookSelect = Object.keys(Game.hero.spells)[lastIndex];
-      var spellBarSelect = Game.hero.data.spellbar[index];
-      if (spellBookSelect != spellBarSelect) {
-        Game.hero.data.spellbar[index] = spellBookSelect;
+      var bookSelect = Object.keys(Game.hero.spells)[lastIndex];
+      var barSelect = Game.hero.data.spellbar[index];
+      if (bookSelect != barSelect) {
+        Game.hero.data.spellbar[index] = bookSelect;
         Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-        Game.ui.initBottomBar();
+        Game.ui.openSpellbar();
       }
     }
 
@@ -720,13 +823,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.hero.data.spellbar[index] = undefined;
         Game.ui.initBottomBar();
       } else {
-        var spellBarSelect1 = Game.hero.data.spellbar[lastIndex];
-        var spellBarSelect2 = Game.hero.data.spellbar[index];
-        var t = spellBarSelect1;
-        Game.hero.data.spellbar[lastIndex] = spellBarSelect2;
+        var barSelect1 = Game.hero.data.spellbar[lastIndex];
+        var barSelect2 = Game.hero.data.spellbar[index];
+        var t = barSelect1;
+        Game.hero.data.spellbar[lastIndex] = barSelect2;
         Game.hero.data.spellbar[index] = t;
         Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-        Game.ui.initBottomBar();
+        Game.ui.openSpellbar();
       }
 
     }
@@ -746,7 +849,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.alpha = 0.6;
 
 
-    var spellBook = [];
+    var spellBook = Game.ui.spellBook = [];
     spellBook.length = heroObj.data.spellcount;
 
     var spellBookWidth = 6;
@@ -765,11 +868,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    Game.ui.spellBook = spellBook;
-
-    var releaseButton = new BoxButtonClass(420, 350);
-    var releaseIcon = new BoxBitmapClass("/image/release.png", releaseButton.x, releaseButton.y);
-
     var spellText = new createjs.Shape();
     spellText.graphics
     .beginFill("gray")
@@ -777,18 +875,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     spellText.x = 15;
     spellText.y = 285;
 
-    var spellWindow = new createjs.Container();
+    var spellWindow = Game.ui.spellWindow = new createjs.Container();
     spellWindow.regX = 400;
     spellWindow.regY = 225;
 
     spellWindow.addChild(background);
-
-    releaseButton.drawOn(spellWindow);
-    releaseIcon.drawOn(spellWindow);
     spellWindow.addChild(spellText);
 
     spellBook.forEach(function (element) {
-      spellWindow.addChild(element.box);
+      element.drawOn(spellWindow);
       spellWindow.addChild(element.box.clone());
     });
 
@@ -796,80 +891,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var index = 0;
       for (var key in Game.hero.spells) {
         (function (element, index) {
-
-          var box = Game.ui.spellBook[index];
-          var t = new BoxBitmapClass(element.icon, box.x, box.y);
-          t.drawOn(spellWindow);
-
-          var X = t.x;
-          var Y = t.y;
-
-          t.on("click", function () {
-            SpellSelect("book", index);
-          });
-
-          t.on("mousedown", function (event) {
-            t.offset = {
-              x: t.x - event.stageX / Game.stage.scaleX,
-              y: t.y - event.stageY / Game.stage.scaleY
-            };
-          });
-
-          t.on("pressmove", function (event) {
-            t.x = event.stageX / Game.stage.scaleX + t.offset.x;
-            t.y = event.stageY / Game.stage.scaleY + t.offset.y;
-          });
-
-          t.on("pressup", function (event) {
-            var x = event.stageX / Game.stage.scaleX + t.offset.x;
-            var y = event.stageY / Game.stage.scaleY + t.offset.y;
-
-            var lastType = null;
-            var lastIndex = -1;
-
-            var minDistance = 9999;
-            var minType = null;
-            var minIndex = -1;
-
-            Game.ui.spellBar.forEach(function (element, index) {
-              if (element == box) {
-                lastType = "bar";
-                lastIndex = index;
-                return;
-              } else if (t.distance(element.x, element.y) < minDistance) {
-                minDistance = t.distance(element.x, element.y);
-                minType = "bar";
-                minIndex = index;
-              }
-            });
-
-            Game.ui.spellBook.forEach(function (element, index) {
-              if (element == box) {
-                lastType = "book";
-                lastIndex = index;
-                return;
-              } else if (t.distance(element.x, element.y) < minDistance) {
-                minDistance = t.distance(element.x, element.y);
-                minType = "book";
-                minIndex = index;
-              }
-            });
-
-            if (lastType && minType && minDistance < 30) {
-              SpellExchange(lastType, lastIndex, minType, minIndex);
-            }
-
-            t.x = X;
-            t.y = Y;
-          });
-
+          SpellIconCopy(element.icon, Game.ui.spellBook[index], "book", index);
         })(Game.hero.spells[key], index);
         index++;
       }
     })();
 
     Game.uiLayer.addChild(spellWindow);
-    Game.ui.spellWindow = spellWindow;
 
     // 再次open信息窗口，即关闭信息窗口
     Game.ui.openInformation();
@@ -945,13 +973,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     background.y = 5;
     background.alpha = 0.6;
 
-    var enterTalk = new BoxTextButtonClass("聊天", 200, 60, 360, 50);
+    var enterTalk = new BoxTextButtonClass("发送聊天", 200, 60, 360, 50);
     enterTalk.on("click", Game.dialogue.talk);
 
-    var talkHistory = new BoxTextButtonClass("历史", 600, 60, 360, 50);
+    var talkHistory = new BoxTextButtonClass("历史记录", 600, 60, 360, 50);
 
-    var fullScreen = new BoxTextButtonClass("全屏", 200, 120, 360, 50);
+    var fullScreen = new BoxTextButtonClass("全屏切换", 200, 120, 360, 50);
     fullScreen.on("click", function () {
+      // 下面的部分是兼容不同浏览器的全屏和取消全屏
       if (
         !document.fullscreenElement &&    // alternative standard method
         !document.mozFullScreenElement &&
@@ -1254,6 +1283,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.ui.initBottomBar();
   }
 
+  Game.ui.openSpellbar = function () {
+
+    if (Game.ui.spellBarWindow) {
+      Game.ui.toolbar.removeChild(Game.ui.spellBarWindow);
+      Game.ui.spellBarWindow = null;
+    }
+
+    var spellBarWindow = Game.ui.spellBarWindow = new createjs.Container();
+
+    var spellBar = Game.ui.spellBar = [];
+    spellBar.length = 7;
+
+    for (var i = 0; i < spellBar.length; i++) {
+      (function (element, index, array) {
+        spellBar[index] = new BoxClass(145 + index * 60, 415);
+      })(spellBar[i], i, spellBar);
+    }
+
+    for (var i = 0; i < spellBar.length; i++) {
+      spellBar[i].drawOn(spellBarWindow);
+    }
+
+    var spellBarIcon = Game.ui.spellBarIcon = [];
+
+    Game.hero.data.spellbar.forEach(function (element, index) {
+      if (!Game.hero.spells[element])
+        return;
+
+      SpellIconCopy(Game.hero.spells[element].icon, Game.ui.spellBar[index], "bar", index);
+    });
+
+    if (Game.ui.toolbar) {
+      Game.ui.toolbar.addChild(spellBarWindow);
+      Game.update();
+    }
+  };
+
   Game.ui.initBottomBar = function () {
 
     if (Game.ui.toolbar) {
@@ -1277,7 +1343,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     .beginStroke("black")
     .drawRoundRect(0, 0, barMax, 20, 5);
     hpbarBox.x = 10;
-    hpbarBox.y = 390;
+    hpbarBox.y = 392;
 
     var hpbar = new createjs.Shape();
     hpbar.graphics
@@ -1291,7 +1357,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     .beginStroke("black")
     .drawRoundRect(0, 0, barMax, 20, 5);
     mpbarBox.x = 10;
-    mpbarBox.y = 420;
+    mpbarBox.y = 418;
 
     var mpbar = new createjs.Shape();
     mpbar.graphics
@@ -1300,34 +1366,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     mpbar.x = mpbarBox.x;
     mpbar.y = mpbarBox.y;
 
-    var spellBar = [];
-    spellBar.length = 7;
+    // use 按钮
 
-    for (var i = 0; i < spellBar.length; i++) {
-      (function (element, index, array) {
-        spellBar[index] = new BoxClass(145 + index * 60, 415);
-      })(spellBar[i], i, spellBar);
-    }
-
-    Game.ui.spellBar = spellBar;
+    var useButton = Game.ui.useButton = new BoxClass(770, 30);
+    if (!Game.hintFlag)
+      useButton.visible = false;
+    useButton.on("click", function () {
+      if (Game.hintObject && Game.hintObject.use)
+        Game.hintObject.use();
+    });
 
     // 四个按钮：
 
-    var informationButton = new BoxBitmapButtonClass("/image/information.png", 585, 415);
+    var informationButton = Game.ui.informationButton = new BoxBitmapButtonClass("/image/information.png", 585, 415);
     informationButton.on("click", Game.ui.openInformation);
-    Game.ui.informationButton = informationButton;
 
-    var itemButton = new BoxBitmapButtonClass("/image/item.png", 645, 415);
+    var itemButton = Game.ui.itemButton = new BoxBitmapButtonClass("/image/item.png", 645, 415);
     itemButton.on("click", Game.ui.openItem);
-    Game.ui.itemButton = itemButton;
 
-    var mapButton = new BoxBitmapButtonClass("/image/map.png", 705, 415);
+    var mapButton = Game.ui.mapButton = new BoxBitmapButtonClass("/image/map.png", 705, 415);
     mapButton.on("click", Game.ui.openMap);
-    Game.ui.mapButton = mapButton;
 
-    var settingButton = new BoxBitmapButtonClass("/image/setting.png", 765, 415);
+    var settingButton = Game.ui.settingButton = new BoxBitmapButtonClass("/image/setting.png", 765, 415);
     settingButton.on("click", Game.ui.openSetting);
-    Game.ui.settingButton = settingButton;
 
     var toolbar = new createjs.Container();
     toolbar.regX = 400;
@@ -1339,113 +1400,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     toolbar.addChild(hpbar);
     toolbar.addChild(mpbar);
 
+    useButton.drawOn(toolbar);
     informationButton.drawOn(toolbar);
     itemButton.drawOn(toolbar);
     mapButton.drawOn(toolbar);
     settingButton.drawOn(toolbar);
 
-    for (var i = 0; i < spellBar.length; i++) {
-      toolbar.addChild(spellBar[i].box);
-    }
-
     // 让底部栏总在最下面
     Game.uiLayer.addChildAt(toolbar, 0);
     Game.ui.toolbar = toolbar;
-
-    Game.ui.spellIcon = [];
-
-    (function AddHeroSpellBarIcon () {
-      Game.hero.data.spellbar.forEach(function (element, index) {
-        if (!Game.hero.spells[element])
-          return;
-
-        var box = Game.ui.spellBar[index];
-        var t = new BoxBitmapClass(Game.hero.spells[element].icon, box.x, box.y);
-        t.drawOn(Game.ui.toolbar);
-
-        Game.ui.spellIcon[index] = t;
-
-        var X = t.x;
-        var Y = t.y;
-
-        t.on("click", function (event) {
-          event.stopImmediatePropagation();
-          if (Game.ui.spellWindow) {
-            SpellSelect("bar", index);
-          } else {
-            Game.ui.clickSpell(index);
-          }
-        });
-
-        t.on("mousedown", function (event) {
-          if (!Game.ui.spellBook) return;
-
-          t.offset = {
-            x: t.x - event.stageX / Game.stage.scaleX,
-            y: t.y - event.stageY / Game.stage.scaleY
-          };
-        });
-
-        t.on("pressmove", function (event) {
-          if (!Game.ui.spellBook) return;
-
-          t.x = event.stageX / Game.stage.scaleX + t.offset.x;
-          t.y = event.stageY / Game.stage.scaleY + t.offset.y;
-        });
-
-        t.on("pressup", function (event) {
-          if (!Game.ui.spellBook) return;
-
-          var x = event.stageX / Game.stage.scaleX + t.offset.x;
-          var y = event.stageY / Game.stage.scaleY + t.offset.y;
-
-          var lastType = null;
-          var lastIndex = -1;
-
-          var minDistance = 9999;
-          var minType = null;
-          var minIndex = -1;
-
-          Game.ui.spellBar.forEach(function (element, index) {
-            if (element == box) {
-              lastType = "bar";
-              lastIndex = index;
-              return;
-            } else if (t.distance(element.x, element.y) < minDistance) {
-              minDistance = t.distance(element.x, element.y);
-              minType = "bar";
-              minIndex = index;
-            }
-          });
-
-          Game.ui.spellBook.forEach(function (element, index) {
-            if (element == box) {
-              lastType = "book";
-              lastIndex = index;
-              return;
-            } else if (t.distance(element.x, element.y) < minDistance) {
-              minDistance = t.distance(element.x, element.y);
-              minType = "book";
-              minIndex = index;
-            }
-          });
-
-          if (lastType && minType) {
-            if (minDistance < 30) {
-              SpellExchange(lastType, lastIndex, minType, minIndex);
-            } else if (t.distance(X, Y) >= 30) {
-              Game.hero.data.spellbar[lastIndex] = null;
-              Game.io.updateHero({spellbar: Game.hero.data.spellbar});
-              Game.ui.initBottomBar();
-            }
-          }
-
-          t.x = X;
-          t.y = Y;
-        });
-
-      });
-    })();
 
     if (Game.ui.settingWindow) { // 如果开着，就要关
       Game.ui.settingButton.color = "green";
@@ -1461,6 +1424,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     if (Game.ui.itemWindow) { // 如果开着，就要关
       Game.ui.itemButton.color = "green";
+    }
+
+    if (Game.ui.spellBarWindow) {
+      toolbar.addChild(Game.ui.spellBarWindow);
+    } else {
+      Game.ui.openSpellbar();
     }
 
     Game.update();
