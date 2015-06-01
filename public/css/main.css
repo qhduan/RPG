@@ -71,7 +71,7 @@ html, body {
 }
 
 .login-box {
-  width: 400px;
+  width: 320px;
   height: 400px;
   margin: auto;
   background-color: #666666;
@@ -93,7 +93,7 @@ html, body {
 }
 
 .register-box {
-  width: 400px;
+  width: 320px;
   height: 1440px;
   margin: auto;
   background-color: #666666;
@@ -137,8 +137,8 @@ html, body {
 .register-box #previewBox {
   position: fixed;
   left: 50%;
-  margin-left: -200px;
-  width: 400px;
+  margin-left: -160px;
+  width: 320px;
   background-color: #666666;
   text-align: center;
   -webkit-border-radius: 20;
