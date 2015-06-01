@@ -2,13 +2,11 @@
   "id": "item0005",
   "name": "一般衣服",
   "description": "普通的一套衣服，没有什么特别之处",
-  "value": 5,
-  "effect": 1,
+  "buff": {
+    "def": 3
+  },
+  "value": 2,
   "type": "armor",
   "equip": "body",
-  "image": "resource\/item0005.png",
-  "width": 32,
-  "height": 32,
-  "tilewidth": 32,
-  "tileheight":32
+  "image": "resource\/item0005.png"
 }

@@ -27,8 +27,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     config: { // 保存所有设置（默认设置）
       walk: 4, // 角色行走速度
       run: 8, // 角色跑动速度
-      width: 960, // 渲染窗口的大小，更大的大小是经过收缩的
-      height: 540
+      width: 800, // 渲染窗口的大小，更大的大小是经过收缩的
+      height: 450
     }
   };
 

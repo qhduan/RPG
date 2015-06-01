@@ -8,8 +8,8 @@
     "content": "我是白猫，我会喵喵叫，你猜怎么样？"
   },
   "image": "resource\/actor0001.png",
-  "hitpoint": 100,
-  "manapoint": 100,
+  "hp": 100,
+  "sp": 100,
   "tileheight": 32,
   "tilewidth": 32,
   "spells": [],

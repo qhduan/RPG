@@ -2,14 +2,12 @@
   "id": "item0002",
   "name": "铁剑",
   "description": "普通的铁剑，冒险者的一般装备",
+  "buff": {
+    "atk": 5
+  },
   "value": 5,
-  "effect": 5,
   "type": "weapon",
   "weapontype": "sword",
   "equip": "onehand",
-  "image": "resource\/item0002.png",
-  "width": 32,
-  "height": 32,
-  "tilewidth": 32,
-  "tileheight":32
+  "image": "resource\/item0002.png"
 }

@@ -30,6 +30,23 @@ var HERO_SOCKET = {};
 var SOCKET_HERO = {};
 //var heroId = SOCKET_HERO[socket.id];
 
+setInterval(function () {
+  for (var key in HERO_SOCKET) {
+    var hero = HeroModule.get(key);
+    if (hero.hp < hero._hp) {
+      hero.hp += Math.floor(hero._hp * 0.03);
+      if (hero.hp > hero._hp)
+        hero.hp = hero._hp;
+    }
+    if (hero.sp < hero._sp) {
+      hero.sp += Math.floor(hero._sp * 0.03);
+      if (hero.sp > hero._sp)
+        hero.sp = hero._sp;
+    }
+    HERO_SOCKET[key].emit("updateHero", hero);
+  }
+}, 1000);
+
 
 SocketModule.on("hit", function (socket, data) {
   var heroId = SOCKET_HERO[socket.id];
@@ -40,7 +57,9 @@ SocketModule.on("hit", function (socket, data) {
 SocketModule.on("updateHero", function (socket, data) {
   var heroId = SOCKET_HERO[socket.id];
   if (!heroId) return;
-  HeroModule.update(heroId, data.object);
+  HeroModule.update(heroId, data.object, function (hero) {
+    socket.emit("updateHero", hero);
+  });
 });
 
 // 某个用户断开链接
@@ -108,6 +127,10 @@ SocketModule.on("attack", function (socket, data) {
 
   var heroObj = HeroModule.get(heroId);
 
+  var spell = SpellModule.get(data.spellId);
+  heroObj.sp -= spell.cost;
+  socket.emit("updateHero", heroObj);
+
   for (var key in HERO_SOCKET) {
     var h = HeroModule.get(key);
     if (h.id != heroObj.id) {
@@ -129,10 +152,10 @@ function TestDamage (socket, heroId, spellId, actorIds) {
   var damage = 0;
 
   if (spellObj.type == "normal") {
-    damage = spellObj.attack + heroObj.attack;
+    damage = spellObj.attack + heroObj.atk;
   }
   if (spellObj.type == "magic") {
-    damage = spellObj.attack + heroObj.magicAttack;
+    damage = spellObj.attack + heroObj.matk;
   }
 
   var ret = {};
@@ -142,10 +165,10 @@ function TestDamage (socket, heroId, spellId, actorIds) {
   // 计算actorIds中的列出的actor的可能的伤害
   actorIds.forEach(function (element) {
     if (actors[element]) {
-      actors[element].hitpoint -= damage;
+      actors[element].hp -= damage;
       ret[element] = damage;
 
-      if (actors[element].hitpoint <= 0) {
+      if (actors[element].hp <= 0) {
         delete actors[element];
       }
     }
@@ -396,34 +419,48 @@ function CreateHero (sock) {
         "password": password,
         "custom": custom, // 保存用户纸娃娃的配置
 
-        "hitpoint": 100, //生命
-        "manapoint": 100, // 魔法
-        "strength": 10, // 力量
-        "dexterity": 10, // 敏捷
-        "intelligence": 10, // 智力
-        "constitution": 10, // 体质
-        "attack": 10, // 攻击力
-        "defense": 10, // 防御力
-        "magicAttack": 10, // 魔法攻击
-        "magicDefense": 10, // 魔法防御
+        "level": 1, // 等级
+        "exp": 0, // 经验值
+
+        // 最基本的属性，其他属性都由此延伸
+        "_str": 10, // strength 攻击
+        "_dex": 10, // dexterity 闪避
+        "_int": 10, // intelligence 魔法攻击
+        "_con": 10, // constitution 生命值
+        "_cha": 10, // charisma 队友能力
+
+        buff: [],
+        nerf: [],
+
+        "currentQuest": { }, // 当前任务
+        "pastQuest": { }, // 完成的任务
 
         "area": "town0001", // 当前所在地图
+
         "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
 
-        "spells": [ // 招式，魔法
+        // 能力
+        "spells": [
           "spell0001", // 普通剑攻击
           "spell0002", // 普通枪攻击
           "spell0003", // 普通弓攻击
-          "spell0004" // 火球术
+          "spell0004", // 火球术
+        ],
+        // 一共能学习多少能力
+        "spellcount": 14,
+        // 技能快捷方式列表
+        "spellbar": [
+          "spell0001",
         ],
 
-        "spellcount": 14, // 一共能学习多少招式
-
-        "spellbar": [ // 技能快捷方式列表
-          "spell0001"
-        ],
-
-        "skill": { // 技能，例如生活技能，说服技能，交易技能
+        // 技能，例如生活技能，说服技能，交易技能
+        "skills": {
+          "_trade": 0, // 交易，交易时的价格
+          "_negotiate": 0, // 交涉，具体剧情，招揽同伴时的费用
+          "_lock": 0, // 开锁
+          "_knowledge": 0, // 知识，具体剧情，鉴定物品
+          "_treatment": 0, // 医疗，在使用医疗物品时的效果
+          "_animal": 0, // 动物战斗加成，动物驯养
         },
 
         "equipment": {
@@ -438,8 +475,8 @@ function CreateHero (sock) {
         },
 
         "items": [
-          {id: "item0003", count: 1},
-          {id: "item0004", count: 1}
+          { id: "item0003", count: 1 },
+          { id: "item0004", count: 1 },
         ],
         "gold": 0
       }], function (err, newDocs) {

@@ -58,17 +58,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             (function (key, heroData) {
               Game.drawHero(heroData.custom, function (heroImage) {
                 heroData.image = heroImage;
-                var heroObj = new Game.ActorClass(heroData);
-                ret.heros[key] = heroObj;
+                var heroObj = ret.heros[key] = new Game.ActorClass(heroData);
 
+                heroObj.items = [];
                 for (var i = 0; i < heroObj.data.items.length; i++) {
-                  if (heroObj.data.items[i])
-                    heroObj.data.items[i].item = new Game.ItemClass(heroObj.data.items[i].item);
+                  if (heroObj.data.items[i]) {
+                    heroObj.items[i] = {
+                      id: heroObj.data.items[i].id,
+                      count: heroObj.data.items[i].count,
+                      item: new Game.ItemClass(heroObj.data.items[i].item),
+                    };
+                  }
                 }
 
+                heroObj.equipment = {};
                 for (var equipment in heroObj.data.equipment) {
                   if (heroObj.data.equipment[equipment])
-                    heroObj.data.equipment[equipment] = new Game.ItemClass(heroObj.data.equipment[equipment]);
+                    heroObj.equipment[equipment] = new Game.ItemClass(heroObj.data.equipment[equipment]);
                 }
 
                 heroObj.on("complete", AreaComplete);

@@ -45,6 +45,9 @@ var ACTORS = {};
     // 读取角色技能
     actorData.spells = SpellModule.get(actorData.spells);
 
+    actorData._hp = actorData.hp;
+    actorData._sp = actorData.sp;
+
     ACTORS[actorData.id] = actorData;
   });
 

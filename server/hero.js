@@ -81,6 +81,89 @@ var HEROS = {};
   });
 })();
 
+function CalculateBuffNerf (h) {
+  h.buff.forEach(function (element) {
+    if (h.hasOwnProperty(element.target)) {
+      h[element.target] += element.value;
+    } else if (h.skills.hasOwnProperty(element.target)) {
+      h.skills[element.target] += element.value;
+    }
+  }); // buff
+  h.nerf.forEach(function (element) {
+    if (h.hasOwnProperty(element.target)) {
+      h[element.target] += element.value;
+    } else if (h.skills.hasOwnProperty(element.target)) {
+      h.skills[element.target] += element.value;
+    }
+  }); // nerf
+}
+
+function CalculateEquipment (h, equipment) {
+  if (equipment.buff) {
+    for (var key in equipment.buff) {
+      h.buff.push({
+        target: key,
+        value: equipment.buff[key],
+        source: equipment.id,
+        time: "forever"
+      });
+    }
+  }
+  if (equipment.nerf) {
+    for (var key in equipment.nerf) {
+      h.buff.push({
+        target: key,
+        value: equipment.nerf[key],
+        source: equipment.id,
+        time: "forever"
+      });
+    }
+  }
+}
+
+function CalculateHero (h) {
+  h.str = h._str;
+  h.dex = h._dex;
+  h.int = h._int;
+  h.con = h._con;
+  h.cha = h._cha;
+
+  h._hp = h.con * 10; // 生命
+  h._sp = h.int * 10; // 精神力
+  h.hp = h._hp; // 当前生命
+  h.sp = h._sp; // 当前精神力
+
+  h.atk = h.str * 0.5; // 攻击力
+  h.def = h.dex * 0.5; // 防御力
+  h.matk = h.int * 0.5; // 魔法攻击力
+  h.mdef = h.int * 0.5; // 魔法防御力
+
+  h.skills.trade = h.skills._trade;
+  h.skills.negotiate = h.skills._negotiate;
+  h.skills.lock = h.skills._lock;
+  h.skills.knowledge = h.skills._knowledge;
+  h.skills.treatment = h.skills._treatment;
+  h.skills.animal = h.skills._animal;
+
+  if (h.equipment.head)
+    CalculateEquipment(h, h.equipment.head);
+  if (h.equipment.neck)
+    CalculateEquipment(h, h.equipment.neck);
+  if (h.equipment.body)
+    CalculateEquipment(h, h.equipment.body);
+  if (h.equipment.feet)
+    CalculateEquipment(h, h.equipment.feet);
+  if (h.equipment.righthand)
+    CalculateEquipment(h, h.equipment.righthand);
+  if (h.equipment.lefthand)
+    CalculateEquipment(h, h.equipment.lefthand);
+  if (h.equipment.leftring)
+    CalculateEquipment(h, h.equipment.leftring);
+  if (h.equipment.rightring)
+    CalculateEquipment(h, h.equipment.rightring);
+}
+
+// 对数据库中保存的hero进行一次初始化
 function AddHero (element) {
   var id = element.id;
   HEROS[id] = element;
@@ -114,6 +197,10 @@ function AddHero (element) {
     HEROS[id].equipment.leftring = ItemModule.get(HEROS[id].equipment.leftring);
   if (HEROS[id].equipment.rightring)
     HEROS[id].equipment.rightring = ItemModule.get(HEROS[id].equipment.rightring);
+
+  // 对属性进行计算
+  CalculateHero(HEROS[id]);
+  CalculateBuffNerf(HEROS[id]);
 }
 
 function GetHero (id) {
@@ -127,11 +214,11 @@ function GetHero (id) {
     return ret;
   } else {
     console.log(typeof id, id);
-    throw "GetHero Invalid Argument";
+    throw new TypeError("GetHero Invalid Argument");
   }
 }
 
-function UpdateHero (id, object) {
+function UpdateHero (id, object, callback) {
   var obj = {
     "$set": object
   };
@@ -141,6 +228,7 @@ function UpdateHero (id, object) {
     }
     HeroDB.findOne({id: id}, function (err, doc) {
       AddHero(doc);
+      callback(HEROS[id]);
     });
   });
 }

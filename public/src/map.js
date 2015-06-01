@@ -91,13 +91,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 开始计算迷你地图
       var ratio = this.width / this.height;
-      var maxMinimapWidth = 940;
-      var maxMinimapHeight = 440;
-      var minimapWidth = 940;
-      var minimapHeight = 940 / ratio;
+      var maxMinimapWidth = 780;
+      var maxMinimapHeight = 360;
+      var minimapWidth = 780;
+      var minimapHeight = 780 / ratio;
       if (minimapHeight > maxMinimapHeight) {
-        minimapHeight = 440;
-        minimapWidth = 440 * ratio;
+        minimapHeight = 360;
+        minimapWidth = 360 * ratio;
       }
       minimapHeight = Math.floor(minimapHeight);
       minimapWidth = Math.floor(minimapWidth);
@@ -111,6 +111,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var minimap = new Image();
       minimap.onload = () => {
         this.minimap = new createjs.Bitmap(minimap);
+        this.minimap.width = minimap.width;
+        this.minimap.height = minimap.height;
         this.minimap.regX = parseInt(minimap.width / 2);
         this.minimap.regY = parseInt(minimap.height / 2);
       };

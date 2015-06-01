@@ -147,6 +147,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
+      socket.on("updateHero", function (data) {
+        if (Game.hero) {
+          Game.hero.data._str = data._str;
+          Game.hero.data._dex = data._dex;
+          Game.hero.data._con = data._con;
+          Game.hero.data._int = data._int;
+          Game.hero.data._cha = data._cha;
+
+          Game.hero.data.str = data.str;
+          Game.hero.data.dex = data.dex;
+          Game.hero.data.con = data.con;
+          Game.hero.data.int = data.int;
+          Game.hero.data.cha = data.cha;
+
+          Game.hero.data.hp = data.hp;
+          Game.hero.data.sp = data.sp;
+          Game.hero.data.chp = data.chp;
+          Game.hero.data.csp = data.csp;
+
+          Game.hero.data.atk = data.atk;
+          Game.hero.data.def = data.def;
+          Game.hero.data.matk = data.matk;
+          Game.hero.data.mdef = data.mdef;
+
+          if (Game.ui.informationWindow) {
+            Game.ui.openAttribute();
+          }
+          Game.ui.initBottomBar();
+
+          Game.hero.refreshBar();
+        }
+      });
+
       // 有玩家离开这个区域时的事件
       socket.on("removeHero", function (data) {
         for (var key in Game.area.heros) {

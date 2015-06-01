@@ -2,14 +2,12 @@
   "id": "item0004",
   "name": "木弓",
   "description": "普通的木弓，冒险者的一般装备",
+  "buff": {
+    "atk": 5
+  },
   "value": 5,
-  "effect": 5,
   "type": "weapon",
   "weapontype": "bow",
   "equip": "twohand",
-  "image": "resource\/item0004.png",
-  "width": 32,
-  "height": 32,
-  "tilewidth": 32,
-  "tileheight":32
+  "image": "resource\/item0004.png"
 }

@@ -5,11 +5,12 @@
   "image": "resource\/spell0002.png",
   "icon": "resource\/icon0002.png",
   "sound": "resource\/spell0002.ogg",
+  "cost": 5,
   "distance": 0,
   "flyspeed": 0,
   "cooldown": 500,
   "type": "normal",
-  "attack": 20,
+  "attack": 5,
   "tileheight": 64,
   "tilewidth": 64,
   "animations": {

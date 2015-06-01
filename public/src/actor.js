@@ -62,9 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.data = actorData;
       this.id = this.data.id;
 
-      this.currentHitpoint = this.data.hitpoint;
-      this.currentManapoint = this.data.manapoint;
-
       // 名字
       this.text = new createjs.Text(this.data.name, "12px Arial", "white");
       this.text.regY = this.text.getMeasuredHeight() / 2;
@@ -98,17 +95,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.hpbar.y = 10;
       // 根据血量不同设定不同颜色
       var hpcolor = "green";
-      if ((this.currentHitpoint / this.data.hitpoint) < 0.25)
+      if ((this.data.hp / this.data._hp) < 0.25)
         hpcolor = "red";
-      else if ((this.currentHitpoint / this.data.hitpoint) < 0.5)
+      else if ((this.data.hp / this.data._hp) < 0.5)
         hpcolor = "yellow";
 
       this.hpbar.graphics
         .clear()
         .beginFill(hpcolor)
-        .drawRect(0, 0, parseInt((this.currentHitpoint / this.data.hitpoint) * 30), 3);
+        .drawRect(0, 0, parseInt((this.data.hp / this.data._hp) * 30), 3);
 
-      // 魔法条
+      // 精神力条
       this.mpbar = new createjs.Shape();
       this.mpbar.regX = 15;
       this.mpbar.regY = 2;
@@ -117,9 +114,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.mpbar.graphics
         .clear()
         .beginFill("blue")
-        .drawRect(0, 0, parseInt((this.currentManapoint / this.data.manapoint) * 30), 3);
+        .drawRect(0, 0, parseInt((this.data.sp / this.data._sp) * 30), 3);
 
-      // 一个上面四个魔法条、血条的聚合，统一管理放入这个Container
+      // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
       this.infoBox = new createjs.Container();
 
       if (this.data.type == "npc") {
@@ -157,8 +154,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.sprite.y = 0;
 
       if (this.data.spells) {
+        this.spells = {};
         for (var key in this.data.spells) {
-          this.data.spells[key] = new Game.SpellClass(this.data.spells[key]);
+          this.spells[key] = new Game.SpellClass(this.data.spells[key]);
         }
       }
 
@@ -196,6 +194,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     clone  (callback) {
       var actorObj = new ActorClass(this.data);
       actorObj.oncomplete(callback);
+    }
+
+    refreshBar () {
+      var hpcolor = "green";
+      if ((this.data.hp / this.data._hp) < 0.25)
+        hpcolor = "red";
+      else if ((this.data.hp / this.data._hp) < 0.5)
+        hpcolor = "yellow";
+
+      this.hpbar.graphics
+        .clear()
+        .beginFill(hpcolor)
+        .drawRect(0, 0, parseInt((this.data.hp / this.data._hp) * 30), 3);
+
+      this.mpbar.graphics
+        .clear()
+        .beginFill("blue")
+        .drawRect(0, 0, parseInt((this.data.sp / this.data._sp) * 30), 3);
     }
 
     popup (text) {
@@ -271,9 +287,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     decreaseHitpoint (hp) {
-      this.currentHitpoint -= hp;
+      this.data.hp -= hp;
 
-      if (this.currentHitpoint <= 0) {
+      if (this.data.hp <= 0) {
 
         // item0001是物品掉落之后出现的小布袋
         Game.items.item0001.clone((dead) => {
@@ -287,15 +303,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       } else {
         var hpcolor = "green";
-        if ((this.currentHitpoint / this.data.hitpoint) < 0.25)
+        if ((this.data.hp / this.data._hp) < 0.25)
           hpcolor = "red";
-        else if ((this.currentHitpoint / this.data.hitpoint) < 0.5)
+        else if ((this.data.hp / this.data._hp) < 0.5)
           hpcolor = "yellow";
 
         this.hpbar.graphics
           .clear()
           .beginFill(hpcolor)
-          .drawRect(0, 0, parseInt((this.currentHitpoint / this.data.hitpoint) * 30), 3);
+          .drawRect(0, 0, parseInt((this.data.hp / this.data._hp) * 30), 3);
       }
 
 
@@ -305,12 +321,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     decreaseManapoint (mp) {
       var self = this;
 
-      this.currentManapoint -= mp;
+      this.data.sp -= mp;
 
       this.mpbar.graphics
         .clear()
         .beginFill("blue")
-        .drawRect(0, 0, parseInt((this.currentManapoint / this.data.manapoint) * 30), 3);
+        .drawRect(0, 0, parseInt((this.data.sp / this.data._sp) * 30), 3);
 
       Game.update();
     }
@@ -318,8 +334,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     damage (hp, mp) {
       var self = this;
 
-      if (typeof hp == "number" && !isNaN(hp) && hp > 0)
+      if (typeof hp == "number" && !isNaN(hp) && hp > 0) {
+        var text = new createjs.Text("-" + hp, "16px Arial", "white");
+        text.width = text.getMeasuredWidth();
+        text.height = text.getMeasuredHeight();
+        text.regX = Math.floor(text.width / 2);
+        text.regY = Math.floor(text.height);
+        text.x = this.x;
+        text.y = this.y;
+
+        Game.actorLayer.addChild(text);
+        Game.update();
+
+        var inter = setInterval(() => {
+          text.y -= 4;
+          Game.update();
+        }, 50);
+
+        setTimeout(() => {
+          Game.actorLayer.removeChild(text);
+          clearInterval(inter);
+          Game.update();
+        }, 2000);
+
         this.decreaseHitpoint(hp);
+      }
+
       if (typeof mp == "number" && !isNaN(mp) && mp > 0)
         this.decreaseManapoint(mp);
     }
@@ -387,29 +427,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         && (now - this.lastAttack) < this.lastAttackCooldown)
         return 0;
 
+      if (this.spells[spell].data.cost > this.data.sp) {
+        return 0;
+      }
+
       this.lastAttack = now;
-      this.lastAttackCooldown = this.data.spells[spell].data.cooldown;
+      this.lastAttackCooldown = this.spells[spell].data.cooldown;
       this.attacking = true;
 
       if (!direction) {
         direction = this.sprite.currentAnimation.match(/up|left|down|right/)[0];
       }
 
-      this.data.spells[spell].fire(self, "attack" + direction, (hittedActorIds) => {
+      this.spells[spell].fire(self, "attack" + direction, (hittedActorIds) => {
         this.attacking = false;
         if (hittedActorIds && hittedActorIds.length) {
-          Game.io.hit(this.data.spells[spell].id, hittedActorIds);
+          Game.io.hit(this.spells[spell].id, hittedActorIds);
         }
       });
 
       if (this.id == Game.hero.id) {
         Game.io.sync("attack", {
           num: num,
-          direction: direction
+          direction: direction,
+          spellId: this.spells[spell].id
         });
       }
 
-      return this.data.spells[spell].data.cooldown;
+      return this.spells[spell].data.cooldown;
     }
 
     goto (x, y, speed, collisionTest, callback) {
@@ -649,6 +694,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
+      this.focus();
       super.emit("move");
 
       if (this.id == Game.hero.id) {

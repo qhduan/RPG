@@ -71,8 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   // Textplit函数用来把文字分行，因为easeljs的lineWidth的wrap机制不支持中文
-  Game.dialogue.textSplit = function (text, maxWidth) {
-    var textBox = new createjs.Text();
+  Game.dialogue.textSplit = function (text, maxWidth, font) {
+    var textBox = new createjs.Text("", font);
 
     var ret = [];
     var line = "";
@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var newline = line + text[i];
       textBox.text = newline;
       if (textBox.getMeasuredWidth() > maxWidth) {
-        ret.push(newline);
+        ret.push(line);
         line = text[i];
       } else {
         line = newline;

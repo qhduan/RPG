@@ -8,8 +8,8 @@
     "content": "我是黑猫，我会说人话，哈哈哈哈哈哈哈哈哈哈"
   },
   "image": "resource\/actor0002.png",
-  "hitpoint": 100,
-  "manapoint": 100,
+  "hp": 100,
+  "sp": 100,
   "tileheight": 32,
   "tilewidth": 32,
   "spells": [],
