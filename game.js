@@ -19,9 +19,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
 
-global.PUBLIC_DIR = __dirname + "/public";
-global.DATA_DIR = __dirname + "/data";
-global.DB_DIR = __dirname + "/db";
+var PUBLIC_DIR = __dirname + "/public";
+var DATA_DIR = __dirname + "/data";
 
 var fs = require("fs");
 var grunt = require("grunt");
@@ -51,6 +50,21 @@ grunt.tasks(["babel"], {}, function () {
 
   console.log("\nGrunt Done, Game Starting...\n");
 
-  var game = require("./server/game");
-  game.init();
+  var express = require("express");
+  var bodyParser = require("body-parser");
+  var compression = require("compression");
+
+  var app = express();
+  app.use(bodyParser.json({limit: "1mb"}));
+  app.use(bodyParser.urlencoded({extended: true, limit: "1mb"}));
+  app.use(compression());
+  app.use(express.static(PUBLIC_DIR));
+  app.use(express.static(DATA_DIR));
+
+  var PORT = 9000;
+
+  app.listen(PORT, function () {
+    console.log("Game Flying at ", PORT);
+  });
+
 });
