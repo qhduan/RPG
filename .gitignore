@@ -1,3 +1,4 @@
+# node files
 node_modules/
-db/
+# js es5 after babel complile
 public/client/

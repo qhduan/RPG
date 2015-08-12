@@ -11,65 +11,369 @@
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="icon" type="image/png" href="icon32x32.png" />
   <link rel="stylesheet" href="/css/main.css">
-  <title>Dream RPG</title>
+  <title>维加世界</title>
 </head>
 <body class="disabled-user-select">
+
+
+<!--registerWindow-->
+<div id="registerWindow" class="game-window">
+  <div style="height: 100px;">
+    <label id="loading">正在载入预览</label>
+    <br>
+    <canvas id="registerPreview" width="256" height="64"></canvas>
+  </div>
+
+  <div style="overflow-y: scroll; height: 350px;">
+    <div>
+      <label>
+      性别
+      </label>
+      <select onchange="SelectHero(event)" data-type="sex" class="">
+        <option value="male">男性</option>
+        <option value="female">女性</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      皮肤
+      </label>
+      <select onchange="SelectHero(event)" data-type="body" class="">
+        <option value="light">粉白</option>
+        <option value="dark">深色</option>
+        <option value="dark2">更深</option>
+        <option value="tanned">黄白</option>
+        <option value="tanned2">黄灰</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      眼睛
+      </label>
+      <select onchange="SelectHero(event)" data-type="eyes" class="">
+        <option value="blue">蓝色</option>
+        <option value="brown">棕色</option>
+        <option value="gray">灰色</option>
+        <option value="green">绿色</option>
+        <option value="orange">橙色</option>
+        <option value="purple">紫色</option>
+        <option value="red">红色</option>
+        <option value="yellow">黄色</option>
+      </select>
+    </div>
+
+    <div id="customMaleHair">
+      <label>
+      头发
+      </label>
+      <select onchange="SelectHero(event)" data-type="hair" class="">
+        <option value="">无</option>
+        <option value="bedhead">Bedhead</option>
+        <option value="long">Long</option>
+        <option value="longhawk">Longhawk</option>
+        <option value="messy1">messy1</option>
+        <option value="messy2">messy2</option>
+        <option value="mohawk">Mohawk</option>
+        <option value="page">Page</option>
+        <option value="parted">Parted</option>
+        <option value="plain">Plain</option>
+        <option value="shorthawk">Shorthawk</option>
+      </select>
+    </div>
+
+    <div id="customFemaleHair" style="display: none;">
+      <label>
+      头发
+      </label>
+      <select onchange="SelectHero(event)" data-type="hair" class="">
+        <option value="">无</option>
+        <option value="bangs">bangs</option>
+        <option value="bangslong">bangslong</option>
+        <option value="bangslong2">bangslong2</option>
+        <option value="bunches">bunches</option>
+        <option value="loose">loose</option>
+        <option value="pixie">pixie</option>
+        <option value="ponytail">ponytail</option>
+        <option value="ponytail2">ponytail2</option>
+        <option value="princess">princess</option>
+        <option value="shoulderl">shoulderl</option>
+        <option value="shoulderr">shoulderr</option>
+        <option value="swoop">swoop</option>
+        <option value="unkempt">unkempt</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      发色
+      </label>
+      <select onchange="SelectHero(event)" data-type="haircolor" class="">
+        <option value="black">Black</option>
+        <option value="blonde">Blonde</option>
+        <option value="blonde2">blonde2</option>
+        <option value="blue">blue</option>
+        <option value="blue2">blue2</option>
+        <option value="brown">brown</option>
+        <option value="brown2">brown2</option>
+        <option value="brunette">brunette</option>
+        <option value="brunette2">brunette2</option>
+        <option value="dark-blonde">dark-blonde</option>
+        <option value="gold">gold</option>
+        <option value="gray">gray</option>
+        <option value="gray2">gray2</option>
+        <option value="green">green</option>
+        <option value="green2">green2</option>
+        <option value="light-blonde">light-blonde</option>
+        <option value="light-blonde2">light-blonde2</option>
+        <option value="pink">pink</option>
+        <option value="pink2">pink2</option>
+        <option value="purple">purple</option>
+        <option value="raven">raven</option>
+        <option value="raven2">raven2</option>
+        <option value="redhead">redhead</option>
+        <option value="redhead2">redhead2</option>
+        <option value="ruby-red">ruby-red</option>
+        <option value="white">white</option>
+        <option value="white-blonde">white-blonde</option>
+        <option value="white-blonde2">white-blonde2</option>
+        <option value="white.center.yan">white.center.yan</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      帽子
+      </label>
+      <select onchange="SelectHero(event)" data-type="head" class="">
+        <option value="">无</option>
+        <option value="chainhat">chainhat</option>
+        <option value="chain_hood">chain_hood</option>
+        <option value="cloth_hood">cloth_hood</option>
+        <option value="leather_cap">leather_cap</option>
+        <option value="red">red</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      上衣
+      </label>
+      <select onchange="SelectHero(event)" data-type="shirts" class="">
+        <option value="">无</option>
+        <option value="brown">brown</option>
+        <option value="maroon">maroon</option>
+        <option value="teal">teal</option>
+        <option value="white">white</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      裤子
+      </label>
+      <select onchange="SelectHero(event)" data-type="pants" class="">
+        <option value="">无</option>
+        <option value="magenta">magenta</option>
+        <option value="red">red</option>
+        <option value="teal">teal</option>
+        <option value="white">white</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      鞋子
+      </label>
+      <select onchange="SelectHero(event)"  data-type="shoes" class="">
+        <option value="">无</option>
+        <option value="black">black</option>
+        <option value="brown">brown</option>
+        <option value="maroon">maroon</option>
+      </select>
+    </div>
+
+
+    <div>
+      <label>
+      头盔
+      </label>
+      <select onchange="SelectHero(event)" data-type="armorhelms" class="">
+        <option value="">无</option>
+        <option value="golden">黄金</option>
+        <option value="metal">白银</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      胸甲
+      </label>
+      <select onchange="SelectHero(event)" data-type="armorchest" class="">
+        <option value="">无</option>
+        <option value="golden">黄金</option>
+        <option value="metal">白银</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      臂甲
+      </label>
+      <select onchange="SelectHero(event)" data-type="armorarm" class="">
+        <option value="">无</option>
+        <option value="golden">黄金</option>
+        <option value="metal">白银</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      腿甲
+      </label>
+      <select onchange="SelectHero(event)" data-type="armorlegs" class="">
+        <option value="">无</option>
+        <option value="golden">黄金</option>
+        <option value="metal">白银</option>
+      </select>
+    </div>
+
+    <div>
+      <label>
+      足甲
+      </label>
+      <select onchange="SelectHero(event)" data-type="armorfeet" class="">
+        <option value="">无</option>
+        <option value="golden">黄金</option>
+        <option value="metal">白银</option>
+      </select>
+    </div>
+
+    <div>
+      <input id="registerHeroName" placeholder="名字" type="text">
+    </div>
+
+    <div>
+      <button onclick="Game.register.submit()" class="btn">完成</button>
+      <button onclick="Game.register.back()" class="btn">返回</button>
+    </div>
+
+  </div>
+</div>
+<!--registerWindow-->
+
 
 <!--资源加载进度条-->
 <div id="ProgressBar">
   <div id="ProgressBarInner"></div>
 </div>
 
-<!--游戏主canvas-->
-<canvas id="game" class="game-canvas"></canvas>
 
-<!--注册窗口-->
-<div id="registerBox" class="register-box"></div>
-<!--注册窗口结束-->
-
-<div id="talkBox">
-  <input id="talkInput" type="text" placeholder="输入想说的话" />
-</div>
-
-
-<!--登录窗口-->
-<div id="loginBox" class="login-box">
+<!--mainWindow-->
+<div id="mainWindow" class="game-window">
   <div>
-    <h1>进入XXXXXXXX</h1>
-    <br>
-    <input id="name" name="name" placeholder="名字" type="text" value="aaa">
-    <br><br>
-    <input id="password" name="password" placeholder="密码" type="password" value="aaa">
-    <br><br>
-    <button onclick="Login()" class="btn" type="button">开始旅行</button>
-    <button onclick="Register()" class="btn" type="button">创建角色</button>
+    <h1 style="font-size: 60px;">维加世界</h1>
+    <div>
+      <button onclick="Game.archive.load()" class="btn">继续旅程</button>
+    </div>
+    <div>
+      <button onclick="Game.register.reg()" class="btn">新的旅程</button>
+    </div>
+    <div>
+      <button onclick="Game.archive.ui()" class="btn">读取进度</button>
+    </div>
   </div>
 </div>
-<!--登录窗口结束-->
+<!--mainWindow-->
 
+<!--fps layer-->
+<div id="fps" style="position: fixed; left: 0; top: 0; z-index: 9999;"></div>
 
-<script src="lib/socket.io-1.3.5.js"></script>
-<script src="lib/uuid.js"></script>
+<div id="uiWindow" class="game-window">
+  <div id="buttonSkill0" class="GameSquareButton" style="bottom: 5px; left: 130px;"></div>
+  <div id="buttonSkill1" class="GameSquareButton" style="bottom: 5px; left: 220px;"></div>
+  <div id="buttonSkill2" class="GameSquareButton" style="bottom: 5px; left: 310px;"></div>
+  <div id="buttonSkill3" class="GameSquareButton" style="bottom: 5px; left: 400px;"></div>
+  <div id="buttonSkill4" class="GameSquareButton" style="bottom: 5px; left: 490px;"></div>
+  <div id="buttonSkill5" class="GameSquareButton" style="bottom: 5px; left: 580px;"></div>
 
-<script src="lib/easeljs-0.8.1.min.js"></script>
-<script src="lib/preloadjs-0.6.1.min.js"></script>
-<script src="lib/soundjs-0.6.1.min.js"></script>
-<script src="lib/tweenjs-0.6.1.min.js"></script>
+  <div id="buttonMenu" class="GameSquareButton" style="top: 5px; right: 5px;">
+    <img src="image/setting.png" alt="System" />
+  </div>
+</div>
 
-<script src="client/game.js"></script>
-<script src="client/collision.js"></script>
-<script src="client/io.js"></script>
-<script src="client/ui.js"></script>
-<script src="client/area.js"></script>
-<script src="client/map.js"></script>
-<script src="client/item.js"></script>
-<script src="client/actor.js"></script>
-<script src="client/hero.js"></script>
-<script src="client/spell.js"></script>
-<script src="client/input.js"></script>
-<script src="client/dialogue.js"></script>
-<script src="client/bootstrap.js"></script>
-<script src="client/register.js"></script>
+<!--存档管理界面-->
+<div id="archiveWindow" class="game-window">
+  <button onclick="Game.ShowWindow('mainWindow')" class="btn">返回首页</button>
+  <div id="archiveTable" style="overflow-y: scroll; height: 360px;"></div>
+</div>
+
+<!--菜单界面-->
+<div id="menuWindow" class="game-window">
+  <div style="position: absolute; width: 760px; height: 450px; left: 20px; top: 10px; background-color: rgba(100, 100, 100, 0.5); border: 5px solid gray; border-radius: 10px;">
+    <button onclick="Game.ShowWindow('statusWindow')">状态</button>
+    <button onclick="Game.ShowWindow('skillWindow')">技能</button>
+    <button onclick="Game.ShowWindow('itemWindow')">物品</button>
+    <button onclick="Game.ShowWindow('mapWindow')">地图</button>
+    <button onclick="Game.ShowWindow('settingWindow')">设置</button>
+    <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  </div>
+</div>
+
+<!--状态界面-->
+<div id="statusWindow" class="game-window">
+  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+</div>
+
+<!--技能界面-->
+<div id="skillWindow" class="game-window">
+  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+</div>
+
+<!--物品界面-->
+<div id="itemWindow" class="game-window">
+  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+</div>
+
+<!--地图界面-->
+<div id="mapWindow" class="game-window">
+  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+</div>
+
+<!--设置界面-->
+<div id="settingWindow" class="game-window">
+  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+</div>
+
+<script src="client/Sprite.js"></script>
+<script src="client/SpriteUtil.js"></script>
+<script src="client/SpriteEvent.js"></script>
+<script src="client/SpriteLoader.js"></script>
+<script src="client/SpriteTicker.js"></script>
+<script src="client/SpriteDisplay.js"></script>
+<script src="client/SpriteContainer.js"></script>
+<script src="client/SpriteStage.js"></script>
+<script src="client/SpriteText.js"></script>
+<script src="client/SpriteSheet.js"></script>
+<script src="client/SpriteInput.js"></script>
+<script src="client/SpriteShape.js"></script>
+<script src="client/SpriteBitmap.js"></script>
+
+<script src="client/GameCore.js"></script>
+<script src="client/GameCollision.js"></script>
+<script src="client/GameUI.js"></script>
+<script src="client/GameArea.js"></script>
+<script src="client/GameMap.js"></script>
+<script src="client/GameItem.js"></script>
+<script src="client/GameSkill.js"></script>
+<script src="client/GameActor.js"></script>
+<script src="client/GameHero.js"></script>
+<script src="client/GameInput.js"></script>
+<script src="client/GameDialogue.js"></script>
+<script src="client/GameRegister.js"></script>
+<script src="client/GameArchive.js"></script>
+<script src="client/GameBootstrap.js"></script>
 
 </body>
 </html>

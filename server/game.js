@@ -20,29 +20,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "use strict";
 
 var fs = require("fs");
-var http = require("http");
 
 var express = require("express");
 var bodyParser = require("body-parser");
 var compression = require("compression");
 
 var app = express();
-
 app.use(bodyParser.json({limit: "1mb"}));
 app.use(bodyParser.urlencoded({extended: true, limit: "1mb"}));
 app.use(compression());
 
-var server = http.Server(app);
-
 exports.init = function () {
-
-  require("./socket").init(server);
-
-  require("./communication");
 
   app.use(express.static(global.PUBLIC_DIR));
   app.use(express.static(global.DATA_DIR));
 
+  /*
   app.get("/image.json", function (req, res) {
     var imagedir = fs.readdirSync(global.DATA_DIR + "/image");
     var files = {};
@@ -54,10 +47,11 @@ exports.init = function () {
     });
     res.json(files);
   });
+  */
 
   var PORT = 9000;
 
-  server.listen(PORT);
+  app.listen(PORT);
 
   console.log("Game Flying at ", PORT);
 

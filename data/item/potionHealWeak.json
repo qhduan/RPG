@@ -1,0 +1,12 @@
+{
+  "id": "potionHealWeak",
+  "name": "弱效治疗药水",
+  "description": "可以治疗微弱的伤害，生命值+50",
+  "use": {
+    "hp": 50
+  },
+  "value": 1,
+  "type": "armor",
+  "equip": "feet",
+  "image": "resource\/potionHeal.png"
+}

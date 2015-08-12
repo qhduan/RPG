@@ -16,11 +16,102 @@ html, body {
   user-select: none;
 }
 
+
+.game-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 800px;
+  height: 480px;
+  z-index: 10;
+}
+
+
 .game-canvas {
   position: absolute;
   top: 0;
   left: 0;
+  visibility: hidden;
 }
+
+
+/* main page */
+#mainWindow {
+  text-align: center;
+  background-color: green;
+}
+
+
+#registerWindow {
+  text-align: center;
+  background-color: green;
+}
+
+#registerWindow input {
+  width: 300px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+#registerWindow label {
+  font-size: 25px;
+  color: white;
+}
+
+#registerWindow select {
+  width: 200px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+
+
+
+.GameSquareButton {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: 4px solid gray;
+  border-radius: 10px;
+  background-color: rgba(100, 100, 100, 0.5);
+}
+
+.GameSquareButton:hover {
+  opacity: 0.5;
+}
+
+.GameSquareButton > img {
+  width: 100%;
+  height: 100%;
+}
+
+
+/* 存档界面 */
+.archiveItem {
+  border: 4px solid gray;
+  border-radius: 10px;
+  margin: 10px 10px;
+}
+
+.archiveItem > button {
+  width: 80px;
+  height: 50px;
+  border-radius: 5px;
+}
+
 
 #ProgressBar {
   opacity: 0;
@@ -70,7 +161,7 @@ html, body {
   text-decoration: none;
 }
 
-.login-box {
+.main-box {
   width: 320px;
   height: 400px;
   margin: auto;
@@ -81,7 +172,7 @@ html, body {
   border-radius: 20px;
 }
 
-.login-box input {
+.main-box input {
   width: 300px;
   height: 50px;
   -webkit-border-radius: 20;
@@ -102,36 +193,6 @@ html, body {
   -moz-border-radius: 20;
   border-radius: 20px;
   text-align: center;
-  display: none;
-}
-
-.register-box input {
-  width: 300px;
-  height: 50px;
-  -webkit-border-radius: 20;
-  -moz-border-radius: 20;
-  border-radius: 20px;
-  text-align: center;
-  font-size: 25px;
-  background-color: #d5ab63;
-  margin: 10px;
-}
-
-.register-box label {
-  font-size: 25px;
-  color: white;
-}
-
-.register-box select {
-  width: 200px;
-  height: 50px;
-  -webkit-border-radius: 20;
-  -moz-border-radius: 20;
-  border-radius: 20px;
-  text-align: center;
-  font-size: 25px;
-  background-color: #d5ab63;
-  margin: 10px;
 }
 
 .register-box #previewBox {

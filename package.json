@@ -1,6 +1,6 @@
 {
   "name": "Game",
-  "description": "RPG Game made by HTML5",
+  "description": "RPG Game",
   "version": "1.0.0",
   "homepage": "https://github.com/qhduan/RPG",
   "author": {
@@ -30,8 +30,6 @@
   "dependencies": {
     "express": "latest",
     "body-parser": "latest",
-    "socket.io": "latest",
-    "nedb": "latest",
     "compression": "latest",
     "node-uuid": "latest",
     "grunt": "latest",

@@ -19,183 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
 
-var SocketModule = require("./socket");
-
-var HeroModule = require("./hero");
-var SpellModule = require("./spell");
-var ActorModule = require("./actor");
-var AreaModule = require("./area");
-
-var HERO_SOCKET = {};
-var SOCKET_HERO = {};
-//var heroId = SOCKET_HERO[socket.id];
-
-setInterval(function () {
-  for (var key in HERO_SOCKET) {
-    var hero = HeroModule.get(key);
-    if (hero.hp < hero._hp) {
-      hero.hp += Math.floor(hero._hp * 0.03);
-      if (hero.hp > hero._hp)
-        hero.hp = hero._hp;
-    }
-    if (hero.sp < hero._sp) {
-      hero.sp += Math.floor(hero._sp * 0.03);
-      if (hero.sp > hero._sp)
-        hero.sp = hero._sp;
-    }
-    HERO_SOCKET[key].emit("updateHero", hero);
-  }
-}, 1000);
-
-
-SocketModule.on("hit", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-  TestDamage(socket, heroId, data.spellId, data.actorIds);
-});
-
-SocketModule.on("updateHero", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-  HeroModule.update(heroId, data.object, function (hero) {
-    socket.emit("updateHero", hero);
-  });
-});
-
-// 某个用户断开链接
-SocketModule.on("disconnect", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-
-  var heroObj = HeroModule.get(heroId);
-
-  AreaModule.remove(heroObj.area, heroId);
-
-  delete SOCKET_HERO[socket.id];
-  delete HERO_SOCKET[heroId];
-
-  for (var key in HERO_SOCKET) {
-    if (HeroModule.get(key).area == heroObj.area) {
-      HERO_SOCKET[key].emit("removeHero", {
-        id: heroId
-      });
-    }
-  }
-});
-
-// 聊天消息
-SocketModule.on("talk", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-
-  var heroObj = HeroModule.get(heroId);
-
-  for (var key in HERO_SOCKET) {
-    if (HeroModule.get(key).area == heroObj.area) {
-      HERO_SOCKET[key].emit("talk", {
-        id: heroId,
-        talk: data
-      });
-    }
-  }
-});
-
-// 玩家行走
-SocketModule.on("move", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-
-  var heroObj = HeroModule.get(heroId);
-  heroObj.x = data.x;
-  heroObj.y = data.y;
-
-  for (var key in HERO_SOCKET) {
-    var h = HeroModule.get(key);
-    if (h.id != heroObj.id) {
-      HERO_SOCKET[key].emit("move", {
-        id: heroObj.id,
-        data: data
-      });
-    }
-  }
-});
-
-// 玩家攻击
-SocketModule.on("attack", function (socket, data) {
-  var heroId = SOCKET_HERO[socket.id];
-  if (!heroId) return;
-
-  var heroObj = HeroModule.get(heroId);
-
-  var spell = SpellModule.get(data.spellId);
-  heroObj.sp -= spell.cost;
-  socket.emit("updateHero", heroObj);
-
-  for (var key in HERO_SOCKET) {
-    var h = HeroModule.get(key);
-    if (h.id != heroObj.id) {
-      HERO_SOCKET[key].emit("attack", {
-        id: heroObj.id,
-        data: data
-      });
-    }
-  }
-});
-
-
-
-// 测试用户heroId以spellId攻击中了actorIds，如果成功，则返回actorIds中对应actor所应受到的伤害
-function TestDamage (socket, heroId, spellId, actorIds) {
-  var heroObj = HeroModule.get(heroId);
-  var spellObj = SpellModule.get(spellId);
-
-  var damage = 0;
-
-  if (spellObj.type == "normal") {
-    damage = spellObj.attack + heroObj.atk;
-  }
-  if (spellObj.type == "magic") {
-    damage = spellObj.attack + heroObj.matk;
-  }
-
-  var ret = {};
-
-  var actors = AreaModule.get(heroObj.area).actors;
-
-  // 计算actorIds中的列出的actor的可能的伤害
-  actorIds.forEach(function (element) {
-    if (actors[element]) {
-      actors[element].hp -= damage;
-      ret[element] = damage;
-
-      if (actors[element].hp <= 0) {
-        delete actors[element];
-      }
-    }
-  });
-
-  for (var key in HERO_SOCKET) {
-    if (HeroModule.get(key).area == heroObj.area) {
-      HERO_SOCKET[key].emit("damage", ret);
-    }
-  }
+function Init (app) {
+  app.post("/area/get", GetArea);
+  app.post("/hero/generate", GenerateHero);
+  app.post("/hero/create", CreateHero);
 }
 
 
-
-
-
-
-
-
-
-
-
-function GetArea (sock) {
-  var id = sock.data.id;
+function GetArea (req, res) {
+  var id = req.body.id;
 
   if (typeof id != "string") {
-    return sock.send({error: "GetArea Invalid Argument"});
+    return res.json({error: "GetArea Invalid Argument"});
   }
 
   var areaData = AreaModule.get(id);
@@ -237,7 +72,7 @@ function GetArea (sock) {
 
     }
 
-    sock.send({
+    res.json({
       map: areaData.map,
       heros: areaData.heros,
       actors: areaData.actors,
@@ -246,91 +81,42 @@ function GetArea (sock) {
       resources: resources
     });
   } else {
-    sock.send({error: "Area Not Found"});
+    res.json({error: "Area Not Found"});
   }
 }
 
-SocketModule.reg("/area/get", GetArea);
-
-
-
-function Login (sock) {
-  var name = sock.data.name;
-  var password = sock.data.password;
-
-  if (typeof name != "string" || name.length <= 0)
-    return sock.send({error: "Invalid Name"});
-
-  if (typeof password != "string" || password.length <= 0)
-    return sock.send({error: "Invalid Password"});
-
-  HeroModule.db.findOne({"name": name, "password": password}, function (err, doc) {
-    if (err) {
-      console.log("Login", err);
-      sock.send({error: "Server Error"});
-    }
-
-    if (doc) {
-      AreaModule.add(doc.area, doc.id);
-      var heroObj = HeroModule.get(doc.id);
-
-      for (var key in HERO_SOCKET) {
-        if (HeroModule.get(key).area == heroObj.area) {
-          HERO_SOCKET[key].emit("addHero", {
-            hero: heroObj
-          });
-        }
-      }
-
-      HERO_SOCKET[doc.id] = sock.socket;
-      SOCKET_HERO[sock.socket.id] = doc.id;
-
-
-      sock.send({success: {
-        heroId: doc.id,
-        areaId: doc.area
-      }});
-    } else {
-      sock.send({error: "Invalid Name or Password"});
-    }
-
-  });
-
-}
-
-SocketModule.reg("/login", Login);
 
 
 
 // 用于根据客户端传来的参数，寻找到指定图片的相应地址
-function GenerateHero (sock) {
+function GenerateHero (req, res) {
 
   var heroCustom = {
-    "sex": sock.data.sex,
-    "body": sock.data.body,
-    "eyes": sock.data.eyes,
+    "sex": req.body.sex,
+    "body": req.body.body,
+    "eyes": req.body.eyes,
 
-    "hair": sock.data.hair,
-    "haircolor": sock.data.haircolor,
+    "hair": req.body.hair,
+    "haircolor": req.body.haircolor,
 
-    "head": sock.data.head,
-    "shirts": sock.data.shirts,
-    "pants": sock.data.pants,
-    "shoes": sock.data.shoes,
+    "head": req.body.head,
+    "shirts": req.body.shirts,
+    "pants": req.body.pants,
+    "shoes": req.body.shoes,
 
-    "armorchest": sock.data.armorchest,
-    "armorarm": sock.data.armorarm,
-    "armorlegs": sock.data.armorlegs,
-    "armorhelms": sock.data.armorhelms,
-    "armorfeet": sock.data.armorfeet
+    "armorchest": req.body.armorchest,
+    "armorarm": req.body.armorarm,
+    "armorlegs": req.body.armorlegs,
+    "armorhelms": req.body.armorhelms,
+    "armorfeet": req.body.armorfeet
   };
 
   if (heroCustom.sex != "male" && heroCustom.sex != "female") {
-    return sock.send({error: "Invalid Sex"});
+    return res.json({error: "Invalid Sex"});
   }
 
   if (typeof heroCustom.body != "string" || heroCustom.body.length <= 0) {
-    return sock.send({error: "Invalid Body"});
+    return res.json({error: "Invalid Body"});
   }
 
   var BASE = "/hero";
@@ -374,44 +160,41 @@ function GenerateHero (sock) {
 
   ret.weapons = BASE + "/weapons/" + heroCustom.sex + "/weapons.png";
 
-  sock.send(ret);
+  res.json(ret);
 } // GenerateHero
 
 
-SocketModule.reg("/hero/generate", GenerateHero);
 
-
-
-function CreateHero (sock) {
-  var name = sock.data.name;
-  var password = sock.data.password;
-  var custom = sock.data.custom;
+function CreateHero (req, res) {
+  var name = req.body.name;
+  var password = req.body.password;
+  var custom = req.body.custom;
 
   if (typeof name != "string" || name.length <= 0) {
-    return sock.send({error: "Invalid Name"});
+    return res.json({error: "Invalid Name"});
   }
 
   if (typeof password != "string" || password.length <= 0) {
-    return sock.send({error: "Invalid Password"});
+    return res.json({error: "Invalid Password"});
   }
 
   if (typeof custom != "object") {
-    return sock.send({error: "Invalid Custom"});
+    return res.json({error: "Invalid Custom"});
   }
 
   if (!custom.body || !custom.sex) {
-    return sock.send({error: "Invalid Custom"});
+    return res.json({error: "Invalid Custom"});
   }
 
   HeroModule.db.findOne({"name": name}, function (err, doc) {
     if (err) {
       console.log("CreateHero", err);
-      sock.send({error: "System Error"});
+      res.json({error: "System Error"});
       return;
     }
 
     if (doc) {
-      sock.send({error: "Name Conflict"});
+      res.json({error: "Name Conflict"});
     } else {
       HeroModule.db.insert([{
         "id": "hero_" + name,
@@ -482,14 +265,14 @@ function CreateHero (sock) {
       }], function (err, newDocs) {
         if (err) {
           console.log(err);
-          return sock.send({error: "System Error"});
+          return res.json({error: "System Error"});
         }
         var heroData = newDocs[0];
         HeroModule.add(heroData);
-        sock.send({success: "ok"});
+        res.json({success: "ok"});
       });
     }
   });
 }
 
-SocketModule.reg("/hero/create", CreateHero);
+exports.init = Init;
