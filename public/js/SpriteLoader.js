@@ -133,3 +133,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Loader;
   })(Sprite.Event);
 })();
+//# sourceMappingURL=SpriteLoader.js.map

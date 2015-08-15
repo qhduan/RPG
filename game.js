@@ -50,8 +50,7 @@ grunt.tasks(["babel"], {}, function () {
   var express = require("express");
 
   var app = express();
-  app.use(express.static(PUBLIC_DIR));
-  app.use(express.static(DATA_DIR));
+  app.use(express.static("public/"));
 
   var PORT = 9000;
 
