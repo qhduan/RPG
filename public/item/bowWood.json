@@ -1,0 +1,11 @@
+{
+  "id": "bowWood",
+  "name": "木弓",
+  "description": "普通的木弓，冒险者的一般装备",
+  "buff": {
+    "atk": 5
+  },
+  "value": 5,
+  "type": "bow",
+  "image": "resource\/bowWood.png"
+}

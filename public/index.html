@@ -10,13 +10,13 @@
   <meta name="author" content="longinus">
   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
   <link rel="icon" type="image/png" href="icon32x32.png" />
-  <link rel="stylesheet" href="/css/main.css">
+  <link rel="stylesheet" href="/css/game.css">
   <title>维加世界</title>
 </head>
 <body class="disabled-user-select">
 
 
-<!--registerWindow-->
+<!--注册窗口-->
 <div id="registerWindow" class="game-window">
   <div style="height: 100px;">
     <label id="loading">正在载入预览</label>
@@ -194,7 +194,6 @@
       </select>
     </div>
 
-
     <div>
       <label>
       头盔
@@ -270,6 +269,54 @@
 </div>
 
 
+<!--选择窗口-->
+<div id="choiceWindow" class="game-window">
+
+  <button id="choiceNo">取消</button>
+  <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
+    <div style="height: 480px; overflow-y: auto; text-align: center;">
+      <table id="choiceTable" style="width: 100%; height: 100%;">
+        <tbody>
+          <tr>
+            <td>
+              <button id="choice0">0</button>
+              <button id="choice1">1</button>
+              <button id="choice2">2</button>
+              <button id="choice3">3</button>
+              <button id="choice4">4</button>
+              <button id="choice5">5</button>
+              <button id="choice6">6</button>
+              <button id="choice7">7</button>
+              <button id="choice8">8</button>
+              <button id="choice9">9</button>
+              <button id="choice10">10</button>
+              <button id="choice11">11</button>
+              <button id="choice12">12</button>
+              <button id="choice13">13</button>
+              <button id="choice14">14</button>
+              <button id="choice15">15</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!--确认窗口-->
+<div id="confirmWindow" class="game-window">
+  <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
+    <table>
+      <tr><td><span id="confirmMessage"></span></td></tr>
+      <tr><td>
+        <button id="confirmYes">确定</button>
+        <button id="confirmNo">取消</button>
+      </td></tr>
+    </table>
+  </div>
+</div>
+
+
 <!--mainWindow-->
 <div id="mainWindow" class="game-window">
   <div>
@@ -281,7 +328,7 @@
       <button onclick="Game.register.reg()" class="btn">新的旅程</button>
     </div>
     <div>
-      <button onclick="Game.archive.ui()" class="btn">读取进度</button>
+      <button onclick="Game.ui.archiveWindow()" class="btn">读取进度</button>
     </div>
   </div>
 </div>
@@ -291,19 +338,27 @@
 <div id="fps" style="position: fixed; left: 0; top: 0; z-index: 9999;"></div>
 
 <div id="uiWindow" class="game-window">
-  <div id="buttonSkill0" class="GameSquareButton" style="bottom: 5px; left: 130px;"></div>
-  <div id="buttonSkill1" class="GameSquareButton" style="bottom: 5px; left: 220px;"></div>
-  <div id="buttonSkill2" class="GameSquareButton" style="bottom: 5px; left: 310px;"></div>
-  <div id="buttonSkill3" class="GameSquareButton" style="bottom: 5px; left: 400px;"></div>
-  <div id="buttonSkill4" class="GameSquareButton" style="bottom: 5px; left: 490px;"></div>
-  <div id="buttonSkill5" class="GameSquareButton" style="bottom: 5px; left: 580px;"></div>
+  <div style="text-align: center; position: absolute; bottom: 10px; width: 100%; height: 70px;">
+    <div class="GameSquareButton" id="buttonBar-0"></div>
+    <div class="GameSquareButton" id="buttonBar-1"></div>
+    <div class="GameSquareButton" id="buttonBar-2"></div>
+    <div class="GameSquareButton" id="buttonBar-3"></div>
+    <div class="GameSquareButton" id="buttonBar-4"></div>
+    <div class="GameSquareButton" id="buttonBar-5"></div>
+    <div class="GameSquareButton" id="buttonBar-6"></div>
+    <div class="GameSquareButton" id="buttonBar-7"></div>
+  </div>
 
-  <div id="buttonMenu" class="GameSquareButton" style="top: 5px; right: 5px;">
+  <div id="buttonUse" class="GameSquareButton" style="position: absolute; top: 5px; right: 85px;">
+    <img src="image/hint.png" alt="System" />
+  </div>
+
+  <div id="buttonMenu" class="GameSquareButton" style="position: absolute; top: 5px; right: 5px;">
     <img src="image/setting.png" alt="System" />
   </div>
 </div>
 
-<!--存档管理界面-->
+<!--存档界面-->
 <div id="archiveWindow" class="game-window">
   <button onclick="Game.ShowWindow('mainWindow')" class="btn">返回首页</button>
   <div id="archiveTable" style="overflow-y: scroll; height: 360px;"></div>
@@ -311,34 +366,142 @@
 
 <!--菜单界面-->
 <div id="menuWindow" class="game-window">
-  <div style="position: absolute; width: 760px; height: 450px; left: 20px; top: 10px; background-color: rgba(100, 100, 100, 0.5); border: 5px solid gray; border-radius: 10px;">
-    <button onclick="Game.ShowWindow('statusWindow')">状态</button>
-    <button onclick="Game.ShowWindow('skillWindow')">技能</button>
-    <button onclick="Game.ShowWindow('itemWindow')">物品</button>
-    <button onclick="Game.ShowWindow('mapWindow')">地图</button>
-    <button onclick="Game.ShowWindow('settingWindow')">设置</button>
-    <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  <div class="window-box">
+    <button onclick="Game.ui.itemWindow()">背包物品</button>
+    <button onclick="Game.ui.statusWindow();">状态装备</button>
+    <button onclick="Game.ui.skillWindow()">查看技能</button>
+    <button onclick="Game.ui.questWindow()">任务列表</button>
+    <button onclick="Game.ui.logWindow()">游戏日志</button>
+    <button onclick="Game.ShowWindow('mapWindow')">迷你地图</button>
+    <button onclick="Game.ShowWindow('settingWindow')">游戏设置</button>
+    <button onclick="Game.ui.shortcut()">删除快捷</button>
+    <button onclick="Game.ui.save()">保存游戏</button>
+    <button onclick="Game.ui.load()">读取游戏</button>
+    <button onclick="Game.ShowWindow('mainWindow')">退出游戏</button>
+    <button onclick="Game.ShowWindow('uiWindow')">关闭窗口</button>
   </div>
 </div>
 
 <!--状态界面-->
 <div id="statusWindow" class="game-window">
-  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  <div class="window-box">
+    <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+    <button onclick="Game.ui.itemWindow();">物品</button>
+    <table border="1">
+      <tr>
+        <td>
+          <label id="heroName"></label>
+          <label id="heroHP"></label>
+          <label id="heroSP"></label>
+          <label id="heroLevel"></label>
+          <label id="heroEXP"></label>
+          <label id="heroSTR"></label>
+          <label id="heroDEX"></label>
+          <label id="heroCON"></label>
+          <label id="heroINT"></label>
+          <label id="heroCHA"></label>
+          <label id="heroATK"></label>
+          <label id="heroDEF"></label>
+          <label id="heroMATK"></label>
+          <label id="heroMDEF"></label>
+        </td>
+        <td>
+          <table border="1">
+            <tr>
+              <td>头部</td>
+              <td id="equipment-head"></td>
+            </tr>
+            <tr>
+              <td>身体</td>
+              <td id="equipment-body"></td>
+            </tr>
+            <tr>
+              <td>足部</td>
+              <td id="equipment-feet"></td>
+            </tr>
+            <tr>
+              <td>武器</td>
+              <td id="equipment-weapon"></td>
+            </tr>
+            <tr>
+              <td>项链</td>
+              <td id="equipment-neck"></td>
+            </tr>
+            <tr>
+              <td>戒指</td>
+              <td id="equipment-ring"></td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
 </div>
 
 <!--技能界面-->
 <div id="skillWindow" class="game-window">
-  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  <div class="window-box">
+    <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+    <table id="skillTable" border="1">
+      <thead>
+        <tr>
+          <td style="width: 40px;"></td>
+          <td style="width: 120px;"></td>
+          <td></td>
+          <td style="width: 60px;"></td>
+        </tr>
+      </thead>
+      <tbody id="skillTableBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!--捡取窗口-->
+<div id="pickupWindow" class="game-window">
+  <div class="window-box">
+    <button onclick="Game.ShowWindow('uiWindow')">关闭</button>
+    <button onclick="Game.ShowWindow('uiWindow')">全部捡取</button>
+    <table border="1">
+      <tbody id="pickupTableBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <!--物品界面-->
 <div id="itemWindow" class="game-window">
-  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  <div class="window-box">
+    <div id="itemBar">
+      <button onclick="Game.ShowWindow('uiWindow')">关闭</button>
+      <button onclick="Game.ui.statusWindow();">状态</button>
+      <button onclick="Game.ui.itemWindow()">全部</button>
+      <button onclick="Game.ui.itemWindow('sword|spear|bow')">武器</button>
+      <button onclick="Game.ui.itemWindow('head|body|feet')">护甲</button>
+      <button onclick="Game.ui.itemWindow('potion')">药水</button>
+      <button onclick="Game.ui.itemWindow('material')">材料</button>
+      <button onclick="Game.ui.itemWindow('book')">书籍</button>
+      <button onclick="Game.ui.itemWindow('misc')">其他</button>
+    </div>
+    <table border="1">
+      <thead>
+        <tr>
+          <td style="width: 40px;"></td>
+          <td style="width: 120px;"></td>
+          <td style="width: 10px;"></td>
+          <td></td>
+          <td style="width: 60px;"></td>
+        </tr>
+      </thead>
+      <tbody id="itemTableBody"></tbody>
+    </table>
+  </div>
 </div>
 
 <!--地图界面-->
 <div id="mapWindow" class="game-window">
-  <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+  <div class="window-box">
+    <button onclick="Game.ShowWindow('uiWindow')">返回</button>
+    <div id="minimap"></div>
+  </div>
 </div>
 
 <!--设置界面-->
@@ -346,34 +509,34 @@
   <button onclick="Game.ShowWindow('uiWindow')">返回</button>
 </div>
 
-<script src="client/Sprite.js"></script>
-<script src="client/SpriteUtil.js"></script>
-<script src="client/SpriteEvent.js"></script>
-<script src="client/SpriteLoader.js"></script>
-<script src="client/SpriteTicker.js"></script>
-<script src="client/SpriteDisplay.js"></script>
-<script src="client/SpriteContainer.js"></script>
-<script src="client/SpriteStage.js"></script>
-<script src="client/SpriteText.js"></script>
-<script src="client/SpriteSheet.js"></script>
-<script src="client/SpriteInput.js"></script>
-<script src="client/SpriteShape.js"></script>
-<script src="client/SpriteBitmap.js"></script>
+<script src="js/Sprite.js"></script>
+<script src="js/SpriteUtil.js"></script>
+<script src="js/SpriteEvent.js"></script>
+<script src="js/SpriteLoader.js"></script>
+<script src="js/SpriteTicker.js"></script>
+<script src="js/SpriteDisplay.js"></script>
+<script src="js/SpriteContainer.js"></script>
+<script src="js/SpriteStage.js"></script>
+<script src="js/SpriteText.js"></script>
+<script src="js/SpriteSheet.js"></script>
+<script src="js/SpriteInput.js"></script>
+<script src="js/SpriteShape.js"></script>
+<script src="js/SpriteBitmap.js"></script>
 
-<script src="client/GameCore.js"></script>
-<script src="client/GameCollision.js"></script>
-<script src="client/GameUI.js"></script>
-<script src="client/GameArea.js"></script>
-<script src="client/GameMap.js"></script>
-<script src="client/GameItem.js"></script>
-<script src="client/GameSkill.js"></script>
-<script src="client/GameActor.js"></script>
-<script src="client/GameHero.js"></script>
-<script src="client/GameInput.js"></script>
-<script src="client/GameDialogue.js"></script>
-<script src="client/GameRegister.js"></script>
-<script src="client/GameArchive.js"></script>
-<script src="client/GameBootstrap.js"></script>
+<script src="js/GameCore.js"></script>
+<script src="js/GameCollision.js"></script>
+<script src="js/GameUI.js"></script>
+<script src="js/GameArea.js"></script>
+<script src="js/GameMap.js"></script>
+<script src="js/GameItem.js"></script>
+<script src="js/GameSkill.js"></script>
+<script src="js/GameActor.js"></script>
+<script src="js/GameHero.js"></script>
+<script src="js/GameInput.js"></script>
+<script src="js/GameDialogue.js"></script>
+<script src="js/GameRegister.js"></script>
+<script src="js/GameArchive.js"></script>
+<script src="js/GameBootstrap.js"></script>
 
 </body>
 </html>

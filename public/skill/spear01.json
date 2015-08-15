@@ -1,0 +1,50 @@
+{
+  "id": "spear01",
+  "name": "枪攻击Level1",
+  "description": "枪攻击Level1",
+  "image": "resource\/spear.png",
+  "icon": "resource\/spear_icon.png",
+  "sound": "resource\/spear.ogg",
+  "cost": 5,
+  "distance": 0,
+  "flyspeed": 0,
+  "cooldown": 500,
+  "type": "normal",
+  "power": 30,
+  "tileheight": 64,
+  "tilewidth": 64,
+  "animations": {
+    "attackdown": {
+      "frames": [0, 1, 2],
+      "speed": 50,
+      "next": "",
+      "x": 0,
+      "y": 30,
+      "actor": "thrustdown"
+    },
+    "attackleft": {
+      "frames": [3, 4, 5],
+      "speed": 50,
+      "next": "",
+      "x": -30,
+      "y": 0,
+      "actor": "thrustleft"
+    },
+    "attackright": {
+      "frames": [6, 7, 8],
+      "speed": 50,
+      "next": "",
+      "x": 30,
+      "y": 0,
+      "actor": "thrustright"
+    },
+    "attackup": {
+      "frames": [9, 10, 11],
+      "speed": 50,
+      "next": "",
+      "x": 0,
+      "y": -30,
+      "actor": "thrustup"
+    }
+  }
+}

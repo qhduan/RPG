@@ -1,0 +1,11 @@
+{
+  "id": "swordIron",
+  "name": "铁剑",
+  "description": "普通的铁剑，冒险者的一般装备",
+  "buff": {
+    "atk": 5
+  },
+  "value": 5,
+  "type": "sword",
+  "image": "resource\/swordIron.png"
+}

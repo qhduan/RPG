@@ -29,9 +29,6 @@
   },
   "dependencies": {
     "express": "latest",
-    "body-parser": "latest",
-    "compression": "latest",
-    "node-uuid": "latest",
     "grunt": "latest",
     "grunt-contrib-watch": "latest",
     "grunt-babel": "latest",

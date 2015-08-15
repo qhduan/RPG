@@ -1,0 +1,8 @@
+{
+  "id": "gold",
+  "name": "金币",
+  "description": "通用货币，一般等价物",
+  "value": 1,
+  "type": "misc",
+  "image": "resource\/gold.png"
+}

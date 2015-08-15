@@ -1,0 +1,284 @@
+
+html {
+  overflow: auto;
+}
+
+html, body {
+  margin: 0;
+}
+
+.disabled-user-select {
+  background-color: gray;
+  -webkit-user-select: none; /* Chrome all / Safari all */
+  -moz-user-select: none; /* Firefox all */
+  -ms-user-select: none; /* IE 10+ */
+  -o-user-select: none;
+  user-select: none;
+}
+
+#choiceWindow, #confirmWindow {
+  z-index: 998;
+  text-align: center;
+}
+
+#choiceWindow div {
+  text-align: center;
+}
+
+#choiceNo {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  width: 100px;
+  height: 60px;
+  font-size: 30px;
+}
+
+#choiceTable button {
+  margin: 5px auto;
+  min-width: 400px;
+  min-height: 60px;
+  font-size: 30px;
+}
+
+#confirmWindow table {
+  width: 100%;
+  height: 100%;
+}
+
+#confirmWindow span {
+  font-size: 20px;
+}
+
+#confirmWindow button {
+  width: 100px;
+  height: 60px;
+  font-size: 20px;
+  margin: 20px;
+}
+
+.game-window {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: none;
+  width: 800px;
+  height: 480px;
+  z-index: 10;
+}
+
+
+.game-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+}
+
+
+/* main page */
+#mainWindow {
+  text-align: center;
+  background-color: green;
+}
+
+
+#registerWindow {
+  text-align: center;
+  background-color: green;
+}
+
+#registerWindow input {
+  width: 300px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+#registerWindow label {
+  font-size: 25px;
+  color: white;
+}
+
+#registerWindow select {
+  width: 200px;
+  height: 50px;
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 25px;
+  background-color: #d5ab63;
+  margin: 10px;
+}
+
+
+
+
+.GameSquareButton {
+  width: 60px;
+  height: 60px;
+  border: 4px solid gray;
+  border-radius: 10px;
+  background-color: rgba(100, 100, 100, 0.5);
+  display: inline-block;
+}
+
+.GameSquareButton:hover {
+  opacity: 0.5;
+}
+
+.GameSquareButton > img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 窗口内饰 */
+.window-box {
+  position: absolute;
+  width: 760px;
+  height: 440px;
+  left: 10px;
+  top: 10px;
+  padding: 5px;
+  background-color: rgba(100, 100, 100, 0.75);
+  border: 5px solid gray;
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+/* ui bar */
+#uiWindow table {
+  position: absolute;
+  bottom: 5px;
+  width:100%;
+  height: 80px;
+  text-align: center;
+}
+
+/* 状态窗口 */
+#statusWindow label {
+  display: block;
+}
+
+#statusWindow button {
+  width: 60px;
+  height: 40px;
+  font-size: 20px;
+}
+
+#statusWindow table {
+  width: 100%;
+  height: 360px;
+}
+
+/* 技能窗口 */
+#skillTable {
+  width: 100%;
+}
+
+#skillTable img {
+  width: 100%;
+  height: 100%;
+}
+
+/* 物品窗口 */
+#itemBar > button {
+  width: 60px;
+  height: 40px;
+  font-size: 20px;
+}
+
+#itemWindow table {
+  width: 100%;
+}
+
+#itemWindow table img {
+  width: 100%;
+  height: 100%;
+}
+
+#itemWindow table button {
+  width: 60px;
+  height: 40px;
+  font-size: 20px;
+}
+
+/* 拾取窗口 */
+#pickupWindow table {
+  width: 100%;
+}
+
+#pickupWindow table img {
+  width: 100%;
+  height: 100%;
+}
+
+#pickupWindow table button {
+  width: 60px;
+  height: 40px;
+}
+
+/* 存档界面 */
+.archiveItem {
+  border: 4px solid gray;
+  border-radius: 10px;
+  margin: 10px 10px;
+}
+
+.archiveItem > button {
+  width: 80px;
+  height: 50px;
+  border-radius: 5px;
+}
+
+
+/* 菜单窗口 */
+#menuWindow {
+  text-align: center;
+}
+
+#menuWindow button {
+  width: 300px;
+  height: 60px;
+  margin: 5px;
+  font-size: 20px;
+}
+
+/* 地图窗口 */
+#mapWindow {
+  text-align: center;
+}
+
+#mapWindow button {
+  width: 200px;
+  height: 60px;
+}
+
+
+.btn {
+  -webkit-border-radius: 20;
+  -moz-border-radius: 20;
+  border-radius: 20px;
+  text-shadow: 1px 1px 3px #666666;
+  -webkit-box-shadow: 0px 1px 3px #666666;
+  -moz-box-shadow: 0px 1px 3px #666666;
+  box-shadow: 0px 1px 3px #666666;
+  font-family: Arial;
+  color: #ffffff;
+  font-size: 25px;
+  padding: 12px;
+  background: #825a23;
+  text-decoration: none;
+  margin: 10px;
+}
+
+.btn:hover {
+  background: #ab7d3e;
+  text-decoration: none;
+}

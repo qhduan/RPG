@@ -19,9 +19,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 "use strict";
 
-var PUBLIC_DIR = __dirname + "/public";
-var DATA_DIR = __dirname + "/data";
-
 var fs = require("fs");
 var grunt = require("grunt");
 var babel = require("babel-core");
@@ -33,7 +30,7 @@ grunt.tasks(["babel"], {}, function () {
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
-    var outputPath = filepath.replace("public/src/", "public/client/");
+    var outputPath = filepath.replace("src/", "public/js/");
     babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
       if (err) throw err;
       // 保存转换好的代码
@@ -51,13 +48,8 @@ grunt.tasks(["babel"], {}, function () {
   console.log("\nGrunt Done, Game Starting...\n");
 
   var express = require("express");
-  var bodyParser = require("body-parser");
-  var compression = require("compression");
 
   var app = express();
-  app.use(bodyParser.json({limit: "1mb"}));
-  app.use(bodyParser.urlencoded({extended: true, limit: "1mb"}));
-  app.use(compression());
   app.use(express.static(PUBLIC_DIR));
   app.use(express.static(DATA_DIR));
 

@@ -11,16 +11,16 @@ module.exports = function (grunt) {
       dist: {
         files: [{
           expand: true,
-          cwd: "public/src",
+          cwd: "src",
           src: ["**/*.js"],
-          dest: "public/client",
+          dest: "public/js",
           ext: ".js"
         }]
       }
     },
     watch: {
       scrpites: {
-        files: "public/src/*.js",
+        files: "src/*.js",
         //tasks: ["babel:dist"],
         options: {
           spawn: false
