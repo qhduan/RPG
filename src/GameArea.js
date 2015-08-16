@@ -44,13 +44,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var mapData = event.data[0];
       var mapExtra = event.data[1];
 
+      for (var key in mapExtra) {
+        mapData[key] = mapExtra[key];
+      }
+
       var mapObj = new Game.MapClass(mapData);
       mapObj.on("complete", function () {
         var area = {
           actors: {},
           bags: {},
+          doors: [],
+          chests: [],
           map: mapObj,
           data: mapExtra
+        };
+
+        var completeCount = -1;
+        var Complete = () => {
+          completeCount++;
+          if (completeCount >= 0) {
+            callback(area);
+          }
         };
 
         mapExtra.actors.forEach(function (element) {
@@ -58,19 +72,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           actorLoader.add(`/actor/${element.id}.json`);
           actorLoader.start();
           actorLoader.on("complete", function (event) {
-            var actorData = event.data[0];
-            actorData.x = element.x;
-            actorData.y = element.y;
+            var actorData = Sprite.Util.copy(event.data[0]);
+            actorData.x = element.x * 32 + 16;
+            actorData.y = element.y * 32 + 16;
             actorData.mode = element.mode;
             var actorObj = new Game.ActorClass(actorData);
             actorObj.on("complete", function () {
               area.actors[actorObj.id] = actorObj;
               actorObj.draw(Game.actorLayer);
+              Complete();
             });
           });
         });
 
-        callback(area);
+        mapExtra.door.forEach(function (element) {
+          var door = Sprite.Util.copy(element);
+          door.x = door.x * 32 + 16;
+          door.y = door.y * 32 + 16;
+          door.destx = door.destx * 32 + 16;
+          door.desty = door.desty * 32 + 16;
+          door.type = "door";
+          area.doors.push(door);
+        });
+
+        mapExtra.chest.forEach(function (element) {
+          var chest = Sprite.Util.copy(element);
+          chest.x = chest.x * 32 + 16;
+          chest.y = chest.y * 32 + 16;
+          chest.destx = chest.destx * 32 + 16;
+          chest.desty = chest.desty * 32 + 16;
+          chest.type = "chest";
+          area.chests.push(chest);
+        });
+
+        Complete();
       });
     });
   };

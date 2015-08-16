@@ -4,9 +4,10 @@
 
   Sprite.Cache = {};
 
-  function Fetch (url, callback) {
+  function Fetch (url, callback, timeout) {
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
+    req.timeout = 15000;
 
     var type = null;
     if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
@@ -16,38 +17,56 @@
       req.responseType = "blob"
       type = "audio";
     } else if (url.match(/json$/i)) {
-      req.responseType = "text"
+      // req.responseType = "text"
+      req.responseType = "json";
       type = "json";
     } else {
       console.error(url);
-      throw new Error("Fetch has an invalid argument");
+      throw new Error("Sprite.Loader.Fetch got an invalid url");
     }
 
+    if (typeof callback != "function")
+      callback = function () {};
+
+    req.ontimeout = function () {
+      if (timeout) {
+        console.error(url);
+        throw new Error("Sprite.Loader.Fetch timeout twice");
+      } else {
+        Fetch(url, callback, true);
+      }
+    };
+
     req.onreadystatechange = function () {
-      if (req.readyState == req.DONE) {
-        if (type == "image") {
-          var blob = req.response;
-          var image = new Image();
-          image.onload = function () {
-            // window.URL.revokeObjectURL(image.src);
-            Sprite.Cache[url] = image;
-            callback(image);
-          };
-          image.src = window.URL.createObjectURL(blob);
-        } else if (type == "audio") {
-          var blob = req.response;
-          var audio = new Audio();
-          audio.oncanplay = function () {
-            // 如果reoke掉audio，那么audio.load()方法则不能用了
-            // window.URL.revokeObjectURL(audio.src);
-            Sprite.Cache[url] = audio;
-            callback(audio);
-          };
-          audio.src = window.URL.createObjectURL(blob);
-        } else if (type == "json") {
-          var json = JSON.parse(req.response);
-          Sprite.Cache[url] = json;
-          callback(json);
+      if (req.readyState == 4) {
+        if (req.status == 200) {
+          if (type == "image") {
+            var blob = req.response;
+            var image = new Image();
+            image.onload = function () {
+              // window.URL.revokeObjectURL(image.src);
+              Sprite.Cache[url] = image;
+              callback(image);
+            };
+            image.src = window.URL.createObjectURL(blob);
+          } else if (type == "audio") {
+            var blob = req.response;
+            var audio = new Audio();
+            audio.oncanplay = function () {
+              // 如果reoke掉audio，那么audio.load()方法则不能用了
+              // window.URL.revokeObjectURL(audio.src);
+              Sprite.Cache[url] = audio;
+              callback(audio);
+            };
+            audio.src = window.URL.createObjectURL(blob);
+          } else if (type == "json") {
+            var json = req.response;
+            Sprite.Cache[url] = json;
+            callback(json);
+          }
+        } else {
+          console.error(req.readyState, req.status, req.statusText);
+          throw new Error("Sprite.Loader.Fetch Error");
         }
       }
     };

@@ -117,6 +117,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     HeroDefault.tilewidth = heroCustom.tilewidth;
     HeroDefault.tileheight = heroCustom.tileheight;
 
+    console.log(HeroDefault);
+
     // 保存一个存档
     Game.archive.save({
       hero: HeroDefault
@@ -168,8 +170,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     currentQuest: { }, // 当前任务
     pastQuest: { }, // 完成的任务
-
-    area: "town0001", // 当前所在地图
+    area: "starttown", // 当前所在地图
 
     type: "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
 

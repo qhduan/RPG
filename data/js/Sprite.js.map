@@ -1,0 +1,1 @@
+{"version":3,"sources":["src/Sprite.js"],"names":[],"mappings":";;AACA,CAAC,YAAY;AACX,cAAY,CAAC;;AAEb,MAAI,MAAM,GAAG,MAAM,CAAC,MAAM,GAAG,EAAE,CAAC;CAEjC,CAAA,EAAG,CAAC","file":"src/Sprite.js","sourcesContent":["\n(function () {\n  \"use strict\";\n\n  var Sprite = window.Sprite = {};\n\n})();\n"]}

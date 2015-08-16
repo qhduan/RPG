@@ -349,7 +349,11 @@
     <div class="GameSquareButton" id="buttonBar-7"></div>
   </div>
 
-  <div id="buttonUse" class="GameSquareButton" style="position: absolute; top: 5px; right: 85px;">
+  <span id="mapName" style="position: absolute: top: 5px; left: 5px; background-color: rgba(100, 100, 100, 0.7);"></span>
+
+  <div id="buttonUseText" style="position:absolute; top: 5px; right: 200px; width: 95px; background-color: rgba(100, 100, 100, 0.7); text-align: center; color: red;"></div>
+
+  <div id="buttonUse" onclick="Game.ui.hint()" class="GameSquareButton" style="position: absolute; top: 5px; right: 85px; visibility: hidden;">
     <img src="image/hint.png" alt="System" />
   </div>
 
@@ -377,7 +381,7 @@
     <button onclick="Game.ui.shortcut()">删除快捷</button>
     <button onclick="Game.ui.save()">保存游戏</button>
     <button onclick="Game.ui.load()">读取游戏</button>
-    <button onclick="Game.ShowWindow('mainWindow')">退出游戏</button>
+    <button onclick="Game.clearStage();Game.ShowWindow('mainWindow');">退出游戏</button>
     <button onclick="Game.ShowWindow('uiWindow')">关闭窗口</button>
   </div>
 </div>

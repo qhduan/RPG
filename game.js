@@ -30,7 +30,7 @@ grunt.tasks(["babel"], {}, function () {
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
-    var outputPath = filepath.replace("src/", "public/js/");
+    var outputPath = filepath.replace("src/", "data/js/");
     babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
       if (err) throw err;
       // 保存转换好的代码
@@ -50,7 +50,7 @@ grunt.tasks(["babel"], {}, function () {
   var express = require("express");
 
   var app = express();
-  app.use(express.static("public/"));
+  app.use(express.static("data/"));
 
   var PORT = 9000;
 

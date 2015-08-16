@@ -1,0 +1,25 @@
+{
+  "name": "斯塔特镇",
+  "bgm": "Dance",
+  "entry": {
+    "x": 34,
+    "y": 31
+  },
+  "actors":
+  [
+  ],
+  "door":
+  [
+    {
+      "x": 28,
+      "y": 24,
+      "dest": "starttown-longhouse",
+      "description": "通往斯塔特镇长屋",
+      "destx": 7,
+      "desty": 13
+    }
+  ],
+  "chest":
+  [
+  ]
+}

@@ -13,7 +13,7 @@ module.exports = function (grunt) {
           expand: true,
           cwd: "src",
           src: ["**/*.js"],
-          dest: "public/js",
+          dest: "data/js",
           ext: ".js"
         }]
       }

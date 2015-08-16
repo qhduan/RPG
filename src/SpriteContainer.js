@@ -66,13 +66,14 @@
     /// @function Sprite.Container.draw
     /// draw all children in this container on context
     /// @param context, a 2d context from canvas
-    draw (context, callback) {
+    draw (context) {
+      if (this.visible != true)
+        return;
+
       if (this._cacheCanvas) {
         this.drawImage(context, this._cacheCanvas,
           0, 0, this._cacheCanvas.width, this._cacheCanvas.height,
           0, 0, this._cacheCanvas.width, this._cacheCanvas.height);
-
-        if (callback) callback();
       } else {
         if (this._children.length <= 0) {
           return;

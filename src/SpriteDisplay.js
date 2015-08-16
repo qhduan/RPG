@@ -32,6 +32,7 @@
         y: 1,
       };
       this._alpha = 1;
+      this._visible = true;
       this._parent = null;
     }
 
@@ -94,6 +95,17 @@
     set alpha (value) {
       if (value != this._alpha) {
         this._alpha = value;
+        this.emit("change");
+      }
+    }
+
+    get visible () {
+      return this._visible;
+    }
+
+    set visible (value) {
+      if (value != this._visible) {
+        this._visible = value;
         this.emit("change");
       }
     }
@@ -199,6 +211,8 @@
     /// @param swidth the width of image we want to draw
     /// @param sheight the height of image we want to draw
     drawImage (context, image, sx, sy, swidth, sheight) {
+      if (this.visible != true)
+        return;
 
       var data = this.realPosition();
 

@@ -4,6 +4,10 @@
 
   Sprite.Util = class Util {
 
+    static copy (obj) {
+      return JSON.parse(JSON.stringify(obj));
+    }
+
     static each (obj, functional) {
       for (var key in obj) {
         functional(obj[key], key, obj);

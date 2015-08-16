@@ -92,12 +92,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         function FindHint () {
 
-          var minDistance = 999999;
+          var buttonUse = document.getElementById("buttonUse");
+          var minDistance = -1;
           var minObject = null;
+          var distanceLimit = 50;
 
           function FindNearest (obj) {
             var d = Game.hero.distance(obj.x, obj.y);
-            if (d < minDistance) {
+            if (minDistance == -1 || d < minDistance) {
               minDistance = d;
               minObject = obj;
             }
@@ -113,37 +115,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             FindNearest(element);
           });
 
-          if (Game.hintObject) {
-            if (Game.hero.distance(Game.hintObject.x, Game.hintObject.y) >= 30) {
-              Game.dialogueLayer.removeChild(Game.hintFlag);
-              Game.hintFlag = null;
-              Game.hintObject = null;
-              if (Game.ui.useButton) {
-                Game.ui.useButton.visible = false;
-              }
-            }
+          Game.area.doors.forEach(function (element) {
+            FindNearest(element);
+          });
+
+          Game.area.chests.forEach(function (element) {
+            FindNearest(element);
+          });
+
+          if (minDistance > distanceLimit) {
+            minDistance = -1;
+            minObject = null;
           }
 
-          if (minObject) {
-            if (minObject != Game.hintObject && minDistance < 50) {
-              Game.hintObject = minObject;
-              if (Game.hintFlag) {
-                Game.dialogueLayer.removeChild(Game.hintFlag);
-                Game.hintFlag = null;
-              }
-              Game.hintFlag = new Sprite.Text({
-                text: "!",
-                fontSize: 30,
-                color: "red"
-              });
-              Game.hintFlag.x = minObject.x;
-              Game.hintFlag.y = minObject.y;
-              Game.hintFlag.center.x = Math.floor(Game.hintFlag.width/2);
-              Game.hintFlag.center.y = Game.hintFlag.height;
-              Game.dialogueLayer.appendChild(Game.hintFlag);
-              if (Game.ui.useButton) {
-                Game.ui.useButton.visible = true;
-              }
+          if (Game.hintObject && Game.hintObject != minObject) {
+            Game.hintObject = null;
+            buttonUse.style.visibility = "hidden";
+            document.getElementById("buttonUseText").textContent = "";
+          }
+
+          if (minObject && minDistance < 50 && Game.hintObject != minObject) {
+            Game.hintObject = minObject;
+            buttonUse.style.visibility = "visible";
+            if (minObject.type == "door") {
+              document.getElementById("buttonUseText").textContent = minObject.description;
+            } else if (minObject instanceof Game.ActorClass) {
+              document.getElementById("buttonUseText").textContent = minObject.data.name;
             }
           }
 

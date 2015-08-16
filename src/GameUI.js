@@ -71,6 +71,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     })(i);
   }
 
+  Game.ui.hint = function () {
+    if (Game.hintObject) {
+      if (Game.hintObject.type && Game.hintObject.type == "door") {
+        Game.clearStage();
+        Game.loadArea(Game.hintObject.dest, function (area) {
+          Game.area = area;
+          area.map.draw(Game.mapLayer);
+          Game.hero.draw(Game.heroLayer);
+          Game.hero.x = Game.hintObject.destx;
+          Game.hero.y = Game.hintObject.desty;
+          //Game.initInput();
+          Game.ui.bar();
+          Game.ShowWindow("uiWindow");
+        });
+
+      } else if (Game.hintObject.type && Game.hintObject.type == "chest") {
+
+      } else if (Game.hintObject instanceof Game.ActorClass)
+        Game.hintObject.contact();
+      else if (Game.hintObject instanceof Game.ItemClass)
+        Game.hintObject.pickup();
+    }
+  }
+
   Game.ui.shortcut = function () {
     Game.ui.choice({
       1:0,
@@ -462,6 +486,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         container.appendChild(document.createElement("img"));
       }
     }
+
+    document.getElementById("mapName").textContent = Game.area.map.data.name;
   }
 
   Game.ui.init = function () {

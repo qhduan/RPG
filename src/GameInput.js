@@ -91,12 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.ui.openItem();
     }
     if (keyCode == keyTable["e"]) { // map
-      if (Game.hintObject) {
-        if (Game.hintObject.contact)
-          Game.hintObject.contact();
-        else if (Game.hintObject.pickup)
-          Game.hintObject.pickup();
-      }
+      document.getElementById("buttonUse").click();
     }
   };
 

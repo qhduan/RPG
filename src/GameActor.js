@@ -57,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.hpbarBox.center.x = 15;
         this.hpbarBox.center.y = 2;
         this.hpbarBox.x = 0;
-        this.hpbarBox.y = 10;
+        this.hpbarBox.y = 9;
 
         // 魔法条外面的黑框
         this.mpbarBox = new Sprite.Shape();
@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.hpbar.center.x = 15;
         this.hpbar.center.y = 2;
         this.hpbar.x = 0;
-        this.hpbar.y = 10;
+        this.hpbar.y = 9;
 
         // 精力条
         this.mpbar = new Sprite.Shape();
@@ -748,8 +748,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var y = this.data.y;
 
       if (typeof x != "number" || typeof y != "number") {
-        x = Game.area.data.entry.x;
-        y = Game.area.data.entry.y;
+        x = Game.area.map.data.entry.x;
+        y = Game.area.map.data.entry.y;
       }
 
       this.infoBox.x = x;

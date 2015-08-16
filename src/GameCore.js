@@ -108,6 +108,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.ResizeWindow();
   });
 
+  Game.clearStage = function () {
+    for (var i = 0; i < Game.stage.children.length; i++) {
+      Game.stage.children[i].clear();
+    }
+  };
+
   Game.init = function () {
 
     Game.stage = new Sprite.Stage(Game.config.width, Game.config.height);

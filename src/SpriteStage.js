@@ -16,6 +16,8 @@
     constructor (width, height) {
       super();
 
+      this._color = "black";
+
       this._canvas = document.createElement("canvas");
       this._canvas.width = width || 320;
       this._canvas.height = height || 240;
@@ -180,6 +182,17 @@
       this._stageCacheCanvas.height = this._canvas.height;
     }
 
+    get color () {
+      return this._color;
+    }
+
+    set color (value) {
+      if (this._color != value) {
+        this._color = value;
+        this.update();
+      }
+    }
+
     get canvas () {
       return this._canvas;
     }
@@ -212,6 +225,8 @@
       this.clear();
       this._context.drawImage(this._stageCacheCanvas, 0, 0);
       //this._stageCacheContext.clearRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
+      this._stageCacheContext.fillStyle = this._color;
+      this._stageCacheContext.fillRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
 
       this.emit("drawEnd");
     }

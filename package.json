@@ -1,7 +1,7 @@
 {
   "name": "Game",
   "description": "RPG Game",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "homepage": "https://github.com/qhduan/RPG",
   "author": {
     "name": "qhduan",
@@ -25,7 +25,7 @@
     "node": ">= 0.8.0"
   },
   "scripts": {
-    "test": "node game.js"
+    "test": "node game"
   },
   "dependencies": {
     "express": "latest",
@@ -36,6 +36,7 @@
   },
   "keywords": [
     "RPG",
-    "Game"
+    "Game",
+    "canvas"
   ]
 }

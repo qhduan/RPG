@@ -28,6 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.data = mapData;
       this.id = this.data.id;
 
+      if (this.data.entry) {
+        this.data.entry.x = this.data.entry.x * 32 + 16;
+        this.data.entry.y = this.data.entry.y * 32 + 16;
+      }
+
       var imageUrls = [];
       this.data.tilesets.forEach((element) => {
         imageUrls.push(`/map/${element.image}`);
