@@ -132,8 +132,6 @@
       });
 
       this._image = canvas;
-      //this._image = new Image();
-      //this._image.src = canvas.toDataURL();
     }
 
     draw (context) {

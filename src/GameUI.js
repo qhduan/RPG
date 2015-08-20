@@ -41,9 +41,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.ui.choiceHandle = null;
   Game.ui.choiceOptions = null;
-  Game.ui.choice = function (options, callback) {
+  Game.ui.choice = function (message, options, callback) {
     Game.ui.choiceHandle = callback;
     Game.ui.choiceOptions = options;
+    document.getElementById("choiceMessage").textContent = message;
     document.getElementById("choiceWindow").style.display = "block";
     var index = 0;
     for (var key in options) {
@@ -71,32 +72,92 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     })(i);
   }
 
-  Game.ui.hint = function () {
-    if (Game.hintObject) {
-      if (Game.hintObject.type && Game.hintObject.type == "door") {
-        Game.clearStage();
-        Game.loadArea(Game.hintObject.dest, function (area) {
-          Game.area = area;
-          area.map.draw(Game.mapLayer);
-          Game.hero.draw(Game.heroLayer);
-          Game.hero.x = Game.hintObject.destx;
-          Game.hero.y = Game.hintObject.desty;
-          //Game.initInput();
-          Game.ui.bar();
-          Game.ShowWindow("uiWindow");
-        });
+  Game.ui.trade = function (items) {
+    var tradeTable = document.getElementById("tradeTable");
+    var tradeHeroTable = document.getElementById("tradeHeroTable");
 
-      } else if (Game.hintObject.type && Game.hintObject.type == "chest") {
+    items.forEach(function (itemId) {
+      var line = document.createElement("tr");
 
-      } else if (Game.hintObject instanceof Game.ActorClass)
-        Game.hintObject.contact();
-      else if (Game.hintObject instanceof Game.ItemClass)
-        Game.hintObject.pickup();
+      var icon = document.createElement("td");
+      icon.appendChild(Game.items[itemId].icon.cloneNode());
+      line.appendChild(icon);
+
+      var name = document.createElement("td");
+      name.textContent = Game.items[itemId].data.name;
+      line.appendChild(name);
+
+      var value = document.createElement("td");
+      value.textContent = Game.items[itemId].data.value + "G";
+      value.style.textAlign = "center";
+      value.style.color = "gold";
+      line.appendChild(value);
+
+      var buy = document.createElement("td");
+      var buyButton = document.createElement("button");
+      buyButton.textContent = "买入";
+      buy.appendChild(buyButton);
+      line.appendChild(buy);
+
+      tradeTable.appendChild(line);
+    });
+
+    Sprite.Util.each(Game.hero.data.items, function (itemCount, itemId) {
+      var line = document.createElement("tr");
+
+      var icon = document.createElement("td");
+      console.log(itemId);
+      icon.appendChild(Game.items[itemId].icon.cloneNode());
+      line.appendChild(icon);
+
+      var name = document.createElement("td");
+      name.textContent = Game.items[itemId].data.name;
+      line.appendChild(name);
+
+      var count = document.createElement("td");
+      count.textContent = itemCount;
+      count.style.textAlign = "center";
+      line.appendChild(count);
+
+      var value = document.createElement("td");
+      value.textContent = Game.items[itemId].data.value + "G";
+      value.style.textAlign = "center";
+      value.style.color = "gold";
+      line.appendChild(value);
+
+      var sell = document.createElement("td");
+      var sellButton = document.createElement("button");
+      sellButton.textContent = "卖出";
+      sell.appendChild(sellButton);
+      line.appendChild(sell);
+
+      tradeHeroTable.appendChild(line);
+    });
+
+    Game.ShowWindow("tradeWindow");
+  };
+
+  Game.ui.dialogueContent = [];
+  Game.ui.dialogueIndex = 0;
+  Game.ui.dialogue = function (content) {
+    document.getElementById("dialogueNext").style.display = "block";
+    Game.ui.dialogueContent = content;
+    Game.ui.dialogueIndex = 0;
+    Game.ui.dialogueNext();
+    Game.ShowWindow("dialogueWindow");
+  };
+
+  Game.ui.dialogueNext = function () {
+    document.getElementById("dialogueContent").textContent = Game.ui.dialogueContent[Game.ui.dialogueIndex];
+    Game.ui.dialogueIndex++;
+    if (Game.ui.dialogueIndex >= Game.ui.dialogueContent.length) {
+      document.getElementById("dialogueNext").style.display = "none";
+      document.getElementById("dialogueClose").style.display = "block";
     }
-  }
+  };
 
   Game.ui.shortcut = function () {
-    Game.ui.choice({
+    Game.ui.choice("", {
       1:0,
       2:1,
       3:2,
@@ -210,6 +271,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       var count = document.createElement("td");
       count.textContent = itemCount;
+      count.style.textAlign = "center";
       line.appendChild(count);
 
       var description = document.createElement("td");
@@ -236,7 +298,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         options["丢弃"] = "drop";
 
-        Game.ui.choice(options, function (choice) {
+        Game.ui.choice("", options, function (choice) {
           console.log(choice);
           switch (choice) {
             case "puton":
@@ -268,7 +330,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               return Game.ui.itemWindow(filter);
               break;
             case "shortcut":
-              Game.ui.choice({
+              Game.ui.choice("", {
                 1:0,
                 2:1,
                 3:2,
@@ -322,7 +384,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         var skillId = Game.hero.data.skills[index];
         if (skillId) {
-          var skill = Game.hero.skills[skillId];
+          var skill = Game.skills[skillId];
           icon.appendChild(skill.icon);
           name.textContent = skill.data.name;
           description.textContent = skill.data.description;
@@ -331,14 +393,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           manageButton.textContent = "操作";
           manage.appendChild(manageButton);
           manageButton.addEventListener("click", function () {
-            Game.ui.choice({
+            Game.ui.choice("", {
               "快捷栏": "shortcut",
               "升级": "levelup",
               "遗忘": "remove"
             }, function (choice) {
               switch(choice) {
                 case "shortcut":
-                  Game.ui.choice({
+                  Game.ui.choice("", {
                     1:0,
                     2:1,
                     3:2,
@@ -475,7 +537,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var id = element.id;
         var type = element.type;
         if (type == "skill") {
-          var skill = Game.hero.skills[id];
+          var skill = Game.skills[id];
           container.appendChild(skill.icon.cloneNode());
         } else if (type == "item") {
           var item = Game.items[id];
@@ -494,7 +556,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // 设置技能栏
     for (var i = 0; i < 8; i++) {
       (function (buttonSkill, index) {
-        buttonSkill.addEventListener("click", function () {
+        buttonSkill.addEventListener("click", function (event) {
+          event.preventDefault();
+          event.stopPropagation();
           var element = Game.hero.data.bar[index];
           if (element) {
             if (element.type == "skill")
@@ -510,8 +574,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.ui.bar();
 
     document.getElementById("buttonMenu").addEventListener("click", function (event) {
+      event.preventDefault();
+      event.stopPropagation();
       Game.ShowWindow("menuWindow");
     });
+
+    document.getElementById("buttonUse").addEventListener("click", function (event) {
+      if (Game.hintObject) {
+        if (Game.hintObject.type && Game.hintObject.type == "door") {
+          var destx = Game.hintObject.destx;
+          var desty = Game.hintObject.desty;
+          Game.clearStage();
+          Game.loadArea(Game.hintObject.dest, function (area) {
+            Game.area = area;
+            area.map.draw(Game.mapLayer);
+            Game.hero.draw(Game.heroLayer);
+            Game.hero.x = destx;
+            Game.hero.y = desty;
+            //Game.initInput();
+            Game.ui.bar();
+            Game.ShowWindow("uiWindow");
+            Game.stage.update();
+          });
+
+        } else if (Game.hintObject.type && Game.hintObject.type == "chest") {
+        } else if (Game.hintObject.type && Game.hintObject.type == "hint") {
+          Game.hero.popup(Game.hintObject.message);
+        } else if (Game.hintObject instanceof Game.ActorClass) {
+          Game.hintObject.contact();
+        }
+        else if (Game.hintObject instanceof Game.ItemClass) {
+          Game.hintObject.pickup();
+        }
+      }
+    });
+
   };
 
 }());

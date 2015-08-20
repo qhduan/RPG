@@ -86,8 +86,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         });
 
         this._image = canvas;
-        //this._image = new Image();
-        //this._image.src = canvas.toDataURL();
       }
     }, {
       key: "draw",

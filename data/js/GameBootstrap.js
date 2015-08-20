@@ -24,5 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.ShowWindow("mainWindow");
   Game.init();
+  Game.initInput();
 })();
 //# sourceMappingURL=GameBootstrap.js.map

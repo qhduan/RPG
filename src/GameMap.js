@@ -149,7 +149,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         rgb.b = Math.floor(rgb.b / (minimapData.length / 4)).toString(16);
         this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
 
-
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
       });

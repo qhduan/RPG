@@ -167,16 +167,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else if (Game.key.isPressed("down")) {
         Game.hero.go(state, "down", speed);
       } else if (Game.key.isPressed("mouse")) {
-        if (Game.uiLayer.numChildren > 1) {
-          return;
-        }
-        var x = Game.stage.center.x + Game.stage.mouseX / Game.stage.scaleX;
-        var y = Game.stage.center.y + Game.stage.mouseY / Game.stage.scaleY;
-        if (Game.uiLayer.hitTest(x, y)) {
-          return;
-        }
-        x -= Game.hero.x;
-        y -= Game.hero.y;
+        //var x = Game.stage.center.x + Game.stage.mouseX / Game.stage.scaleX;
+        //var y = Game.stage.center.y + Game.stage.mouseY / Game.stage.scaleY;
+        //if (Game.uiLayer.hitTest(x, y)) {
+        //  return;
+        //}
+        var x = Game.stage.mouseX;
+        var y = Game.stage.mouseY;
+        x -= Game.stage.width/2;
+        y -= Game.stage.height/2;
+
+        //console.log(Game.stage.mouseX, Game.stage.mouseY, x, y, Game.stage.width, Game.stage.height);
 
         if (Math.abs(Math.abs(x) - Math.abs(y)) < 40) {
           if (x < 0 && y < 0) { // left up

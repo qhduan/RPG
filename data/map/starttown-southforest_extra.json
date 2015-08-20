@@ -1,0 +1,36 @@
+{
+  "name": "斯塔特南部森林",
+  "bgm": "Dance",
+  "entry": {
+    "x": 14,
+    "y": 2
+  },
+  "actors":
+  [
+    {
+      "id": "batPurple",
+      "x": 11,
+      "y": 9,
+      "mode": "random"
+    }, {
+      "id": "batPurple",
+      "x": 20,
+      "y": 13,
+      "mode": "random"
+    }
+  ],
+  "door":
+  [
+    {
+      "x": 14,
+      "y": 0,
+      "dest": "starttown",
+      "description": "通往斯塔特镇",
+      "destx": 28,
+      "desty": 47
+    }
+  ],
+  "chest":
+  [
+  ]
+}

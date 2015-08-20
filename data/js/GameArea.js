@@ -22,6 +22,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  function fixPosition(obj) {
+    obj.x = obj.x * 32 + 16;
+    obj.y = obj.y * 32;
+  }
+
   // 加载区域，把括地图，角色，物品
   Game.loadArea = function (id, callback) {
 
@@ -39,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     var loader = new Sprite.Loader();
-    loader.add("/map/" + id + ".json", "/map/" + id + "_extra.json");
+    loader.add("map/" + id + ".json", "map/" + id + "_extra.json");
     loader.start();
     loader.on("complete", function (event) {
       var mapData = event.data[0];
@@ -56,8 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           bags: {},
           doors: [],
           chests: [],
-          map: mapObj,
-          data: mapExtra
+          hints: [],
+          map: mapObj
         };
 
         var completeCount = -1;
@@ -68,43 +73,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         };
 
-        mapExtra.actors.forEach(function (element) {
-          var actorLoader = new Sprite.Loader();
-          actorLoader.add("/actor/" + element.id + ".json");
-          actorLoader.start();
-          actorLoader.on("complete", function (event) {
-            var actorData = Sprite.Util.copy(event.data[0]);
-            actorData.x = element.x * 32 + 16;
-            actorData.y = element.y * 32 + 16;
-            actorData.mode = element.mode;
-            var actorObj = new Game.ActorClass(actorData);
-            actorObj.on("complete", function () {
-              area.actors[actorObj.id] = actorObj;
-              actorObj.draw(Game.actorLayer);
-              Complete();
+        if (mapExtra.actors) {
+          mapExtra.actors.forEach(function (element) {
+            var actorLoader = new Sprite.Loader();
+            actorLoader.add("actor/" + element.id + ".json");
+            actorLoader.start();
+            actorLoader.on("complete", function (event) {
+              var actorData = Sprite.Util.copy(event.data[0]);
+              if (actorData.type == "monster") actorData.id = actorData.id + "_" + Sprite.Util.id();
+              actorData.x = element.x;
+              actorData.y = element.y;
+              fixPosition(actorData);
+              actorData.mode = element.mode;
+              var actorObj = new Game.ActorClass(actorData);
+              actorObj.on("complete", function () {
+                area.actors[actorObj.id] = actorObj;
+                actorObj.draw(Game.actorLayer);
+                Complete();
+              });
             });
           });
-        });
+        }
 
-        mapExtra.door.forEach(function (element) {
-          var door = Sprite.Util.copy(element);
-          door.x = door.x * 32 + 16;
-          door.y = door.y * 32 + 16;
-          door.destx = door.destx * 32 + 16;
-          door.desty = door.desty * 32 + 16;
-          door.type = "door";
-          area.doors.push(door);
-        });
+        if (mapExtra.door) {
+          mapExtra.door.forEach(function (element) {
+            var door = Sprite.Util.copy(element);
+            fixPosition(door);
+            door.destx = door.destx * 32 + 16;
+            door.desty = door.desty * 32 + 16;
+            door.type = "door";
+            area.doors.push(door);
+          });
+        }
 
-        mapExtra.chest.forEach(function (element) {
-          var chest = Sprite.Util.copy(element);
-          chest.x = chest.x * 32 + 16;
-          chest.y = chest.y * 32 + 16;
-          chest.destx = chest.destx * 32 + 16;
-          chest.desty = chest.desty * 32 + 16;
-          chest.type = "chest";
-          area.chests.push(chest);
-        });
+        if (mapExtra.chest) {
+          mapExtra.chest.forEach(function (element) {
+            var chest = Sprite.Util.copy(element);
+            fixPosition(chest);
+            chest.destx = chest.destx * 32 + 16;
+            chest.desty = chest.desty * 32 + 16;
+            chest.type = "chest";
+            area.chests.push(chest);
+          });
+        }
+
+        if (mapExtra.hint) {
+          mapExtra.hint.forEach(function (element) {
+            var hint = Sprite.Util.copy(element);
+            fixPosition(hint);
+            hint.type = "hint";
+            area.hints.push(hint);
+          });
+        }
 
         Complete();
       });

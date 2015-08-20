@@ -127,50 +127,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         };
 
         if (this.data.skills) {
-          this.skills = {};
-          this.data.skills.forEach((element) => {
-            var skillLoader = new Sprite.Loader();
-            skillLoader.add(`/skill/${element}.json`);
-            skillLoader.start();
+          this.data.skills.forEach((skillId) => {
             completeCount--;
-            skillLoader.on("complete", (event) => {
-              var skillData = event.data[0];
-              var skillObj = new Game.SkillClass(skillData);
-              this.skills[element] = skillObj;
+            Game.SkillClass.load(skillId, () => {
               Complete();
             });
           });
         }
 
-        var LoadItem = (element) => {
-          if (Game.items.hasOwnProperty(element) == false) {
-            Game.items[element] = true;
-            var itemLoader = new Sprite.Loader();
-            itemLoader.add(`/item/${element}.json`);
-            itemLoader.start();
-            completeCount--;
-            itemLoader.on("complete", (event) => {
-              var itemData = event.data[0];
-              var itemObj = new Game.ItemClass(itemData);
-              Game.items[element] = itemObj;
-              Complete();
-            });
-          }
-        };
-
         if (this.data.equipment) {
           for (var key in this.data.equipment) {
-            var equipment = this.data.equipment[key];
-            if (equipment) {
-              LoadItem(equipment);
+            var itemId = this.data.equipment[key];
+            if (itemId) {
+              completeCount--;
+              Game.ItemClass.load(itemId, () => {
+                Complete();
+              });
             }
           }
         }
 
         if (this.data.items) {
           for (var itemId in this.data.items) {
-            LoadItem(itemId);
+            completeCount--;
+            Game.ItemClass.load(itemId, () => {
+              Complete();
+            });
           }
+        }
+
+        if (this.data.contact && this.data.contact.trade && this.data.contact.trade.length) {
+          this.data.contact.trade.forEach((itemId) => {
+            completeCount--;
+            Game.ItemClass.load(itemId, () => {
+              Complete();
+            });
+          });
         }
 
         Complete();
@@ -282,6 +274,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var middle = Math.round((w + 10) / 2);
 
       var dialogueBox = new Sprite.Shape();
+
       dialogueBox.rect({
         x : 0,
         y: 0,
@@ -291,16 +284,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         fill: "white",
       });
 
-      /*
       dialogueBox.polygon({
-        points: [
-          middle - 5, h + 9,
-          middle + 5, h + 9,
-          middle - 5, h + 9,
-        ].join(", "),
+        points: `${middle-10},${h+10} ${middle+10},${h+10} ${middle},${h+20} ${middle-10},${h+10}`,
         fill: "white"
       });
-      */
 
       var dialogueContainer = new Sprite.Container();
       dialogueContainer.appendChild(dialogueBox, dialogueText);
@@ -338,9 +325,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     contact () {
       if (this.data.contact) {
-        if (this.data.contact.type == "talk") {
-          this.popup(this.data.contact.content);
+
+        var options = {};
+
+        if (this.data.contact.talk) {
+          options["对话"] = "talk";
         }
+
+        if (this.data.contact.trade) {
+          options["交易"] = "trade"
+        }
+
+        Game.ui.choice(this.data.contact.hi, options, (choice) => {
+          switch (choice) {
+            case "talk":
+              Game.ui.dialogue(this.data.contact.talk);
+              break;
+            case "trade":
+              Game.ui.trade(this.data.contact.trade);
+              break;
+          }
+        });
       }
     }
 
@@ -463,7 +468,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.attacking)
         return 0;
 
-      var skill = this.skills[id];
+      var skill = Game.skills[id];
       if (!skill)
         return 0;
 
@@ -734,7 +739,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
-      this.focus();
       super.emit("move");
     }
 

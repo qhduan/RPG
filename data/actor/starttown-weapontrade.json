@@ -1,12 +1,21 @@
 {
-  "id": "actor0004",
-  "name": "蜜蜂",
-  "description": "如果群体出动的话，是很危险的存在",
-  "type": "monster",
-  "drop": {
-    "gold": "0-1"
+  "id": "starttown-weapontrade",
+  "name": "维朋",
+  "description": "斯塔特镇中贩卖武器装备",
+  "type": "npc",
+  "contact": {
+    "hi": "这里是武器屋，负责出售各种武器",
+    "talk": [
+      "斯塔特镇的武器当然比不过都城的",
+      "不过你还是可以随便看看"
+    ],
+    "trade": [
+      "swordIron",
+      "spearIron",
+      "bowWood"
+    ]
   },
-  "image": "resource\/actor0004.png",
+  "image": "resource\/starttown-mayor.png",
   "level": 1,
   "$str": 10,
   "$dex": 10,
@@ -30,7 +39,7 @@
   "def": 1,
   "matk": 1,
   "mdef": 1,
-  "tileheight": 32,
+  "tileheight": 48,
   "tilewidth": 32,
   "spells": [],
   "animations": {

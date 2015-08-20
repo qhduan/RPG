@@ -1,12 +1,16 @@
 {
   "id": "starttown-mayor",
   "name": "斯塔特镇长",
-  "description": "管理着斯塔特镇",
+  "description": "斯塔特镇的管理者",
   "type": "npc",
   "contact": {
-    "type": "talk",
-    "content": "我是镇长，你好"
+    "hi": "我是镇长，你好",
+    "talk": [
+      "斯塔特镇北方就是都城",
+      "斯塔特镇有一切你所需的"
+    ]
   },
+  "talk": [],
   "image": "resource\/starttown-mayor.png",
   "level": 1,
   "$str": 10,

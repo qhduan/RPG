@@ -142,50 +142,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         };
 
         if (_this.data.skills) {
-          _this.skills = {};
-          _this.data.skills.forEach(function (element) {
-            var skillLoader = new Sprite.Loader();
-            skillLoader.add("/skill/" + element + ".json");
-            skillLoader.start();
+          _this.data.skills.forEach(function (skillId) {
             completeCount--;
-            skillLoader.on("complete", function (event) {
-              var skillData = event.data[0];
-              var skillObj = new Game.SkillClass(skillData);
-              _this.skills[element] = skillObj;
+            Game.SkillClass.load(skillId, function () {
               Complete();
             });
           });
         }
 
-        var LoadItem = function LoadItem(element) {
-          if (Game.items.hasOwnProperty(element) == false) {
-            Game.items[element] = true;
-            var itemLoader = new Sprite.Loader();
-            itemLoader.add("/item/" + element + ".json");
-            itemLoader.start();
-            completeCount--;
-            itemLoader.on("complete", function (event) {
-              var itemData = event.data[0];
-              var itemObj = new Game.ItemClass(itemData);
-              Game.items[element] = itemObj;
-              Complete();
-            });
-          }
-        };
-
         if (_this.data.equipment) {
           for (var key in _this.data.equipment) {
-            var equipment = _this.data.equipment[key];
-            if (equipment) {
-              LoadItem(equipment);
+            var itemId = _this.data.equipment[key];
+            if (itemId) {
+              completeCount--;
+              Game.ItemClass.load(itemId, function () {
+                Complete();
+              });
             }
           }
         }
 
         if (_this.data.items) {
           for (var itemId in _this.data.items) {
-            LoadItem(itemId);
+            completeCount--;
+            Game.ItemClass.load(itemId, function () {
+              Complete();
+            });
           }
+        }
+
+        if (_this.data.contact && _this.data.contact.trade && _this.data.contact.trade.length) {
+          _this.data.contact.trade.forEach(function (itemId) {
+            completeCount--;
+            Game.ItemClass.load(itemId, function () {
+              Complete();
+            });
+          });
         }
 
         Complete();
@@ -285,6 +277,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var middle = Math.round((w + 10) / 2);
 
         var dialogueBox = new Sprite.Shape();
+
         dialogueBox.rect({
           x: 0,
           y: 0,
@@ -294,16 +287,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           fill: "white"
         });
 
-        /*
         dialogueBox.polygon({
-          points: [
-            middle - 5, h + 9,
-            middle + 5, h + 9,
-            middle - 5, h + 9,
-          ].join(", "),
+          points: middle - 10 + "," + (h + 10) + " " + (middle + 10) + "," + (h + 10) + " " + middle + "," + (h + 20) + " " + (middle - 10) + "," + (h + 10),
           fill: "white"
         });
-        */
 
         var dialogueContainer = new Sprite.Container();
         dialogueContainer.appendChild(dialogueBox, dialogueText);
@@ -341,10 +328,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "contact",
       value: function contact() {
+        var _this3 = this;
+
         if (this.data.contact) {
-          if (this.data.contact.type == "talk") {
-            this.popup(this.data.contact.content);
+
+          var options = {};
+
+          if (this.data.contact.talk) {
+            options["对话"] = "talk";
           }
+
+          if (this.data.contact.trade) {
+            options["交易"] = "trade";
+          }
+
+          Game.ui.choice(this.data.contact.hi, options, function (choice) {
+            switch (choice) {
+              case "talk":
+                Game.ui.dialogue(_this3.data.contact.talk);
+                break;
+              case "trade":
+                Game.ui.trade(_this3.data.contact.trade);
+                break;
+            }
+          });
         }
       }
     }, {
@@ -466,12 +473,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "fire",
       value: function fire(id, direction) {
-        var _this3 = this;
+        var _this4 = this;
 
         // 同一时间只能施展一个skill
         if (this.attacking) return 0;
 
-        var skill = this.skills[id];
+        var skill = Game.skills[id];
         if (!skill) return 0;
 
         // 只有当这个skill的cooldown结
@@ -491,7 +498,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         skill.fire(this, "attack" + direction, function (hittedActorIds) {
-          _this3.attacking = false;
+          _this4.attacking = false;
           if (hittedActorIds && hittedActorIds.length) {
             hittedActorIds.forEach(function (element) {
               Game.area.actors[element].damage(skill.data.type, skill.data.power);
@@ -504,7 +511,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "goto",
       value: function goto(x, y, speed, collisionTest, callback) {
-        var _this4 = this;
+        var _this5 = this;
 
         if (this.gotoListener) {
           Sprite.Ticker.off("tick", this.gotoListener);
@@ -539,32 +546,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var toXY = function toXY() {
           if (x <= limit && y <= limit) {
-            if (_this4.gotoListener) {
-              Sprite.Ticker.off("tick", _this4.gotoListener);
-              _this4.gotoListener = null;
+            if (_this5.gotoListener) {
+              Sprite.Ticker.off("tick", _this5.gotoListener);
+              _this5.gotoListener = null;
             }
             if (X > Y) {
-              _this4.face(leftright);
+              _this5.face(leftright);
             } else {
-              _this4.face(updown);
+              _this5.face(updown);
             }
             if (callback) callback();
           } else if (x > limit && y > limit) {
             if (X > Y) {
-              _this4.go(state, leftright, speed, collisionTest);
+              _this5.go(state, leftright, speed, collisionTest);
               x -= speed;
             } else {
-              _this4.go(state, updown, speed, collisionTest);
+              _this5.go(state, updown, speed, collisionTest);
               y -= speed;
             }
             if (x < 0) x = 0;
             if (y < 0) y = 0;
           } else if (x > limit) {
-            _this4.go(state, leftright, speed, collisionTest);
+            _this5.go(state, leftright, speed, collisionTest);
             x -= speed;
             if (x < 0) x = 0;
           } else if (y > limit) {
-            _this4.go(state, updown, speed, collisionTest);
+            _this5.go(state, updown, speed, collisionTest);
             y -= speed;
             if (y < 0) y = 0;
           }
@@ -585,7 +592,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "CheckDirection",
       value: function CheckDirection(direction, step, collisionTest) {
-        var _this5 = this;
+        var _this6 = this;
 
         var oldX = this.x;
         var oldY = this.y;
@@ -620,7 +627,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (tested.hasOwnProperty(i)) return tested[i];
 
           if (Game.area.map.blockedMap[t.y] && Game.area.map.blockedMap[t.y][t.x]) {
-            if (Game.actorCollision(_this5.sprite, Game.area.map.blockedMap[t.y][t.x])) {
+            if (Game.actorCollision(_this6.sprite, Game.area.map.blockedMap[t.y][t.x])) {
               tested[i] = true;
               return true;
             }
@@ -743,7 +750,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             break;
         }
 
-        this.focus();
         _get(Object.getPrototypeOf(ActorClass.prototype), "emit", this).call(this, "move");
       }
     }, {

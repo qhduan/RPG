@@ -17,41 +17,7 @@
       super();
 
       this._color = "black";
-
-      this._canvas = document.createElement("canvas");
-      this._canvas.width = width || 320;
-      this._canvas.height = height || 240;
-
-      this._context = this._canvas.getContext("2d");
-      this._context.imageSmoothingEnabled = false;
-
-      this._stageCacheCanvas = document.createElement("canvas");
-      this._stageCacheCanvas.width = this._canvas.width;
-      this._stageCacheCanvas.height = this._canvas.height;
-
-      this._stageCacheContext = this._stageCacheCanvas.getContext("2d");
-      this._stageCacheContext.imageSmoothingEnabled = false;
-
-      this._updateNextTick = false;
-
-      this.on("addedChildren", () => {
-        this.update();
-      });
-
-      this.on("removedChildren", () => {
-        this.update();
-      });
-
-      this.on("change", () => {
-        this.update();
-      });
-
-      Sprite.Ticker.on("tick", () => {
-        if (this._updateNextTick) {
-          this._updateNextTick = false;
-          this.draw();
-        }
-      });
+      this._renderer = new Sprite.Webgl(width, height);
 
       var mousedown = false;
 
@@ -59,7 +25,7 @@
         var x;
         var y;
         var type;
-        var rect = this._canvas.getBoundingClientRect();
+        var rect = this.canvas.getBoundingClientRect();
 
         if (event.targetTouches && event.targetTouches.length == 1) {
           var touch = event.targetTouches[0];
@@ -72,87 +38,107 @@
           type = "mouse";
         }
 
-        //x = x / this.scale.x + this.center.x;
-        //y = y / this.scale.y + this.center.y;
-        x = Math.round(x);
-        y = Math.round(y);
-        return {x, y, type};
+        var scaleX = rect.width / this.width;
+        var scaleY = rect.height / this.height;
+
+        x = Math.floor(x / scaleX);
+        y = Math.floor(y / scaleY);
+
+        if (x >= 0 && y >= 0) {
+          this.mouseX = x;
+          this.mouseY = y;
+          this.mouseType = type;
+          return true;
+        } else {
+          return false;
+        }
       }
 
-      this._canvas.addEventListener("mousedown", (event) => {
-        mousedown = true;
-        this.pressdown(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mousedown", (event) => {
+        if (ConvertMouseEvent(event))
+          this.pressdown();
       });
 
-      this._canvas.addEventListener("mousemove", (event) => {
-        if (mousedown)
-          this.pressmove(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mousemove", (event) => {
+        if (ConvertMouseEvent(event))
+          this.pressmove();
       });
 
-      this._canvas.addEventListener("mouseup", (event) => {
-        mousedown = false;
-        this.pressup(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mouseup", (event) => {
+        if (ConvertMouseEvent(event))
+          this.pressup();
       });
 
-      this._canvas.addEventListener("touchstart", (event) => {
+      this.canvas.addEventListener("touchstart", (event) => {
         event.preventDefault();
-        this.pressdown(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event))
+          this.pressdown();
       });
 
-      this._canvas.addEventListener("touchmove", (event) => {
+      this.canvas.addEventListener("touchmove", (event) => {
         event.preventDefault();
-        this.pressmove(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event))
+          this.pressmove();
       });
 
-      this._canvas.addEventListener("touchend", (event) => {
+      this.canvas.addEventListener("touchend", (event) => {
         event.preventDefault();
-        this.pressup(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event))
+          this.pressup();
+      });
+
+      this.canvas.addEventListener("touchleave", (event) => {
+        event.preventDefault();
+        if (ConvertMouseEvent(event))
+          this.pressup();
       });
 
       this.pressdownElement = null;
 
     }
 
-    findHit (event, mouse) {
-      var hitted = super.hitTest(mouse.x, mouse.y);
+    findHit (event) {
+      var hitted = super.hitTest(this.mouseX, this.mouseY);
       hitted.reverse();
       if (hitted.length)
         return hitted;
       return null;
     }
 
-    pressdown (mouse) {
-      var hit = this.findHit("pressdown", mouse);
+    pressdown () {
+      var hit = this.findHit("pressdown");
       if (hit) {
         hit.forEach((element) => {
-          element.emit("pressdown", false, mouse);
+          element.emit("pressdown", false);
         });
       }
 
-      hit = this.findHit("click", mouse);
+      hit = this.findHit("click");
       if (hit) {
         this.pressdownElement = hit;
       }
+
+      this.emit("stagemousedown");
     }
 
     pressmove (mouse) {
-      var hit = this.findHit("pressmove", mouse);
+      var hit = this.findHit("pressmove");
       if (hit) {
         hit.forEach((element) => {
-          element.emit("pressmove", false, mouse);
+          element.emit("pressmove", false);
         });
       }
     }
 
     pressup (mouse) {
-      var hit = this.findHit("pressup", mouse);
+      var hit = this.findHit("pressup");
       if (hit) {
         hit.forEach((element) => {
-          element.emit("pressup", false, mouse);
+          element.emit("pressup", false);
         });
       }
 
-      hit = this.findHit("click", mouse);
+      hit = this.findHit("click");
       if (hit) {
         hit.forEach((element) => {
           if (this.pressdownElement && this.pressdownElement.indexOf(element) != -1) {
@@ -162,24 +148,26 @@
       }
 
       this.pressdownElement = null;
+
+      this.emit("stagemouseup");
     }
 
     get width () {
-      return this._canvas.width;
+      return this._renderer.width;
     }
 
     set width (value) {
-      this._canvas.width = value;
-      this._stageCacheCanvas.width = this._canvas.width;
+      this._renderer.width = value;
+      this._stageCacheCanvas.width = this._renderer.width;
     }
 
     get height () {
-      return this._canvas.height;
+      return this._renderer.height;
     }
 
     set height (value) {
-      this._canvas.height = value;
-      this._stageCacheCanvas.height = this._canvas.height;
+      this._renderer.height = value;
+      this._stageCacheCanvas.height = this._renderer.height;
     }
 
     get color () {
@@ -194,23 +182,23 @@
     }
 
     get canvas () {
-      return this._canvas;
+      return this._renderer.canvas;
     }
 
     set canvas (value) {
-      throw new TypeError("Sprite.Stage.canvas readonly")
+      throw new Error("Sprite.Stage.canvas readonly")
     }
 
     /// @function Sprite.Stage.clear
     /// clear the stage
     clear () {
       this._context.fillStyle = "white";
-      this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-      //this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+      this._context.fillRect(0, 0, this._renderer.width, this._renderer.height);
+      //this._context.clearRect(0, 0, this._renderer.width, this._renderer.height);
     }
 
     update () {
-      this._updateNextTick = true;
+      this.draw();
     }
 
     draw () {
@@ -218,15 +206,11 @@
 
       if (this._children.length <= 0) return false;
 
-      this._children.forEach((element) => {
-        element.draw(this._stageCacheContext);
-      });
+      this._renderer.clear();
 
-      this.clear();
-      this._context.drawImage(this._stageCacheCanvas, 0, 0);
-      //this._stageCacheContext.clearRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
-      this._stageCacheContext.fillStyle = this._color;
-      this._stageCacheContext.fillRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
+      this._children.forEach((element) => {
+        element.draw(this._renderer);
+      });
 
       this.emit("drawEnd");
     }

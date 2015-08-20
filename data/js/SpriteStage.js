@@ -33,41 +33,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(Stage.prototype), "constructor", this).call(this);
 
       this._color = "black";
-
-      this._canvas = document.createElement("canvas");
-      this._canvas.width = width || 320;
-      this._canvas.height = height || 240;
-
-      this._context = this._canvas.getContext("2d");
-      this._context.imageSmoothingEnabled = false;
-
-      this._stageCacheCanvas = document.createElement("canvas");
-      this._stageCacheCanvas.width = this._canvas.width;
-      this._stageCacheCanvas.height = this._canvas.height;
-
-      this._stageCacheContext = this._stageCacheCanvas.getContext("2d");
-      this._stageCacheContext.imageSmoothingEnabled = false;
-
-      this._updateNextTick = false;
-
-      this.on("addedChildren", function () {
-        _this.update();
-      });
-
-      this.on("removedChildren", function () {
-        _this.update();
-      });
-
-      this.on("change", function () {
-        _this.update();
-      });
-
-      Sprite.Ticker.on("tick", function () {
-        if (_this._updateNextTick) {
-          _this._updateNextTick = false;
-          _this.draw();
-        }
-      });
+      this._renderer = new Sprite.Webgl(width, height);
 
       var mousedown = false;
 
@@ -75,7 +41,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var x;
         var y;
         var type;
-        var rect = _this._canvas.getBoundingClientRect();
+        var rect = _this.canvas.getBoundingClientRect();
 
         if (event.targetTouches && event.targetTouches.length == 1) {
           var touch = event.targetTouches[0];
@@ -88,40 +54,52 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           type = "mouse";
         }
 
-        //x = x / this.scale.x + this.center.x;
-        //y = y / this.scale.y + this.center.y;
-        x = Math.round(x);
-        y = Math.round(y);
-        return { x: x, y: y, type: type };
+        var scaleX = rect.width / _this.width;
+        var scaleY = rect.height / _this.height;
+
+        x = Math.floor(x / scaleX);
+        y = Math.floor(y / scaleY);
+
+        if (x >= 0 && y >= 0) {
+          _this.mouseX = x;
+          _this.mouseY = y;
+          _this.mouseType = type;
+          return true;
+        } else {
+          return false;
+        }
       };
 
-      this._canvas.addEventListener("mousedown", function (event) {
-        mousedown = true;
-        _this.pressdown(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mousedown", function (event) {
+        if (ConvertMouseEvent(event)) _this.pressdown();
       });
 
-      this._canvas.addEventListener("mousemove", function (event) {
-        if (mousedown) _this.pressmove(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mousemove", function (event) {
+        if (ConvertMouseEvent(event)) _this.pressmove();
       });
 
-      this._canvas.addEventListener("mouseup", function (event) {
-        mousedown = false;
-        _this.pressup(ConvertMouseEvent(event));
+      this.canvas.addEventListener("mouseup", function (event) {
+        if (ConvertMouseEvent(event)) _this.pressup();
       });
 
-      this._canvas.addEventListener("touchstart", function (event) {
+      this.canvas.addEventListener("touchstart", function (event) {
         event.preventDefault();
-        _this.pressdown(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event)) _this.pressdown();
       });
 
-      this._canvas.addEventListener("touchmove", function (event) {
+      this.canvas.addEventListener("touchmove", function (event) {
         event.preventDefault();
-        _this.pressmove(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event)) _this.pressmove();
       });
 
-      this._canvas.addEventListener("touchend", function (event) {
+      this.canvas.addEventListener("touchend", function (event) {
         event.preventDefault();
-        _this.pressup(ConvertMouseEvent(event));
+        if (ConvertMouseEvent(event)) _this.pressup();
+      });
+
+      this.canvas.addEventListener("touchleave", function (event) {
+        event.preventDefault();
+        if (ConvertMouseEvent(event)) _this.pressup();
       });
 
       this.pressdownElement = null;
@@ -129,34 +107,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     _createClass(Stage, [{
       key: "findHit",
-      value: function findHit(event, mouse) {
-        var hitted = _get(Object.getPrototypeOf(Stage.prototype), "hitTest", this).call(this, mouse.x, mouse.y);
+      value: function findHit(event) {
+        var hitted = _get(Object.getPrototypeOf(Stage.prototype), "hitTest", this).call(this, this.mouseX, this.mouseY);
         hitted.reverse();
         if (hitted.length) return hitted;
         return null;
       }
     }, {
       key: "pressdown",
-      value: function pressdown(mouse) {
-        var hit = this.findHit("pressdown", mouse);
+      value: function pressdown() {
+        var hit = this.findHit("pressdown");
         if (hit) {
           hit.forEach(function (element) {
-            element.emit("pressdown", false, mouse);
+            element.emit("pressdown", false);
           });
         }
 
-        hit = this.findHit("click", mouse);
+        hit = this.findHit("click");
         if (hit) {
           this.pressdownElement = hit;
         }
+
+        this.emit("stagemousedown");
       }
     }, {
       key: "pressmove",
       value: function pressmove(mouse) {
-        var hit = this.findHit("pressmove", mouse);
+        var hit = this.findHit("pressmove");
         if (hit) {
           hit.forEach(function (element) {
-            element.emit("pressmove", false, mouse);
+            element.emit("pressmove", false);
           });
         }
       }
@@ -165,14 +145,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function pressup(mouse) {
         var _this2 = this;
 
-        var hit = this.findHit("pressup", mouse);
+        var hit = this.findHit("pressup");
         if (hit) {
           hit.forEach(function (element) {
-            element.emit("pressup", false, mouse);
+            element.emit("pressup", false);
           });
         }
 
-        hit = this.findHit("click", mouse);
+        hit = this.findHit("click");
         if (hit) {
           hit.forEach(function (element) {
             if (_this2.pressdownElement && _this2.pressdownElement.indexOf(element) != -1) {
@@ -182,6 +162,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         this.pressdownElement = null;
+
+        this.emit("stagemouseup");
       }
     }, {
       key: "clear",
@@ -190,13 +172,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// clear the stage
       value: function clear() {
         this._context.fillStyle = "white";
-        this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
-        //this._context.clearRect(0, 0, this._canvas.width, this._canvas.height);
+        this._context.fillRect(0, 0, this._renderer.width, this._renderer.height);
+        //this._context.clearRect(0, 0, this._renderer.width, this._renderer.height);
       }
     }, {
       key: "update",
       value: function update() {
-        this._updateNextTick = true;
+        this.draw();
       }
     }, {
       key: "draw",
@@ -207,35 +189,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         if (this._children.length <= 0) return false;
 
-        this._children.forEach(function (element) {
-          element.draw(_this3._stageCacheContext);
-        });
+        this._renderer.clear();
 
-        this.clear();
-        this._context.drawImage(this._stageCacheCanvas, 0, 0);
-        //this._stageCacheContext.clearRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
-        this._stageCacheContext.fillStyle = this._color;
-        this._stageCacheContext.fillRect(0, 0, this._stageCacheCanvas.width, this._stageCacheCanvas.height);
+        this._children.forEach(function (element) {
+          element.draw(_this3._renderer);
+        });
 
         this.emit("drawEnd");
       }
     }, {
       key: "width",
       get: function get() {
-        return this._canvas.width;
+        return this._renderer.width;
       },
       set: function set(value) {
-        this._canvas.width = value;
-        this._stageCacheCanvas.width = this._canvas.width;
+        this._renderer.width = value;
+        this._stageCacheCanvas.width = this._renderer.width;
       }
     }, {
       key: "height",
       get: function get() {
-        return this._canvas.height;
+        return this._renderer.height;
       },
       set: function set(value) {
-        this._canvas.height = value;
-        this._stageCacheCanvas.height = this._canvas.height;
+        this._renderer.height = value;
+        this._stageCacheCanvas.height = this._renderer.height;
       }
     }, {
       key: "color",
@@ -251,13 +229,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "canvas",
       get: function get() {
-        return this._canvas;
+        return this._renderer.canvas;
       },
       set: function set(value) {
-        throw new TypeError("Sprite.Stage.canvas readonly");
+        throw new Error("Sprite.Stage.canvas readonly");
       }
     }]);
 
     return Stage;
   })(Sprite.Container);
 })();
+//# sourceMappingURL=SpriteStage.js.map

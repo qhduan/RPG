@@ -21,6 +21,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   Game.ItemClass = class ItemClass extends Sprite.Event {
+
+    static load (id, callback) {
+      var itemLoader = new Sprite.Loader();
+      itemLoader.add(`/item/${id}.json`);
+      itemLoader.start();
+      itemLoader.on("complete", (event) => {
+        var itemData = event.data[0];
+        var itemObj = new ItemClass(itemData);
+        Game.items[id] = itemObj;
+        itemObj.on("complete", () => {
+          if (typeof callback == "function") {
+            callback();
+          }
+        });
+      });
+    }
+
     constructor (itemData) {
       super();
 

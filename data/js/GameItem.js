@@ -33,6 +33,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.ItemClass = (function (_Sprite$Event) {
     _inherits(ItemClass, _Sprite$Event);
 
+    _createClass(ItemClass, null, [{
+      key: "load",
+      value: function load(id, callback) {
+        var itemLoader = new Sprite.Loader();
+        itemLoader.add("/item/" + id + ".json");
+        itemLoader.start();
+        itemLoader.on("complete", function (event) {
+          var itemData = event.data[0];
+          var itemObj = new ItemClass(itemData);
+          Game.items[id] = itemObj;
+          itemObj.on("complete", function () {
+            if (typeof callback == "function") {
+              callback();
+            }
+          });
+        });
+      }
+    }]);
+
     function ItemClass(itemData) {
       var _this = this;
 
@@ -108,4 +127,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return ItemClass;
   })(Sprite.Event);
 })();
-//# sourceMappingURL=GameItem.js.map

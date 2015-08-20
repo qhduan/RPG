@@ -21,6 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   Game.SkillClass = class SkillClass extends Sprite.Event {
+    static load (id, callback) {
+      var skillLoader = new Sprite.Loader();
+      skillLoader.add(`/skill/${id}.json`);
+      skillLoader.start();
+      skillLoader.on("complete", (event) => {
+        var skillData = event.data[0];
+        var skillObj = new Game.SkillClass(skillData);
+        Game.skills[id] = skillObj;
+        skillObj.on("complete", () => {
+          if (typeof callback == "function") {
+            callback();
+          }
+        });
+      });
+    }
+
     constructor (skillData) {
       super ();
 
@@ -55,6 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     fire (actor, animation, callback) {
+
       if (this.sound) {
         this.sound.load();
         this.sound.play();

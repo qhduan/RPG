@@ -33,6 +33,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.SkillClass = (function (_Sprite$Event) {
     _inherits(SkillClass, _Sprite$Event);
 
+    _createClass(SkillClass, null, [{
+      key: "load",
+      value: function load(id, callback) {
+        var skillLoader = new Sprite.Loader();
+        skillLoader.add("/skill/" + id + ".json");
+        skillLoader.start();
+        skillLoader.on("complete", function (event) {
+          var skillData = event.data[0];
+          var skillObj = new Game.SkillClass(skillData);
+          Game.skills[id] = skillObj;
+          skillObj.on("complete", function () {
+            if (typeof callback == "function") {
+              callback();
+            }
+          });
+        });
+      }
+    }]);
+
     function SkillClass(skillData) {
       var _this = this;
 
@@ -194,4 +213,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SkillClass;
   })(Sprite.Event);
 })();
-//# sourceMappingURL=GameSkill.js.map

@@ -53,6 +53,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var image = new Image();
             image.onload = function () {
               // window.URL.revokeObjectURL(image.src);
+              image.onload = null;
               Sprite.Cache[url] = image;
               callback(image);
             };
@@ -63,12 +64,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             audio.oncanplay = function () {
               // 如果reoke掉audio，那么audio.load()方法则不能用了
               // window.URL.revokeObjectURL(audio.src);
+              audio.oncanplay = null;
               Sprite.Cache[url] = audio;
               callback(audio);
             };
             audio.src = window.URL.createObjectURL(blob);
           } else if (type == "json") {
             var json = req.response;
+            if (!json) {
+              console.error(url);
+              throw new Error("Sprite.Loader invalid json");
+            }
             Sprite.Cache[url] = json;
             callback(json);
           }
@@ -151,4 +157,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Loader;
   })(Sprite.Event);
 })();
-//# sourceMappingURL=SpriteLoader.js.map

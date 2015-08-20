@@ -1,13 +1,12 @@
 {
-  "id": "actor0002",
-  "name": "黑猫",
-  "description": "很可爱的黑猫哦",
-  "type": "npc",
-  "contact": {
-    "type": "talk",
-    "content": "我是黑猫，我会说人话，哈哈哈哈哈哈哈哈哈哈"
+  "id": "batPurple",
+  "name": "紫蝙蝠",
+  "description": "实力很弱的妖兽",
+  "type": "monster",
+  "drop": {
+    "gold": "0-1"
   },
-  "image": "resource\/actor0002.png",
+  "image": "resource\/batPurple.png",
   "level": 1,
   "$str": 10,
   "$dex": 10,

@@ -25,11 +25,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     items: {
       // 保存items的Game.ItemClass对象缓存
     },
+    skills: {
+      // 保存skills的Game.SkillClass对象缓存
+    },
     config: { // 保存所有设置（默认设置）
       walk: 4, // 角色行走速度
       run: 8, // 角色跑动速度
       width: 800, // 渲染窗口的原始大小
-      height: 480,
+      height: 450,
       scale: false, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
       fps: 35, // 锁定fps到指定数值，如果设置为<=0，则不限制
     }
@@ -84,15 +87,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     // html窗口拉伸（css中控制了原始大小）
     var elements = document.getElementsByClassName("game-window");
     for (let i = 0; i < elements.length; i++) {
-      elements[i].style.transformOrigin = "0 0";
-      elements[i].style.transform = `scale(${scale}, ${scale})`;
+      elements[i].style.transformOrigin = "0 0 0";
+      // elements[i].style.transform = `scale(${scale}, ${scale})`;
+      elements[i].style.transform = `scale3d(${scale}, ${scale}, 1.0)`;
       elements[i].style.left = `${leftMargin}px`;
       elements[i].style.top = `${topMargin}px`;
     }
     // 游戏画布拉伸
     if (Game.stage && Game.stage.canvas) {
-      Game.stage.canvas.style.transformOrigin = "0 0";
-      Game.stage.canvas.style.transform = `scale(${scale}, ${scale})`;
+      Game.stage.canvas.style.transformOrigin = "0 0 0";
+      // Game.stage.canvas.style.transform = `scale(${scale}, ${scale})`;
+      Game.stage.canvas.style.transform = `scale3d(${scale}, ${scale}, 1.0)`;
       Game.stage.canvas.style.left = `${leftMargin}px`;
       Game.stage.canvas.style.top = `${topMargin}px`;
     }
@@ -147,14 +152,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.dialogueLayer
     );
 
-    /*
     Sprite.Ticker.on("tick", function () {
-      if (updateStageNextTick) {
-        Game.stage.update();
-        updateStageNextTick = false;
-      }
+      Game.stage.update();
     });
-    */
 
     var fps = 0;
     var start = new Date().getTime();
@@ -167,7 +167,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       fps = 0;
       start = now;
       document.getElementById("fps").innerHTML = f.toFixed(2);
-    }, 500);
+    }, 1000);
 
 
     Game.ResizeWindow();

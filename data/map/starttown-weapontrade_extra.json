@@ -1,5 +1,5 @@
 {
-  "name": "斯塔特镇长屋",
+  "name": "斯塔特镇武器屋",
   "bgm": "Dance",
   "entry": {
     "x": 34,
@@ -8,20 +8,20 @@
   "actors":
   [
     {
-      "id": "starttown-mayor",
-      "x": 5,
-      "y": 6
+      "id": "starttown-weapontrade",
+      "x": 4,
+      "y": 4
     }
   ],
   "door":
   [
     {
-      "x": 7,
-      "y": 15,
+      "x": 4,
+      "y": 8,
       "dest": "starttown",
       "description": "通往斯塔特镇",
-      "destx": 28,
-      "desty": 25
+      "destx": 25,
+      "desty": 14
     }
   ],
   "chest":

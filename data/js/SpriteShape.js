@@ -197,7 +197,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "polygon",
       value: function polygon(userConfig) {
         var config = {
-          "points": "20, 20, 30, 20, 30, 30, 20, 30",
+          "points": "20,20 30,20 30,30 20,30",
           "stroke": "black",
           "stroke-width": 1,
           "fill": "white",
@@ -208,18 +208,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         this._children.push("<polyline " + this.makeConfig(config, userConfig) + " />");
 
-        var max = -1;
-        config.points.split(/, /).forEach(function (element) {
+        var width = -1;
+        var height = -1;
+        // split points by comma or space
+        config.points.split(/,| /).forEach(function (element, index) {
           var number = parseInt(element);
-          if (!isNaN(number) && number > max) {
-            max = number;
+          if (index % 2 == 0) {
+            // even
+            if (number > width) width = number;
+          } else {
+            // odds
+            if (number > height) height = number;
           }
         });
 
-        if (max != -1) {
-          this._width = max;
-          this._height = max;
-        }
+        if (width > 0 && width > this._width) this._width = width;
+        if (height > 0 && height > this._height) this._height = height;
         this.generate();
       }
     }, {

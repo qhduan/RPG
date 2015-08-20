@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           var buttonUse = document.getElementById("buttonUse");
           var minDistance = -1;
           var minObject = null;
-          var distanceLimit = 50;
+          var distanceLimit = 48;
 
           function FindNearest(obj) {
             var d = Game.hero.distance(obj.x, obj.y);
@@ -125,6 +125,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             FindNearest(element);
           });
 
+          Game.area.hints.forEach(function (element) {
+            FindNearest(element);
+          });
+
           if (minDistance > distanceLimit) {
             minDistance = -1;
             minObject = null;
@@ -136,7 +140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             document.getElementById("buttonUseText").textContent = "";
           }
 
-          if (minObject && minDistance < 50 && Game.hintObject != minObject) {
+          if (minObject && minDistance < distanceLimit && Game.hintObject != minObject) {
             Game.hintObject = minObject;
             buttonUse.style.visibility = "visible";
             if (minObject.type == "door") {
@@ -162,7 +166,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             area.map.draw(Game.mapLayer);
             Game.hero.draw(Game.heroLayer);
             Game.hero.focus();
-            Game.initInput();
             Game.ui.init();
             Game.ShowWindow("uiWindow");
           });
@@ -175,3 +178,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     //return archive[id];
   };
 })();
+//# sourceMappingURL=GameArchive.js.map
