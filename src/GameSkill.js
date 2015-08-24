@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,17 +17,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
-  Game.SkillClass = class SkillClass extends Sprite.Event {
+  Game.Skill = class GameSkill extends Sprite.Event {
     static load (id, callback) {
       var skillLoader = new Sprite.Loader();
       skillLoader.add(`/skill/${id}.json`);
       skillLoader.start();
       skillLoader.on("complete", (event) => {
         var skillData = event.data[0];
-        var skillObj = new Game.SkillClass(skillData);
+        var skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
         skillObj.on("complete", () => {
           if (typeof callback == "function") {
@@ -160,19 +161,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           sprite.y = a.sprite.y;
           sprite.play("hitted");
           if (sprite.paused == true) {
-            Game.skillLayer.removeChild(sprite);
+            Game.layers.skillLayer.removeChild(sprite);
           } else {
             sprite.on("animationend", function () {
-              Game.skillLayer.removeChild(sprite);
+              Game.layers.skillLayer.removeChild(sprite);
             });
           }
         } else {
           // 如果动画已经播完，则停止
           if (sprite.paused == true) {
-            Game.skillLayer.removeChild(sprite);
+            Game.layers.skillLayer.removeChild(sprite);
           } else {
             sprite.on("animationend", function () {
-              Game.skillLayer.removeChild(sprite);
+              Game.layers.skillLayer.removeChild(sprite);
             });
           }
         }
@@ -180,7 +181,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (callback) callback(Object.keys(hitted));
       }
 
-      Game.skillLayer.appendChild(sprite);
+      Game.layers.skillLayer.appendChild(sprite);
       sprite.play(animation);
 
       if ( this.data.animations[animation].actor

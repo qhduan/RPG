@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,10 +17,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
-  Game.ItemClass = class ItemClass extends Sprite.Event {
+  Game.Item = class GameItem extends Sprite.Event {
 
     static load (id, callback) {
       var itemLoader = new Sprite.Loader();
@@ -28,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       itemLoader.start();
       itemLoader.on("complete", (event) => {
         var itemData = event.data[0];
-        var itemObj = new ItemClass(itemData);
+        var itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
         itemObj.on("complete", () => {
           if (typeof callback == "function") {
@@ -81,14 +82,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     pickup () {
       if (this.inner) {
-        Game.ui.pickupWindow(this);
+        Game.windows.pickup.execute("pickup", this);
       }
     }
 
     clone (callback) {
       var self = this;
 
-      var itemObj = new ItemClass(this.data);
+      var itemObj = new Game.Item(this.data);
       return itemObj;
     }
 

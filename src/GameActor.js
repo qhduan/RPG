@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
@@ -25,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.ActorClass = class ActorClass extends Sprite.Event {
+  Game.Actor = class GameActor extends Sprite.Event {
     constructor (actorData) {
       super();
 
@@ -129,7 +130,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (this.data.skills) {
           this.data.skills.forEach((skillId) => {
             completeCount--;
-            Game.SkillClass.load(skillId, () => {
+            Game.Skill.load(skillId, () => {
               Complete();
             });
           });
@@ -140,7 +141,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             var itemId = this.data.equipment[key];
             if (itemId) {
               completeCount--;
-              Game.ItemClass.load(itemId, () => {
+              Game.Item.load(itemId, () => {
                 Complete();
               });
             }
@@ -150,7 +151,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (this.data.items) {
           for (var itemId in this.data.items) {
             completeCount--;
-            Game.ItemClass.load(itemId, () => {
+            Game.Item.load(itemId, () => {
               Complete();
             });
           }
@@ -159,7 +160,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (this.data.contact && this.data.contact.trade && this.data.contact.trade.length) {
           this.data.contact.trade.forEach((itemId) => {
             completeCount--;
-            Game.ItemClass.load(itemId, () => {
+            Game.Item.load(itemId, () => {
               Complete();
             });
           });
@@ -183,15 +184,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       this.calculate();
-
-      this.on("move", () => {
-        if (this.popupBox && Object.keys(this.popupBox).length) {
-          for (let key in this.popupBox) {
-            this.popupBox[key].x = this.x;
-            this.popupBox[key].y = this.y - this.sprite.center.y;
-          }
-        }
-      });
     }
 
     calculate () {
@@ -234,7 +226,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     clone  (callback) {
-      var actorObj = new ActorClass(this.data);
+      var actorObj = new Game.Actor(this.data);
       actorObj.oncomplete(callback);
     }
 
@@ -264,65 +256,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     }
 
-    popup (text) {
-      var dialogueText = new Sprite.Text({
-        text: text,
-        maxWidth: 200,
-      });
-      var w = dialogueText.width;
-      var h = dialogueText.height;
-      var middle = Math.round((w + 10) / 2);
-
-      var dialogueBox = new Sprite.Shape();
-
-      dialogueBox.rect({
-        x : 0,
-        y: 0,
-        width: w + 10,
-        height: h + 10,
-        stroke: "black",
-        fill: "white",
-      });
-
-      dialogueBox.polygon({
-        points: `${middle-10},${h+10} ${middle+10},${h+10} ${middle},${h+20} ${middle-10},${h+10}`,
-        fill: "white"
-      });
-
-      var dialogueContainer = new Sprite.Container();
-      dialogueContainer.appendChild(dialogueBox, dialogueText);
-      dialogueText.x = 5;
-      dialogueText.y = 5;
-      dialogueContainer.x = this.x;
-      dialogueContainer.y = this.y - this.sprite.center.y - 30;
-      dialogueContainer.center.x = middle;
-      dialogueContainer.center.y = h + 15;
-      dialogueContainer.height = h + 15;
-      dialogueContainer.width = w + 10;
-
-      if (!this.popupBox) {
-        this.popupBox = {};
-      }
-
-      if (Object.keys(this.popupBox).length > 0) {
-        for (var key in this.popupBox) {
-          this.popupBox[key].center.y += this.popupBox[key].height;
-        }
-      }
-
-      var id = Sprite.Util.id();
-
-      this.popupBox[id] = dialogueContainer;
-      Game.dialogueLayer.appendChild(this.popupBox[id]);
-
-      setTimeout(() => {
-        if (this.popupBox[id]) {
-          Game.dialogueLayer.removeChild(this.popupBox[id]);
-          delete this.popupBox[id];
-        }
-      }, 4000);
-    }
-
     contact () {
       if (this.data.contact) {
 
@@ -336,13 +269,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           options["交易"] = "trade"
         }
 
-        Game.ui.choice(this.data.contact.hi, options, (choice) => {
+        Game.choice(options, (choice) => {
           switch (choice) {
             case "talk":
-              Game.ui.dialogue(this.data.contact.talk);
+              Game.dialogue(this.data.contact.talk);
               break;
             case "trade":
-              Game.ui.trade(this.data.contact.trade);
+              Game.windows.trade.execute("trade", this.data.contact.trade);
               break;
           }
         });
@@ -374,14 +307,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var dead = Game.items.bag.clone();
         dead.x = this.x;
         dead.y = this.y;
-        dead.draw(Game.itemLayer);
+        dead.draw(Game.layers.itemLayer);
         dead.inner = {
           "gold": 1
         };
         Game.area.bags[Sprite.Util.id()] = dead;
 
-        Game.actorLayer.removeChild(this.infoBox);
-        Game.actorLayer.removeChild(this.sprite);
+        Game.layers.actorLayer.removeChild(this.infoBox);
+        Game.layers.actorLayer.removeChild(this.sprite);
 
         delete Game.area.actors[this.id];
 
@@ -406,14 +339,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       text.x = this.x;
       text.y = this.y;
 
-      Game.actorLayer.appendChild(text);
+      Game.layers.actorLayer.appendChild(text);
 
       var inter = setInterval(() => {
         text.y -= 4;
       }, 50);
 
       setTimeout(() => {
-        Game.actorLayer.removeChild(text);
+        Game.layers.actorLayer.removeChild(text);
         clearInterval(inter);
       }, 2000);
 
@@ -599,8 +532,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           break;
       }
 
-      this.x = parseInt(this.x);
-      this.y = parseInt(this.y);
+      this.x = Math.floor(this.x);
+      this.y = Math.floor(this.y);
 
       var t = Game.area.map.tile(this.x, this.y);
 
@@ -630,21 +563,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (collisionTest) {
         if (collision == false) collision = CheckCollision(t);
 
-        if (collision == false) collision = CheckCollision({x: t.x, y: t.y + 1});
         if (collision == false) collision = CheckCollision({x: t.x, y: t.y - 1});
+        if (collision == false) collision = CheckCollision({x: t.x, y: t.y + 1});
         if (collision == false) collision = CheckCollision({x: t.x - 1, y: t.y});
         if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y});
 
-        if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y - 1});
-        if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y + 1});
         if (collision == false) collision = CheckCollision({x: t.x - 1, y: t.y - 1});
+        if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y - 1});
         if (collision == false) collision = CheckCollision({x: t.x - 1, y: t.y + 1});
+        if (collision == false) collision = CheckCollision({x: t.x + 1, y: t.y + 1});
 
         // 判断和地图上角色的碰撞
         if (collision == false) {
           for (var key in Game.area.actors) {
             collision = Game.actorCollision(this.sprite, Game.area.actors[key].sprite);
-            if (collision) break;
+            if (collision) {
+              break;
+            }
           }
         }
       }
@@ -774,6 +709,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.stage.center.y = Math.round(this.y - Game.config.height / 2);
     }
 
-  } // ActorClass
+  } // Game.Actor
 
 })();

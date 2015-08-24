@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 (function () {
@@ -25,10 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // root级别api入口
   var Game = window.Game = {
     items: {
-      // 保存items的Game.ItemClass对象缓存
+      // 保存items的Game.Item对象缓存
     },
     skills: {
-      // 保存skills的Game.SkillClass对象缓存
+      // 保存skills的Game.Skill对象缓存
+    },
+    layers: {
+      // 保存Stage中的Layer的对象
     },
     config: { // 保存所有设置（默认设置）
       walk: 4, // 角色行走速度
@@ -40,76 +44,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   // 锁定fps到指定数值，如果设置为<=0，则不限制
-  Game.ShowWindow = function (id) {
-    var elements = document.getElementsByClassName("game-window");
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].style.display = "none";
-    }
-    if (id && document.getElementById(id)) {
-      document.getElementById(id).style.display = "block";
-    }
-  };
-
-  // 当窗口大小改变时改变游戏窗口大小
-  Game.ResizeWindow = function () {
-    var width = window.innerWidth;
-    var height = window.innerHeight;
-    var scale = 1;
-    var leftMargin = 0;
-    var topMargin = 0;
-
-    if (Game.config.scale == false) {
-      // 不拉伸游戏窗口，按原始大小计算窗口居中
-      leftMargin = Math.floor((width - Game.config.width) / 2);
-      topMargin = Math.floor((height - Game.config.height) / 2);
-    } else {
-      // 拉伸游戏窗口，首先计算游戏原始大小比例
-      var ratio = Game.config.width / Game.config.height;
-      // width first
-      var w = width;
-      var h = w / ratio;
-      // then height
-      if (h > height) {
-        h = height;
-        w = h * ratio;
-      }
-
-      w = Math.floor(w);
-      h = Math.floor(h);
-      leftMargin = Math.floor((width - w) / 2);
-      topMargin = Math.floor((height - h) / 2);
-
-      scale = Math.min(w / Game.config.width, h / Game.config.height);
-    }
-
-    // html窗口拉伸（css中控制了原始大小）
-    var elements = document.getElementsByClassName("game-window");
-    for (var i = 0; i < elements.length; i++) {
-      elements[i].style.transformOrigin = "0 0 0";
-      // elements[i].style.transform = `scale(${scale}, ${scale})`;
-      elements[i].style.transform = "scale3d(" + scale + ", " + scale + ", 1.0)";
-      elements[i].style.left = leftMargin + "px";
-      elements[i].style.top = topMargin + "px";
-    }
-    // 游戏画布拉伸
-    if (Game.stage && Game.stage.canvas) {
-      Game.stage.canvas.style.transformOrigin = "0 0 0";
-      // Game.stage.canvas.style.transform = `scale(${scale}, ${scale})`;
-      Game.stage.canvas.style.transform = "scale3d(" + scale + ", " + scale + ", 1.0)";
-      Game.stage.canvas.style.left = leftMargin + "px";
-      Game.stage.canvas.style.top = topMargin + "px";
-    }
-
-    if (Game.hero) {
-      Game.hero.focus();
-    }
-  };
-
-  Game.ResizeWindow();
-  window.addEventListener("resize", function () {
-    Game.ResizeWindow();
-  });
-
   Game.clearStage = function () {
     for (var i = 0; i < Game.stage.children.length; i++) {
       Game.stage.children[i].clear();
@@ -122,25 +56,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     document.body.appendChild(Game.stage.canvas);
     Game.stage.canvas.style.position = "fixed";
 
-    Game.mapLayer = new Sprite.Container();
-    Game.mapLayer.name = "mapLayer";
+    Game.layers.mapLayer = new Sprite.Container();
+    Game.layers.mapLayer.name = "mapLayer";
 
-    Game.actorLayer = new Sprite.Container();
-    Game.actorLayer.name = "actorLayer";
+    Game.layers.actorLayer = new Sprite.Container();
+    Game.layers.actorLayer.name = "actorLayer";
 
-    Game.itemLayer = new Sprite.Container();
-    Game.itemLayer.name = "itemLayer";
+    Game.layers.itemLayer = new Sprite.Container();
+    Game.layers.itemLayer.name = "itemLayer";
 
-    Game.heroLayer = new Sprite.Container();
-    Game.heroLayer.name = "heroLayer";
+    Game.layers.heroLayer = new Sprite.Container();
+    Game.layers.heroLayer.name = "heroLayer";
 
-    Game.skillLayer = new Sprite.Container();
-    Game.skillLayer.name = "skillLayer";
+    Game.layers.skillLayer = new Sprite.Container();
+    Game.layers.skillLayer.name = "skillLayer";
 
-    Game.dialogueLayer = new Sprite.Container();
-    Game.dialogueLayer.name = "dialogueLayer";
+    Game.layers.dialogueLayer = new Sprite.Container();
+    Game.layers.dialogueLayer.name = "dialogueLayer";
 
-    Game.stage.appendChild(Game.mapLayer, Game.actorLayer, Game.itemLayer, Game.heroLayer, Game.skillLayer, Game.dialogueLayer);
+    Game.stage.appendChild(Game.layers.mapLayer, Game.layers.actorLayer, Game.layers.itemLayer, Game.layers.heroLayer, Game.layers.skillLayer, Game.layers.dialogueLayer);
 
     Sprite.Ticker.on("tick", function () {
       Game.stage.update();
@@ -159,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.getElementById("fps").innerHTML = f.toFixed(2);
     }, 1000);
 
-    Game.ResizeWindow();
+    Game.Window.resize();
 
     console.log("RPG Game Flying!");
   };

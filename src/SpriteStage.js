@@ -1,3 +1,23 @@
+/*
+
+2D Game Sprite Library, Built using JavaScript ES6
+Copyright (C) 2015 qhduan(http://qhduan.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
 /// @file SpriteStage.js
 /// @namespace Sprite
 /// class Sprite.Stage
@@ -16,8 +36,13 @@
     constructor (width, height) {
       super();
 
-      this._color = "black";
-      this._renderer = new Sprite.Webgl(width, height);
+      if (Sprite.Webgl.support()) {
+        this._renderer = new Sprite.Webgl(width, height);
+      } else if (Sprite.Canvas.support()) {
+        this._renderer = new Sprite.Canvas(width, height);
+      } else {
+        throw new Error("Sprite.Stage all renderer not support");
+      }
 
       var mousedown = false;
 

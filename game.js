@@ -1,6 +1,6 @@
 /*
 
-Online A-RPG Game, Built using Node.js + createjs
+Online A-RPG Game, Built using JavaScript
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@ grunt.tasks(["babel"], {}, function () {
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
-    var outputPath = filepath.replace("src/", "data/js/");
+    var outputPath = filepath.replace("src", "data/js");
     babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
       if (err) throw err;
       // 保存转换好的代码

@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,14 +17,16 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 (function () {
   "use strict";
 
   function fixPosition(obj) {
+    // 这里的数值用来修正方块位置，到真实位置的数值
     obj.x = obj.x * 32 + 16;
-    obj.y = obj.y * 32;
+    obj.y = obj.y * 32 + 16; // 这里用来修正视角和人物模型行走的问题
   }
 
   // 加载区域，把括地图，角色，物品
@@ -39,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     itemLoader.on("complete", function (event) {
       preloadItems.forEach(function (element, index) {
         var itemData = event.data[index];
-        Game.items[element] = new Game.ItemClass(itemData);
+        Game.items[element] = new Game.Item(itemData);
       });
     });
 
@@ -54,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         mapData[key] = mapExtra[key];
       }
 
-      var mapObj = new Game.MapClass(mapData);
+      var mapObj = new Game.Map(mapData);
       mapObj.on("complete", function () {
         var area = {
           actors: {},
@@ -85,10 +87,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               actorData.y = element.y;
               fixPosition(actorData);
               actorData.mode = element.mode;
-              var actorObj = new Game.ActorClass(actorData);
+              var actorObj = new Game.Actor(actorData);
               actorObj.on("complete", function () {
                 area.actors[actorObj.id] = actorObj;
-                actorObj.draw(Game.actorLayer);
+                actorObj.draw(Game.layers.actorLayer);
                 Complete();
               });
             });
@@ -131,3 +133,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   };
 })();
+//# sourceMappingURL=GameArea.js.map

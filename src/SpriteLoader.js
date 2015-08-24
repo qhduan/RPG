@@ -1,13 +1,65 @@
+/*
+
+2D Game Sprite Library, Built using JavaScript ES6
+Copyright (C) 2015 qhduan(http://qhduan.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+/// @file SpriteLoader.js
+/// @namespace Sprite
+/// class Sprite.Loader
 
 (function () {
   "use strict";
 
-  Sprite.Cache = {};
+  var Cache = {};
+  var Downloading = {};
 
   function Fetch (url, callback, timeout) {
+  
+    function Finish (obj) {
+      Cache[url] = obj;
+      if (typeof callback == "function") {
+        callback(obj);
+      }
+      if (Downloading.hasOwnProperty(url)) {
+        Downloading[url].forEach(function (callback) {
+          if (typeof callback == "function") {
+            callback(obj);
+          }
+        });
+        delete Downloading[url];
+      }
+    }
+  
+    if (Cache.hasOwnProperty(url)) {
+      Finish(Cache[url]);
+      return;
+    }
+    
+    if (Downloading.hasOwnProperty(url)) {
+      Downloading[url].push(callback);
+      return;
+    }
+    
+    Downloading[url] = [];
+  
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
-    req.timeout = 15000;
+    req.timeout = 15000; // 15 seconds
 
     var type = null;
     if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
@@ -46,8 +98,7 @@
             image.onload = function () {
               // window.URL.revokeObjectURL(image.src);
               image.onload = null;
-              Sprite.Cache[url] = image;
-              callback(image);
+              Finish(image);
             };
             image.src = window.URL.createObjectURL(blob);
           } else if (type == "audio") {
@@ -57,8 +108,7 @@
               // 如果reoke掉audio，那么audio.load()方法则不能用了
               // window.URL.revokeObjectURL(audio.src);
               audio.oncanplay = null;
-              Sprite.Cache[url] = audio;
-              callback(audio);
+              Finish(audio);
             };
             audio.src = window.URL.createObjectURL(blob);
           } else if (type == "json") {
@@ -67,8 +117,7 @@
               console.error(url);
               throw new Error("Sprite.Loader invalid json");
             }
-            Sprite.Cache[url] = json;
-            callback(json);
+            Finish(json);
           }
         } else {
           console.error(req.readyState, req.status, req.statusText);
@@ -125,15 +174,10 @@
       }
 
       this._list.forEach((element, index) => {
-        if (Sprite.Cache.hasOwnProperty(element)) {
-          ret[index] = Sprite.Cache[element];
+        Fetch(element, (result) => {
+          ret[index] = result;
           Done();
-        } else {
-          Fetch(element, (result) => {
-            ret[index] = result;
-            Done();
-          });
-        }
+        });
       });
 
     }

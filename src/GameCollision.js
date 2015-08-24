@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
@@ -64,61 +65,64 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     && data.height < (rectA.height + rectB.height) )
       return data;
     return false;
-  }
-
+  }  
+  
   var canvasCollide = document.createElement("canvas");
-  //document.body.appendChild(canvasCollide);
-
-  // 检测像素级碰撞
-  // 四个delta参数代表的是检测的偏移，例如为了只检测角色下半身，则设角色高度为h/2，把deltaY设置为h，把deltaH设置为-h/w即可
-  // 如果只检测角色右半边，设角色宽度为w，则可以把deltaX设置为w/2，deltaW为-w/2
+  canvasCollide.width = 128;
+  canvasCollide.height = 128;
+  var contextCollide = canvasCollide.getContext("2d");
+  // document.body.appendChild(canvasCollide);
+  
   function pixelCollide (spriteA, spriteB, rectA, rectB, data,
     deltaX, deltaY, deltaW, deltaH) {
     // 对图像进行某种意义上的移动，例如把上面的图的A和B都平移到左上角，也就是AA的左上角变为0,0坐标
-
 
     data.x1 -= data.minX;
     data.x2 -= data.minX;
     data.y1 -= data.minY;
     data.y2 -= data.minY;
 
-    if (typeof deltaX != "number") deltaX = 0;
-    if (typeof deltaY != "number") deltaY = 0;
-    if (typeof deltaW != "number") deltaW = 0;
-    if (typeof deltaH != "number") deltaH = 0;
-
-    canvasCollide.width = data.width;//Game.area.map.width;//data.width;
-    canvasCollide.height = data.height;//Game.area.map.height;//data.height;
-    var context = canvasCollide.getContext("2d");
-
+    // contextCollide.clearRect(0, 0, data.width, data.height)
+    canvasCollide.width = data.width;
+    canvasCollide.height = data.height;
+    
     // draw spriteA
-    context.clearRect(0, 0, data.width, data.height)
-    context.drawImage(rectA.image,
-      rectA.x, rectA.y, data.w1, data.h1,
-      data.x1, data.y1, data.w1, data.h1);
+    contextCollide.drawImage(rectA.image,
+      rectA.x + deltaX, rectA.y + deltaY, data.w1 + deltaW, data.h1 + deltaH,
+      data.x1 + deltaX, data.y1 + deltaY, data.w1 + deltaW, data.h1 + deltaH);
 
-    var pixelOld = context.getImageData(data.x1 + deltaX, data.y1 + deltaY, data.w1 + deltaW, data.h1 + deltaH).data;
+    var cropX = data.x1 + deltaX;
+    var cropY = data.y1 + deltaY;
+    var cropWidth = data.w1 + deltaW;
+    var cropHeight = data.h1 + deltaH;
+      
+    var pixelOld = contextCollide.getImageData(cropX, cropY, cropWidth, cropHeight).data;
 
     // draw spriteB
-    context.drawImage(rectB.image,
+    contextCollide.drawImage(rectB.image,
       rectB.x, rectB.y, data.w2, data.h2,
       data.x2, data.y2, data.w2, data.h2);
 
-    var pixelNew = context.getImageData(data.x1 + deltaX, data.y1 + deltaY, data.w1 + deltaW, data.h1 + deltaH).data;
+    var pixelNew = contextCollide.getImageData(cropX, cropY, cropWidth, cropHeight).data;
 
+    var collision = false;
+    
     for (var i = 3; i < pixelOld.length; i += 3) {
       if (pixelOld[i] > 0) {
         if ( pixelOld[i] != pixelNew[i]
           || pixelOld[i - 1] != pixelNew[i - 1]
           || pixelOld[i - 2] != pixelNew[i - 2]
           || pixelOld[i - 3] != pixelNew[i - 3]
-        ) return true;
+        ) {
+          collision = true;
+          break;
+        }
       }
     }
 
-    return false;
+    return collision;
   }
-
+  
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
   Game.actorCollision = function (actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
@@ -129,10 +133,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var data = rectngleCollide(actorSprite, blockSprite, actorRect, blockRect);
     if (data) {
       var actorHeight = data.h1;
-      // deltaY偏移0.8，大概意思是只检测角色最下方20%的地方
-      var deltaY = parseInt(actorHeight * 0.8);
-      var deltaH = actorHeight - deltaY;
-      return pixelCollide(actorSprite, blockSprite, actorRect, blockRect, data, 0, deltaY, 0, deltaH);
+      // deltaY偏移0.7，大概意思是只检测角色最下方30%的地方
+      var deltaY = parseInt(actorHeight * 0.7);
+      var deltaH = -deltaY;
+      var result = pixelCollide(actorSprite, blockSprite, actorRect, blockRect, data, 0, deltaY, 0, deltaH);
+      
+      return result;
     }
     return false;
   };
@@ -149,7 +155,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     if (data) {
       //return true;
       // 和角色碰撞检测对比，技能碰撞检测无delta
-      return pixelCollide(skillSprite, actorSprite, skillRect, actorRect, data);
+      return pixelCollide(skillSprite, actorSprite, skillRect, actorRect, data, 0, 0, 0, 0);
     }
     return false;
   };

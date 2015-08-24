@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   Game.archive = {};
 
@@ -82,20 +83,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     if (data) {
-      Game.ShowWindow();
-
       var heroData = data.hero;
 
       Game.drawHero(heroData.custom, function (heroImage) {
         heroData.image = heroImage;
-        Game.hero = new Game.ActorClass(heroData);
+        Game.hero = new Game.Actor(heroData);
 
         function FindHint () {
 
           var buttonUse = document.getElementById("buttonUse");
           var minDistance = -1;
           var minObject = null;
-          var distanceLimit = 48;
+          var distanceLimit = 60;
 
           function FindNearest (obj) {
             var d = Game.hero.distance(obj.x, obj.y);
@@ -115,14 +114,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             FindNearest(element);
           });
 
+          // 最近的门
           Game.area.doors.forEach(function (element) {
             FindNearest(element);
           });
 
+          // 最近的箱子
           Game.area.chests.forEach(function (element) {
             FindNearest(element);
           });
 
+          // 最近的提示物（例如牌子）
           Game.area.hints.forEach(function (element) {
             FindNearest(element);
           });
@@ -134,17 +136,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
           if (Game.hintObject && Game.hintObject != minObject) {
             Game.hintObject = null;
-            buttonUse.style.visibility = "hidden";
-            document.getElementById("buttonUseText").textContent = "";
+            Game.windows.interface.use.style.visibility = "hidden";
           }
 
           if (minObject && minDistance < distanceLimit && Game.hintObject != minObject) {
             Game.hintObject = minObject;
-            buttonUse.style.visibility = "visible";
+            Game.windows.interface.use.style.visibility = "visible";
             if (minObject.type == "door") {
-              document.getElementById("buttonUseText").textContent = minObject.description;
-            } else if (minObject instanceof Game.ActorClass) {
-              document.getElementById("buttonUseText").textContent = minObject.data.name;
+              Game.popup(minObject, minObject.description, 0, -30);
+            } else if (minObject instanceof Game.Actor) {
+              Game.popup(minObject, minObject.data.name, 0, -50);
             }
           }
 
@@ -163,11 +164,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.hero.on("complete", function () {
           Game.loadArea(heroData.area, function (area) {
             Game.area = area;
-            area.map.draw(Game.mapLayer);
-            Game.hero.draw(Game.heroLayer);
+            area.map.draw(Game.layers.mapLayer);
+            Game.hero.draw(Game.layers.heroLayer);
             Game.hero.focus();
-            Game.ui.init();
-            Game.ShowWindow("uiWindow");
+            Game.windows.main.hide();
+            Game.windows.interface.show();
           });
         });
 

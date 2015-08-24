@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -30,10 +31,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Game.ItemClass = (function (_Sprite$Event) {
-    _inherits(ItemClass, _Sprite$Event);
+  Game.Item = (function (_Sprite$Event) {
+    _inherits(GameItem, _Sprite$Event);
 
-    _createClass(ItemClass, null, [{
+    _createClass(GameItem, null, [{
       key: "load",
       value: function load(id, callback) {
         var itemLoader = new Sprite.Loader();
@@ -41,7 +42,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         itemLoader.start();
         itemLoader.on("complete", function (event) {
           var itemData = event.data[0];
-          var itemObj = new ItemClass(itemData);
+          var itemObj = new Game.Item(itemData);
           Game.items[id] = itemObj;
           itemObj.on("complete", function () {
             if (typeof callback == "function") {
@@ -52,12 +53,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    function ItemClass(itemData) {
+    function GameItem(itemData) {
       var _this = this;
 
-      _classCallCheck(this, ItemClass);
+      _classCallCheck(this, GameItem);
 
-      _get(Object.getPrototypeOf(ItemClass.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(GameItem.prototype), "constructor", this).call(this);
 
       this.data = itemData;
       this.id = this.data.id;
@@ -81,11 +82,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       });
     }
 
-    _createClass(ItemClass, [{
+    _createClass(GameItem, [{
       key: "pickup",
       value: function pickup() {
         if (this.inner) {
-          Game.ui.pickupWindow(this);
+          Game.windows.pickup.execute("pickup", this);
         }
       }
     }, {
@@ -93,7 +94,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function clone(callback) {
         var self = this;
 
-        var itemObj = new ItemClass(this.data);
+        var itemObj = new Game.Item(this.data);
         return itemObj;
       }
     }, {
@@ -124,6 +125,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return ItemClass;
+    return GameItem;
   })(Sprite.Event);
 })();
+//# sourceMappingURL=GameItem.js.map

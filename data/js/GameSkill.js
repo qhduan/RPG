@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -30,10 +31,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Game.SkillClass = (function (_Sprite$Event) {
-    _inherits(SkillClass, _Sprite$Event);
+  Game.Skill = (function (_Sprite$Event) {
+    _inherits(GameSkill, _Sprite$Event);
 
-    _createClass(SkillClass, null, [{
+    _createClass(GameSkill, null, [{
       key: "load",
       value: function load(id, callback) {
         var skillLoader = new Sprite.Loader();
@@ -41,7 +42,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         skillLoader.start();
         skillLoader.on("complete", function (event) {
           var skillData = event.data[0];
-          var skillObj = new Game.SkillClass(skillData);
+          var skillObj = new Game.Skill(skillData);
           Game.skills[id] = skillObj;
           skillObj.on("complete", function () {
             if (typeof callback == "function") {
@@ -52,12 +53,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    function SkillClass(skillData) {
+    function GameSkill(skillData) {
       var _this = this;
 
-      _classCallCheck(this, SkillClass);
+      _classCallCheck(this, GameSkill);
 
-      _get(Object.getPrototypeOf(SkillClass.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(GameSkill.prototype), "constructor", this).call(this);
 
       this.data = skillData;
       this.id = this.data.id;
@@ -89,7 +90,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       });
     }
 
-    _createClass(SkillClass, [{
+    _createClass(GameSkill, [{
       key: "fire",
       value: function fire(actor, animation, callback) {
         var _this2 = this;
@@ -181,19 +182,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             sprite.y = a.sprite.y;
             sprite.play("hitted");
             if (sprite.paused == true) {
-              Game.skillLayer.removeChild(sprite);
+              Game.layers.skillLayer.removeChild(sprite);
             } else {
               sprite.on("animationend", function () {
-                Game.skillLayer.removeChild(sprite);
+                Game.layers.skillLayer.removeChild(sprite);
               });
             }
           } else {
             // 如果动画已经播完，则停止
             if (sprite.paused == true) {
-              Game.skillLayer.removeChild(sprite);
+              Game.layers.skillLayer.removeChild(sprite);
             } else {
               sprite.on("animationend", function () {
-                Game.skillLayer.removeChild(sprite);
+                Game.layers.skillLayer.removeChild(sprite);
               });
             }
           }
@@ -201,7 +202,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (callback) callback(Object.keys(hitted));
         };
 
-        Game.skillLayer.appendChild(sprite);
+        Game.layers.skillLayer.appendChild(sprite);
         sprite.play(animation);
 
         if (this.data.animations[animation].actor && actor.data.animations[this.data.animations[animation].actor]) {
@@ -210,6 +211,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return SkillClass;
+    return GameSkill;
   })(Sprite.Event);
 })();
+//# sourceMappingURL=GameSkill.js.map

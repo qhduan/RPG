@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -35,15 +36,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     属性：
       this.sprite 精灵
   */
-  Game.ActorClass = (function (_Sprite$Event) {
-    _inherits(ActorClass, _Sprite$Event);
+  Game.Actor = (function (_Sprite$Event) {
+    _inherits(GameActor, _Sprite$Event);
 
-    function ActorClass(actorData) {
+    function GameActor(actorData) {
       var _this = this;
 
-      _classCallCheck(this, ActorClass);
+      _classCallCheck(this, GameActor);
 
-      _get(Object.getPrototypeOf(ActorClass.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(GameActor.prototype), "constructor", this).call(this);
 
       this.data = actorData;
       this.id = this.data.id;
@@ -144,7 +145,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (_this.data.skills) {
           _this.data.skills.forEach(function (skillId) {
             completeCount--;
-            Game.SkillClass.load(skillId, function () {
+            Game.Skill.load(skillId, function () {
               Complete();
             });
           });
@@ -155,7 +156,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var itemId = _this.data.equipment[key];
             if (itemId) {
               completeCount--;
-              Game.ItemClass.load(itemId, function () {
+              Game.Item.load(itemId, function () {
                 Complete();
               });
             }
@@ -165,7 +166,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (_this.data.items) {
           for (var itemId in _this.data.items) {
             completeCount--;
-            Game.ItemClass.load(itemId, function () {
+            Game.Item.load(itemId, function () {
               Complete();
             });
           }
@@ -174,7 +175,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (_this.data.contact && _this.data.contact.trade && _this.data.contact.trade.length) {
           _this.data.contact.trade.forEach(function (itemId) {
             completeCount--;
-            Game.ItemClass.load(itemId, function () {
+            Game.Item.load(itemId, function () {
               Complete();
             });
           });
@@ -198,18 +199,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
 
       this.calculate();
-
-      this.on("move", function () {
-        if (_this.popupBox && Object.keys(_this.popupBox).length) {
-          for (var key in _this.popupBox) {
-            _this.popupBox[key].x = _this.x;
-            _this.popupBox[key].y = _this.y - _this.sprite.center.y;
-          }
-        }
-      });
     }
 
-    _createClass(ActorClass, [{
+    _createClass(GameActor, [{
       key: "calculate",
       value: function calculate() {
         this.data.str = this.data.$str;
@@ -236,7 +228,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "clone",
       value: function clone(callback) {
-        var actorObj = new ActorClass(this.data);
+        var actorObj = new Game.Actor(this.data);
         actorObj.oncomplete(callback);
       }
     }, {
@@ -264,71 +256,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         });
       }
     }, {
-      key: "popup",
-      value: function popup(text) {
-        var _this2 = this;
-
-        var dialogueText = new Sprite.Text({
-          text: text,
-          maxWidth: 200
-        });
-        var w = dialogueText.width;
-        var h = dialogueText.height;
-        var middle = Math.round((w + 10) / 2);
-
-        var dialogueBox = new Sprite.Shape();
-
-        dialogueBox.rect({
-          x: 0,
-          y: 0,
-          width: w + 10,
-          height: h + 10,
-          stroke: "black",
-          fill: "white"
-        });
-
-        dialogueBox.polygon({
-          points: middle - 10 + "," + (h + 10) + " " + (middle + 10) + "," + (h + 10) + " " + middle + "," + (h + 20) + " " + (middle - 10) + "," + (h + 10),
-          fill: "white"
-        });
-
-        var dialogueContainer = new Sprite.Container();
-        dialogueContainer.appendChild(dialogueBox, dialogueText);
-        dialogueText.x = 5;
-        dialogueText.y = 5;
-        dialogueContainer.x = this.x;
-        dialogueContainer.y = this.y - this.sprite.center.y - 30;
-        dialogueContainer.center.x = middle;
-        dialogueContainer.center.y = h + 15;
-        dialogueContainer.height = h + 15;
-        dialogueContainer.width = w + 10;
-
-        if (!this.popupBox) {
-          this.popupBox = {};
-        }
-
-        if (Object.keys(this.popupBox).length > 0) {
-          for (var key in this.popupBox) {
-            this.popupBox[key].center.y += this.popupBox[key].height;
-          }
-        }
-
-        var id = Sprite.Util.id();
-
-        this.popupBox[id] = dialogueContainer;
-        Game.dialogueLayer.appendChild(this.popupBox[id]);
-
-        setTimeout(function () {
-          if (_this2.popupBox[id]) {
-            Game.dialogueLayer.removeChild(_this2.popupBox[id]);
-            delete _this2.popupBox[id];
-          }
-        }, 4000);
-      }
-    }, {
       key: "contact",
       value: function contact() {
-        var _this3 = this;
+        var _this2 = this;
 
         if (this.data.contact) {
 
@@ -342,13 +272,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             options["交易"] = "trade";
           }
 
-          Game.ui.choice(this.data.contact.hi, options, function (choice) {
+          Game.choice(options, function (choice) {
             switch (choice) {
               case "talk":
-                Game.ui.dialogue(_this3.data.contact.talk);
+                Game.dialogue(_this2.data.contact.talk);
                 break;
               case "trade":
-                Game.ui.trade(_this3.data.contact.trade);
+                Game.windows.trade.execute("trade", _this2.data.contact.trade);
                 break;
             }
           });
@@ -384,14 +314,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           var dead = Game.items.bag.clone();
           dead.x = this.x;
           dead.y = this.y;
-          dead.draw(Game.itemLayer);
+          dead.draw(Game.layers.itemLayer);
           dead.inner = {
             "gold": 1
           };
           Game.area.bags[Sprite.Util.id()] = dead;
 
-          Game.actorLayer.removeChild(this.infoBox);
-          Game.actorLayer.removeChild(this.sprite);
+          Game.layers.actorLayer.removeChild(this.infoBox);
+          Game.layers.actorLayer.removeChild(this.sprite);
 
           delete Game.area.actors[this.id];
         }
@@ -417,14 +347,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         text.x = this.x;
         text.y = this.y;
 
-        Game.actorLayer.appendChild(text);
+        Game.layers.actorLayer.appendChild(text);
 
         var inter = setInterval(function () {
           text.y -= 4;
         }, 50);
 
         setTimeout(function () {
-          Game.actorLayer.removeChild(text);
+          Game.layers.actorLayer.removeChild(text);
           clearInterval(inter);
         }, 2000);
 
@@ -473,7 +403,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "fire",
       value: function fire(id, direction) {
-        var _this4 = this;
+        var _this3 = this;
 
         // 同一时间只能施展一个skill
         if (this.attacking) return 0;
@@ -498,7 +428,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         skill.fire(this, "attack" + direction, function (hittedActorIds) {
-          _this4.attacking = false;
+          _this3.attacking = false;
           if (hittedActorIds && hittedActorIds.length) {
             hittedActorIds.forEach(function (element) {
               Game.area.actors[element].damage(skill.data.type, skill.data.power);
@@ -511,7 +441,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "goto",
       value: function goto(x, y, speed, collisionTest, callback) {
-        var _this5 = this;
+        var _this4 = this;
 
         if (this.gotoListener) {
           Sprite.Ticker.off("tick", this.gotoListener);
@@ -546,32 +476,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var toXY = function toXY() {
           if (x <= limit && y <= limit) {
-            if (_this5.gotoListener) {
-              Sprite.Ticker.off("tick", _this5.gotoListener);
-              _this5.gotoListener = null;
+            if (_this4.gotoListener) {
+              Sprite.Ticker.off("tick", _this4.gotoListener);
+              _this4.gotoListener = null;
             }
             if (X > Y) {
-              _this5.face(leftright);
+              _this4.face(leftright);
             } else {
-              _this5.face(updown);
+              _this4.face(updown);
             }
             if (callback) callback();
           } else if (x > limit && y > limit) {
             if (X > Y) {
-              _this5.go(state, leftright, speed, collisionTest);
+              _this4.go(state, leftright, speed, collisionTest);
               x -= speed;
             } else {
-              _this5.go(state, updown, speed, collisionTest);
+              _this4.go(state, updown, speed, collisionTest);
               y -= speed;
             }
             if (x < 0) x = 0;
             if (y < 0) y = 0;
           } else if (x > limit) {
-            _this5.go(state, leftright, speed, collisionTest);
+            _this4.go(state, leftright, speed, collisionTest);
             x -= speed;
             if (x < 0) x = 0;
           } else if (y > limit) {
-            _this5.go(state, updown, speed, collisionTest);
+            _this4.go(state, updown, speed, collisionTest);
             y -= speed;
             if (y < 0) y = 0;
           }
@@ -592,7 +522,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "CheckDirection",
       value: function CheckDirection(direction, step, collisionTest) {
-        var _this6 = this;
+        var _this5 = this;
 
         var oldX = this.x;
         var oldY = this.y;
@@ -612,8 +542,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             break;
         }
 
-        this.x = parseInt(this.x);
-        this.y = parseInt(this.y);
+        this.x = Math.floor(this.x);
+        this.y = Math.floor(this.y);
 
         var t = Game.area.map.tile(this.x, this.y);
 
@@ -627,7 +557,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (tested.hasOwnProperty(i)) return tested[i];
 
           if (Game.area.map.blockedMap[t.y] && Game.area.map.blockedMap[t.y][t.x]) {
-            if (Game.actorCollision(_this6.sprite, Game.area.map.blockedMap[t.y][t.x])) {
+            if (Game.actorCollision(_this5.sprite, Game.area.map.blockedMap[t.y][t.x])) {
               tested[i] = true;
               return true;
             }
@@ -641,21 +571,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (collisionTest) {
           if (collision == false) collision = CheckCollision(t);
 
-          if (collision == false) collision = CheckCollision({ x: t.x, y: t.y + 1 });
           if (collision == false) collision = CheckCollision({ x: t.x, y: t.y - 1 });
+          if (collision == false) collision = CheckCollision({ x: t.x, y: t.y + 1 });
           if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y });
           if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y });
 
-          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y - 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y + 1 });
           if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y - 1 });
+          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y - 1 });
           if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y + 1 });
+          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y + 1 });
 
           // 判断和地图上角色的碰撞
           if (collision == false) {
             for (var key in Game.area.actors) {
               collision = Game.actorCollision(this.sprite, Game.area.actors[key].sprite);
-              if (collision) break;
+              if (collision) {
+                break;
+              }
             }
           }
         }
@@ -750,7 +682,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             break;
         }
 
-        _get(Object.getPrototypeOf(ActorClass.prototype), "emit", this).call(this, "move");
+        _get(Object.getPrototypeOf(GameActor.prototype), "emit", this).call(this, "move");
       }
     }, {
       key: "remove",
@@ -805,6 +737,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return ActorClass;
-  })(Sprite.Event); // ActorClass
+    return GameActor;
+  })(Sprite.Event); // Game.Actor
 })();
+//# sourceMappingURL=GameActor.js.map

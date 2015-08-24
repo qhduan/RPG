@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -30,15 +31,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Game.MapClass = (function (_Sprite$Event) {
-    _inherits(MapClass, _Sprite$Event);
+  Game.Map = (function (_Sprite$Event) {
+    _inherits(GameMap, _Sprite$Event);
 
-    function MapClass(mapData) {
+    function GameMap(mapData) {
       var _this = this;
 
-      _classCallCheck(this, MapClass);
+      _classCallCheck(this, GameMap);
 
-      _get(Object.getPrototypeOf(MapClass.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(GameMap.prototype), "constructor", this).call(this);
 
       this.data = mapData;
       this.id = this.data.id;
@@ -112,8 +113,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 这个cache会创建一个看不到的canvas
         _this.container.cache(0, 0, _this.width, _this.height);
 
+        /*
         // 开始计算迷你地图
-        var ratio = _this.width / _this.height;
+        var ratio = this.width / this.height;
         var maxMinimapWidth = 780;
         var maxMinimapHeight = 360;
         var minimapWidth = 780;
@@ -128,39 +130,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         minimapCanvas.width = minimapWidth;
         minimapCanvas.height = minimapHeight;
         var minimapContext = minimapCanvas.getContext("2d");
-        minimapContext.drawImage(_this.container.cacheCanvas, 0, 0, _this.width, _this.height, 0, 0, minimapWidth, minimapHeight);
+        minimapContext.drawImage(this.container.cacheCanvas, 0, 0,
+          this.width, this.height, 0, 0, minimapWidth, minimapHeight);
+        */
 
-        var minimap = new Image();
-        minimap.onload = function () {
-          //this.minimap = new Sprite.Bitmap(minimap);
-          //this.minimap.width = minimap.width;
-          //this.minimap.height = minimap.height;
-          //this.minimap.center.x = parseInt(minimap.width / 2);
-          //this.minimap.center.y = parseInt(minimap.height / 2);
+        _this.minimap = _this.container.cacheCanvas;
 
+        /*
+         var minimap = new Image();
+        minimap.onload = () => {
           var div = document.getElementById("minimap");
-          while (div.hasChildNodes()) {
+          while(div.hasChildNodes()) {
             div.removeChild(div.lastChild);
           }
           div.appendChild(minimap);
         };
         minimap.src = minimapCanvas.toDataURL();
-
-        // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
+         /*
+         // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
         var rgb = { r: 0, g: 0, b: 0 };
         var minimapData = minimapContext.getImageData(0, 0, minimapCanvas.width, minimapCanvas.height).data;
-
-        for (var i = 0; i < minimapData.length; i += 4) {
+         for (var i = 0; i < minimapData.length; i += 4) {
           rgb.r += minimapData[i];
           rgb.g += minimapData[i + 1];
           rgb.b += minimapData[i + 2];
         }
-
-        // 把颜色取平均值然后转换为16进制，最后到css格式
+         // 把颜色取平均值然后转换为16进制，最后到css格式
         rgb.r = Math.floor(rgb.r / (minimapData.length / 4)).toString(16);
         rgb.g = Math.floor(rgb.g / (minimapData.length / 4)).toString(16);
         rgb.b = Math.floor(rgb.b / (minimapData.length / 4)).toString(16);
-        _this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
+        this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
+        */
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -169,7 +169,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     // 返回某个坐标点所在的地格
 
-    _createClass(MapClass, [{
+    _createClass(GameMap, [{
       key: "tile",
       value: function tile(x, y) {
         x = x / this.data.tilewidth;
@@ -187,10 +187,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         layer.clear();
         layer.appendChild(this.container);
 
-        if (this.averageColor) {
-          document.body.style.backgroundColor = this.averageColor;
-        }
-
         if (this.data.bgm) {
           // set loop = -1, 无限循环
           //var bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
@@ -199,7 +195,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return MapClass;
+    return GameMap;
   })(Sprite.Event);
 })();
 //# sourceMappingURL=GameMap.js.map

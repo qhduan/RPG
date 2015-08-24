@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,6 +17,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
@@ -95,12 +96,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 注册模块
   Game.register.reg = function () {
     document.getElementById("registerHeroName").value = "";
-    Game.ShowWindow("registerWindow");
+    Game.windows.register.show();
     Init();
   };
 
   Game.register.back = function () {
-    Game.ShowWindow("mainWindow");
+    Game.windows.main.show();
   };
 
   Game.register.submit = function () {
@@ -117,12 +118,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     HeroDefault.tilewidth = heroCustom.tilewidth;
     HeroDefault.tileheight = heroCustom.tileheight;
 
-    console.log(HeroDefault);
-
     // 保存一个存档
     Game.archive.save({
       hero: HeroDefault
     });
+
+    Game.windows.register.hide();
 
     // 空调用，代表读取最新一个存档（last），即刚刚新建的存档
     Game.archive.load();

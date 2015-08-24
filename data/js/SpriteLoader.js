@@ -1,3 +1,27 @@
+/*
+
+2D Game Sprite Library, Built using JavaScript ES6
+Copyright (C) 2015 qhduan(http://qhduan.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+/// @file SpriteLoader.js
+/// @namespace Sprite
+/// class Sprite.Loader
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -11,12 +35,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Sprite.Cache = {};
+  var Cache = {};
+  var Downloading = {};
 
   function Fetch(url, callback, timeout) {
+
+    function Finish(obj) {
+      Cache[url] = obj;
+      if (typeof callback == "function") {
+        callback(obj);
+      }
+      if (Downloading.hasOwnProperty(url)) {
+        Downloading[url].forEach(function (callback) {
+          if (typeof callback == "function") {
+            callback(obj);
+          }
+        });
+        delete Downloading[url];
+      }
+    }
+
+    if (Cache.hasOwnProperty(url)) {
+      Finish(Cache[url]);
+      return;
+    }
+
+    if (Downloading.hasOwnProperty(url)) {
+      Downloading[url].push(callback);
+      return;
+    }
+
+    Downloading[url] = [];
+
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
-    req.timeout = 15000;
+    req.timeout = 15000; // 15 seconds
 
     var type = null;
     if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
@@ -54,8 +107,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             image.onload = function () {
               // window.URL.revokeObjectURL(image.src);
               image.onload = null;
-              Sprite.Cache[url] = image;
-              callback(image);
+              Finish(image);
             };
             image.src = window.URL.createObjectURL(blob);
           } else if (type == "audio") {
@@ -65,8 +117,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               // 如果reoke掉audio，那么audio.load()方法则不能用了
               // window.URL.revokeObjectURL(audio.src);
               audio.oncanplay = null;
-              Sprite.Cache[url] = audio;
-              callback(audio);
+              Finish(audio);
             };
             audio.src = window.URL.createObjectURL(blob);
           } else if (type == "json") {
@@ -75,8 +126,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               console.error(url);
               throw new Error("Sprite.Loader invalid json");
             }
-            Sprite.Cache[url] = json;
-            callback(json);
+            Finish(json);
           }
         } else {
           console.error(req.readyState, req.status, req.statusText);
@@ -133,15 +183,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         };
 
         this._list.forEach(function (element, index) {
-          if (Sprite.Cache.hasOwnProperty(element)) {
-            ret[index] = Sprite.Cache[element];
+          Fetch(element, function (result) {
+            ret[index] = result;
             Done();
-          } else {
-            Fetch(element, function (result) {
-              ret[index] = result;
-              Done();
-            });
-          }
+          });
         });
       }
     }, {
@@ -157,3 +202,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Loader;
   })(Sprite.Event);
 })();
+//# sourceMappingURL=SpriteLoader.js.map

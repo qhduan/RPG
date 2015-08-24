@@ -1,6 +1,6 @@
 /*
 
-A-RPG Game, Built using Node.js + JavaScript + ES6
+A-RPG Game, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
 
 This program is free software: you can redistribute it and/or modify
@@ -17,11 +17,12 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
+
 (function () {
   "use strict";
 
 
-  Game.MapClass = class MapClass extends Sprite.Event {
+  Game.Map = class GameMap extends Sprite.Event {
     constructor (mapData) {
       super();
 
@@ -97,6 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // 这个cache会创建一个看不到的canvas
         this.container.cache(0, 0, this.width, this.height);
 
+        /*
         // 开始计算迷你地图
         var ratio = this.width / this.height;
         var maxMinimapWidth = 780;
@@ -115,23 +117,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var minimapContext = minimapCanvas.getContext("2d");
         minimapContext.drawImage(this.container.cacheCanvas, 0, 0,
           this.width, this.height, 0, 0, minimapWidth, minimapHeight);
+        */
+
+        this.minimap = this.container.cacheCanvas;
+
+
+        /*
 
         var minimap = new Image();
         minimap.onload = () => {
-          //this.minimap = new Sprite.Bitmap(minimap);
-          //this.minimap.width = minimap.width;
-          //this.minimap.height = minimap.height;
-          //this.minimap.center.x = parseInt(minimap.width / 2);
-          //this.minimap.center.y = parseInt(minimap.height / 2);
-
           var div = document.getElementById("minimap");
           while(div.hasChildNodes()) {
             div.removeChild(div.lastChild);
           }
           div.appendChild(minimap);
-
         };
         minimap.src = minimapCanvas.toDataURL();
+
+        /*
 
         // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
         var rgb = { r: 0, g: 0, b: 0 };
@@ -148,6 +151,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         rgb.g = Math.floor(rgb.g / (minimapData.length / 4)).toString(16);
         rgb.b = Math.floor(rgb.b / (minimapData.length / 4)).toString(16);
         this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
+        */
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
@@ -169,10 +173,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     draw (layer) {
       layer.clear();
       layer.appendChild(this.container);
-
-      if (this.averageColor) {
-        document.body.style.backgroundColor = this.averageColor;
-      }
 
       if (this.data.bgm) {
         // set loop = -1, 无限循环
