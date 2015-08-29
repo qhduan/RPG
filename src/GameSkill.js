@@ -61,8 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           animations: this.data.animations
         });
 
-        sheet.center.x = Math.floor(this.data.tilewidth / 2);
-        sheet.center.y = Math.floor(this.data.tileheight / 2);
+        sheet.centerX = Math.floor(this.data.tilewidth / 2);
+        sheet.centerY = Math.floor(this.data.tileheight / 2);
 
         this.sprite = sheet;
 

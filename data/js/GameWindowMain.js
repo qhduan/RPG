@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   document.querySelector("button#mainWindowLoad").addEventListener("click", function (event) {
-    Game.windows.archive.show();
+    Game.windows.archive.execute("open");
   });
 })();
 //# sourceMappingURL=GameWindowMain.js.map

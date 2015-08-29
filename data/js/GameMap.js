@@ -112,55 +112,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
         // 这个cache会创建一个看不到的canvas
         _this.container.cache(0, 0, _this.width, _this.height);
-
-        /*
-        // 开始计算迷你地图
-        var ratio = this.width / this.height;
-        var maxMinimapWidth = 780;
-        var maxMinimapHeight = 360;
-        var minimapWidth = 780;
-        var minimapHeight = 780 / ratio;
-        if (minimapHeight > maxMinimapHeight) {
-          minimapHeight = 360;
-          minimapWidth = 360 * ratio;
-        }
-        minimapHeight = Math.floor(minimapHeight);
-        minimapWidth = Math.floor(minimapWidth);
-        var minimapCanvas = document.createElement("canvas");
-        minimapCanvas.width = minimapWidth;
-        minimapCanvas.height = minimapHeight;
-        var minimapContext = minimapCanvas.getContext("2d");
-        minimapContext.drawImage(this.container.cacheCanvas, 0, 0,
-          this.width, this.height, 0, 0, minimapWidth, minimapHeight);
-        */
-
         _this.minimap = _this.container.cacheCanvas;
-
-        /*
-         var minimap = new Image();
-        minimap.onload = () => {
-          var div = document.getElementById("minimap");
-          while(div.hasChildNodes()) {
-            div.removeChild(div.lastChild);
-          }
-          div.appendChild(minimap);
-        };
-        minimap.src = minimapCanvas.toDataURL();
-         /*
-         // 开始计算地图平均颜色（用迷你地图的平均颜色，用来作为document.body的背景）
-        var rgb = { r: 0, g: 0, b: 0 };
-        var minimapData = minimapContext.getImageData(0, 0, minimapCanvas.width, minimapCanvas.height).data;
-         for (var i = 0; i < minimapData.length; i += 4) {
-          rgb.r += minimapData[i];
-          rgb.g += minimapData[i + 1];
-          rgb.b += minimapData[i + 2];
-        }
-         // 把颜色取平均值然后转换为16进制，最后到css格式
-        rgb.r = Math.floor(rgb.r / (minimapData.length / 4)).toString(16);
-        rgb.g = Math.floor(rgb.g / (minimapData.length / 4)).toString(16);
-        rgb.b = Math.floor(rgb.b / (minimapData.length / 4)).toString(16);
-        this.averageColor = "#" + rgb.r + rgb.g + rgb.b;
-        */
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);

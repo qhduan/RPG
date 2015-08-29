@@ -42,12 +42,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       this._listeners = {};
       this._once = {};
+      this._parent = null;
     }
-
-    /// #function Sprite.Event.hasEvent
 
     _createClass(Event, [{
       key: "hasEvent",
+
+      /// @function Sprite.Event.hasEvent
       value: function hasEvent(event) {
         if (this._listeners[event]) return true;
         return false;
@@ -125,6 +126,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (this.parent && pop == true) {
           this.parent.emit(event, false, data);
         }
+      }
+    }, {
+      key: "parent",
+      get: function get() {
+        return this._parent;
+      },
+      set: function set(value) {
+        this._parent = value;
       }
     }]);
 

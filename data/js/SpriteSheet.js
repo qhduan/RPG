@@ -39,6 +39,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _inherits(Sheet, _Sprite$Display);
 
     function Sheet(config) {
+      var _this = this;
+
       _classCallCheck(this, Sheet);
 
       _get(Object.getPrototypeOf(Sheet.prototype), "constructor", this).call(this);
@@ -55,6 +57,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       this._currentAnimation = null;
       this._currentFrame = 0;
       this._animationTimer = null;
+
+      this._frames = [];
+
+      this._images.forEach(function (image) {
+        var col = Math.floor(image.width / _this._tilewidth);
+        var row = Math.floor(image.height / _this._tileheight);
+        for (var j = 0; j < row; j++) {
+          for (var i = 0; i < col; i++) {
+            _this._frames.push({
+              image: image,
+              x: i * _this._tilewidth,
+              y: j * _this._tileheight
+            });
+          }
+        }
+      });
     }
 
     _createClass(Sheet, [{
@@ -68,17 +86,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         });
         sheet.x = this.x;
         sheet.y = this.y;
-        sheet.center.x = this.center.x;
-        sheet.center.y = this.center.y;
-        sheet.scale.x = this.scale.x;
-        sheet.scale.y = this.scale.y;
+        sheet.centerX = this.centerX;
+        sheet.centerY = this.centerY;
+        sheet.scaleX = this.scaleX;
+        sheet.scaleY = this.scaleY;
         sheet._currentFrame = this._currentFrame;
         return sheet;
       }
     }, {
       key: "play",
       value: function play(choice) {
-        var _this = this;
+        var _this2 = this;
 
         if (this._animationTimer) {
           clearInterval(this._animationTimer);
@@ -130,18 +148,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.emit("change");
 
           this._animationTimer = setInterval(function () {
-            _this._currentFrame++;
-            if (_this._currentFrame > end) {
-              clearInterval(_this._animationTimer);
-              _this._animationTimer = null;
-              if (next && next.length && _this._animations[next]) {
-                _this.play(next);
+            _this2._currentFrame++;
+            if (_this2._currentFrame > end) {
+              clearInterval(_this2._animationTimer);
+              _this2._animationTimer = null;
+              if (next && next.length && _this2._animations[next]) {
+                _this2.play(next);
               } else {
-                _this._currentFrame--;
+                _this2._currentFrame--;
               }
-              _this.emit("animationend");
+              _this2.emit("animationend");
             }
-            _this.emit("change");
+            _this2.emit("change");
           }, time);
         } else {
           throw new Error("Sprite.Sheet.play has an invalid argument");
@@ -149,31 +167,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }, {
       key: "getFrame",
-      value: function getFrame(frame) {
-        for (var i = 0; i < this._images.length; i++) {
-          var image = this._images[i];
-          var col = Math.floor(image.width / this._tilewidth);
-          var row = Math.floor(image.height / this._tileheight);
-          if (frame < row * col) {
-            return {
-              image: image,
-              x: Math.floor(frame % col) * this._tilewidth,
-              y: Math.floor(frame / col) * this._tileheight,
-              width: this._tilewidth,
-              height: this._tileheight,
-              center: this.center
-            };
-          } else {
-            frame -= row * col;
-          }
+      value: function getFrame(index) {
+        if (typeof index != "number") {
+          index = this.currentFrame;
         }
+        var frame = this._frames[index];
+        frame.width = this._tilewidth;
+        frame.height = this._tileheight;
+        frame.centerX = this.centerX;
+        frame.centerY = this.centerY;
+        return frame;
       }
     }, {
       key: "draw",
       value: function draw(context) {
-        var frame = this.getFrame(this._currentFrame);
+        var frame = this.getFrame(this.currentFrame);
         if (!frame || !frame.image) {
-          console.error(frame, this._currentFrame, this);
+          console.error(frame, this.currentFrame, this);
           throw new Error("Sprite.Sheet.draw invalid frame");
         }
         this.drawImage(context, frame.image, frame.x, frame.y, frame.width, frame.height);

@@ -58,8 +58,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     dialogueText.y = 5;
     dialogueContainer.x = obj.x + adjustX;
     dialogueContainer.y = obj.y + adjustY;
-    dialogueContainer.center.x = middle;
-    dialogueContainer.center.y = h + 15;
+    dialogueContainer.centerX = middle;
+    dialogueContainer.centerY = h + 15;
     dialogueContainer.height = h + 15;
     dialogueContainer.width = w + 10;
 

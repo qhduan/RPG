@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `);
 
-  win.on("beforeShow", function () {
+  win.register("open", function () {
 
     var table = document.getElementById("archiveTable");
 
@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       div.appendChild(removeButton);
       removeButton.addEventListener("click", function () {
         Game.archive.remove(`SAVE_${element}`);
-        Game.ui.archiveWindow();
+        Game.windows.archive.execute("open");
       });
 
       var loadButton = document.createElement("button");
@@ -89,6 +89,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       table.appendChild(div);
     });
 
+    Game.windows.archive.show();
   });
 
 }());

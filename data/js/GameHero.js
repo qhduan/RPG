@@ -37,11 +37,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       context.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
     }
 
+    callback(canvas);
+    /*
     var img = new Image();
     img.onload = function () {
       callback(img);
     };
-    img.src = canvas.toDataURL();
+    img.src = canvas.toDataURL("image/png");
+    */
   }
 
   // 把多张图片合成一张，并返回

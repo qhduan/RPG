@@ -52,10 +52,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var bitmap = new Bitmap(this._image);
         bitmap.x = this.x;
         bitmap.y = this.y;
-        bitmap.center.x = this.center.x;
-        bitmap.center.y = this.center.y;
-        bitmap.scale.x = this.scale.x;
-        bitmap.scale.y = this.scale.y;
+        bitmap.centerX = this.centerX;
+        bitmap.centerY = this.centerY;
+        bitmap.scaleX = this.scaleX;
+        bitmap.scaleY = this.scaleY;
         return bitmap;
       }
     }, {

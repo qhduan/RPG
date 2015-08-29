@@ -144,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           <option value="white">white</option>
           <option value="white-blonde">white-blonde</option>
           <option value="white-blonde2">white-blonde2</option>
-          <option value="white.center.yan">white.center.yan</option>
+          <option value="white.centerYan">white.centerYan</option>
         </select>
       </div>
 

@@ -19,7 +19,7 @@
       "desty": 13
     }, {
       "x": 28,
-      "y": 50,
+      "y": 49,
       "dest": "starttown-southforest",
       "description": "通往斯塔特南部森林",
       "destx": 14,
@@ -30,7 +30,7 @@
       "dest": "starttown-weapontrade",
       "description": "武器屋",
       "destx": 4,
-      "desty": 7
+      "desty": 6
     }
   ],
   "chest":

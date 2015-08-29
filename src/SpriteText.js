@@ -47,10 +47,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var text = new Text(this._config);
       text.x = this.x;
       text.y = this.y;
-      text.center.x = this.center.x;
-      text.center.y = this.center.y;
-      text.scale.x = this.scale.x;
-      text.scale.y = this.scale.y;
+      text.centerX = this.centerX;
+      text.centerY = this.centerY;
+      text.scaleX = this.scaleX;
+      text.scaleY = this.scaleY;
       return text;
     }
 

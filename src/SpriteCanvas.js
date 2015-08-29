@@ -53,6 +53,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this._context = context;
     }
 
+    filter () {
+      // for now, only Sprite.Webgl could use .filter() method
+    }
+
     drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
       if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
         console.error(image);

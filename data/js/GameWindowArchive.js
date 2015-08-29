@@ -29,7 +29,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.css("\n    #archiveWindow {\n      background-color: white;\n    }\n    .archiveItem {\n      border: 4px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 80px;\n      height: 50px;\n      border-radius: 5px;\n    }\n  ");
 
-  win.on("beforeShow", function () {
+  win.register("open", function () {
 
     var table = document.getElementById("archiveTable");
 
@@ -50,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       div.appendChild(removeButton);
       removeButton.addEventListener("click", function () {
         Game.archive.remove("SAVE_" + element);
-        Game.ui.archiveWindow();
+        Game.windows.archive.execute("open");
       });
 
       var loadButton = document.createElement("button");
@@ -72,6 +72,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       table.appendChild(div);
     });
+
+    Game.windows.archive.show();
   });
 })();
 //# sourceMappingURL=GameWindowArchive.js.map

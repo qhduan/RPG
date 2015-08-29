@@ -55,8 +55,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.icon = image;
 
         this.bitmap = new Sprite.Bitmap(image);
-        this.bitmap.center.x = image.width / 2;
-        this.bitmap.center.y = image.height / 2;
+        this.bitmap.centerX = image.width / 2;
+        this.bitmap.centerY = image.height / 2;
         this.bitmap.name = this.id;
 
         // 发送完成事件，第二个参数代表一次性事件

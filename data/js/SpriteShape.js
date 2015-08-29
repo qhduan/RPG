@@ -58,10 +58,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         shape._image = this._image;
         shape.x = this.x;
         shape.y = this.y;
-        shape.center.x = this.center.x;
-        shape.center.y = this.center.y;
-        shape.scale.x = this.scale.x;
-        shape.scale.y = this.scale.y;
+        shape.centerX = this.centerX;
+        shape.centerY = this.centerY;
+        shape.scaleX = this.scaleX;
+        shape.scaleY = this.scaleY;
         return shape;
       }
     }, {

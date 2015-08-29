@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows["interface"] = new Game.Window("interfaceWindow");
 
-  win.html("\n    <div style=\"text-align: center; position: absolute; bottom: 10px; width: 100%; height: 70px;\">\n      <button id=\"interfaceWindowButton-0\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-1\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-2\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-3\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-4\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-5\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-6\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-7\" class=\"interfaceWindowButton\"></button>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ");
+  win.html("\n    <div style=\"text-align: center; position: absolute; bottom: 10px; width: 100%; height: 70px;\">\n      <button id=\"interfaceWindowButton-0\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-1\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-2\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-3\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-4\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-5\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-6\" class=\"interfaceWindowButton\"></button>\n      <button id=\"interfaceWindowButton-7\" class=\"interfaceWindowButton\"></button>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n    <span id=\"interfaceWindowDatetime\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ");
 
-  win.css("\n    #interfaceWindow {\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n  ");
+  win.css("\n    #interfaceWindow {\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n  ");
 
   win.use = document.querySelector("button#interfaceWindowUse");
 
@@ -84,7 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.stage.update();
           });
         } else if (Game.hintObject.type && Game.hintObject.type == "chest") {} else if (Game.hintObject.type && Game.hintObject.type == "hint") {
-          Game.hero.popup(Game.hintObject.message);
+          Game.popup(Game.hintObject, Game.hintObject.message);
         } else if (Game.hintObject instanceof Game.Actor) {
           Game.hintObject.contact();
         } else if (Game.hintObject instanceof Game.Item) {
@@ -93,6 +93,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     });
   })();
+
+  win.register("datetime", function () {
+    if (Game.hero && Game.hero.data && Number.isInteger(Game.hero.data.time)) {
+      var YEARMIN = 60 * 24 * 30 * 12;
+      var MONTHMIN = 60 * 24 * 30;
+      var DAYMIN = 60 * 24;
+      var HOURMIN = 60;
+      var datetime = document.querySelector("span#interfaceWindowDatetime");
+      var time = Game.hero.data.time;
+      var year = Math.floor(time / YEARMIN);
+      time = time % YEARMIN;
+      var month = Math.floor(time / MONTHMIN);
+      time = time % MONTHMIN;
+      var day = Math.floor(time / DAYMIN);
+      time = time % DAYMIN;
+      var hour = Math.floor(time / HOURMIN);
+      time = time % HOURMIN;
+      var minute = time;
+      year++;
+      month++;
+      day++;
+      hour = hour.toString();
+      while (hour.length < 2) hour = "0" + hour;
+      minute = minute.toString();
+      while (minute.length < 2) minute = "0" + minute;
+      datetime.textContent = "帝国历" + year + "年" + month + "月" + day + "日 " + hour + ":" + minute;
+    }
+  });
+
+  setInterval(function () {
+    if (Game.hero) {
+      Game.hero.data.time++;
+      Game.windows["interface"].execute("datetime");
+    }
+  }, 1000);
 
   win.register("refresh", function () {
     for (var i = 0; i < 8; i++) {
@@ -129,3 +164,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.sysmenu.show();
   });
 })();
+//# sourceMappingURL=GameWindowInterface.js.map

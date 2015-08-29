@@ -114,3 +114,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.pickup.show();
   });
 })();
+//# sourceMappingURL=GameWindowPickup.js.map

@@ -1,21 +1,16 @@
 /*
-
 2D Game Sprite Library, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
-
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
-
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 */
 
 /// @file SpriteDisplay.js
@@ -43,14 +38,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       this._x = 0;
       this._y = 0;
-      this._scale = {
-        x: 1,
-        y: 1,
-      };
-      this._center = {
-        x: 1,
-        y: 1,
-      };
+      this._centerX = 0;
+      this._centerY = 0;
       this._alpha = 1;
       this._visible = true;
       this._parent = null;
@@ -86,27 +75,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    get scale () {
-      return this._scale;
+    get centerX () {
+      return this._centerX;
     }
 
-    set scale (value) {
-      if (value != this._scale) {
-        this._scale = value;
+    set centerX (value) {
+      if (value != this._centerX) {
+        this._centerX = value;
         this.emit("change");
       }
     }
 
-    get center () {
-      return this._center;
+    get centerY () {
+      return this._centerY;
     }
 
-    set center (value) {
-      if (value != this._center) {
-        this._center = value;
+    set centerY (value) {
+      if (value != this._centerY) {
+        this._centerY = value;
         this.emit("change");
       }
     }
+
+
 
     get alpha () {
       return this._alpha;
@@ -132,24 +123,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     realPosition () {
       var scale = {
-        x: this.scale.x,
-        y: this.scale.y,
+        x: this.scaleX,
+        y: this.scaleY
       };
       var center = {
-        x: this.center.x,
-        y: this.center.y,
+        x: this.centerX,
+        y: this.centerY
       };
       var position = {
         x: this.x,
-        y: this.y,
+        y: this.y
       };
 
       var obj = this.parent;
       while (obj) {
-        scale.x *= obj.scale.x;
-        scale.y *= obj.scale.y;
-        center.x += obj.center.x;
-        center.y += obj.center.y;
+        scale.x *= obj.scaleX;
+        scale.y *= obj.scaleY;
+        center.x += obj.centerX;
+        center.y += obj.centerY;
         position.x += obj.x;
         position.y += obj.y;
         obj = obj.parent;
@@ -177,13 +168,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /*
       var data = this.realPosition();
-
       var dx = Math.floor(data.position.x);
       var dy = Math.floor(data.position.y);
-      var dwidth = Math.floor(100 * data.scale.x);
-      var dheight = Math.floor(100 * data.scale.y);
-
-
+      var dwidth = Math.floor(100 * data.scaleX);
+      var dheight = Math.floor(100 * data.scaleY);
       if (dx > x && dy > y)
         return false;
       if ((dx + dwidth) < x && (dy + dheight) < y)
@@ -205,7 +193,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var oldData = context.getImageData(x, y, 1, 1).data;
       this.draw(context);
       var newData = context.getImageData(x, y, 1, 1).data;
-
       if (oldData[0] != newData[0] || oldData[1] != newData[1] || oldData[2] != newData[2]) {
         return true;
       }
@@ -215,7 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     /// @function Sprite.Display.drawImage
-    /// image, draw a 'box' from.scale.x.scale.y to swidth,sheight on context
+    /// image, draw a 'box' from.scaleX.scaleY to swidth,sheight on context
     /// x=0,y=0--------------------------------------
     /// -                                           -
     /// -    sx.sy------------                      -
@@ -226,41 +213,39 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// draw an image on context
     /// @param context a 2d context from canvas
     /// @param image, the image we wang to draw
-    /// @param.scale.x the x position of image
-    /// @param.scale.y the y position of image
+    /// @param.scaleX the x position of image
+    /// @param.scaleY the y position of image
     /// @param swidth the width of image we want to draw
     /// @param sheight the height of image we want to draw
-    drawImage (context, image, sx, sy, swidth, sheight) {
-      if (this.visible != true)
-        return;
+    drawImage (renderer, image, sx, sy, swidth, sheight) {
+      if (this.visible == true && this.alpha > 0) {
+        var center = {
+          x: this.centerX,
+          y: this.centerY
+        };
+        var position = {
+          x: this.x,
+          y: this.y
+        };
 
-      var data = this.realPosition();
+        var obj = this.parent;
+        while (obj) {
+          center.x += obj.centerX;
+          center.y += obj.centerY;
+          position.x += obj.x;
+          position.y += obj.y;
+          obj = obj.parent;
+        }
 
-      if (this.debug) {
-        console.log("debug",
-          sx, sy, swidth, sheight,
-          data.position.x,
-          data.position.y,
-          Math.floor(swidth * data.scale.x),
-          Math.floor(sheight * data.scale.y)
+        var dx = position.x - center.x;
+        var dy = position.y - center.y;
+
+        renderer.alpha = this.alpha;
+        renderer.drawImage(
+          image, sx, sy, swidth, sheight,
+          dx, dy, swidth, sheight
         );
       }
-
-      sx = Math.floor(sx);
-      sy = Math.floor(sy);
-      swidth = Math.floor(swidth);
-      swidth = Math.floor(swidth);
-
-      var dx = Math.floor(data.position.x);
-      var dy = Math.floor(data.position.y);
-      var dwidth = Math.floor(swidth * data.scale.x);
-      var dheight = Math.floor(sheight * data.scale.y);
-
-      context.globalAlpha = this.alpha;
-      context.drawImage(
-        image, sx, sy, swidth, sheight,
-        dx, dy, dwidth, dheight
-      );
     }
   };
 

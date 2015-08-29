@@ -133,6 +133,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var HeroDefault = {
     level: 1, // 等级
     exp: 0, // 经验值
+    // 337年6月4日 9时25分
+    time: 336 * (60 * 24 * 30 * 12) + 5 * (60 * 24 * 30) + 3 * (60 * 24) + 9 * 60 + 25,
 
     // 最基本的属性，其他属性都由此延伸
     $str: 10, // strength 力量： 攻击

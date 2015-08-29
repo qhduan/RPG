@@ -62,11 +62,64 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       var mousedown = false;
 
-      var ConvertMouseEvent = function ConvertMouseEvent(event) {
+      this.canvas.addEventListener("mousedown", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressdown();
+      });
+
+      this.canvas.addEventListener("mousemove", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressmove();
+      });
+
+      this.canvas.addEventListener("mouseup", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressup();
+      });
+
+      this.canvas.addEventListener("touchstart", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressdown();
+      });
+
+      this.canvas.addEventListener("touchmove", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressmove();
+      });
+
+      this.canvas.addEventListener("touchend", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressup();
+      });
+
+      this.canvas.addEventListener("touchleave", function (event) {
+        event.preventDefault();
+        if (_this.convertMouseEvent(event)) _this.pressup();
+      });
+
+      this.pressdownElement = null;
+    }
+
+    _createClass(Stage, [{
+      key: "filter",
+      value: function filter(name, value) {
+        this._renderer.filter(name, value);
+      }
+    }, {
+      key: "findHit",
+      value: function findHit(event) {
+        var hitted = _get(Object.getPrototypeOf(Stage.prototype), "hitTest", this).call(this, this.mouseX, this.mouseY);
+        hitted.reverse();
+        if (hitted.length) return hitted;
+        return null;
+      }
+    }, {
+      key: "convertMouseEvent",
+      value: function convertMouseEvent(event) {
         var x;
         var y;
         var type;
-        var rect = _this.canvas.getBoundingClientRect();
+        var rect = this.canvas.getBoundingClientRect();
 
         if (event.targetTouches && event.targetTouches.length == 1) {
           var touch = event.targetTouches[0];
@@ -79,64 +132,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           type = "mouse";
         }
 
-        var scaleX = rect.width / _this.width;
-        var scaleY = rect.height / _this.height;
+        var scaleX = rect.width / this.width;
+        var scaleY = rect.height / this.height;
 
         x = Math.floor(x / scaleX);
         y = Math.floor(y / scaleY);
 
         if (x >= 0 && y >= 0) {
-          _this.mouseX = x;
-          _this.mouseY = y;
-          _this.mouseType = type;
+          this.mouseX = x;
+          this.mouseY = y;
+          this.mouseType = type;
           return true;
         } else {
           return false;
         }
-      };
-
-      this.canvas.addEventListener("mousedown", function (event) {
-        if (ConvertMouseEvent(event)) _this.pressdown();
-      });
-
-      this.canvas.addEventListener("mousemove", function (event) {
-        if (ConvertMouseEvent(event)) _this.pressmove();
-      });
-
-      this.canvas.addEventListener("mouseup", function (event) {
-        if (ConvertMouseEvent(event)) _this.pressup();
-      });
-
-      this.canvas.addEventListener("touchstart", function (event) {
-        event.preventDefault();
-        if (ConvertMouseEvent(event)) _this.pressdown();
-      });
-
-      this.canvas.addEventListener("touchmove", function (event) {
-        event.preventDefault();
-        if (ConvertMouseEvent(event)) _this.pressmove();
-      });
-
-      this.canvas.addEventListener("touchend", function (event) {
-        event.preventDefault();
-        if (ConvertMouseEvent(event)) _this.pressup();
-      });
-
-      this.canvas.addEventListener("touchleave", function (event) {
-        event.preventDefault();
-        if (ConvertMouseEvent(event)) _this.pressup();
-      });
-
-      this.pressdownElement = null;
-    }
-
-    _createClass(Stage, [{
-      key: "findHit",
-      value: function findHit(event) {
-        var hitted = _get(Object.getPrototypeOf(Stage.prototype), "hitTest", this).call(this, this.mouseX, this.mouseY);
-        hitted.reverse();
-        if (hitted.length) return hitted;
-        return null;
       }
     }, {
       key: "pressdown",
@@ -196,9 +205,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// @function Sprite.Stage.clear
       /// clear the stage
       value: function clear() {
-        this._context.fillStyle = "white";
-        this._context.fillRect(0, 0, this._renderer.width, this._renderer.height);
-        //this._context.clearRect(0, 0, this._renderer.width, this._renderer.height);
+        this.renderer.clear();
       }
     }, {
       key: "update",
@@ -212,15 +219,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         this.emit("drawStart");
 
-        if (this._children.length <= 0) return false;
+        if (this.children.length <= 0) return false;
 
-        this._renderer.clear();
+        this.clear();
 
-        this._children.forEach(function (element) {
-          element.draw(_this3._renderer);
+        this.children.forEach(function (element) {
+          element.draw(_this3.renderer);
         });
 
         this.emit("drawEnd");
+      }
+    }, {
+      key: "renderer",
+      get: function get() {
+        return this._renderer;
+      },
+      set: function set(value) {
+        throw new Error("Sprite.Stage renderer readonly");
       }
     }, {
       key: "width",
@@ -254,7 +269,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "canvas",
       get: function get() {
-        return this._renderer.canvas;
+        return this.renderer.canvas;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage.canvas readonly");

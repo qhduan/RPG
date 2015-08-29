@@ -64,6 +64,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(Canvas, [{
+      key: "filter",
+      value: function filter() {
+        // for now, only Sprite.Webgl could use .filter() method
+      }
+    }, {
       key: "drawImage",
       value: function drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) {
         if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {

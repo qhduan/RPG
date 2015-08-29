@@ -42,6 +42,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this._currentFrame = 0;
       this._animationTimer = null;
 
+      this._frames = [];
+
+      this._images.forEach((image) => {
+        var col = Math.floor(image.width / this._tilewidth);
+        var row = Math.floor(image.height / this._tileheight);
+        for (let j = 0; j < row; j++) {
+          for (let i = 0; i < col; i++) {
+            this._frames.push({
+              image: image,
+              x: i * this._tilewidth,
+              y: j * this._tileheight
+            });
+          }
+        }
+      });
+
     }
 
     clone () {
@@ -53,10 +69,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
       sheet.x = this.x;
       sheet.y = this.y;
-      sheet.center.x = this.center.x;
-      sheet.center.y = this.center.y;
-      sheet.scale.x = this.scale.x;
-      sheet.scale.y = this.scale.y;
+      sheet.centerX = this.centerX;
+      sheet.centerY = this.centerY;
+      sheet.scaleX = this.scaleX;
+      sheet.scaleY = this.scaleY;
       sheet._currentFrame = this._currentFrame;
       return sheet;
     }
@@ -156,30 +172,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    getFrame (frame) {
-      for (let i = 0; i < this._images.length; i++) {
-        var image = this._images[i];
-        var col = Math.floor(image.width / this._tilewidth);
-        var row = Math.floor(image.height / this._tileheight);
-        if (frame < row * col) {
-          return {
-            image: image,
-            x: Math.floor(frame % col) * this._tilewidth,
-            y: Math.floor(frame / col) * this._tileheight,
-            width: this._tilewidth,
-            height: this._tileheight,
-            center: this.center,
-          };
-        } else {
-          frame -= row * col;
-        }
+    getFrame (index) {
+      if (typeof index != "number") {
+        index = this.currentFrame;
       }
+      var frame = this._frames[index];
+      frame.width = this._tilewidth;
+      frame.height = this._tileheight;
+      frame.centerX = this.centerX;
+      frame.centerY = this.centerY;
+      return frame;
     }
 
     draw (context) {
-      var frame = this.getFrame(this._currentFrame);
+      var frame = this.getFrame(this.currentFrame);
       if (!frame || !frame.image) {
-        console.error(frame, this._currentFrame, this);
+        console.error(frame, this.currentFrame, this);
         throw new Error("Sprite.Sheet.draw invalid frame");
       }
       this.drawImage(context, frame.image, frame.x, frame.y, frame.width, frame.height);

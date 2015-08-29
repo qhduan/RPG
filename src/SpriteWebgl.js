@@ -26,16 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   var vertexShaderSrc = `
-  attribute vec2 a_position;
+  attribute vec2 position;
   attribute vec2 a_texCoord;
 
-  uniform vec2 u_resolution;
+  uniform vec2 resolution;
 
-  varying vec2 v_texCoord;
+  varying vec2 texCoord;
 
   void main() {
      // convert the rectangle from pixels to 0.0 to 1.0
-     vec2 zeroToOne = a_position / u_resolution;
+     vec2 zeroToOne = position / resolution;
 
      // convert from 0->1 to 0->2
      vec2 zeroToTwo = zeroToOne * 2.0;
@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
      // pass the texCoord to the fragment shader
      // The GPU will interpolate this value between points.
-     v_texCoord = a_texCoord;
+     texCoord = a_texCoord;
   }`;
 
   var fragmentShaderSrc = `
@@ -55,21 +55,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   precision highp float;
 
   // texture crop
-  uniform vec4 u_crop;
+  uniform vec4 crop;
+
+  // texture brightness
+  uniform float brightness;
+
+  // texture alpha
+  uniform float alpha;
+
+  // texture contrast
+  uniform float contrast;
 
   // our texture
-  uniform sampler2D u_image;
+  uniform sampler2D image;
 
   // the texCoords passed in from the vertex shader.
-  varying vec2 v_texCoord;
+  varying vec2 texCoord;
 
   void main() {
      // Look up a color from the texture.
-     // gl_FragColor = texture2D(u_image, v_texCoord);
-     gl_FragColor = texture2D(
-       u_image,
-       vec2(v_texCoord.x * u_crop.z, v_texCoord.y * u_crop.w) + u_crop.xy
-     );
+     // gl_FragColor = texture2D(image, texCoord);
+
+     // use crop to cut image
+     vec4 color = texture2D(
+       image,
+       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy
+     ).rgba;
+
+     // brightness and contrast's formular from https://github.com/evanw/glfx.js
+
+     // add the brightness to rgb, but not alpha (a of rgba)
+     color.xyz = color.xyz + brightness;
+
+     // apply contrast
+     if (contrast > 0.0) {
+       color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;
+     } else {
+       color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;
+     }
+
+     // apply alpha
+     color.a = color.a * alpha;
+
+     gl_FragColor = color;
   }`;
 
   function setRectangle(gl, x, y, width, height) {
@@ -111,6 +139,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       canvas.width = width || 640;
       canvas.height = height || 480;
 
+      this._alpha = 1;
+      this._filters = {};
       this._textureCache = new Map();
 
       var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -142,15 +172,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
-      var positionLocation = gl.getAttribLocation(program, "a_position");
+      var positionLocation = gl.getAttribLocation(program, "position");
       var texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
-      var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-      var cropLocation = gl.getUniformLocation(program, 'u_crop');
+      var resolutionLocation = gl.getUniformLocation(program, "resolution");
+      var cropLocation = gl.getUniformLocation(program, "crop");
+      var brightnessLocation = gl.getUniformLocation(program, "brightness");
+      var contrastLocation = gl.getUniformLocation(program, "contrast");
+      var alphaLocation = gl.getUniformLocation(program, "alpha");
 
       this._positionLocation = positionLocation;
       this._texCoordLocation = texCoordLocation;
       this._resolutionLocation = resolutionLocation;
       this._cropLocation = cropLocation;
+      this._brightnessLocation = brightnessLocation;
+      this._contrastLocation = contrastLocation;
+      this._alphaLocation = alphaLocation;
 
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 
@@ -168,6 +204,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       this._canvas = canvas;
       this._gl = gl;
+    }
+
+    get alpha () {
+      return this._alpha;
+    }
+
+    set alpha (value) {
+      this._alpha = value;
+    }
+
+    filter (name, value) {
+      this._filters[name] = value;
     }
 
     createTexture (gl, image) {
@@ -239,6 +287,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       gl.uniform4f(this._cropLocation, sx/image.width, sy/image.height, sw/image.width, sh/image.height);
       //console.log(sx, sy, sw, sh, dx, dy, dw, dh, sx/image.width, sy/image.height, sw/image.width, sh/image.height)
       //setRectangle(gl, 0, 0, 1, 1);
+
+      if (this._filters["brightness"]) {
+        gl.uniform1f(this._brightnessLocation, this._filters["brightness"]);
+      } else {
+        gl.uniform1f(this._brightnessLocation, 0.0);
+      }
+
+      if (this._filters["contrast"]) {
+        gl.uniform1f(this._contrastLocation, this._filters["contrast"]);
+      } else {
+        gl.uniform1f(this._contrastLocation, 0.0);
+      }
+
+      gl.uniform1f(this._alphaLocation, this._alpha);
 
       gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
       gl.enableVertexAttribArray(this._positionLocation);

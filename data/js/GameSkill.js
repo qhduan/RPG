@@ -80,8 +80,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           animations: _this.data.animations
         });
 
-        sheet.center.x = Math.floor(_this.data.tilewidth / 2);
-        sheet.center.y = Math.floor(_this.data.tileheight / 2);
+        sheet.centerX = Math.floor(_this.data.tilewidth / 2);
+        sheet.centerY = Math.floor(_this.data.tileheight / 2);
 
         _this.sprite = sheet;
 

@@ -96,7 +96,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           var buttonUse = document.getElementById("buttonUse");
           var minDistance = -1;
           var minObject = null;
-          var distanceLimit = 60;
+          var distanceLimit = 40;
 
           function FindNearest(obj) {
             var d = Game.hero.distance(obj.x, obj.y);

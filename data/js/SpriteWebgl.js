@@ -31,9 +31,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
   "use strict";
 
-  var vertexShaderSrc = "\n  attribute vec2 a_position;\n  attribute vec2 a_texCoord;\n\n  uniform vec2 u_resolution;\n\n  varying vec2 v_texCoord;\n\n  void main() {\n     // convert the rectangle from pixels to 0.0 to 1.0\n     vec2 zeroToOne = a_position / u_resolution;\n\n     // convert from 0->1 to 0->2\n     vec2 zeroToTwo = zeroToOne * 2.0;\n\n     // convert from 0->2 to -1->+1 (clipspace)\n     vec2 clipSpace = zeroToTwo - 1.0;\n\n     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n\n     // pass the texCoord to the fragment shader\n     // The GPU will interpolate this value between points.\n     v_texCoord = a_texCoord;\n  }";
+  var vertexShaderSrc = "\n  attribute vec2 position;\n  attribute vec2 a_texCoord;\n\n  uniform vec2 resolution;\n\n  varying vec2 texCoord;\n\n  void main() {\n     // convert the rectangle from pixels to 0.0 to 1.0\n     vec2 zeroToOne = position / resolution;\n\n     // convert from 0->1 to 0->2\n     vec2 zeroToTwo = zeroToOne * 2.0;\n\n     // convert from 0->2 to -1->+1 (clipspace)\n     vec2 clipSpace = zeroToTwo - 1.0;\n\n     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n\n     // pass the texCoord to the fragment shader\n     // The GPU will interpolate this value between points.\n     texCoord = a_texCoord;\n  }";
 
-  var fragmentShaderSrc = "\n  // precision mediump float;\n  precision highp float;\n\n  // texture crop\n  uniform vec4 u_crop;\n\n  // our texture\n  uniform sampler2D u_image;\n\n  // the texCoords passed in from the vertex shader.\n  varying vec2 v_texCoord;\n\n  void main() {\n     // Look up a color from the texture.\n     // gl_FragColor = texture2D(u_image, v_texCoord);\n     gl_FragColor = texture2D(\n       u_image,\n       vec2(v_texCoord.x * u_crop.z, v_texCoord.y * u_crop.w) + u_crop.xy\n     );\n  }";
+  var fragmentShaderSrc = "\n  // precision mediump float;\n  precision highp float;\n\n  // texture crop\n  uniform vec4 crop;\n\n  // texture brightness\n  uniform float brightness;\n\n  // texture alpha\n  uniform float alpha;\n\n  // texture contrast\n  uniform float contrast;\n\n  // our texture\n  uniform sampler2D image;\n\n  // the texCoords passed in from the vertex shader.\n  varying vec2 texCoord;\n\n  void main() {\n     // Look up a color from the texture.\n     // gl_FragColor = texture2D(image, texCoord);\n\n     // use crop to cut image\n     vec4 color = texture2D(\n       image,\n       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy\n     ).rgba;\n\n     // brightness and contrast's formular from https://github.com/evanw/glfx.js\n\n     // add the brightness to rgb, but not alpha (a of rgba)\n     color.xyz = color.xyz + brightness;\n\n     // apply contrast\n     if (contrast > 0.0) {\n       color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;\n     } else {\n       color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;\n     }\n\n     // apply alpha\n     color.a = color.a * alpha;\n\n     gl_FragColor = color;\n  }";
 
   function setRectangle(gl, x, y, width, height) {
     var x2 = x + width;
@@ -65,6 +65,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       canvas.width = width || 640;
       canvas.height = height || 480;
 
+      this._alpha = 1;
+      this._filters = {};
       this._textureCache = new Map();
 
       var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -96,15 +98,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
-      var positionLocation = gl.getAttribLocation(program, "a_position");
+      var positionLocation = gl.getAttribLocation(program, "position");
       var texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
-      var resolutionLocation = gl.getUniformLocation(program, "u_resolution");
-      var cropLocation = gl.getUniformLocation(program, 'u_crop');
+      var resolutionLocation = gl.getUniformLocation(program, "resolution");
+      var cropLocation = gl.getUniformLocation(program, "crop");
+      var brightnessLocation = gl.getUniformLocation(program, "brightness");
+      var contrastLocation = gl.getUniformLocation(program, "contrast");
+      var alphaLocation = gl.getUniformLocation(program, "alpha");
 
       this._positionLocation = positionLocation;
       this._texCoordLocation = texCoordLocation;
       this._resolutionLocation = resolutionLocation;
       this._cropLocation = cropLocation;
+      this._brightnessLocation = brightnessLocation;
+      this._contrastLocation = contrastLocation;
+      this._alphaLocation = alphaLocation;
 
       gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
 
@@ -125,6 +133,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(Webgl, [{
+      key: "filter",
+      value: function filter(name, value) {
+        this._filters[name] = value;
+      }
+    }, {
       key: "createTexture",
       value: function createTexture(gl, image) {
         //var cacheIndex = imageCache.indexOf(image);
@@ -197,6 +210,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         //console.log(sx, sy, sw, sh, dx, dy, dw, dh, sx/image.width, sy/image.height, sw/image.width, sh/image.height)
         //setRectangle(gl, 0, 0, 1, 1);
 
+        if (this._filters["brightness"]) {
+          gl.uniform1f(this._brightnessLocation, this._filters["brightness"]);
+        } else {
+          gl.uniform1f(this._brightnessLocation, 0.0);
+        }
+
+        if (this._filters["contrast"]) {
+          gl.uniform1f(this._contrastLocation, this._filters["contrast"]);
+        } else {
+          gl.uniform1f(this._contrastLocation, 0.0);
+        }
+
+        gl.uniform1f(this._alphaLocation, this._alpha);
+
         gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
         gl.enableVertexAttribArray(this._positionLocation);
         gl.vertexAttribPointer(this._positionLocation, 2, gl.FLOAT, false, 0, 0);
@@ -212,6 +239,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var gl = this._gl;
         gl.clearColor(0, 0, 0, 1); // black
         gl.clear(gl.COLOR_BUFFER_BIT);
+      }
+    }, {
+      key: "alpha",
+      get: function get() {
+        return this._alpha;
+      },
+      set: function set(value) {
+        this._alpha = value;
       }
     }, {
       key: "width",

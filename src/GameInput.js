@@ -78,8 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else if (Sprite.Input.isPressed("down")) {
         Game.hero.go(state, "down", speed);
       } else if (mousePressed) {
-        //var x = Game.stage.center.x + Game.stage.mouseX / Game.stage.scaleX;
-        //var y = Game.stage.center.y + Game.stage.mouseY / Game.stage.scaleY;
+        //var x = Game.stage.centerX + Game.stage.mouseX / Game.stage.scaleX;
+        //var y = Game.stage.centerY + Game.stage.mouseY / Game.stage.scaleY;
         //if (Game.uiLayer.hitTest(x, y)) {
         //  return;
         //}

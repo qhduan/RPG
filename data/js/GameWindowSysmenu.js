@@ -89,3 +89,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.sysmenu.hide();
   });
 })();
+//# sourceMappingURL=GameWindowSysmenu.js.map

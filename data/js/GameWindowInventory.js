@@ -203,3 +203,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.inventory.show();
   });
 })();
+//# sourceMappingURL=GameWindowInventory.js.map

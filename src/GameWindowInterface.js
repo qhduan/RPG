@@ -36,6 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 
     <span id="interfaceWindowMap"></span>
+    <span id="interfaceWindowDatetime"></span>
 
     <button id="interfaceWindowUse" class="interfaceWindowButton"></button>
     <button id="interfaceWindowMenu" class="interfaceWindowButton"></button>
@@ -71,6 +72,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       position: absolute:
       top: 0px;
       background-color: rgba(100, 100, 100, 0.7);
+      display: inline-block;
+    }
+
+    span#interfaceWindowDatetime {
+      position: absolute:
+      top: 200px;
+      left: 0;
+      background-color: rgba(100, 100, 100, 0.7);
+      display: inline-block;
     }
 
     button#interfaceWindowUse {
@@ -152,7 +162,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         } else if (Game.hintObject.type && Game.hintObject.type == "chest") {
         } else if (Game.hintObject.type && Game.hintObject.type == "hint") {
-          Game.hero.popup(Game.hintObject.message);
+          Game.popup(Game.hintObject, Game.hintObject.message)
         } else if (Game.hintObject instanceof Game.Actor) {
           Game.hintObject.contact();
         }
@@ -163,6 +173,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
   })();
+
+  win.register("datetime", function () {
+    if (Game.hero && Game.hero.data && Number.isInteger(Game.hero.data.time)) {
+      var YEARMIN = 60*24*30*12;
+      var MONTHMIN = 60*24*30;
+      var DAYMIN = 60*24;
+      var HOURMIN = 60;
+      var datetime = document.querySelector("span#interfaceWindowDatetime");
+      var time = Game.hero.data.time;
+      var year = Math.floor(time/YEARMIN);
+      time = time % YEARMIN;
+      var month = Math.floor(time/MONTHMIN);
+      time = time % MONTHMIN;
+      var day = Math.floor(time/DAYMIN);
+      time = time % DAYMIN;
+      var hour = Math.floor(time/HOURMIN);
+      time = time % HOURMIN;
+      var minute = time;
+      year++;
+      month++;
+      day++;
+      hour = hour.toString();
+      while (hour.length < 2) hour = "0"+hour;
+      minute = minute.toString();
+      while (minute.length < 2) minute = "0"+minute;
+      datetime.textContent = `帝国历${year}年${month}月${day}日 ${hour}:${minute}`;
+    }
+  });
+
+  setInterval(function () {
+    if (Game.hero) {
+      Game.hero.data.time++;
+      Game.windows.interface.execute("datetime");
+    }
+  }, 1000);
 
   win.register("refresh", function () {
     for (var i = 0; i < 8; i++) {

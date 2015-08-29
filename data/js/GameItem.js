@@ -73,8 +73,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _this.icon = image;
 
         _this.bitmap = new Sprite.Bitmap(image);
-        _this.bitmap.center.x = image.width / 2;
-        _this.bitmap.center.y = image.height / 2;
+        _this.bitmap.centerX = image.width / 2;
+        _this.bitmap.centerY = image.height / 2;
         _this.bitmap.name = _this.id;
 
         // 发送完成事件，第二个参数代表一次性事件

@@ -33,9 +33,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     constructor () {
       this._listeners = {};
       this._once = {};
+      this._parent = null;
     }
 
-    /// #function Sprite.Event.hasEvent
+    get parent () {
+      return this._parent;
+    }
+
+    set parent (value) {
+      this._parent = value;
+    }
+
+    /// @function Sprite.Event.hasEvent
     hasEvent (event) {
       if (this._listeners[event])
         return true;

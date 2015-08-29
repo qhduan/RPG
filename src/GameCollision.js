@@ -21,141 +21,130 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  // 粗略计算地块是否和角色碰撞，主要是利用位置计算上是否有矩形的重叠
-  // 例如如果长方形A和长方形B左右重叠，则他们重叠在一起的宽会比AB各自的宽加一起要来的窄
-  function rectngleCollide (spriteA, spriteB, rectA, rectB) {
-    /*
-    以下图为例：
-    AA
-    AA
-        BB
-        BB
-    假设上面是两个图片，并且图片的x和y都在左上角
-     */
-
-    var data = {
-      x1: spriteA.x - rectA.center.x, // A的左上角x坐标
-      y1: spriteA.y - rectA.center.y, // A的左上角y坐标
-      x2: spriteB.x - rectB.center.x, // B的左上角x坐标
-      y2: spriteB.y - rectB.center.y, // B的左上角y坐标
-      w1: rectA.width, // A的宽
-      h1: rectA.height, // A的高
-      w2: rectB.width, // B的宽
-      h2: rectB.height, // B的高
-      x3: spriteA.x - rectA.center.x + rectA.width, // A的右上角
-      y3: spriteA.y - rectA.center.y + rectA.height, // A的左下角
-      x4: spriteB.x - rectB.center.x + rectB.width, // B的右上角
-      y4: spriteB.y - rectB.center.y + rectB.height // B的左下角
+  function boxCollide (spriteA, spriteB, rectA, rectB) {
+    var A = {
+      x: spriteA.x - rectA.centerX,
+      y: spriteA.y - rectA.centerY,
+      w: rectA.width,
+      h: rectA.height,
+      sx: rectA.x,
+      sy: rectA.y,
+      sw: rectA.width,
+      sh: rectA.height,
+      image: rectA.image
     };
 
-    data.minX = Math.min(data.x1, data.x2); // 最小的x坐标，这里应该是A的左上角x坐标
-    data.minY = Math.min(data.y1, data.y2); // 最小的y坐标，这里应该是A的左上角y坐标
-    data.maxX = Math.max(data.x3, data.x4); // 最大的x坐标，这里应该是B的右上角x坐标
-    data.maxY = Math.max(data.y3, data.y4); // 最大的y坐标，这里应该是B的左下角y坐标
+    var B = {
+      x: spriteB.x - rectB.centerX,
+      y: spriteB.y - rectB.centerY,
+      w: rectB.width,
+      h: rectB.height,
+      sx: rectB.x,
+      sy: rectB.y,
+      sw: rectB.width,
+      sh: rectB.height,
+      image: rectB.image
+    };
 
-    // 一个最大宽度和最大高度
-    // 宽度就是从A的左上角x坐标到B的右上角x坐标
-    // 高度就是从A的左上角y坐标到B的左下角y坐标
-    data.width = data.maxX - data.minX;
-    data.height = data.maxY - data.minY;
+    var bigX = Math.max(A.x + A.w, B.x + B.w);
+    var smallX = Math.min(A.x, B.x);
+    var bigY = Math.max(A.y + A.h, B.y + B.h);
+    var smallY = Math.min(A.y, B.y);
 
-    // 如果两个图形组成的最大宽，大于两个图片分别的最大宽，说明可能有交集
-    // 如果两个图形组成的最大高，大于两个图片分别的最大高，说明可能有交集
-    if( data.width < (rectA.width + rectB.width)
-    && data.height < (rectA.height + rectB.height) )
-      return data;
+    var width = bigX - smallX;
+    var height = bigY - smallY;
+
+    if (width < (A.w + B.w) && height < (A.h + B.h)) {
+      return {
+        A: A,
+        B: B
+      };
+    }
     return false;
-  }  
-  
-  var canvasCollide = document.createElement("canvas");
-  canvasCollide.width = 128;
-  canvasCollide.height = 128;
-  var contextCollide = canvasCollide.getContext("2d");
-  // document.body.appendChild(canvasCollide);
-  
-  function pixelCollide (spriteA, spriteB, rectA, rectB, data,
-    deltaX, deltaY, deltaW, deltaH) {
+  }
+
+  var collideCavansCache = new Map();
+
+  function pixelCollide (A, B) {
     // 对图像进行某种意义上的移动，例如把上面的图的A和B都平移到左上角，也就是AA的左上角变为0,0坐标
 
-    data.x1 -= data.minX;
-    data.x2 -= data.minX;
-    data.y1 -= data.minY;
-    data.y2 -= data.minY;
+    var now = (new Date().getTime());
 
-    // contextCollide.clearRect(0, 0, data.width, data.height)
-    canvasCollide.width = data.width;
-    canvasCollide.height = data.height;
-    
+    // WWWHHH
+    var key = A.w * 1000 + A.h;
+    var canvas;
+    var context;
+    if (collideCavansCache.has(key)) {
+      canvas = collideCavansCache.get(key).canvas;
+      context = collideCavansCache.get(key).context;
+    } else {
+      canvas = document.createElement("canvas");
+      canvas.width = A.w;
+      canvas.height = A.h;
+      context = canvas.getContext("2d");
+      collideCavansCache.set(key, {
+        canvas: canvas,
+        context: context
+      });
+    }
+    context.clearRect(0, 0, canvas.width, canvas.height);
+
     // draw spriteA
-    contextCollide.drawImage(rectA.image,
-      rectA.x + deltaX, rectA.y + deltaY, data.w1 + deltaW, data.h1 + deltaH,
-      data.x1 + deltaX, data.y1 + deltaY, data.w1 + deltaW, data.h1 + deltaH);
-
-    var cropX = data.x1 + deltaX;
-    var cropY = data.y1 + deltaY;
-    var cropWidth = data.w1 + deltaW;
-    var cropHeight = data.h1 + deltaH;
-      
-    var pixelOld = contextCollide.getImageData(cropX, cropY, cropWidth, cropHeight).data;
+    context.globalCompositeOperation="source-over"
+    context.drawImage(A.image,
+      A.sx, A.sy, A.sw, A.sh,
+      0, 0, A.w, A.h);
 
     // draw spriteB
-    contextCollide.drawImage(rectB.image,
-      rectB.x, rectB.y, data.w2, data.h2,
-      data.x2, data.y2, data.w2, data.h2);
+    // 在source-in模式下，图像如果相交则显示，不相交则透明，所以判断如果有非透明就是相交
+    context.globalCompositeOperation="source-in"
+    context.drawImage(B.image,
+      B.sx, B.sy, B.sw, B.sh,
+      B.x - A.x, B.y - A.y, B.w, B.h);
 
-    var pixelNew = contextCollide.getImageData(cropX, cropY, cropWidth, cropHeight).data;
+    var pixel = context.getImageData(0, 0, A.w, A.h).data;
 
     var collision = false;
-    
-    for (var i = 3; i < pixelOld.length; i += 3) {
-      if (pixelOld[i] > 0) {
-        if ( pixelOld[i] != pixelNew[i]
-          || pixelOld[i - 1] != pixelNew[i - 1]
-          || pixelOld[i - 2] != pixelNew[i - 2]
-          || pixelOld[i - 3] != pixelNew[i - 3]
-        ) {
-          collision = true;
-          break;
-        }
+
+    for (var i = 3; i < pixel.length; i += 3) {
+      if (pixel[i] != 0) {
+        collision = true;
       }
     }
 
     return collision;
   }
-  
+
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
   Game.actorCollision = function (actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
     var actorRect = actorSprite.getFrame(0);
-    // 阻挡的块则检测当前frame，因为地块一般无变化
-    var blockRect = blockSprite.getFrame(blockSprite.currentFrame);
-
-    var data = rectngleCollide(actorSprite, blockSprite, actorRect, blockRect);
+    // 阻挡的块则检测当前frame
+    var blockRect = blockSprite.getFrame();
+    var data = boxCollide(actorSprite, blockSprite, actorRect, blockRect);
     if (data) {
-      var actorHeight = data.h1;
-      // deltaY偏移0.7，大概意思是只检测角色最下方30%的地方
-      var deltaY = parseInt(actorHeight * 0.7);
-      var deltaH = -deltaY;
-      var result = pixelCollide(actorSprite, blockSprite, actorRect, blockRect, data, 0, deltaY, 0, deltaH);
-      
-      return result;
+      // 计算一个delta，即只碰撞角色的下半部分
+      // deltaY偏移0.85，大概意思是只检测角色最下方15%的地方
+      var deltaY = Math.floor(actorRect.height * 0.85);
+      data.A.y += deltaY;
+      data.A.sy += deltaY;
+      data.A.h -= deltaY;
+      data.A.sh -= deltaY;
+
+      return pixelCollide(data.A, data.B);
     }
     return false;
   };
 
   // 技能碰撞检测
   Game.skillCollision = function (skillSprite, actorSprite) {
-    // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
-    var skillRect = skillSprite.getFrame(skillSprite.currentFrame);
-    //console.log(skillSprite.currentFrame);
-    // 阻挡的块则检测当前frame，因为地块一般无变化
-    var actorRect = actorSprite.getFrame(actorSprite.currentFrame);
+    var skillRect = skillSprite.getFrame();
+    var actorRect = actorSprite.getFrame();
 
-    var data = rectngleCollide(skillSprite, actorSprite, skillRect, actorRect);
+    var data = boxCollide(skillSprite, actorSprite, skillRect, actorRect);
     if (data) {
-      //return true;
       // 和角色碰撞检测对比，技能碰撞检测无delta
-      return pixelCollide(skillSprite, actorSprite, skillRect, actorRect, data, 0, 0, 0, 0);
+      return pixelCollide(data.A, data.B);
     }
     return false;
   };

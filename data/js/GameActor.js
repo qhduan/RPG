@@ -56,8 +56,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         color: "white",
         fontSize: 12
       });
-      text.center.y = Math.floor(text.height / 2);
-      text.center.x = Math.floor(text.width / 2);
+      text.centerY = Math.floor(text.height / 2);
+      text.centerX = Math.floor(text.width / 2);
       text.x = 0;
       text.y = 0;
       this.text = text;
@@ -71,15 +71,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       } else {
         // 血条外面的黑框
         this.hpbarBox = new Sprite.Shape();
-        this.hpbarBox.center.x = 15;
-        this.hpbarBox.center.y = 2;
+        this.hpbarBox.centerX = 15;
+        this.hpbarBox.centerY = 2;
         this.hpbarBox.x = 0;
         this.hpbarBox.y = 9;
 
         // 魔法条外面的黑框
         this.mpbarBox = new Sprite.Shape();
-        this.mpbarBox.center.x = 15;
-        this.mpbarBox.center.y = 2;
+        this.mpbarBox.centerX = 15;
+        this.mpbarBox.centerY = 2;
         this.mpbarBox.x = 0;
         this.mpbarBox.y = 12;
 
@@ -101,15 +101,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 生命条
         this.hpbar = new Sprite.Shape();
-        this.hpbar.center.x = 15;
-        this.hpbar.center.y = 2;
+        this.hpbar.centerX = 15;
+        this.hpbar.centerY = 2;
         this.hpbar.x = 0;
         this.hpbar.y = 9;
 
         // 精力条
         this.mpbar = new Sprite.Shape();
-        this.mpbar.center.x = 15;
-        this.mpbar.center.y = 2;
+        this.mpbar.centerX = 15;
+        this.mpbar.centerY = 2;
         this.mpbar.x = 0;
         this.mpbar.y = 12;
 
@@ -126,9 +126,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           animations: _this.data.animations
         });
 
-        //.center.x.center.y把角色中间设定为图片中间
-        sprite.center.x = Math.floor(_this.data.tilewidth / 2);
-        sprite.center.y = Math.floor(_this.data.tileheight / 2);
+        //.centerX.centerY把角色中间设定为图片中间
+        sprite.centerX = Math.floor(_this.data.tilewidth * 0.5);
+        sprite.centerY = Math.floor(_this.data.tileheight * 0.85);
         sprite.play("facedown");
         sprite.x = 0;
         sprite.y = 0;
@@ -184,7 +184,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         Complete();
       };
 
-      if (this.data.image instanceof Image) {
+      if (this.data.image && this.data.image.width && this.data.image.height) {
+        // img or canvas
         Init(this.data.image);
       } else if (typeof this.data.image == "string") {
         var loader = new Sprite.Loader();
@@ -286,11 +287,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }, {
       key: "distance",
-      value: function distance(x, y) {
+      value: function distance() {
+        var x, y;
+        if (arguments.length == 2 && typeof arguments[0] == "number" && typeof arguments[1] == "number") {
+          x = arguments[0];
+          y = arguments[1];
+        } else if (arguments.length == 1 && typeof arguments[0].x == "number" && typeof arguments[0].y == "number") {
+          x = arguments[0].x;
+          y = arguments[0].y;
+        } else {
+          console.error(arguments);
+          throw new Error("Game.Actor.distance Invalid arguments");
+        }
         var d = 0;
         d += Math.pow(this.x - x, 2);
         d += Math.pow(this.y - y, 2);
-        return parseInt(Math.sqrt(d));
+        d = Math.sqrt(d);
+        return Math.floor(d);
       }
     }, {
       key: "decreaseHitpoint",
@@ -342,8 +355,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           color: "white",
           fontSize: 16
         });
-        text.center.x = Math.floor(text.width / 2);
-        text.center.y = Math.floor(text.height);
+        text.centerX = Math.floor(text.width / 2);
+        text.centerY = Math.floor(text.height);
         text.x = this.x;
         text.y = this.y;
 
@@ -569,17 +582,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var collision = false;
 
         if (collisionTest) {
-          if (collision == false) collision = CheckCollision(t);
 
-          if (collision == false) collision = CheckCollision({ x: t.x, y: t.y - 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x, y: t.y + 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y });
-          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y });
-
-          if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y - 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y - 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x - 1, y: t.y + 1 });
-          if (collision == false) collision = CheckCollision({ x: t.x + 1, y: t.y + 1 });
+          // 测试角色和角色周面总共9个地格(当range=1时)
+          var range = 1;
+          for (var i = -range; i <= range; i++) {
+            for (var j = -range; j <= range; j++) {
+              collision = CheckCollision({ x: t.x + i, y: t.y + j });
+              if (collision) break;
+            }
+            if (collision) break;
+          }
 
           // 判断和地图上角色的碰撞
           if (collision == false) {
@@ -599,7 +611,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return false;
         } else {
           this.infoBox.x = this.x;
-          this.infoBox.y = this.y - this.sprite.center.y - 20;
+          this.infoBox.y = this.y - this.sprite.centerY - 20;
 
           return true;
         }
@@ -702,7 +714,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         this.infoBox.x = x;
-        this.infoBox.y = y - this.sprite.center.y - 20;
+        this.infoBox.y = y - this.sprite.centerY - 20;
 
         this.x = x;
         this.y = y;
@@ -714,10 +726,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "focus",
       value: function focus() {
         this.infoBox.x = this.x;
-        this.infoBox.y = this.y - this.sprite.center.y - 20;
+        this.infoBox.y = this.y - this.sprite.centerY - 20;
 
-        Game.stage.center.x = Math.round(this.x - Game.config.width / 2);
-        Game.stage.center.y = Math.round(this.y - Game.config.height / 2);
+        Game.stage.centerX = Math.round(this.x - Game.config.width / 2);
+        Game.stage.centerY = Math.round(this.y - Game.config.height / 2);
       }
     }, {
       key: "x",
