@@ -20,7 +20,7 @@ module.exports = function (grunt) {
     },
     watch: {
       scrpites: {
-        files: "src/*.js",
+        files: "src/**/*.js",
         //tasks: ["babel:dist"],
         options: {
           spawn: false

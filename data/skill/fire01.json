@@ -5,12 +5,12 @@
   "image": "resource\/fire.png",
   "icon": "resource\/fire_icon.png",
   "sound": "resource\/fire.ogg",
-  "cost": 5,
-  "distance": 200,
+  "cost": 3,
+  "distance": 80,
   "flyspeed": 4,
   "cooldown": 500,
   "type": "magic",
-  "power": 30,
+  "power": "1d8",
   "tileheight": 64,
   "tilewidth": 64,
   "animations": {
@@ -24,7 +24,7 @@
     },
     "attackleft": {
       "frames": [1],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": -10,
       "y": 0,
@@ -32,7 +32,7 @@
     },
     "attackright": {
       "frames": [2],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": 10,
       "y": 0,
@@ -40,7 +40,7 @@
     },
     "attackup": {
       "frames": [3],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": 0,
       "y": -10,

@@ -3,7 +3,7 @@
   "name": "一般衣服",
   "description": "普通的一套衣服，没有什么特别之处",
   "buff": {
-    "def": 3
+    "def": 2
   },
   "value": 2,
   "type": "body",

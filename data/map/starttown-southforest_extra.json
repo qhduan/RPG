@@ -11,12 +11,17 @@
       "id": "batPurple",
       "x": 11,
       "y": 9,
-      "mode": "random"
+      "mode": "patrol"
     }, {
       "id": "batPurple",
       "x": 20,
       "y": 13,
-      "mode": "random"
+      "mode": "patrol"
+    }, {
+      "id": "robberGreen",
+      "x": 26,
+      "y": 25,
+      "mode": "patrol"
     }
   ],
   "door":

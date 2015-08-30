@@ -5,18 +5,18 @@
   "image": "resource\/spear.png",
   "icon": "resource\/spear_icon.png",
   "sound": "resource\/spear.ogg",
-  "cost": 5,
+  "cost": 1,
   "distance": 0,
   "flyspeed": 0,
   "cooldown": 500,
   "type": "normal",
-  "power": 30,
+  "power": "1d8",
   "tileheight": 64,
   "tilewidth": 64,
   "animations": {
     "attackdown": {
       "frames": [0, 1, 2],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": 0,
       "y": 30,
@@ -24,7 +24,7 @@
     },
     "attackleft": {
       "frames": [3, 4, 5],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": -30,
       "y": 0,
@@ -32,7 +32,7 @@
     },
     "attackright": {
       "frames": [6, 7, 8],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": 30,
       "y": 0,
@@ -40,7 +40,7 @@
     },
     "attackup": {
       "frames": [9, 10, 11],
-      "speed": 50,
+      "speed": 20,
       "next": "",
       "x": 0,
       "y": -30,
