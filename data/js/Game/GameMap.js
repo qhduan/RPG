@@ -58,7 +58,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       loader.add(imageUrls);
       loader.start();
       loader.on("complete", function (event) {
-        //console.log("mapData", this.data);
+
         _this.sheet = new Sprite.Sheet({
           images: event.data,
           width: _this.data.tilewidth,
@@ -88,16 +88,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 var position = x + y * layer.width;
                 var picture = layer.data[position] - 1;
                 if (picture >= 0) {
-                  var spriteClone = _this.sheet.clone();
-                  spriteClone.x = x * _this.data.tilewidth;
-                  spriteClone.y = y * _this.data.tileheight;
-                  spriteClone.play(picture);
+                  var frame = _this.sheet.getFrame(picture);
+                  frame.x = x * _this.data.tilewidth;
+                  frame.y = y * _this.data.tileheight;
 
                   if (layer.properties && layer.properties.blocked) {
-                    _this.blockedMap[y][x] = spriteClone;
+                    _this.blockedMap[y][x] = frame;
                   }
 
-                  _this.container.appendChild(spriteClone);
+                  _this.container.appendChild(frame);
                 }
               }
             }
@@ -150,4 +149,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameMap;
   })(Sprite.Event);
 })();
-//# sourceMappingURL=GameMap.js.map

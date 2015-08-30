@@ -25,20 +25,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html(`
     <div class="window-box">
-      <button id="sysmenuWindowClose">关闭窗口</button>
+      <button id="sysmenuWindowClose" class="brownButton">关闭窗口</button>
 
       <table><tbody><tr><td>
-        <button id="sysmenuWindowInventory">背包物品</button>
-        <button id="sysmenuWindowStatus">状态装备</button>
+        <button id="sysmenuWindowInventory" class="brownButton">背包物品</button>
+        <button id="sysmenuWindowStatus" class="brownButton">状态装备</button>
         <br>
-        <button id="sysmenuWindowSkill">查看技能</button>
-        <button id="sysmenuWindowQuest">任务列表</button>
+        <button id="sysmenuWindowSkill" class="brownButton">查看技能</button>
+        <button id="sysmenuWindowQuest" class="brownButton">任务列表</button>
         <br>
-        <button id="sysmenuWindowMap">迷你地图</button>
-        <button id="sysmenuWindowSetting">游戏设置</button>
+        <button id="sysmenuWindowMap" class="brownButton">迷你地图</button>
+        <button id="sysmenuWindowSetting" class="brownButton">游戏设置</button>
         <br>
-        <button id="sysmenuWindowArchive">存档管理</button>
-        <button id="sysmenuWindowExit">退出游戏</button>
+        <button id="sysmenuWindowArchive" class="brownButton">存档管理</button>
+        <button id="sysmenuWindowExit" class="brownButton">退出游戏</button>
         <br>
       </td></tr></tbody></table>
     </div>
@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       position: absolute;
       right: 5px;
       top: 5px;
-      width: 100px;
+      width: 120px;
       height: 60px;
       font-size: 16px;
     }

@@ -27,16 +27,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="window-box">
       <div id="inventoryWindowItemBar">
 
-        <button id="inventoryWindowClose">关闭</button>
-        <button id="inventoryWindowStatus">状态</button>
+        <button id="inventoryWindowClose" class="brownButton">关闭</button>
+        <button id="inventoryWindowStatus" class="brownButton">状态</button>
 
-        <button id="inventoryWindowAll">全部</button>
-        <button id="inventoryWindowWeapon">武器</button>
-        <button id="inventoryWindowArmor">护甲</button>
-        <button id="inventoryWindowPotion">药水</button>
-        <button id="inventoryWindowMaterial">材料</button>
-        <button id="inventoryWindowBook">书籍</button>
-        <button id="inventoryWindowMisc">其他</button>
+        <button id="inventoryWindowAll" class="brownButton">全部</button>
+        <button id="inventoryWindowWeapon" class="brownButton">武器</button>
+        <button id="inventoryWindowArmor" class="brownButton">护甲</button>
+        <button id="inventoryWindowPotion" class="brownButton">药水</button>
+        <button id="inventoryWindowMaterial" class="brownButton">材料</button>
+        <button id="inventoryWindowBook" class="brownButton">书籍</button>
+        <button id="inventoryWindowMisc" class="brownButton">其他</button>
       </div>
 
       <span id="inventoryWindowGold"></span>
@@ -161,28 +161,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       tableBody.removeChild(tableBody.lastChild);
     }
 
-    inventoryWindowAll.style.color = "black";
-    inventoryWindowWeapon.style.color = "black";
-    inventoryWindowArmor.style.color = "black";
-    inventoryWindowPotion.style.color = "black";
-    inventoryWindowMaterial.style.color = "black";
-    inventoryWindowBook.style.color = "black";
-    inventoryWindowMisc.style.color = "black";
+    var defaultColor = "white";
+    var activeColor = "yellow";
+
+    inventoryWindowAll.style.color = defaultColor;
+    inventoryWindowWeapon.style.color = defaultColor;
+    inventoryWindowArmor.style.color = defaultColor;
+    inventoryWindowPotion.style.color = defaultColor;
+    inventoryWindowMaterial.style.color = defaultColor;
+    inventoryWindowBook.style.color = defaultColor;
+    inventoryWindowMisc.style.color = defaultColor;
 
     if (filter == null) {
-      inventoryWindowAll.style.color = "red";
+      inventoryWindowAll.style.color = activeColor;
     } else if (filter.match(/sword/)) {
-      inventoryWindowWeapon.style.color = "red";
+      inventoryWindowWeapon.style.color = activeColor;
     } else if (filter.match(/head/)) {
-      inventoryWindowArmor.style.color = "red";
+      inventoryWindowArmor.style.color = activeColor;
     } else if (filter.match(/potion/)) {
-      inventoryWindowPotion.style.color = "red";
+      inventoryWindowPotion.style.color = activeColor;
     } else if (filter.match(/material/)) {
-      inventoryWindowMaterial.style.color = "red";
+      inventoryWindowMaterial.style.color = activeColor;
     } else if (filter.match(/book/)) {
-      inventoryWindowBook.style.color = "red";
+      inventoryWindowBook.style.color = activeColor;
     } else if (filter.match(/misc/)) {
-      inventoryWindowMisc.style.color = "red";
+      inventoryWindowMisc.style.color = activeColor;
     }
 
     inventoryWindowGold.textContent = Game.hero.data.gold + "G";
@@ -227,6 +230,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var manageButton = document.createElement("button");
       manageButton.textContent = "操作";
       manage.appendChild(manageButton);
+
+      manageButton.classList.add("brownButton");
+
       manageButton.addEventListener("click", function () {
         var options = {};
         if (item.data.type.match(/potion/)) {

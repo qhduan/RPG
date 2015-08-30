@@ -178,20 +178,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         index = this.currentFrame;
       }
       var frame = this._frames[index];
-      frame.width = this._tilewidth;
-      frame.height = this._tileheight;
-      frame.centerX = this.centerX;
-      frame.centerY = this.centerY;
-      return frame;
+      var frameObj = new Sprite.Frame(frame.image, frame.x, frame.y,
+        this._tilewidth, this._tileheight);
+      frameObj.parent = this;
+      return frameObj;
     }
 
-    draw (context) {
+    draw (renderer) {
       var frame = this.getFrame(this.currentFrame);
       if (!frame || !frame.image) {
         console.error(frame, this.currentFrame, this);
         throw new Error("Sprite.Sheet.draw invalid frame");
       }
-      this.drawImage(context, frame.image, frame.x, frame.y, frame.width, frame.height);
+      frame.draw(renderer);
     }
 
   };

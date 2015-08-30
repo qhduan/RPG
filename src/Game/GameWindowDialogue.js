@@ -30,8 +30,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <table><tbody><tr><td>
           <div id="dialogueWindowContent" style=""></div>
         </td></tr></tbody></table>
-        <button id="dialogueWindowNext" style="display: block;">继续</button>
-        <button id="dialogueWindowClose" style="display: none;">结束</button>
+        <button id="dialogueWindowNext" style="display: block;" class="brownButton">继续</button>
+        <button id="dialogueWindowClose" style="display: none;" class="brownButton">结束</button>
       </div>
     </div>
   `);
@@ -85,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
   dialogueWindowNext.addEventListener("click", function () {
-    Game.dialogueNext();
+    DialogueNext();
   });
 
   dialogueWindowClose.addEventListener("click", function () {
@@ -100,11 +100,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     dialogueWindowSpeaker.textContent =  `${name}：`;
     dialogueContent = content;
     dialogueIndex = 0;
-    Game.dialogueNext();
+    DialogueNext();
     Game.windows.dialogue.show();
   };
 
-  Game.dialogueNext = function () {
+  function DialogueNext () {
     dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
     dialogueIndex++;
     if (dialogueIndex >= dialogueContent.length) {

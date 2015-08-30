@@ -171,21 +171,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           index = this.currentFrame;
         }
         var frame = this._frames[index];
-        frame.width = this._tilewidth;
-        frame.height = this._tileheight;
-        frame.centerX = this.centerX;
-        frame.centerY = this.centerY;
-        return frame;
+        var frameObj = new Sprite.Frame(frame.image, frame.x, frame.y, this._tilewidth, this._tileheight);
+        frameObj.parent = this;
+        return frameObj;
       }
     }, {
       key: "draw",
-      value: function draw(context) {
+      value: function draw(renderer) {
         var frame = this.getFrame(this.currentFrame);
         if (!frame || !frame.image) {
           console.error(frame, this.currentFrame, this);
           throw new Error("Sprite.Sheet.draw invalid frame");
         }
-        this.drawImage(context, frame.image, frame.x, frame.y, frame.width, frame.height);
+        frame.draw(renderer);
       }
     }, {
       key: "paused",
@@ -218,4 +216,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   })(Sprite.Display);
 })(Sprite);
 /// class Sprite.Sheet
-//# sourceMappingURL=SpriteSheet.js.map

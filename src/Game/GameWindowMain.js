@@ -26,11 +26,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html(`
     <div>
       <h1>维加世界</h1>
-      <button id="mainWindowContinue">继续旅程</button>
+      <button id="mainWindowContinue" class="brownButton">继续旅程</button>
       <br>
-      <button id="mainWindowNew">新的旅程</button>
+      <button id="mainWindowNew" class="brownButton">新的旅程</button>
       <br>
-      <button id="mainWindowLoad">读取进度</button>
+      <button id="mainWindowLoad" class="brownButton">读取进度</button>
       <br>
     </div>
   `);
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.css(`
     #mainWindow {
       text-align: center;
-      background-color: green;
+      background-image: url("image/main.jpeg");
     }
 
     #mainWindow h1 {

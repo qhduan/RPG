@@ -33,22 +33,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.loadArea = function (id, callback) {
 
     var preloadItems = ["bag", "gold"];
-    var itemLoader = new Sprite.Loader();
-    preloadItems.forEach(function (element) {
-      itemLoader.add("/item/" + element + ".json");
+    preloadItems = preloadItems.filter(function (element) {
+      if (Game.items && Game.items[element]) {
+        return false;
+      }
+      return true;
     });
-    itemLoader.start();
-    itemLoader.on("complete", function (event) {
-      preloadItems.forEach(function (element, index) {
-        var itemData = event.data[index];
-        Game.items[element] = new Game.Item(itemData);
+
+    if (preloadItems.length > 0) {
+      var itemLoader = new Sprite.Loader();
+      preloadItems.forEach(function (element) {
+        itemLoader.add("/item/" + element + ".json");
       });
-    });
+      itemLoader.start();
+      itemLoader.on("complete", function (event) {
+        preloadItems.forEach(function (element, index) {
+          var itemData = event.data[index];
+          Game.items[element] = new Game.Item(itemData);
+        });
+      });
+    }
 
     var loader = new Sprite.Loader();
     loader.add("map/" + id + ".json", "map/" + id + "_extra.json");
     loader.start();
+
     loader.on("complete", function (event) {
+
       var mapData = event.data[0];
       var mapExtra = event.data[1];
 
@@ -58,6 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       var mapObj = new Game.Map(mapData);
       mapObj.on("complete", function () {
+
         var area = {
           actors: {},
           bags: {},
@@ -77,6 +89,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (mapExtra.actors) {
           mapExtra.actors.forEach(function (element) {
+            completeCount--;
             var actorLoader = new Sprite.Loader();
             actorLoader.add("actor/" + element.id + ".json");
             actorLoader.start();
@@ -133,4 +146,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   };
 })();
-//# sourceMappingURL=GameArea.js.map

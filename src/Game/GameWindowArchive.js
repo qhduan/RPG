@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html(`
     <div class="window-box">
       <div id="archiveWindowItemBar">
-        <button id="archiveWindowSave">保存</button>
-        <button id="archiveWindowClose">关闭</button>
+        <button id="archiveWindowClose" class="brownButton">关闭</button>
+        <button id="archiveWindowSave" class="brownButton">保存</button>
       </div>
       <div id="archiveWindowTable"></div>
     </div>
@@ -52,13 +52,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       border-radius: 5px;
     }
 
-    #archiveWindowClose {
+    #archiveWindowItemBar button {
       width: 100px;
       height: 30px;
-      float: right;
       font-size: 16px;
       display: block;
       margin-bottom: 5px;
+    }
+
+    #archiveWindowClose {
+      float: right;
     }
   `);
 
@@ -89,6 +92,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   win.register("open", function () {
+
+    if (Game.hero && Game.windows.main.showing() == false) {
+      archiveWindowSave.style.visibility = "visible";
+    } else {
+      archiveWindowSave.style.visibility = "hidden";
+    }
 
     var table = archiveWindowTable;
 

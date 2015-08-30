@@ -23,6 +23,86 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.AI = class AI {
 
+    static hint () {
+      var heroPosition = Game.area.map.tile(Game.hero.x, Game.hero.y);
+      var heroDirection = Game.hero.sprite.currentAnimation.match(/up|left|down|right/)[0];
+      var heroFace = Sprite.copy(heroPosition);
+
+      switch (heroDirection) {
+        case "up":
+          heroFace.y -= 1;
+          break;
+        case "down":
+          heroFace.y += 1;
+          break;
+        case "left":
+          heroFace.x -= 1;
+          break;
+        case "right":
+          heroFace.x += 1;
+          break;
+      }
+
+      var hint = null;
+
+      function FindUnderHero (element) {
+        if (hint != null || element == Game.hero) {
+          return;
+        }
+        var t = Game.area.map.tile(element.x, element.y);
+        if (t.x == heroPosition.x && t.y == heroPosition.y) {
+          hint = element;
+        }
+      }
+
+      function FindFaceHero (element) {
+        if (hint != null || element == Game.hero) {
+          return;
+        }
+        var t = Game.area.map.tile(element.x, element.y);
+        if (t.x == heroFace.x && t.y == heroFace.y) {
+          hint = element;
+        }
+      }
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindUnderHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindUnderHero);
+      // 最近的门
+      Game.area.doors.forEach(FindUnderHero);
+      // 最近的箱子
+      Game.area.chests.forEach(FindUnderHero);
+      // 最近的提示物（例如牌子）
+      Game.area.hints.forEach(FindUnderHero);
+
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindFaceHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindFaceHero);
+      // 最近的门
+      Game.area.doors.forEach(FindFaceHero);
+      // 最近的箱子
+      Game.area.chests.forEach(FindFaceHero);
+      // 最近的提示物（例如牌子）
+      Game.area.hints.forEach(FindFaceHero);
+
+
+      if (Game.hintObject && Game.hintObject != hint) {
+        Game.hintObject = null;
+        Game.windows.interface.use.style.visibility = "hidden";
+      }
+
+      if (hint != null) {
+        Game.hintObject = hint;
+        Game.windows.interface.use.style.visibility = "visible";
+        if (hint.type == "door") {
+          Game.popup(hint, hint.description, 0, -30);
+        }
+      }
+    }
+
     static actor () {
       if (Game.area && Game.area.actors) {
         Sprite.each(Game.area.actors, function (actor) {
@@ -94,6 +174,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       setInterval(function () {
         Game.AI.actor();
       }, 500);
+
+      var skip = 0;
+      Sprite.Ticker.on("tick", function () {
+        if (Game.area && Game.area.actors && Game.area.bags) {
+          skip++;
+          if (skip % 5 == 0)
+            Game.AI.hint();
+        }
+      });
     }
 
   };

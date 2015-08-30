@@ -24,47 +24,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 (function (Sprite) {
 
-  Sprite.Bitmap = class Bitmap extends Sprite.Display {
+  Sprite.Frame = class Frame extends Sprite.Display {
 
-    constructor (image) {
+    constructor (image, sx, sy, width, height) {
       super();
       this._image = image;
-      this._width = image.width;
-      this._height = image.height;
+      this._sx = sx;
+      this._sy = sy;
+      this.width = width;
+      this.height = height;
+    }
+
+    get image () {
+      return this._image;
+    }
+
+    set image (value) {
+      throw new Error("Sprite.Frame.image readonly");
+    }
+
+    get sx () {
+      return this._sx;
+    }
+
+    set sx (value) {
+      throw new Error("Sprite.Frame.sx readonly");
+    }
+
+    get sy () {
+      return this._sy;
+    }
+
+    set sy (value) {
+      throw new Error("Sprite.Frame.sy readonly");
     }
 
     clone () {
-      var bitmap = new Bitmap(this._image);
-      bitmap.x = this.x;
-      bitmap.y = this.y;
-      bitmap.centerX = this.centerX;
-      bitmap.centerY = this.centerY;
-      bitmap.scaleX = this.scaleX;
-      bitmap.scaleY = this.scaleY;
-      return bitmap;
+      var frame = new Frame(this._image,
+        this._sx, this._sy, this.width, this.height, this.centerX, this.centerY);
+      frame.x = this.x;
+      frame.y = this.y;
+      return frame;
     }
 
-    get width () {
-      return this._width;
-    }
-
-    set width (value) {
-      this._width = value;
-    }
-
-    get height () {
-      return this._height;
-    }
-
-    set height (value) {
-      this._height = value;
-    }
-
-    draw (context) {
-      if (this._image && this._image.width > 0 && this._image.height > 0) {
-        this.drawImage(context, this._image,
-          0, 0, this._width, this._height);
-      }
+    draw (renderer) {
+      this.drawImage(renderer, this.image, this.sx, this.sy, this.width, this.height);
     }
 
   };

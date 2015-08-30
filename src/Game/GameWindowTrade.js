@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html(`
     <div class="window-box">
       <div id="tradeWindowItemBar">
-        <button id="tradeWindowClose">关闭</button>
-        <button id="tradeWindowAll">全部</button>
-        <button id="tradeWindowWeapon">武器</button>
-        <button id="tradeWindowArmor">护甲</button>
-        <button id="tradeWindowPotion">药水</button>
-        <button id="tradeWindowMaterial">材料</button>
-        <button id="tradeWindowBook">书籍</button>
-        <button id="tradeWindowMisc">其他</button>
+        <button id="tradeWindowClose" class="brownButton">关闭</button>
+        <button id="tradeWindowAll" class="brownButton">全部</button>
+        <button id="tradeWindowWeapon" class="brownButton">武器</button>
+        <button id="tradeWindowArmor" class="brownButton">护甲</button>
+        <button id="tradeWindowPotion" class="brownButton">药水</button>
+        <button id="tradeWindowMaterial" class="brownButton">材料</button>
+        <button id="tradeWindowBook" class="brownButton">书籍</button>
+        <button id="tradeWindowMisc" class="brownButton">其他</button>
       </div>
 
       <span id="tradeWindowGold"></span>
@@ -162,28 +162,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     tradeWindowGold.textContent = Game.hero.data.gold + "G";
 
-    tradeWindowAll.style.color = "black";
-    tradeWindowWeapon.style.color = "black";
-    tradeWindowArmor.style.color = "black";
-    tradeWindowPotion.style.color = "black";
-    tradeWindowMaterial.style.color = "black";
-    tradeWindowBook.style.color = "black";
-    tradeWindowMisc.style.color = "black";
+    var defaultColor = "white";
+    var activeColor = "yellow";
+
+    tradeWindowAll.style.color = defaultColor;
+    tradeWindowWeapon.style.color = defaultColor;
+    tradeWindowArmor.style.color = defaultColor;
+    tradeWindowPotion.style.color = defaultColor;
+    tradeWindowMaterial.style.color = defaultColor;
+    tradeWindowBook.style.color = defaultColor;
+    tradeWindowMisc.style.color = defaultColor;
 
     if (filter == null) {
-      tradeWindowAll.style.color = "red";
+      tradeWindowAll.style.color = activeColor;
     } else if (filter.match(/sword/)) {
-      tradeWindowWeapon.style.color = "red";
+      tradeWindowWeapon.style.color = activeColor;
     } else if (filter.match(/head/)) {
-      tradeWindowArmor.style.color = "red";
+      tradeWindowArmor.style.color = activeColor;
     } else if (filter.match(/potion/)) {
-      tradeWindowPotion.style.color = "red";
+      tradeWindowPotion.style.color = activeColor;
     } else if (filter.match(/material/)) {
-      tradeWindowMaterial.style.color = "red";
+      tradeWindowMaterial.style.color = activeColor;
     } else if (filter.match(/book/)) {
-      tradeWindowBook.style.color = "red";
+      tradeWindowBook.style.color = activeColor;
     } else if (filter.match(/misc/)) {
-      tradeWindowMisc.style.color = "red";
+      tradeWindowMisc.style.color = activeColor;
     }
 
     var tradeTable = document.getElementById("tradeWindowTable");
@@ -224,6 +227,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       buyButton.textContent = "买入";
       buy.appendChild(buyButton);
       line.appendChild(buy);
+
+      buyButton.classList.add("brownButton");
 
       if (item.data.value > Game.hero.data.gold) {
         buyButton.disabled = true;
@@ -274,6 +279,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       sellButton.textContent = "卖出";
       sell.appendChild(sellButton);
       line.appendChild(sell);
+
+      sellButton.classList.add("brownButton");
 
       sellButton.addEventListener("click", function () {
         if (itemCount == 1) {

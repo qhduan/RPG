@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var win = Game.windows.choice = new Game.Window("choiceWindow");
 
   win.html(`
-    <button id="choiceWindowNo">取消</button>
+    <button id="choiceWindowNo" class="brownButton">取消</button>
     <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
       <div style="height: 420px; overflow-y: auto; text-align: center;">
         <table id="choiceWindowTable" style="width: 100%; height: 380px;">
@@ -82,6 +82,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       button.textContent = `${buttonArray.length+1}. ${key}`;
       choiceWindowButtonContainer.appendChild(button);
       buttonArray.push(button);
+
+      button.classList.add("brownButton");
 
       button.addEventListener("click", function () {
         if (Game.windows.choice.showing()) {

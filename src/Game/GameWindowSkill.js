@@ -26,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html(`
     <div class="window-box">
       <div id="skillWindowItemBar">
-        <button id="skillWindowClose">关闭</button>
+        <button id="skillWindowClose" class="brownButton">关闭</button>
       </div>
       <table border="1" cellspacing="0" cellpadding="0">
         <thead>
@@ -117,6 +117,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           var manageButton = document.createElement("button");
           manageButton.textContent = "操作";
           manage.appendChild(manageButton);
+
+          manageButton.classList.add("brownButton");
+
           manageButton.addEventListener("click", function () {
             Game.choice({
               "快捷栏": "shortcut",

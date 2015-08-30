@@ -1,6 +1,7 @@
 {
   "name": "斯塔特镇武器屋",
   "bgm": "Dance",
+  "type": "indoor",
   "entry": {
     "x": 34,
     "y": 31

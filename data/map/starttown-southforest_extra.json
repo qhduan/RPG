@@ -1,6 +1,7 @@
 {
   "name": "斯塔特南部森林",
   "bgm": "Dance",
+  "type": "outdoor",
   "entry": {
     "x": 14,
     "y": 2

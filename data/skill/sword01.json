@@ -19,7 +19,7 @@
       "speed": 20,
       "next": "",
       "x": 0,
-      "y": 10,
+      "y": 5,
       "actor": "slashdown"
     },
     "attackleft": {
@@ -27,7 +27,7 @@
       "speed": 20,
       "next": "",
       "x": -10,
-      "y": -10,
+      "y": -5,
       "actor": "slashleft"
     },
     "attackright": {
@@ -35,7 +35,7 @@
       "speed": 20,
       "next": "",
       "x": 10,
-      "y": -10,
+      "y": -5,
       "actor": "slashright"
     },
     "attackup": {

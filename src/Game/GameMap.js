@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       loader.add(imageUrls);
       loader.start();
       loader.on("complete", (event) => {
-        //console.log("mapData", this.data);
+
         this.sheet = new Sprite.Sheet({
           images: event.data,
           width: this.data.tilewidth,
@@ -72,16 +72,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 var position = x + y * layer.width;
                 var picture = layer.data[position] - 1;
                 if (picture >= 0) {
-                  var spriteClone = this.sheet.clone();
-                  spriteClone.x = x * this.data.tilewidth;
-                  spriteClone.y = y * this.data.tileheight;
-                  spriteClone.play(picture);
+                  var frame = this.sheet.getFrame(picture);
+                  frame.x = x * this.data.tilewidth;
+                  frame.y = y * this.data.tileheight;
 
                   if (layer.properties && layer.properties.blocked) {
-                    this.blockedMap[y][x] = spriteClone;
+                    this.blockedMap[y][x] = frame;
                   }
 
-                  this.container.appendChild(spriteClone);
+                  this.container.appendChild(frame);
                 }
               }
             }

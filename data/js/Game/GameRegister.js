@@ -86,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       document.getElementById("loading").innerHTML = "正在载入预览";
       Game.drawHero(heroCustom, function (img) {
-        context.drawImage(img, 0, -128, img.width, img.height);
+        context.drawImage(img, 0, 0, img.width, img.height);
         document.getElementById("loading").innerHTML = "预览";
       });
     }
@@ -272,4 +272,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 })();
-//# sourceMappingURL=GameRegister.js.map

@@ -1,6 +1,7 @@
 {
   "name": "斯塔特镇",
   "bgm": "Dance",
+  "type": "outdoor",
   "entry": {
     "x": 34,
     "y": 31

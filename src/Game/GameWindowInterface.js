@@ -36,10 +36,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 
     <div style="position: absolute; bottom: 10px; left: 20px; width: 100px; height: 60px;">
-      <div style="width: 100px; height: 20px; margin: 5px 0; border: 1px solid black; background-color: white;">
+      <div style="width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;">
         <div id="interfaceWindowHP" style="width: 100%; height: 100%; background-color: green;"></div>
       </div>
-      <div style="width: 100px; height: 20px; margin: 5px 0; border: 1px solid black; background-color: white;">
+      <div style="width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;">
         <div id="interfaceWindowSP" style="width: 100%; height: 100%; background-color: blue;"></div>
       </div>
     </div>
@@ -181,21 +181,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.use.addEventListener("click", function (event) {
       if (Game.hintObject) {
         if (Game.hintObject.type && Game.hintObject.type == "door") {
-          var destx = Game.hintObject.destx;
-          var desty = Game.hintObject.desty;
-          Game.clearStage();
-          var newArea = Game.hintObject.dest;
-          Game.loadArea(newArea, function (area) {
-            Game.area = area;
-            area.map.draw(Game.layers.mapLayer);
-            Game.hero.data.area = newArea;
-            Game.hero.draw(Game.layers.actorLayer);
-            area.actors["hero"] = Game.hero;
-            Game.hero.x = destx;
-            Game.hero.y = desty;
-            Game.windows.interface.show();
-            Game.stage.update();
-          });
+
+          Game.windows.loading.execute("begin");
+
+          setTimeout(function () {
+            var destx = Game.hintObject.destx;
+            var desty = Game.hintObject.desty;
+            Game.clearStage();
+            var newArea = Game.hintObject.dest;
+
+            Game.loadArea(newArea, function (area) {
+
+              Game.area = area;
+              area.map.draw(Game.layers.mapLayer);
+
+              Game.hero.data.area = newArea;
+              Game.hero.draw(Game.layers.actorLayer);
+              area.actors["hero"] = Game.hero;
+              Game.hero.x = destx;
+              Game.hero.y = desty;
+              Game.windows.interface.show();
+
+              Game.windows.loading.execute("end");
+            });
+          }, 100);
 
         } else if (Game.hintObject.type && Game.hintObject.type == "chest") {
         } else if (Game.hintObject.type && Game.hintObject.type == "hint") {
@@ -251,25 +260,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       while (minute.length < 2) minute = "0"+minute;
       datetime.textContent = `帝国历${year}年${month}月${day}日 ${hour}:${minute}`;
 
-      if (hour >= 20 || hour < 4) { // 20:00 to 4:00
-        Game.stage.filter("brightness", -0.20);
-      } else if (hour >= 4 && hour < 6) {
-        Game.stage.filter("brightness", -0.1);
-      } else if (hour >= 6 && hour < 8) {
-        Game.stage.filter("brightness", 0.0);
-      } else if (hour >= 8 && hour < 10) {
-        Game.stage.filter("brightness", 0.05);
-      } else if (hour >= 10 && hour < 12) {
-        Game.stage.filter("brightness", 0.1);
-      } else if (hour >= 12 && hour < 14) {
-        Game.stage.filter("brightness", 0.05);
-      } else if (hour >= 14 && hour < 16) {
-        Game.stage.filter("brightness", 0.0);
-      } else if (hour >= 16 && hour < 18) {
-        Game.stage.filter("brightness", -0.1);
-      } else if (hour >= 18 && hour < 20) {
-        Game.stage.filter("brightness", -0.15);
+      if (Game.area && Game.area.map && Game.area.map.data.type == "outdoor") {
+        if (hour >= 20 || hour < 4) { // 20:00 to 4:00
+          Game.stage.filter("brightness", -0.15);
+        } else if (hour >= 4 && hour < 6) {
+          Game.stage.filter("brightness", -0.1);
+        } else if (hour >= 6 && hour < 8) {
+          Game.stage.filter("brightness", -0.05);
+        } else if (hour >= 8 && hour < 10) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 10 && hour < 12) {
+          Game.stage.filter("brightness", 0.05);
+        } else if (hour >= 12 && hour < 14) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 14 && hour < 16) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 16 && hour < 18) {
+          Game.stage.filter("brightness", -0.05);
+        } else if (hour >= 18 && hour < 20) {
+          Game.stage.filter("brightness", -0.1);
+        }
       }
+
     }
   });
 

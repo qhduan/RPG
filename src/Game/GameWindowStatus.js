@@ -26,8 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html(`
     <div class="window-box">
       <div id="statusWindowItemBar">
-        <button id="statusWindowClose">关闭</button>
-        <button id="statusWindowInventory">物品</button>
+        <button id="statusWindowClose" class="brownButton">关闭</button>
+        <button id="statusWindowInventory" class="brownButton">物品</button>
       </div>
       <table border="0" cellspacing="0" cellpadding="0">
         <tr>

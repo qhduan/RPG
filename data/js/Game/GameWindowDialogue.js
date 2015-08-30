@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows.dialogue = new Game.Window("dialogueWindow");
 
-  win.html("\n    <div style=\"width: 100%; height: 100%;\">\n      <div style=\"position: absolute; left: 10%; top: 35%; width: 80%; height: 30%; background-color: rgba(100, 100, 100, 0.8);\">\n        <span id=\"dialogueWindowSpeaker\"></span>\n        <table><tbody><tr><td>\n          <div id=\"dialogueWindowContent\" style=\"\"></div>\n        </td></tr></tbody></table>\n        <button id=\"dialogueWindowNext\" style=\"display: block;\">继续</button>\n        <button id=\"dialogueWindowClose\" style=\"display: none;\">结束</button>\n      </div>\n    </div>\n  ");
+  win.html("\n    <div style=\"width: 100%; height: 100%;\">\n      <div style=\"position: absolute; left: 10%; top: 35%; width: 80%; height: 30%; background-color: rgba(100, 100, 100, 0.8);\">\n        <span id=\"dialogueWindowSpeaker\"></span>\n        <table><tbody><tr><td>\n          <div id=\"dialogueWindowContent\" style=\"\"></div>\n        </td></tr></tbody></table>\n        <button id=\"dialogueWindowNext\" style=\"display: block;\" class=\"brownButton\">继续</button>\n        <button id=\"dialogueWindowClose\" style=\"display: none;\" class=\"brownButton\">结束</button>\n      </div>\n    </div>\n  ");
 
   win.css("\n    #dialogueWindow table, dialogueWindow.tbody, dialogueWindow tr, dialogueWindow td {\n      margin: 0;\n      padding: 0;\n      width: 100%;\n      height: 100%;\n      text-align: center;\n    }\n\n    #dialogueWindowSpeaker {\n      position: absolute;\n      left: 5px;\n      top: 5px;\n    }\n\n    #dialogueWindow button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      position: absolute;\n    }\n\n    #dialogueWindowNext {\n      bottom: 5px;\n      right: 10px;\n    }\n\n    #dialogueWindowClose {\n      bottom: 5px;\n      right: 10px;\n    }\n\n    #dialogueContent {\n      font-size: 30px;\n      font-weight: bold;\n      color: white;\n      text-align: center;\n    }\n  ");
 
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
   dialogueWindowNext.addEventListener("click", function () {
-    Game.dialogueNext();
+    DialogueNext();
   });
 
   dialogueWindowClose.addEventListener("click", function () {
@@ -53,11 +53,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     dialogueWindowSpeaker.textContent = name + "：";
     dialogueContent = content;
     dialogueIndex = 0;
-    Game.dialogueNext();
+    DialogueNext();
     Game.windows.dialogue.show();
   };
 
-  Game.dialogueNext = function () {
+  function DialogueNext() {
     dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
     dialogueIndex++;
     if (dialogueIndex >= dialogueContent.length) {
@@ -76,4 +76,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
-//# sourceMappingURL=GameWindowDialogue.js.map
