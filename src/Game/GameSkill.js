@@ -101,57 +101,98 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Game.Skill.type readonly");
     }
 
-    fire (actor, animation, callback) {
+    can (attacker) {
+      var Type2Text = {
+        sword: "剑",
+        spear: "枪",
+        bow: "弓"
+      };
+
+      if (this.data.needweapontype && attacker == Game.hero) {
+        if (Game.hero.data.equipment.weapon) {
+          var weapon = Game.items[Game.hero.data.equipment.weapon];
+          if (weapon.data.type != this.data.needweapontype) {
+            Game.popup(Game.hero.sprite, `这个技能需要装备 '${Type2Text[this.data.needweapontype]}' 类型的武器`, 0, -40);
+            return false;
+          }
+        } else {
+          Game.popup(Game.hero.sprite, "这个技能需要装备武器", 0, -40);
+          return false;
+        }
+      }
+
+      return true;
+    }
+
+    fire (attacker, direction, callback) {
 
       if (this.sound) {
         this.sound.load();
         this.sound.play();
       }
 
+      var animation = "attack" + direction;
       var sprite = this.sprite.clone();
 
       // 矫正武器效果位置
-      //sprite.x = parseInt(actor.sprite.x - parseInt(this.data.tilewidth / 2));
-      //sprite.y = parseInt(actor.sprite.y - parseInt(this.data.tileheight / 2));
-      sprite.x = actor.x;
-      sprite.y = actor.y;
+      sprite.x = attacker.sprite.x;
+      sprite.y = attacker.sprite.y;
 
-      if (this.data.animations[animation].x) {
-        sprite.x += this.data.animations[animation].x;
+      switch (direction) {
+        case "left":
+          sprite.x -= 32;
+          break;
+        case "up":
+          sprite.y -= 32;
+          break;
+        case "right":
+          sprite.x += 32;
+          break;
+        case "down":
+          sprite.y += 32;
+          break;
       }
 
-      if (this.data.animations[animation].y) {
-        sprite.y += this.data.animations[animation].y;
+      // 矫正武器效果中心
+      if (this.data.animations[animation].centerX) {
+        sprite.centerX = this.data.animations[animation].centerX;
+      }
+      if (this.data.animations[animation].centerY) {
+        sprite.centerY = this.data.animations[animation].centerY;
       }
 
+
+      // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的举例
+      var distance = 0;
       // 被命中的actor列表
-      var hitted= {};
+      var hitted = [];
       var CheckHit = () => {
-
+        // 技能所在当前方格
+        var l1 = Game.area.map.tile(sprite);
+        if (this.data.distance > 0
+          && (l1.x < 0
+            || l1.y < 0
+            || l1.x >= Game.area.map.data.width
+            || l1.y >= Game.area.map.data.height
+          )
+        ) {
+          distance = this.data.distance;
+        }
         // 碰撞检测
-        if (actor.data.type == "hero") {
-          for (var key in Game.area.actors) {
-            if (Game.area.actors[key].id == actor.id) continue;
-            if (Game.area.actors[key].data.type != "monster") continue;
-            var c = Game.skillCollision(sprite, Game.area.actors[key].sprite);
-            if (c) {
-              hitted[key] = true;
+        for (let actor of Game.area.actors) {
+          if (actor != attacker && hitted.length <= 0) {
+            if (actor.hitTest(l1.x, l1.y)) {
+              hitted.push(actor);
             }
-          }
-        } else {
-          var c = Game.skillCollision(sprite, Game.hero.sprite);
-          if (c) {
-            hitted["hero"] = true;
           }
         }
       };
 
-      // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的举例
-      var distance = 0;
-
       var listener = Sprite.Ticker.on("tick", () => {
 
-        distance += this.data.flyspeed;
+        if (this.data.distance > 0) {
+          distance += 4;
+        }
 
         switch (animation) {
           case "attackdown":
@@ -171,7 +212,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         CheckHit();
 
         // 如果击中了一个敌人（单体伤害）
-        if (Object.keys(hitted).length > 0) {
+        if (hitted.length > 0) {
           Finish();
         }
 
@@ -191,11 +232,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var Finish = () => {
         Sprite.Ticker.off("tick", listener);
 
-        if (Object.keys(hitted).length > 0 && this.data.animations["hitted"]) {
-          var a = Object.keys(hitted)[0];
-          a = Game.area.actors[a];
-          sprite.x = a.sprite.x;
-          sprite.y = a.sprite.y;
+        if (hitted.length > 0 && this.data.animations["hitted"]) {
+          var actor = hitted[0];
+          sprite.x = actor.sprite.x;
+          sprite.y = actor.sprite.y;
           sprite.play("hitted");
           if (sprite.paused == true) {
             Game.layers.skillLayer.removeChild(sprite);
@@ -215,22 +255,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
 
-        if (callback) callback(Object.keys(hitted));
+        if (typeof callback == "function") {
+          callback(hitted);
+        }
       }
 
       Game.layers.skillLayer.appendChild(sprite);
       sprite.play(animation);
 
       if ( this.data.animations[animation].actor
-        && actor.data.animations[this.data.animations[animation].actor] ) {
-        actor.play(this.data.animations[animation].actor, 3);
+        && attacker.data.animations[this.data.animations[animation].actor] ) {
+        attacker.play(this.data.animations[animation].actor, 3);
       } else {
-        var direction = this.data.animations[animation].actor.match(/left|right|up|down/);
-        if (direction) {
-          direction = direction[0];
-          actor.play("face" + direction, 0);
-          actor.play("attack" + direction, 3);
-        }
+        attacker.play("face" + direction, 0);
+        attacker.play("attack" + direction, 3);
       }
     }
 

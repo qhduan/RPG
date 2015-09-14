@@ -28,17 +28,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <button id="sysmenuWindowClose" class="brownButton">关闭窗口</button>
 
       <table><tbody><tr><td>
-        <button id="sysmenuWindowInventory" class="brownButton">背包物品</button>
-        <button id="sysmenuWindowStatus" class="brownButton">状态装备</button>
+        <button id="sysmenuWindowInventory" class="brownButton">1、背包物品</button>
+        <button id="sysmenuWindowStatus" class="brownButton">2、状态装备</button>
         <br>
-        <button id="sysmenuWindowSkill" class="brownButton">查看技能</button>
-        <button id="sysmenuWindowQuest" class="brownButton">任务列表</button>
+        <button id="sysmenuWindowSkill" class="brownButton">3、查看技能</button>
+        <button id="sysmenuWindowQuest" class="brownButton">4、任务列表</button>
         <br>
-        <button id="sysmenuWindowMap" class="brownButton">迷你地图</button>
-        <button id="sysmenuWindowSetting" class="brownButton">游戏设置</button>
+        <button id="sysmenuWindowMap" class="brownButton">5、迷你地图</button>
+        <button id="sysmenuWindowSetting" class="brownButton">6、游戏设置</button>
         <br>
-        <button id="sysmenuWindowArchive" class="brownButton">存档管理</button>
-        <button id="sysmenuWindowExit" class="brownButton">退出游戏</button>
+        <button id="sysmenuWindowArchive" class="brownButton">7、存档管理</button>
+        <button id="sysmenuWindowExit" class="brownButton">8、退出游戏</button>
         <br>
       </td></tr></tbody></table>
     </div>
@@ -75,18 +75,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var sysmenuWindowInventory = document.querySelector("button#sysmenuWindowInventory");
   var sysmenuWindowStatus = document.querySelector("button#sysmenuWindowStatus");
+
   var sysmenuWindowSkill = document.querySelector("button#sysmenuWindowSkill");
   var sysmenuWindowQuest = document.querySelector("button#sysmenuWindowQuest");
+
   var sysmenuWindowMap = document.querySelector("button#sysmenuWindowMap");
   var sysmenuWindowSetting = document.querySelector("button#sysmenuWindowSetting");
+
   var sysmenuWindowArchive = document.querySelector("button#sysmenuWindowArchive");
   var sysmenuWindowExit = document.querySelector("button#sysmenuWindowExit");
+
   var sysmenuWindowClose = document.querySelector("button#sysmenuWindowClose");
 
+  win.whenUp(["esc"], function (key) {
+    sysmenuWindowClose.click();
+  });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.sysmenu.showing()) {
-      sysmenuWindowClose.click();
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
+    switch (key) {
+      case "1":
+        sysmenuWindowInventory.click();
+        break;
+      case "2":
+        sysmenuWindowStatus.click();
+        break;
+      case "3":
+        sysmenuWindowSkill.click();
+        break;
+      case "4":
+        sysmenuWindowQuest.click();
+        break;
+      case "5":
+        sysmenuWindowMap.click();
+        break;
+      case "6":
+        sysmenuWindowSetting.click();
+        break;
+      case "7":
+        sysmenuWindowArchive.click();
+        break;
+      case "8":
+        sysmenuWindowExit.click();
+        break;
     }
   });
 

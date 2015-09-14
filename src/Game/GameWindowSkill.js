@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.skill.showing()) {
+    if (Game.windows.skill.showing) {
       skillWindowClose.click();
     }
   });
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       tableBody.removeChild(tableBody.lastChild);
     }
 
-    for (var i = 0; i < Game.hero.data.skillcount; i++) {
+    for (let i = 0; i < Game.hero.data.skillcount; i++) {
       (function (index) {
         var line = document.createElement("tr");
 

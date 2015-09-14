@@ -18,11 +18,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+/**
+ * @fileoverview Define the Sprite in window, declare the Sprite.Base
+ * @author mail@qhduan.com (QH Duan)
+ */
+
 "use strict";
 
 (function () {
   "use strict";
 
   var Sprite = window.Sprite = {};
+
+  Sprite.Namespace = function () {
+    var privateProperties = new WeakMap();
+    return function (object) {
+      if (privateProperties.has(object) == false) {
+        privateProperties.set(object, {});
+      }
+      return privateProperties.get(object);
+    };
+  };
 })();
-//# sourceMappingURL=Sprite.js.map

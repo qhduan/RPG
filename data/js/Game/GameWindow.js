@@ -38,7 +38,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.Window = (function (_Sprite$Event) {
     _inherits(GameWindow, _Sprite$Event);
 
-    _createClass(GameWindow, null, [{
+    _createClass(GameWindow, [{
+      key: "whenPress",
+      value: function whenPress(keys, callback) {
+        var _this = this;
+
+        Sprite.Input.whenPress(keys, function (key) {
+          if (_this.atop) {
+            callback(key);
+          }
+        });
+      }
+    }, {
+      key: "whenUp",
+      value: function whenUp(keys, callback) {
+        var _this2 = this;
+
+        Sprite.Input.whenUp(keys, function (key) {
+          if (_this2.atop) {
+            callback(key);
+          }
+        });
+      }
+    }, {
+      key: "whenDown",
+      value: function whenDown(keys, callback) {
+        var _this3 = this;
+
+        Sprite.Input.whenDown(keys, function (key) {
+          if (_this3.atop) {
+            callback(key);
+          }
+        });
+      }
+    }], [{
       key: "clear",
       value: function clear() {
         var nodes = document.getElementsByClassName("GameWindowClass");
@@ -49,13 +82,62 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     function GameWindow(id) {
+      var _this4 = this;
+
       _classCallCheck(this, GameWindow);
 
       _get(Object.getPrototypeOf(GameWindow.prototype), "constructor", this).call(this);
       this._id = id;
-      this._html = null;
       this._css = null;
+      this._index = -1;
       this._exec = {};
+
+      this._html = document.createElement("div");
+      this._html.id = this._id;
+      this._html.classList.add("GameWindowClass");
+      this._html.style.display = "none";
+      document.body.appendChild(this._html);
+
+      this._html.addEventListener("mousedown", function (event) {
+        var x = event.clientX;
+        var y = event.clientY;
+
+        var left = null;
+        var top = null;
+        var scale = null;
+
+        if (_this4._html.style.left) {
+          var t = _this4._html.style.left.match(/(\d+)px/);
+          if (t) {
+            left = parseInt(t[1]);
+          }
+        }
+
+        if (_this4._html.style.top) {
+          var t = _this4._html.style.top.match(/(\d+)px/);
+          if (t) {
+            top = parseInt(t[1]);
+          }
+        }
+
+        if (_this4._html.style.transform) {
+          var t = _this4._html.style.transform.match(/scale\((\d+), (\d+)\)/);
+          if (t) {
+            scale = parseFloat(t[1]);
+          }
+        }
+
+        if (typeof left == "number" && typeof top == "number" && typeof scale == "number") {
+          x -= left;
+          y -= top;
+          x /= scale;
+          y /= scale;
+          _this4.emit("mousedown", false, {
+            x: x,
+            y: y
+          });
+        }
+      });
     }
 
     _createClass(GameWindow, [{
@@ -76,7 +158,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function show() {
         if (this._html) {
           this.emit("beforeShow");
-          this._html.style.zIndex = zIndex;
+          this._index = zIndex;
+          this._html.style.zIndex = this._index;
           this._html.style.display = "block";
           zIndex++;
           this.emit("afterShow");
@@ -87,46 +170,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function hide() {
         if (this._html) {
           this.emit("beforeHide");
+          this._index = -1;
+          this._html.style.zIndex = this._index;
           this._html.style.display = "none";
           this.emit("afterHide");
         }
       }
     }, {
-      key: "showing",
-      value: function showing() {
-        if (this._html && this._html.style.display != "none") {
-          return true;
-        }
-        return false;
-      }
-    }, {
-      key: "only",
-      value: function only() {
-        var nodes = document.getElementsByClassName("GameWindowClass");
-        var showing = 0;
-        for (var i = 0; i < nodes.length; i++) {
-          if (nodes[i].style.display != "none") {
-            showing++;
-          }
-        }
-        if (showing == 1 && this.showing()) {
-          return true;
-        }
-        return false;
-      }
-    }, {
       key: "html",
       value: function html(_html) {
-        if (this._html) {
-          document.body.removeChild(this._html);
-          this._html = null;
-        }
-        this._html = document.createElement("div");
-        this._html.id = this._id;
         this._html.innerHTML = _html;
-        this._html.classList.add("GameWindowClass");
-        this._html.style.display = "none";
-        document.body.appendChild(this._html);
+      }
+    }, {
+      key: "clear",
+      value: function clear() {
+        this._html.innerHTML = "";
+      }
+    }, {
+      key: "appendChild",
+      value: function appendChild(domElement) {
+        this._html.appendChild(domElement);
       }
     }, {
       key: "css",
@@ -141,6 +204,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
 
       // 当窗口大小改变时改变游戏窗口大小
+    }, {
+      key: "showing",
+      get: function get() {
+        if (this._html && this._html.style.display != "none") {
+          return true;
+        }
+        return false;
+      },
+      set: function set(value) {
+        throw new Error("Game.Window.showing readonly");
+      }
+    }, {
+      key: "atop",
+      get: function get() {
+        var nodes = document.getElementsByClassName("GameWindowClass");
+        for (var i = 0; i < nodes.length; i++) {
+          if (nodes[i].style.display != "none" && nodes[i].style.zIndex > this._index) {
+            return false;
+          }
+        }
+        return true;
+      },
+      set: function set(value) {
+        throw new Error("Game.Window.atop readonly");
+      }
     }], [{
       key: "resize",
       value: function resize() {
@@ -178,19 +266,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var elements = document.getElementsByClassName("GameWindowClass");
         for (var i = 0; i < elements.length; i++) {
           elements[i].style.transformOrigin = "0 0 0";
-          // elements[i].style.transform = `scale(${scale}, ${scale})`;
-          elements[i].style.transform = "scale3d(" + scale + ", " + scale + ", 1.0)";
+          elements[i].style.transform = "scale(" + scale + ", " + scale + ")";
           elements[i].style.left = leftMargin + "px";
           elements[i].style.top = topMargin + "px";
-        }
-
-        // 游戏画布拉伸
-        if (Game.stage && Game.stage.canvas) {
-          Game.stage.canvas.style.transformOrigin = "0 0 0";
-          // Game.stage.canvas.style.transform = `scale(${scale}, ${scale})`;
-          Game.stage.canvas.style.transform = "scale3d(" + scale + ", " + scale + ", 1.0)";
-          Game.stage.canvas.style.left = leftMargin + "px";
-          Game.stage.canvas.style.top = topMargin + "px";
         }
 
         if (Game.hero) {

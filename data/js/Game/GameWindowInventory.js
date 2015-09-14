@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.inventory.showing()) {
+    if (Game.windows.inventory.showing) {
       inventoryWindowClose.click();
     }
   });
@@ -174,10 +174,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         options["丢弃"] = "drop";
 
         Game.choice(options, function (choice) {
-          console.log(choice);
+          // console.log(choice);
           switch (choice) {
             case "puton":
-              Game.hero.data.equipment[item.data.type] = item.id;
+              var type = item.data.type;
+              if (type.match(/sword|spear|bow/)) {
+                type = "weapon";
+              }
+              Game.hero.data.equipment[type] = item.id;
               return Game.windows.inventory.execute("open", filter);
               break;
             case "takeoff":
@@ -231,3 +235,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.inventory.show();
   });
 })();
+//# sourceMappingURL=GameWindowInventory.js.map

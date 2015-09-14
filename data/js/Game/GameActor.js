@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-var _get = function get(_x5, _x6, _x7) { var _again = true; _function: while (_again) { var object = _x5, property = _x6, receiver = _x7; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x5 = parent; _x6 = property; _x7 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+var _get = function get(_x4, _x5, _x6) { var _again = true; _function: while (_again) { var object = _x4, property = _x5, receiver = _x6; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x4 = parent; _x5 = property; _x6 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -120,25 +120,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.infoBox.appendChild(this.text, this.hpbarBox, this.mpbarBox, this.hpbar, this.mpbar);
         }
 
-      var Init = function Init(image) {
+      var Init = function Init(images) {
         var sprite = new Sprite.Sheet({
-          images: [image],
+          images: images, // images is Array
           width: _this.data.tilewidth,
           height: _this.data.tileheight,
           animations: _this.data.animations
         });
 
         //.centerX.centerY把角色中间设定为图片中间
-        sprite.centerX = Math.floor(_this.data.tilewidth * 0.5);
-        sprite.centerY = Math.floor(_this.data.tileheight * 0.75);
+
+        if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
+          sprite.centerX = _this.data.centerX;
+          sprite.centerY = _this.data.centerY;
+        } else {
+          console.log(_this.data);
+          throw new Error("Game.Actor invalid centerX/centerY");
+        }
+
+        // sprite.centerX = Math.floor(this.data.tilewidth * 0.5);
+        // sprite.centerY = Math.floor(this.data.tileheight * 0.75);
         sprite.play("facedown");
-        sprite.x = 0;
-        sprite.y = 0;
         _this.sprite = sprite;
 
         sprite.on("change", function () {
-          _this.infoBox.x = _this.x;
-          _this.infoBox.y = _this.y - _this.sprite.centerY - 20;
+          _this.infoBox.x = _this.sprite.x;
+          _this.infoBox.y = _this.sprite.y - _this.sprite.centerY - 20;
         });
 
         var completeCount = -1;
@@ -181,8 +188,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        if (_this.data.contact && _this.data.contact.trade && _this.data.contact.trade.length) {
-          _this.data.contact.trade.forEach(function (itemId) {
+        if (_this.data.contact && _this.data.trade && _this.data.trade.length) {
+          _this.data.trade.forEach(function (itemId) {
             completeCount--;
             Game.Item.load(itemId, function () {
               Complete();
@@ -193,7 +200,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         Complete();
       };
 
-      if (this.data.image && this.data.image.width && this.data.image.height) {
+      if (this.data.image instanceof Array) {
         // img or canvas
         Init(this.data.image);
       } else if (typeof this.data.image == "string") {
@@ -201,7 +208,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         loader.add("/actor/" + this.data.image);
         loader.start();
         loader.on("complete", function (event) {
-          Init(event.data[0]);
+          Init(event.data);
         });
       } else {
         console.error(this.id, this.data, this.data.image, this);
@@ -293,22 +300,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           var options = {};
 
-          if (this.data.contact.talk) {
-            options["对话"] = "talk";
+          if (this.data.contact) {
+            Sprite.each(this.data.contact, function (talk, key) {
+              if (eval(talk.condition)) {
+                options[key] = key;
+              }
+            });
           }
 
-          if (this.data.contact.trade) {
+          if (this.data.trade) {
             options["交易"] = "trade";
           }
 
           Game.choice(options, function (choice) {
             switch (choice) {
-              case "talk":
-                Game.dialogue(_this2.data.contact.talk, _this2.data.name);
-                break;
               case "trade":
-                Game.windows.trade.execute("trade", _this2.data.contact.trade);
+                Game.windows.trade.execute("trade", _this2.data.trade);
                 break;
+              default:
+                if (_this2.data.contact[choice]) {
+                  Game.dialogue(_this2.data.contact[choice].content, _this2.data.name);
+                }
             }
           });
         }
@@ -331,7 +343,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         d += Math.pow(this.x - x, 2);
         d += Math.pow(this.y - y, 2);
         d = Math.sqrt(d);
-        return Math.floor(d);
+        return d;
       }
     }, {
       key: "decreaseHitpoint",
@@ -350,20 +362,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "dead",
       value: function dead() {
         if (this.data.hp <= 0) {
+          if (this.data.type == "hero") {} else {
+            // item0001是物品掉落之后出现的小布袋
+            var dead = Game.items.bag.clone();
+            console.log(dead.x, dead.y);
+            dead.x = this.x;
+            dead.y = this.y;
+            dead.draw(Game.layers.itemLayer);
+            dead.inner = {
+              "gold": 1
+            };
+            Game.area.bags[Sprite.uuid()] = dead;
 
-          // item0001是物品掉落之后出现的小布袋
-          var dead = Game.items.bag.clone();
-          dead.x = this.x;
-          dead.y = this.y;
-          dead.draw(Game.layers.itemLayer);
-          dead.inner = {
-            "gold": 1
-          };
-          Game.area.bags[Sprite.uuid()] = dead;
+            this.remove();
 
-          this.remove();
-
-          delete Game.area.actors[this.id];
+            Game.area.actors["delete"](this);
+          }
         }
       }
     }, {
@@ -379,6 +393,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "damage",
       value: function damage(attacker, skill) {
+
+        this.emit("damaged");
 
         var power = skill.power;
         var type = skill.type;
@@ -431,8 +447,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         text.centerX = Math.floor(text.width / 2);
         text.centerY = Math.floor(text.height);
-        text.x = this.x;
-        text.y = this.y;
+        text.x = this.sprite.x;
+        text.y = this.sprite.y;
 
         text.x += Sprite.rand(-10, 10);
 
@@ -450,13 +466,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "play",
       value: function play(animation, priority) {
-        var direction = animation.match(/down|left|right|up/)[0];
-
         // 新动画默认优先级为0
-        if (typeof priority == "undefined") priority = 0;
+        if (typeof priority != "number") {
+          priority = 0;
+        }
 
         // 无动画或者停止状态，现有优先级为-1（最低级）
-        if (typeof this.animationPriority == "undefined" || this.sprite.paused == true) this.animationPriority = -1;
+        if (typeof this.animationPriority == "undefined" || this.sprite.paused == true) {
+          this.animationPriority = -1;
+        }
 
         if (this.data.animations.hasOwnProperty(animation) && priority >= this.animationPriority && animation != this.sprite.currentAnimation) {
           this.animationPriority = priority;
@@ -468,10 +486,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function stop() {
         if (!this.sprite.currentAnimation) return;
 
-        if (this.gotoListener) return;
-
         if (this.sprite.paused && !this.sprite.currentAnimation.match(/face/) || this.sprite.currentAnimation.match(/walk|run/)) {
-          switch (this.sprite.currentAnimation.match(/up|down|left|right/)[0]) {
+          switch (this.direction) {
             case "up":
               this.sprite.play("faceup");
               break;
@@ -506,42 +522,71 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return 0;
         }
 
-        this.lastAttack = now;
-        this.lastAttackCooldown = skill.data.cooldown;
-        this.attacking = true;
-
         if (!direction) {
-          direction = this.sprite.currentAnimation.match(/up|left|down|right/)[0];
+          direction = this.direction;
         }
 
-        this.data.sp -= skill.data.cost;
-        this.refreshBar();
+        if (skill.can(this)) {
 
-        skill.fire(this, "attack" + direction, function (hittedActorIds) {
-          _this4.attacking = false;
-          if (hittedActorIds && hittedActorIds.length) {
-            hittedActorIds.forEach(function (element) {
-              if (Game.area.actors.hasOwnProperty(element)) {
-                Game.area.actors[element].damage(_this4, skill);
-              }
-            });
-          }
-        });
+          this.lastAttack = now;
+          this.lastAttackCooldown = skill.data.cooldown;
+          this.attacking = true;
 
-        return skill.data.cooldown;
+          this.data.sp -= skill.data.cost;
+          this.refreshBar();
+
+          skill.fire(this, direction, function (hitted) {
+            _this4.attacking = false;
+            if (hitted.length > 0) {
+              hitted[0].damage(_this4, skill);
+            }
+          });
+
+          return skill.data.cooldown;
+        } else {
+          return 0;
+        }
       }
     }, {
       key: "goto",
-      value: function goto(x, y, state) {
+      value: function goto(x, y) {
         var _this5 = this;
 
+        var state = arguments.length <= 2 || arguments[2] === undefined ? "walk" : arguments[2];
         var callback = arguments.length <= 3 || arguments[3] === undefined ? null : arguments[3];
 
         if (this.going) {
-          return false;
+          this.goingNext = function () {
+            _this5.goto(x, y, state, callback);
+          };
+          return "wait";
         }
 
-        var destPosition = Game.area.map.tile(x, y);
+        var destBlocked = this.checkCollision(x, y);
+
+        if (destBlocked) {
+          if (this.x == x) {
+            if (this.y - y == -1) {
+              this.stop();
+              this.play("facedown");
+              return;
+            } else if (this.y - y == 1) {
+              this.stop();
+              this.play("faceup");
+              return;
+            }
+          } else if (this.y == y) {
+            if (this.x - x == -1) {
+              this.stop();
+              this.play("faceright");
+              return;
+            } else if (this.x - x == 1) {
+              this.stop();
+              this.play("faceleft");
+              return;
+            }
+          }
+        }
 
         var map = [];
         var height = Game.area.map.blockedMap.length;
@@ -555,7 +600,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         for (var i = 0; i < height; i++) {
           for (var j = 0; j < width; j++) {
-            if (this.checkCollision({ x: j, y: i })) {
+            if (this.checkCollision(j, i)) {
               map[i][j] = 0;
             } else {
               map[i][j] = 1;
@@ -563,57 +608,112 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
+        var destPosition = {
+          x: x,
+          y: y
+        };
         var after = null;
+        var path = null;
 
-        var path = Game.Astar.path(map, width, height, Game.area.map.tile(this.x, this.y), // 角色现在位置
-        destPosition); // 目的地
+        if (destBlocked == false) {
+          Game.Astar.path(map, width, height, { x: this.x, y: this.y }, // 角色现在位置
+          destPosition); // 目的地
+        }
 
+        // 可能因为指定x,y被阻挡，尝试寻路到指定x,y的四个邻接地点
         if (!path) {
-          var otherChoice = [{
-            x: destPosition.x,
-            y: destPosition.y - 1,
-            after: "facedown"
-          }, {
-            x: destPosition.x,
-            y: destPosition.y + 1,
-            after: "faceup"
-          }, {
-            x: destPosition.x - 1,
-            y: destPosition.y,
-            after: "faceright"
-          }, {
-            x: destPosition.x + 1,
-            y: destPosition.y,
-            after: "faceleft"
-          }];
+          var otherChoice = [];
+          if (this.checkCollision(x, y - 1) == false) {
+            otherChoice.push({ x: x, y: y - 1, after: "facedown" });
+          }
+          if (this.checkCollision(x, y + 1) == false) {
+            otherChoice.push({ x: x, y: y + 1, after: "faceup" });
+          }
+          if (this.checkCollision(x - 1, y) == false) {
+            otherChoice.push({ x: x - 1, y: y, after: "faceright" });
+          }
+          if (this.checkCollision(x + 1, y) == false) {
+            otherChoice.push({ x: x + 1, y: y, after: "faceleft" });
+          }
 
-          otherChoice.forEach(function (element) {
-            var x = element.x * 32 + 16;
-            var y = element.y * 32 + 16;
-            element.distance = _this5.distance(x, y);
-          });
+          if (otherChoice.length > 0) {
+            var _iteratorNormalCompletion = true;
 
-          otherChoice.sort(function (a, b) {
-            return a.distance - b.distance;
-          });
+            // 找到四个邻接地址中最近的
+            var _didIteratorError = false;
+            var _iteratorError = undefined;
 
-          otherChoice.forEach(function (element) {
-            if (path) {
-              return;
+            try {
+              for (var _iterator = otherChoice[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                var element = _step.value;
+
+                // 计算地址距离
+                element.distance = this.distance(element.x, element.y);
+              }
+            } catch (err) {
+              _didIteratorError = true;
+              _iteratorError = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion && _iterator["return"]) {
+                  _iterator["return"]();
+                }
+              } finally {
+                if (_didIteratorError) {
+                  throw _iteratorError;
+                }
+              }
             }
-            path = Game.Astar.path(map, width, height, Game.area.map.tile(_this5.x, _this5.y), element);
-            if (path) {
-              after = element.after;
+
+            if (otherChoice.length > 1) {
+              otherChoice.sort(function (a, b) {
+                return a.distance - b.distance;
+              });
             }
-          });
+
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+              for (var _iterator2 = otherChoice[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var element = _step2.value;
+
+                path = Game.Astar.path(map, width, height, { x: this.x, y: this.y }, { x: element.x, y: element.y });
+                if (path) {
+                  // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
+                  after = element.after;
+                  break;
+                }
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                  _iterator2["return"]();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
+              }
+            }
+          }
         }
 
         if (path && path.length && path.length > 1) {
           this.going = true;
           var index = 1;
           var Walk = function Walk() {
-            if (index < path.length) {
-              var current = Game.area.map.tile(_this5.x, _this5.y);
+            if (_this5.goingNext) {
+              var c = _this5.goingNext;
+              _this5.goingNext = null;
+              _this5.going = false;
+              c();
+            } else if (index < path.length) {
+              var current = { x: _this5.x, y: _this5.y };
               var dest = path[index];
               var direction = null;
               if (dest.x == current.x) {
@@ -631,11 +731,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
 
               if (direction) {
-                var currentDirection = _this5.sprite.currentAnimation.match(/up|left|down|right/)[0];
+                var currentDirection = _this5.direction;
                 if (direction != currentDirection) {
                   _this5.face(direction);
                 }
-                var goResult = _this5.go("walk", direction, function () {
+                var goResult = _this5.go(state, direction, function () {
                   return Walk();
                 });
                 if (goResult != true) {
@@ -646,9 +746,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             } else {
               // 正常结束
               if (after) {
+                _this5.stop();
                 _this5.play(after);
               }
               _this5.going = false;
+              if (typeof callback == "function") {
+                callback();
+              }
             }
           };
           Walk();
@@ -656,83 +760,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           // 实在没找到路
           // console.log("noway");
         }
-      }
-    }, {
-      key: "gotoTT",
-      value: function gotoTT(x, y, state) {
-        var _this6 = this;
-
-        var collisionTest = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
-        var callback = arguments.length <= 4 || arguments[4] === undefined ? null : arguments[4];
-
-        if (this.gotoListener) {
-          Sprite.Ticker.off("tick", this.gotoListener);
-          this.gotoListener = null;
-        }
-
-        var limit = 10;
-
-        x -= this.x;
-        y -= this.y;
-
-        var speed = 2;
-        if (state == "run") speed = 4;
-
-        this.gotoListener = Sprite.Ticker.on("tick", function () {
-          return toXY();
-        });
-
-        var leftright = "";
-        var updown = "";
-        if (x > 0) {
-          leftright = "right";
-        } else {
-          leftright = "left";
-        }
-        if (y > 0) {
-          updown = "down";
-        } else {
-          updown = "up";
-        }
-        var X = x = Math.abs(x);
-        var Y = y = Math.abs(y);
-
-        var toXY = function toXY() {
-          if (x <= limit && y <= limit) {
-            if (_this6.gotoListener) {
-              Sprite.Ticker.off("tick", _this6.gotoListener);
-              _this6.gotoListener = null;
-              _this6.stop();
-              if (typeof callback == "function") {
-                callback();
-              }
-            }
-            if (X > Y) {
-              _this6.face(leftright);
-            } else {
-              _this6.face(updown);
-            }
-            if (callback) callback();
-          } else if (x > limit && y > limit) {
-            if (X > Y) {
-              _this6.go(state, leftright, collisionTest);
-              x -= speed;
-            } else {
-              _this6.go(state, updown, collisionTest);
-              y -= speed;
-            }
-            if (x < 0) x = 0;
-            if (y < 0) y = 0;
-          } else if (x > limit) {
-            _this6.go(state, leftright, collisionTest);
-            x -= speed;
-            if (x < 0) x = 0;
-          } else if (y > limit) {
-            _this6.go(state, updown, collisionTest);
-            y -= speed;
-            if (y < 0) y = 0;
-          }
-        };
       }
     }, {
       key: "face",
@@ -747,28 +774,46 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       // 返回true为有碰撞，返回false为无碰撞
     }, {
       key: "checkCollision",
-      value: function checkCollision(t) {
-        var positionKey = t.x + "x" + t.y;
-
+      value: function checkCollision(x, y) {
+        var positionKey = x + "," + y;
+        // 角色预占位碰撞
         if (actorHold[positionKey]) {
           return true;
         }
         // 地图边缘碰撞
-        if (t.x < 0 || t.y < 0 || t.x >= Game.area.map.data.width || t.y >= Game.area.map.data.height) {
+        if (x < 0 || y < 0 || x >= Game.area.map.data.width || y >= Game.area.map.data.height) {
           return true;
         }
         // 地图碰撞
-        if (Game.area.map.blockedMap[t.y] && Game.area.map.blockedMap[t.y][t.x]) {
+        if (Game.area.map.hitTest(x, y)) {
           return true;
         }
+
         // 角色碰撞
         if (Game.area.actors) {
-          for (var key in Game.area.actors) {
-            var actor = Game.area.actors[key];
-            if (actor != this) {
-              var pos = Game.area.map.tile(actor.x, actor.y);
-              if (pos.x == t.x && pos.y == t.y) {
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = Game.area.actors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var actor = _step3.value;
+
+              if (actor != this && actor.hitTest(x, y)) {
                 return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+                _iterator3["return"]();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
               }
             }
           }
@@ -776,9 +821,46 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         return false;
       }
     }, {
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = this.data.hitArea[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var p = _step4.value;
+
+              if (x == this.x + p[0] && y == this.y + p[1]) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                _iterator4["return"]();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+
+          return false;
+        } else {
+          console.error(this.data);
+          throw new Error("Game.Actor.hitTest invalid data");
+        }
+      }
+    }, {
       key: "go",
       value: function go(state, direction) {
-        var _this7 = this;
+        var _this6 = this;
 
         var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
@@ -795,39 +877,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return false;
         }
 
-        var currentDirection = this.sprite.currentAnimation.match(/up|left|down|right/)[0];
+        var currentDirection = this.direction;
         if (currentDirection != direction) {
           this.walking = true;
           this.face(direction);
           // wait 8 ticks
           Sprite.Ticker.after(4, function () {
-            _this7.walking = false;
+            _this6.walking = false;
           });
           return false;
         }
 
-        var t = Game.area.map.tile(this.x, this.y);
+        var newX = this.x;
+        var newY = this.y;
 
-        var oldPositionKey = t.x + "x" + t.y;
+        var oldPositionKey = newX + "," + newY;
 
         switch (direction) {
           case "up":
-            t.y -= 1;
+            newY -= 1;
             break;
           case "down":
-            t.y += 1;
+            newY += 1;
             break;
           case "left":
-            t.x -= 1;
+            newX -= 1;
             break;
           case "right":
-            t.x += 1;
+            newX += 1;
             break;
         }
 
-        var newPositionKey = t.x + "x" + t.y;
+        var newPositionKey = newX + "," + newY;
 
-        var result = this.checkCollision(t);
+        var result = this.checkCollision(newX, newY);
 
         if (result == false) {
           this.walking = true;
@@ -845,23 +928,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           Sprite.Ticker.whiles(times, function (last) {
             switch (direction) {
               case "up":
-                _this7.y -= speed;
+                _this6.sprite.y -= speed;
                 break;
               case "down":
-                _this7.y += speed;
+                _this6.sprite.y += speed;
                 break;
               case "left":
-                _this7.x -= speed;
+                _this6.sprite.x -= speed;
                 break;
               case "right":
-                _this7.x += speed;
+                _this6.sprite.x += speed;
                 break;
             }
 
             if (last) {
               delete actorHold[newPositionKey];
               delete actorHold[oldPositionKey];
-              _this7.walking = false;
+              _this6.x = newX;
+              _this6.y = newY;
+              _this6.walking = false;
 
               if (typeof callback == "function") {
                 callback();
@@ -886,53 +971,109 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw() {
-        var x = this.data.x;
-        var y = this.data.y;
+        if (Number.isInteger(this.x) && Number.isInteger(this.y)) {
+          this.x = this.data.x;
+          this.y = this.data.y;
 
-        if (typeof x != "number" || typeof y != "number") {
-          console.log(this, this.data, this.data.x, this.data.y);
-          throw new Error("Game.Actor.draw Invalid position x,y");
+          this.infoBox.x = this.sprite.x;
+          this.infoBox.y = this.sprite.y - this.sprite.centerY - 20;
+
+          Game.layers.actorLayer.appendChild(this.sprite);
+          Game.layers.infoLayer.appendChild(this.infoBox);
+        } else {
+          console.error(this.data);
+          throw new Error("Game.Actor.draw invalid data.x/data.y");
         }
-
-        this.infoBox.x = x;
-        this.infoBox.y = y - this.sprite.centerY - 20;
-
-        this.x = x;
-        this.y = y;
-
-        Game.layers.actorLayer.appendChild(this.sprite);
-        Game.layers.infoLayer.appendChild(this.infoBox);
       }
     }, {
       key: "focus",
       value: function focus() {
-        this.infoBox.x = this.x;
-        this.infoBox.y = this.y - this.sprite.centerY - 20;
+        this.infoBox.x = this.sprite.x;
+        this.infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
-        Game.stage.centerX = Math.round(this.x - Game.config.width / 2);
-        Game.stage.centerY = Math.round(this.y - Game.config.height / 2);
+        Game.stage.centerX = Math.round(this.sprite.x - Game.config.width / 2);
+        Game.stage.centerY = Math.round(this.sprite.y - Game.config.height / 2);
       }
     }, {
       key: "x",
       get: function get() {
-        return this.sprite.x;
+        return this.data.x;
       },
       set: function set(value) {
-        this.sprite.x = value;
         this.data.x = value;
+        this.sprite.x = value * 32 + 16;
       }
     }, {
       key: "y",
       get: function get() {
-        return this.sprite.y;
+        return this.data.y;
       },
       set: function set(value) {
-        this.sprite.y = value;
         this.data.y = value;
+        this.sprite.y = value * 32 + 16;
+      }
+    }, {
+      key: "visible",
+      get: function get() {
+        return this.sprite.visible;
+      },
+      set: function set(value) {
+        this.sprite.visible = value;
+        this.infoBox.visible = value;
+      }
+    }, {
+      key: "alpha",
+      get: function get() {
+        return this.sprite.alpha;
+      },
+      set: function set(value) {
+        this.sprite.alpha = value;
+        this.infoBox.alpha = value;
+      }
+    }, {
+      key: "position",
+      get: function get() {
+        return {
+          x: this.x,
+          y: this.y
+        };
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.position readonly");
+      }
+    }, {
+      key: "direction",
+      get: function get() {
+        return this.sprite.currentAnimation.match(/up|left|down|right/)[0];
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.direction readonly");
+      }
+    }, {
+      key: "facePosition",
+      get: function get() {
+        var p = this.position;
+        switch (this.direction) {
+          case "up":
+            p.y -= 1;
+            break;
+          case "down":
+            p.y += 1;
+            break;
+          case "left":
+            p.x -= 1;
+            break;
+          case "right":
+            p.x += 1;
+            break;
+        }
+        return p;
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.facePosition readonly");
       }
     }]);
 
     return GameActor;
   })(Sprite.Event); // Game.Actor
 })();
-//# sourceMappingURL=GameActor.js.map

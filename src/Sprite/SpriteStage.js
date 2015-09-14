@@ -38,8 +38,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       if (Sprite.Webgl.support()) {
         this._renderer = new Sprite.Webgl(width, height);
+        this._rendererType = "webgl";
       } else if (Sprite.Canvas.support()) {
         this._renderer = new Sprite.Canvas(width, height);
+        this._rendererType = "canvas";
       } else {
         throw new Error("Sprite.Stage all renderer not support");
       }
@@ -101,7 +103,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     filter (name, value) {
-      this._renderer.filter(name, value);
+      return this.renderer.filter(name, value);
     }
 
     findHit (event) {

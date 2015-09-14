@@ -25,17 +25,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows.pickup = new Game.Window("pickupWindow");
 
-  win.html("\n    <div class=\"window-box\">\n      <button id=\"pickupWindowClose\">关闭</button>\n      <button id=\"pickupWindowAll\">全部</button>\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"pickupWindowTable\"></tbody>\n      </table>\n    </div>\n  ");
+  win.html("\n    <div class=\"window-box\">\n      <button id=\"pickupWindowClose\" class=\"brownButton\">关闭</button>\n      <button id=\"pickupWindowAll\" class=\"brownButton\">全部(a)</button>\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"pickupWindowTable\"></tbody>\n      </table>\n    </div>\n  ");
 
   win.css("\n    #pickupWindow table {\n      width: 100%;\n    }\n\n    #pickupWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #pickupWindow button {\n      width: 60px;\n      height: 40px;\n      font-size: 16;\n    }\n\n    #pickupWindowClose {\n\n    }\n\n    #pickupWindowAll {\n\n    }\n  ");
 
-  document.querySelector("button#pickupWindowClose").addEventListener("click", function (event) {
+  var pickupWindowClose = document.querySelector("button#pickupWindowClose");
+  var pickupWindowAll = document.querySelector("button#pickupWindowAll");
+
+  pickupWindowClose.addEventListener("click", function (event) {
     Game.windows.pickup.hide();
   });
 
   var currentItemObj = null;
 
-  document.querySelector("button#pickupWindowAll").addEventListener("click", function (event) {
+  pickupWindowAll.addEventListener("click", function (event) {
     var itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
       Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
@@ -47,6 +50,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         delete inner[itemId];
       });
       Game.windows.pickup.execute("pickup", itemObj);
+    }
+  });
+
+  Sprite.Input.whenUp(["a", "A"], function (key) {
+    if (Game.windows.pickup.showing) {
+      pickupWindowAll.click();
+    }
+  });
+
+  Sprite.Input.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+    if (Game.windows.pickup.showing) {
+      var index = parseInt(key) - 1;
+      var button = document.querySelector("button#pickupWindowGet-" + index);
+      if (button) {
+        button.click();
+      }
     }
   });
 
@@ -68,6 +87,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     while (tableBody.hasChildNodes()) {
       tableBody.removeChild(tableBody.lastChild);
     }
+
+    var index = 0;
 
     Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
       var item = Game.items[itemId];
@@ -96,7 +117,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       description.textContent = item.data.description;
 
       var pickupButton = document.createElement("button");
-      pickupButton.textContent = "捡取";
+
+      if (index < 9) {
+        pickupButton.textContent = index + 1 + "捡取";
+      } else {
+        pickupButton.textContent = "捡取";
+      }
+      pickupButton.id = "pickupWindowGet-" + index;
+      index++;
+
+      pickupButton.classList.add("brownButton");
+
       pickupButton.addEventListener("click", function () {
         if (itemId == "gold") {
           Game.hero.data.gold += itemCount;

@@ -25,43 +25,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function (Sprite) {
   "use strict";
 
-  var Cache = {};
-  var Downloading = {};
+  let internal = Sprite.Namespace();
+
+  /**
+   * Cache all url and element
+   */
+  let Cache = new Map();
+  /**
+   * When some url in Downloading, the url is downloading,
+   * and other thread want it have to wait
+   */
+  let Downloading = new Map();
 
   function Fetch (url, callback, timeout) {
 
-    function Finish (obj) {
-      Cache[url] = obj;
+    let Finish = (obj) => {
+      Cache.set(url, obj);
       if (typeof callback == "function") {
         callback(obj);
       }
-      if (Downloading.hasOwnProperty(url)) {
-        Downloading[url].forEach(function (callback) {
+      if (Downloading.has(url)) {
+        let callbacks = Downloading.get(url);
+        for (let callback of callbacks) {
           if (typeof callback == "function") {
             callback(obj);
           }
-        });
-        delete Downloading[url];
+        }
+        Downloading.delete(url);
       }
     }
 
-    if (Cache.hasOwnProperty(url)) {
-      Finish(Cache[url]);
+    if (Cache.has(url)) {
+      Finish(Cache.get(url));
       return;
     }
 
-    if (Downloading.hasOwnProperty(url)) {
-      Downloading[url].push(callback);
+    if (Downloading.has(url)) {
+      Downloading.get(url).push(callback);
       return;
     }
 
-    Downloading[url] = [];
+    Downloading.set(url, []);
 
-    var req = new XMLHttpRequest();
+    let req = new XMLHttpRequest();
     req.open("GET", url, true);
     req.timeout = 15000; // 15 seconds
 
-    var type = null;
+    let type = null;
     if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
       req.responseType = "blob";
       type = "image";
@@ -93,8 +103,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (req.readyState == 4) {
         if (req.status == 200) {
           if (type == "image") {
-            var blob = req.response;
-            var image = new Image();
+            let blob = req.response;
+            let image = new Image();
             image.onload = function () {
               // window.URL.revokeObjectURL(image.src);
               image.onload = null;
@@ -102,8 +112,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             };
             image.src = window.URL.createObjectURL(blob);
           } else if (type == "audio") {
-            var blob = req.response;
-            var audio = new Audio();
+            let blob = req.response;
+            let audio = new Audio();
             audio.oncanplay = function () {
               // 如果reoke掉audio，那么audio.load()方法则不能用了
               // window.URL.revokeObjectURL(audio.src);
@@ -112,7 +122,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             };
             audio.src = window.URL.createObjectURL(blob);
           } else if (type == "json") {
-            var json = req.response;
+            let json = req.response;
             if (!json) {
               console.error(url);
               throw new Error("Sprite.Loader invalid json");
@@ -132,48 +142,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     constructor () {
       super();
-      this._list = [];
-      this._progress = 0;
+
+      internal(this).list = [];
+      internal(this).progress = 0;
     }
 
     get progress () {
-      return this._progress;
+      return internal(this).progress;
     }
 
     set progress (value) {
-      throw new Error("Sprite.Loader progress readonly");
+      throw new Error("Sprite.Loader.progress readonly");
     }
 
     add () {
-      for (var i = 0; i < arguments.length; i++) {
-        if (arguments[i] instanceof Array) {
-          this._list = this._list.concat(arguments[i]);
-        } else if (typeof arguments[i] == "string" && arguments[i].length > 0) {
-          this._list.push(arguments[i]);
+      let args = Array.prototype.slice.call(arguments);
+
+      for (let element of args) {
+        if (element instanceof Array) {
+          internal(this).list = internal(this).list.concat(element);
+        } else if (typeof element == "string" && element.length > 0) {
+          internal(this).list.push(element);
         } else {
-          console.error(i, arguments[i], arguments);
-          throw new Error("Sprite.Loader.add Error");
+          console.error(element, args, this);
+          throw new Error("Sprite.Loader.add invalid argument");
         }
       }
+      return this;
     }
 
     start () {
-      var done = 0;
-      var ret = [];
-      ret.length = this._list.length;
+      let done = 0;
+      let ret = [];
+      ret.length = internal(this).list.length;
 
-      var Done = () => {
+      let Done = () => {
         done++;
 
-        this._progress = done / this._list.length;
+        internal(this).progress = done / ret.length;
         this.emit("progress");
 
-        if (done >= this._list.length) {
+        if (done >= ret.length) {
           this.emit("complete", true, ret);
         }
       }
 
-      this._list.forEach((element, index) => {
+      internal(this).list.forEach((element, index) => {
         Fetch(element, (result) => {
           ret[index] = result;
           Done();

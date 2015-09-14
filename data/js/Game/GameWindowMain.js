@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.css("\n    #mainWindow {\n      text-align: center;\n      background-image: url(\"image/main.jpeg\");\n    }\n\n    #mainWindow h1 {\n      font-size: 60px;\n    }\n\n    #mainWindow button {\n      width: 120px;\n      height: 60px;\n      margin-top: 10px;\n    }\n  ");
 
   document.querySelector("button#mainWindowContinue").addEventListener("click", function (event) {
-    Game.archive.load();
+    Game.Archive.load();
   });
 
   document.querySelector("button#mainWindowNew").addEventListener("click", function (event) {
@@ -41,3 +41,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.archive.execute("open");
   });
 })();
+//# sourceMappingURL=GameWindowMain.js.map

@@ -51,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       this._canvas = canvas;
       this._context = context;
+      this._alpha = 1;
     }
 
     filter () {
@@ -63,12 +64,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         throw new Error("drawImage invalid image");
       }
 
+      this._context.globalAlpha = this.alpha;
       this._context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     clear () {
       this._context.fillStyle = "black";
       this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+    }
+
+    get alpha () {
+      return this._alpha;
+    }
+
+    set alpha (value) {
+      if (value != this._alpha) {
+        this._alpha = value;
+      }
     }
 
     get width () {

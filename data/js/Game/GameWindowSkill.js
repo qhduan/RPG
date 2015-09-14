@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.skill.showing()) {
+    if (Game.windows.skill.showing) {
       skillWindowClose.click();
     }
   });
@@ -136,3 +136,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.skill.show();
   });
 })();
+//# sourceMappingURL=GameWindowSkill.js.map

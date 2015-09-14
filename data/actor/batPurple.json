@@ -7,6 +7,9 @@
     "gold": "0-1"
   },
   "image": "resource\/batPurple.png",
+  "centerX": 16,
+  "centerY": 16,
+  "hitArea": [[0, 0]],
   "level": 1,
   "$str": 5,
   "$dex": 5,

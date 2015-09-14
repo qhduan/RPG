@@ -21,16 +21,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "use strict";
 
 (function () {
-  Game.archive = {};
+  Game.Archive = {};
 
-  Game.archive.remove = function (id) {
+  Game.Archive.remove = function (id) {
     if (window.localStorage.getItem(id)) {
       window.localStorage.removeItem(id);
     }
   };
 
   // 返回所有存档，Object格式
-  Game.archive.list = function () {
+  Game.Archive.list = function () {
     var keys = [];
     for (var key in window.localStorage) {
       if (key.match(/^SAVE_(\d+)$/)) {
@@ -43,17 +43,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   // 返回最新存档，Object格式
-  Game.archive.last = function () {
-    var list = Game.archive.list();
+  Game.Archive.last = function () {
+    var list = Game.Archive.list();
     if (list.length > 0) {
       var last = list[0];
       return JSON.parse(window.localStorage.getItem("SAVE_" + last));
     } else {
-      throw new Error("Game.archive.last Error");
+      throw new Error("Game.Archive.last Error");
     }
   };
 
-  Game.archive.clear = function () {
+  Game.Archive.clear = function () {
     for (var key in window.localStorage) {
       if (key.match(/^SAVE_(\d+)$/)) {
         window.localStorage.removeItem(key);
@@ -61,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  Game.archive.save = function (data) {
+  Game.Archive.save = function (data) {
     var now = new Date();
     var id = now.getTime();
 
@@ -72,17 +72,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     window.localStorage.setItem("SAVE_" + id, JSON.stringify(data));
   };
 
-  Game.archive.get = function (id) {
+  Game.Archive.get = function (id) {
     if (id && window.localStorage.getItem(id)) {
       return JSON.parse(window.localStorage.getItem(id));
     }
     return null;
   };
 
-  Game.archive.load = function (id) {
-    var data = Game.archive.get(id);
+  Game.Archive.load = function (id) {
+    var data = Game.Archive.get(id);
     if (!data) {
-      data = Game.archive.last();
+      data = Game.Archive.last();
     }
 
     if (data) {
@@ -111,11 +111,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               }
             }
 
-            area.actors["hero"] = Game.hero;
+            area.actors.add(Game.hero);
             Game.hero.draw(Game.layers.actorLayer);
             Game.hero.focus();
             Game.windows.main.hide();
             Game.windows["interface"].show();
+            Game.start();
 
             Game.windows.loading.execute("end");
           });
@@ -123,8 +124,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     } else {
       console.error("id:", id);
-      throw "Invalid id, Game.archive.load";
+      throw "Invalid id, Game.Archive.load";
     }
     //return archive[id];
   };
 })();
+//# sourceMappingURL=GameArchive.js.map

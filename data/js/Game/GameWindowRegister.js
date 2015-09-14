@@ -40,3 +40,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.register.hide();
   });
 })();
+//# sourceMappingURL=GameWindowRegister.js.map

@@ -4,18 +4,41 @@
   "description": "斯塔特镇中贩卖武器装备",
   "type": "npc",
   "contact": {
-    "hi": "这里是武器屋，负责出售各种武器",
-    "talk": [
-      "斯塔特镇的武器当然比不过都城的",
-      "不过你还是可以随便看看"
-    ],
-    "trade": [
-      "swordIron",
-      "spearIron",
-      "bowWood"
-    ]
+    "交谈": {
+      "condition": "true",
+      "content": [
+        "斯塔特镇的武器当然比不过都城的",
+        "不过你还是可以随便看看"
+      ]
+    },
+    "关于剑": {
+      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='sword'",
+      "content": [
+        "剑是优雅的武器"
+      ]
+    },
+    "关于枪": {
+      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='spear'",
+      "content": [
+        "枪很适合战场厮杀"
+      ]
+    },
+    "关于弓": {
+      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='bow'",
+      "content": [
+        "弓箭适合远程攻击，拉扯风筝"
+      ]
+    }
   },
+  "trade": [
+    "swordIron",
+    "spearIron",
+    "bowWood"
+  ],
   "image": "resource\/starttown-mayor.png",
+  "centerX": 16,
+  "centerY": 36,
+  "hitArea": [[0, 0]],
   "level": 1,
   "$str": 10,
   "$dex": 10,

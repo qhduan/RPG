@@ -39,12 +39,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 450,
       scale: false, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
       fps: 35, // 锁定fps到指定数值，如果设置为<=0，则不限制
-    }
+    },
+    paused: true // 默认暂停
+  };
+
+  Game.start = function () {
+    Game.paused = false;
+  };
+
+  Game.pause = function () {
+    Game.paused = true;
   };
 
 
   Game.clearStage = function () {
-    for (var i = 0; i < Game.stage.children.length; i++) {
+    for (let i = 0; i < Game.stage.children.length; i++) {
       Game.stage.children[i].clear();
     }
   };
@@ -52,8 +61,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.init = function () {
 
     Game.stage = new Sprite.Stage(Game.config.width, Game.config.height);
-    document.body.appendChild(Game.stage.canvas);
-    Game.stage.canvas.style.position = "fixed";
+
+    // 建立一个可以自动伸缩的窗口
+    Game.windows.stage = new Game.Window("stageWindow");
+    Game.windows.stage.appendChild(Game.stage.canvas);
+    Game.windows.stage.show();
 
     Game.layers.mapLayer = new Sprite.Container();
     Game.layers.mapLayer.name = "mapLayer";
@@ -66,9 +78,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Game.layers.infoLayer = new Sprite.Container();
     Game.layers.infoLayer.name = "inforLayer";
-
-    //Game.layers.heroLayer = new Sprite.Container();
-    //Game.layers.heroLayer.name = "heroLayer";
 
     Game.layers.skillLayer = new Sprite.Container();
     Game.layers.skillLayer.name = "skillLayer";
@@ -96,7 +105,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     Sprite.Ticker.on("tick", function () {
-      Game.stage.update();
+      if (Game.paused == false) {
+        Game.stage.update();
+      }
     });
 
     var fps = 0;
@@ -109,7 +120,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var f = fps / ((now - start)/1000);
       fps = 0;
       start = now;
-      document.getElementById("fps").innerHTML = f.toFixed(2);
+      document.querySelector("#fps").textContent = f.toFixed(1);
     }, 1000);
 
 

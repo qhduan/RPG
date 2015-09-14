@@ -56,6 +56,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       mousePressed = false;
     });
 
+    Game.windows.stage.on("mousedown", function (event) {
+      var data = event.data;
+      data.x += Game.stage.centerX;
+      data.y += Game.stage.centerY;
+      data.x = Math.floor(data.x / 32);
+      data.y = Math.floor(data.y / 32);
+
+      if (Game.hero.x != data.x || Game.hero.y != data.y) {
+        Game.hero.goto(data.x, data.y, "walk");
+      }
+    });
+
     Sprite.Ticker.on("tick", function () {
 
       if (!Game.hero) return;

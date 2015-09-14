@@ -31,8 +31,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 (function (Sprite) {
-
   "use strict";
+
+  var internal = Sprite.Namespace();
 
   /// @class Sprite.Container
   /// inherit the Sprite.Display
@@ -46,7 +47,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, Container);
 
       _get(Object.getPrototypeOf(Container.prototype), "constructor", this).call(this);
-      this._children = [];
+      internal(this).children = [];
+      internal(this).cacheCanvas = null;
     }
 
     _createClass(Container, [{
@@ -60,25 +62,47 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         canvas.height = height;
         var context = canvas.getContext("2d");
         this.draw(context);
-        this._cacheCanvas = canvas;
+        internal(this).cacheCanvas = canvas;
       }
 
       /// @function Sprite.Container.hitTest
     }, {
       key: "hitTest",
       value: function hitTest(x, y) {
-        if (this._cacheCanvas) {
+        if (this.cacheCanvas) {
           return _get(Object.getPrototypeOf(Container.prototype), "hitTest", this).call(this, x, y);
         } else {
           var hitted = [];
-          for (var i = 0; i < this.children.length; i++) {
-            var ret = this.children[i].hitTest(x, y);
-            if (ret instanceof Array) {
-              hitted = hitted.concat(ret);
-            } else if (ret === true) {
-              hitted.push(this.children[i]);
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var child = _step.value;
+
+              var ret = child.hitTest(x, y);
+              if (ret instanceof Array) {
+                hitted = hitted.concat(ret);
+              } else if (ret === true) {
+                hitted.push(child);
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
             }
           }
+
           return hitted;
         }
       }
@@ -88,19 +112,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// @param context, a 2d context from canvas
     }, {
       key: "draw",
-      value: function draw(context) {
+      value: function draw(renderer) {
         if (this.visible != true) return;
 
-        if (this._cacheCanvas) {
-          this.drawImage(context, this._cacheCanvas, 0, 0, this._cacheCanvas.width, this._cacheCanvas.height, 0, 0, this._cacheCanvas.width, this._cacheCanvas.height);
+        if (this.cacheCanvas) {
+          this.drawImage(renderer, this.cacheCanvas, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height);
         } else {
-          if (this._children.length <= 0) {
-            return;
-          }
+          if (this.children.length > 0) {
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
-          this._children.forEach(function (element) {
-            element.draw(context);
-          });
+            try {
+              for (var _iterator2 = this.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var child = _step2.value;
+
+                child.draw(renderer);
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                  _iterator2["return"]();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
+              }
+            }
+          }
         }
       }
 
@@ -111,18 +154,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "appendChild",
       value: function appendChild() {
-        if (arguments.length <= 0) {
-          console.log(arguments, this);
-          throw new TypeError("Sprite.Container.appendChild has an invalid arguments");
+        var args = Array.prototype.slice.call(arguments);
+
+        if (args.length <= 0) {
+          throw new Error("Sprite.Container.appendChild got an invalid arguments");
         }
 
-        for (var i = 0; i < arguments.length; i++) {
-          if (arguments[i] instanceof Sprite.Display == false) {
-            console.log(arguments[i]);
-            throw new TypeError("Sprite.Container.appendChild only can append Sprite.Display or it's sub-class");
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = args[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var element = _step3.value;
+
+            if (element instanceof Sprite.Display == false) {
+              console.error(element);
+              throw new Error("Sprite.Container.appendChild only accept Sprite.Display or it's sub-class");
+            }
+            element.parent = this;
+            this.children.push(element);
           }
-          arguments[i].parent = this;
-          this._children.push(arguments[i]);
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+              _iterator3["return"]();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
         }
 
         this.emit("addedChildren");
@@ -135,19 +200,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "appendChildAt",
       value: function appendChildAt() {
-        if (arguments.length <= 1) {
+        var args = Array.prototype.slice.call(arguments);
+
+        if (args.length <= 1) {
           console.log(arguments, this);
           throw new TypeError("Sprite.Container.appendChildAt has an invalid arguments");
         }
 
-        var index = arguments[0];
-        for (var i = 1; i < arguments.length; i++) {
-          if (arguments[i] instanceof Sprite.Display == false) {
-            console.log(arguments[i]);
-            throw new TypeError("Sprite.Container.appendChild only can append Sprite.Display or it's sub-class");
+        var index = args[0];
+        for (var i = 1; i < args.length; i++) {
+          if (args[i] instanceof Sprite.Display == false) {
+            console.error(args[i]);
+            throw new Error("Sprite.Container.appendChildAt only can accept Sprite.Display or it's sub-class");
           }
-          arguments[i].parent = this;
-          this._children.splice(index, 0, arguments[i]);
+          args[i].parent = this;
+          this.children.splice(index, 0, args[i]);
         }
 
         this.emit("addedChildren");
@@ -160,11 +227,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "removeChild",
       value: function removeChild(element) {
-        var index = this._children.indexOf(element);
+        var index = this.children.indexOf(element);
         if (index != -1) {
           // 删除成功
-          this._children[index].parent = null;
-          this._children.splice(index, 1);
+          this.children[index].parent = null;
+          this.children.splice(index, 1);
           this.emit("removedChildren");
           return true;
         } else {
@@ -178,28 +245,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "clear",
       value: function clear() {
-        for (var i = 0; i < this._children.length; i++) {
-          this._children[i].parent = null;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+          for (var _iterator4 = this.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var child = _step4.value;
+
+            child.parent = null;
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+              _iterator4["return"]();
+            }
+          } finally {
+            if (_didIteratorError4) {
+              throw _iteratorError4;
+            }
+          }
         }
-        this._children = [];
+
+        internal(this).children = [];
         this.emit("removedChildren");
         return true;
       }
     }, {
       key: "children",
       get: function get() {
-        return this._children;
+        return internal(this).children;
       },
       set: function set(value) {
-        throw new TypeError("Sprite.Container.children readonly");
+        throw new Error("Sprite.Container.children readonly");
       }
     }, {
       key: "cacheCanvas",
       get: function get() {
-        return this._cacheCanvas;
+        return internal(this).cacheCanvas;
       },
       set: function set(value) {
-        throw new TypeError("Sprite.Container.cacheCanvas readonly");
+        throw new Error("Sprite.Container.cacheCanvas readonly");
       }
     }]);
 
@@ -207,4 +296,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   })(Sprite.Display);
 })(Sprite);
 /// class Sprite.Container
-//# sourceMappingURL=SpriteContainer.js.map

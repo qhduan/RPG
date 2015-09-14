@@ -56,8 +56,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     dialogueContainer.y = obj.y + adjustY;
     dialogueContainer.centerX = middle;
     dialogueContainer.centerY = h + 15;
-    dialogueContainer.height = h + 15;
-    dialogueContainer.width = w + 10;
 
     Game.layers.dialogueLayer.appendChild(dialogueContainer);
 
@@ -74,7 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.layers.dialogueLayer.removeChild(popup.container);
         popupCache.delete(obj);
       }
-    }, 5000);
+    }, 3000);
 
     popupCache.set(obj, {
       container: dialogueContainer,

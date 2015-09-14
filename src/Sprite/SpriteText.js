@@ -18,136 +18,155 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteText.js
-/// @namespace Sprite
-/// class Sprite.Text
+/**
+ * @fileoverview Define the Sprite.Text to show text in game
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
-  var textCanvas = document.createElement("canvas");
+  let internal = Sprite.Namespace();
+
+  let textCanvas = document.createElement("canvas");
   textCanvas.width = 1;
   textCanvas.height = 1;
-  var textContext = textCanvas.getContext("2d");
+  let textContext = textCanvas.getContext("2d");
 
-  Sprite.Text = class Text extends Sprite.Display {
+  /**
+   * Class Sprite.Text, contain text
+   * @class
+   * @extends Sprite.Display
+   */
+  Sprite.Text = class SpriteText extends Sprite.Display {
+    /**
+     * construct Sprite.Text
+     * @constructor
+     */
     constructor (config) {
       super();
-      this._config = config;
-      this._text = config.text || "Hello World!";
-      this._maxWidth = config.maxWidth || 1000;
-      this._color = config.color || "black";
-      this._fontSize = config.fontSize || 14;
-      this._fontFamily = config.fontFamily || "Ariel";
-      this._image = null;
+      internal(this).text = config.text || "Invalid Text";
+      internal(this).maxWidth = config.maxWidth || 1000;
+      internal(this).color = config.color || "black";
+      internal(this).fontSize = config.fontSize || 14;
+      internal(this).fontFamily = config.fontFamily || "Ariel";
+      internal(this).image = null;
       this.generate();
     }
 
     clone () {
-      var text = new Text(this._config);
+      let text = new Text({
+        text: internal(this).text,
+        maxWidth: internal(this).maxWidth,
+        color: internal(this).color,
+        fontSize: internal(this).fontSize,
+        fontFamily: internal(this).fontFamily
+      });
       text.x = this.x;
       text.y = this.y;
       text.centerX = this.centerX;
       text.centerY = this.centerY;
-      text.scaleX = this.scaleX;
-      text.scaleY = this.scaleY;
       return text;
     }
 
-    get svg () {
-      return this._svg;
-    }
-
-    set svg (value) {
-      throw new TypeError("Sprite.Text.svg readonly");
-    }
-
     get text () {
-      return this._text;
+      return internal(this).text;
     }
 
     set text (value) {
-      this._text = value;
-      this.generate();
+      if (value != this.text) {
+        internal(this).text = value;
+        this.generate();
+      }
     }
 
     get width () {
-      return this._width;
+      return internal(this).width;
     }
 
     set width (value) {
-      this._width = value;
-      this.generate();
+      if (value != this.width) {
+        internal(this).width = value;
+        this.generate();
+      }
     }
 
     get height () {
-      return this._height;
+      return internal(this).height;
     }
 
     set height (value) {
-      this._height = value;
-      this.generate();
+      if (value != this.height) {
+        internal(this).height = value;
+        this.generate();
+      }
     }
 
     get color () {
-      return this._color;
+      return internal(this).color;
     }
 
     set color (value) {
-      this._color = value;
-      this.generate();
+      if (value != this.color) {
+        internal(this).color = value;
+        this.generate();
+      }
     }
 
     get fontSize () {
-      return this._fontSize;
+      return internal(this).fontSize;
     }
 
     set fontSize (value) {
-      this._fontSize = value;
-      this.generate();
+      if (value != this.fontSize) {
+        internal(this).fontSize = value;
+        this.generate();
+      }
     }
 
     get fontFamily () {
-      return this._fontFamily;
+      return internal(this).fontFamily;
     }
 
     set fontFamily (value) {
-      this._fontFamily = value;
-      this.generate();
+      if (value != this.fontFamily) {
+        internal(this).fontFamily = value;
+        this.generate();
+      }
     }
 
     generate () {
-      textContext.font = this._fontSize + "px " + this._fontFamily;
+      textContext.font = this.fontSize + "px " + internal(this).fontFamily;
       // "龍" is the max-width & max-height Chinese word I think
-      var lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-      this._width = 0;
+      let lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
+      internal(this).width = 0;
 
       // find the real-maximum-width of multiline text, base user's maxWidth
-      var lines = [];
-      var lineText = "";
-      for (let i = 0; i < this._text.length; i++) {
-        if (textContext.measureText(lineText + this._text[i]).width > this._maxWidth) {
+      let lines = [];
+      let lineText = "";
+      for (let i = 0; i < this.text.length; i++) {
+        if (textContext.measureText(lineText + this.text[i]).width > this.maxWidth) {
           lines.push(lineText);
-          lineText = this._text[i];
+          lineText = this.text[i];
         } else {
-          lineText += this._text[i];
+          lineText += this.text[i];
         }
-        if (textContext.measureText(lineText).width > this._width)
-          this._width = Math.ceil(textContext.measureText(lineText).width);
+        if (textContext.measureText(lineText).width > this.width)
+          internal(this).width = Math.ceil(textContext.measureText(lineText).width);
       }
 
       if (lineText.length) {
         lines.push(lineText);
       }
 
-      this._height = lines.length * lineHeight;
+      this.height = lines.length * lineHeight;
 
-      var canvas = document.createElement("canvas");
-      canvas.width = this._width;
-      canvas.height = this._height;
-      var context = canvas.getContext("2d");
-      context.font = this._fontSize + "px " + this._fontFamily;
-      context.fillStyle = this._color;
+      let canvas = document.createElement("canvas");
+      canvas.width = this.width;
+      canvas.height = this.height;
+      let context = canvas.getContext("2d");
+      context.font = this.fontSize + "px " + this.fontFamily;
+      context.fillStyle = this.color;
       context.textAlign = "center";
       context.textBaseline = "top";
       // draw each line
@@ -155,18 +174,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         context.fillText(element, canvas.width/2, index*lineHeight)
       });
 
-      this._image = canvas;
+      internal(this).image = canvas;
     }
 
     draw (context) {
-      if (this._image && this._image.width > 0 && this._image.height > 0) {
+      let image = internal(this).image;
+      if ( image && image.width > 0 && image.height > 0) {
         this.drawImage(
           context,
-          this._image,
+          image,
           0,
           0,
-          this._image.width,
-          this._image.height
+          image.width,
+          image.height
         );
       }
     }

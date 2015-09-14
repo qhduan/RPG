@@ -21,12 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  function fixPosition (obj) {
-    // 这里的数值用来修正方块位置，到真实位置的数值
-    obj.x = obj.x * 32 + 16;
-    obj.y = obj.y * 32 + 16; // 这里用来修正视角和人物模型行走的问题
-  }
-
   // 加载区域，把括地图，角色，物品
   Game.loadArea = function (id, callback) {
 
@@ -62,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var mapData = event.data[0];
       var mapExtra = event.data[1];
 
-      for (var key in mapExtra) {
+      for (let key in mapExtra) {
         mapData[key] = mapExtra[key];
       }
 
@@ -70,11 +64,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       mapObj.on("complete", function () {
 
         var area = {
-          actors: {},
+          actors: new Set(),
           bags: {},
           doors: [],
           chests: [],
           hints: [],
+          touch: [],
           map: mapObj
         };
 
@@ -90,20 +85,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           mapExtra.actors.forEach(function (element) {
             completeCount--;
             var actorLoader = new Sprite.Loader();
-            actorLoader.add(`actor/${element.id}.json`);
-            actorLoader.start();
+            actorLoader.add(`actor/${element.id}.json`).start();
             actorLoader.on("complete", function (event) {
               var actorData = Sprite.copy(event.data[0]);
-              if (actorData.type == "monster")
-                actorData.id = actorData.id + "_" + Sprite.uuid();
               actorData.x = element.x;
               actorData.y = element.y;
-              fixPosition(actorData);
               actorData.mode = element.mode;
               var actorObj = new Game.Actor(actorData);
               actorObj.on("complete", function () {
-                area.actors[actorObj.id] = actorObj;
+                area.actors.add(actorObj);
                 actorObj.draw(Game.layers.actorLayer);
+                if (element.hasOwnProperty("visible")) {
+                  actorObj.visible = element.visible;
+                }
                 Complete();
               });
             });
@@ -113,9 +107,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (mapExtra.door) {
           mapExtra.door.forEach(function (element) {
             var door = Sprite.copy(element);
-            fixPosition(door);
-            door.destx = door.destx * 32 + 16;
-            door.desty = door.desty * 32 + 16;
             door.type = "door";
             area.doors.push(door);
           });
@@ -124,9 +115,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (mapExtra.chest) {
           mapExtra.chest.forEach(function (element) {
             var chest = Sprite.copy(element);
-            fixPosition(chest);
-            chest.destx = chest.destx * 32 + 16;
-            chest.desty = chest.desty * 32 + 16;
             chest.type = "chest";
             area.chests.push(chest);
           });
@@ -135,9 +123,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (mapExtra.hint) {
           mapExtra.hint.forEach(function (element) {
             var hint = Sprite.copy(element);
-            fixPosition(hint);
             hint.type = "hint";
             area.hints.push(hint);
+          });
+        }
+
+        if (mapExtra.touch) {
+          mapExtra.touch.forEach(function (element) {
+            var touch = Sprite.copy(element);
+            touch.type = "touch";
+            area.touch.push(touch);
           });
         }
 

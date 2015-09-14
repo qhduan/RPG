@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
       <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-          <td>
+          <td style="width: 60%;">
             <label id="heroName"></label>
             <label id="heroHP"></label>
             <label id="heroSP"></label>
@@ -47,32 +47,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <label id="heroMATK"></label>
             <label id="heroMDEF"></label>
           </td>
-          <td>
-            <table border="1" cellspacing="0" cellpadding="0">
-              <tr>
-                <td>头部</td>
-                <td id="equipment-head"></td>
-              </tr>
-              <tr>
-                <td>身体</td>
-                <td id="equipment-body"></td>
-              </tr>
-              <tr>
-                <td>足部</td>
-                <td id="equipment-feet"></td>
-              </tr>
-              <tr>
-                <td>武器</td>
-                <td id="equipment-weapon"></td>
-              </tr>
-              <tr>
-                <td>项链</td>
-                <td id="equipment-neck"></td>
-              </tr>
-              <tr>
-                <td>戒指</td>
-                <td id="equipment-ring"></td>
-              </tr>
+          <td style="width: 40%;">
+            <table id="statusWindowEquipmentTable" border="1" cellspacing="0" cellpadding="0">
+              <tbody>
+                <tr>
+                  <td class="statusWindowEquipmentText">头部</td>
+                  <td id="equipment-head"></td>
+                  <td style="width: 60px;"><button id="equipmentButton-head" class="brownButton">卸下</button></td>
+                </tr>
+                <tr>
+                  <td class="statusWindowEquipmentText">身体</td>
+                  <td id="equipment-body"></td>
+                  <td><button id="equipmentButton-body" class="brownButton">卸下</button></td>
+                </tr>
+                <tr>
+                  <td class="statusWindowEquipmentText">足部</td>
+                  <td id="equipment-feet"></td>
+                  <td><button id="equipmentButton-feet" class="brownButton">卸下</button></td>
+                </tr>
+                <tr>
+                  <td class="statusWindowEquipmentText">武器</td>
+                  <td id="equipment-weapon"></td>
+                  <td><button id="equipmentButton-weapon" class="brownButton">卸下</button></td>
+                </tr>
+                <tr>
+                  <td class="statusWindowEquipmentText">项链</td>
+                  <td id="equipment-neck"></td>
+                  <td><button id="equipmentButton-neck" class="brownButton">卸下</button></td>
+                </tr>
+                <tr>
+                  <td class="statusWindowEquipmentText">戒指</td>
+                  <td id="equipment-ring"></td>
+                  <td><button id="equipmentButton-ring" class="brownButton">卸下</button></td>
+                </tr>
+              </tbody>
             </table>
           </td>
         </tr>
@@ -81,6 +89,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `);
 
   win.css(`
+    #statusWindowEquipmentTable button {
+      width: 60px;
+      height: 40px;
+    }
+
+    .statusWindowEquipmentText {
+      width: 60px;
+      font-size: 20px;
+      text-align: center;
+    }
+
     #statusWindow label {
       display: block;
     }
@@ -109,6 +128,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `);
 
+  var statusWindowEquipment = {
+    head: document.querySelector("#equipment-head"),
+    body: document.querySelector("#equipment-body"),
+    feet: document.querySelector("#equipment-feet"),
+    weapon: document.querySelector("#equipment-weapon"),
+    neck: document.querySelector("#equipment-neck"),
+    ring: document.querySelector("#equipment-ring")
+  };
+
+  var statusWindowEquipmentButton = {
+    head: document.querySelector("#equipmentButton-head"),
+    body: document.querySelector("#equipmentButton-body"),
+    feet: document.querySelector("#equipmentButton-feet"),
+    weapon: document.querySelector("#equipmentButton-weapon"),
+    neck: document.querySelector("#equipmentButton-neck"),
+    ring: document.querySelector("#equipmentButton-ring")
+  };
+
+  Sprite.each(statusWindowEquipmentButton, function (button, key) {
+    button.addEventListener("click", function () {
+      if (Game.hero.data.equipment[key]) {
+        Game.hero.data.equipment[key] = null;
+        Game.windows.status.execute("update");
+      }
+    });
+  });
+
+  var heroName = document.getElementById("heroName");
+  var heroHP = document.getElementById("heroHP")
+  var heroSP = document.getElementById("heroSP");
+  var heroLevel = document.getElementById("heroLevel");
+  var heroEXP = document.getElementById("heroEXP");
+  var heroSTR = document.getElementById("heroSTR");
+  var heroDEX = document.getElementById("heroDEX");
+  var heroCON = document.getElementById("heroCON");
+  var heroINT = document.getElementById("heroINT");
+  var heroCHA = document.getElementById("heroCHA");
+  var heroATK = document.getElementById("heroATK");
+  var heroDEF = document.getElementById("heroDEF");
+  var heroMATK = document.getElementById("heroMATK");
+  var heroMDEF = document.getElementById("heroMDEF");
+
   var statusWindowClose = document.querySelector("button#statusWindowClose");
   var statusWindowInventory = document.querySelector("button#statusWindowInventory");
 
@@ -122,36 +183,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.status.showing()) {
+    if (Game.windows.status.showing) {
       statusWindowClose.click();
     }
   });
 
   win.register("update", function () {
-    document.getElementById("heroName").textContent = `名字：${Game.hero.data.name}`;
-    document.getElementById("heroHP").textContent = `生命力：${Game.hero.data.hp}/${Game.hero.data.$hp}`;
-    document.getElementById("heroSP").textContent = `精神力：${Game.hero.data.sp}/${Game.hero.data.$sp}`;
-    document.getElementById("heroLevel").textContent = `等级：${Game.hero.data.level}`;
-    document.getElementById("heroEXP").textContent = `经验：${Game.hero.data.exp}`;
-    document.getElementById("heroSTR").textContent = `力量：${Game.hero.data.str}`;
-    document.getElementById("heroDEX").textContent = `敏捷：${Game.hero.data.dex}`;
-    document.getElementById("heroCON").textContent = `耐力：${Game.hero.data.con}`;
-    document.getElementById("heroINT").textContent = `智力：${Game.hero.data.int}`;
-    document.getElementById("heroCHA").textContent = `魅力：${Game.hero.data.cha}`;
-    document.getElementById("heroATK").textContent = `攻击：${Game.hero.data.atk}`;
-    document.getElementById("heroDEF").textContent = `防御：${Game.hero.data.def}`;
-    document.getElementById("heroMATK").textContent = `魔法攻击：${Game.hero.data.matk}`;
-    document.getElementById("heroMDEF").textContent = `魔法防御：${Game.hero.data.mdef}`;
+
+    heroName.textContent = `名字：${Game.hero.data.name}`;
+    heroHP.textContent = `生命力：${Game.hero.data.hp}/${Game.hero.data.$hp}`;
+    heroSP.textContent = `精神力：${Game.hero.data.sp}/${Game.hero.data.$sp}`;
+    heroLevel.textContent = `等级：${Game.hero.data.level}`;
+    heroEXP.textContent = `经验：${Game.hero.data.exp}`;
+    heroSTR.textContent = `力量：${Game.hero.data.str}`;
+    heroDEX.textContent = `敏捷：${Game.hero.data.dex}`;
+    heroCON.textContent = `耐力：${Game.hero.data.con}`;
+    heroINT.textContent = `智力：${Game.hero.data.int}`;
+    heroCHA.textContent = `魅力：${Game.hero.data.cha}`;
+    heroATK.textContent = `攻击：${Game.hero.data.atk}`;
+    heroDEF.textContent = `防御：${Game.hero.data.def}`;
+    heroMATK.textContent = `魔法攻击：${Game.hero.data.matk}`;
+    heroMDEF.textContent = `魔法防御：${Game.hero.data.mdef}`;
 
     Sprite.each(Game.hero.data.equipment, function (element, key) {
-      if (!element) return;
-      var dom = document.getElementById(`equipment-${key}`);
+      var dom = statusWindowEquipment[key];
       while (dom.hasChildNodes())
         dom.removeChild(dom.lastChild);
-      dom.appendChild(Game.items[element].icon);
-      var text = document.createElement("span");
-      text.textContent = Game.items[element].data.name;
-      dom.appendChild(text);
+
+      var button = statusWindowEquipmentButton[key];
+
+      if (element) {
+        dom.appendChild(Game.items[element].icon);
+        var text = document.createElement("span");
+        text.textContent = Game.items[element].data.name;
+        dom.appendChild(text);
+        button.style.visibility = "visible";
+      } else {
+        button.style.visibility = "hidden";
+      }
     });
   });
 

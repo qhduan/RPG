@@ -8,30 +8,28 @@
   },
   "actors":
   [
+    {
+      "id": "starttown-mayor",
+      "x": 29,
+      "y": 22,
+      "visible": false
+    },
+    {
+      "id": "starttown-weapontrade",
+      "x": 21,
+      "y": 11,
+      "visible": false
+    }
   ],
   "door":
   [
     {
-      "x": 28,
-      "y": 24,
-      "dest": "starttown-longhouse",
-      "description": "通往斯塔特镇长屋",
-      "destx": 7,
-      "desty": 13
-    }, {
       "x": 28,
       "y": 49,
       "dest": "starttown-southforest",
       "description": "通往斯塔特南部森林",
       "destx": 14,
       "desty": 2
-    } ,{
-      "x": 25,
-      "y": 12,
-      "dest": "starttown-weapontrade",
-      "description": "武器屋",
-      "destx": 4,
-      "desty": 6
     }
   ],
   "chest":
@@ -42,6 +40,36 @@
       "x": 34,
       "y": 27,
       "message": "欢迎来到斯塔特镇！"
+    }
+  ],
+  "touch": [
+    {
+      "x": 29,
+      "y": 25,
+      "showmap": ["longhouse-floor", "longhouse-wall"],
+      "hidemap": ["longhouse-roof", "longhouse-decoration"],
+      "showactor": ["starttown-mayor"]
+    },
+    {
+      "x": 29,
+      "y": 26,
+      "hidemap": ["longhouse-floor", "longhouse-wall"],
+      "showmap": ["longhouse-roof", "longhouse-decoration"],
+      "hideactor": ["starttown-mayor"]
+    },
+    {
+      "x": 21,
+      "y": 14,
+      "showmap": ["weapon-floor", "weapon-wall"],
+      "hidemap": ["weapon-roof", "weapon-decoration"],
+      "showactor": ["starttown-weapontrade"]
+    },
+    {
+      "x": 21,
+      "y": 15,
+      "hidemap": ["weapon-floor", "weapon-wall"],
+      "showmap": ["weapon-roof", "weapon-decoration"],
+      "hideactor": ["starttown-weapontrade"]
     }
   ]
 }

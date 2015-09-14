@@ -126,8 +126,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.addEventListener("keypress", function (event) {
         event = event || window.event;
         var keyCode = event.keyCode;
-        for (var i = 0; i < keys.length; i++) {
-          var code = keyTable[keys[i]];
+        for (let i = 0; i < keys.length; i++) {
+          let code = keyTable[keys[i]];
           if (code && code == keyCode) {
             callback(keys[i]);
             return;
@@ -140,8 +140,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.addEventListener("keydown", function (event) {
         event = event || window.event;
         var keyCode = event.keyCode;
-        for (var i = 0; i < keys.length; i++) {
-          var code = keyTable[keys[i]];
+        for (let i = 0; i < keys.length; i++) {
+          let code = keyTable[keys[i]];
           if (code && code == keyCode) {
             callback(keys[i]);
             return;
@@ -154,8 +154,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.addEventListener("keyup", function (event) {
         event = event || window.event;
         var keyCode = event.keyCode;
-        for (var i = 0; i < keys.length; i++) {
-          var code = keyTable[keys[i]];
+        for (let i = 0; i < keys.length; i++) {
+          let code = keyTable[keys[i]];
           if (code && code == keyCode) {
             callback(keys[i]);
             return;

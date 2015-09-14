@@ -7,5 +7,8 @@
   },
   "value": 1,
   "type": "feet",
-  "image": "resource\/shoesNormal.png"
+  "image": "resource\/shoesNormal.png",
+  "centerX": 17,
+  "centerY": 17,
+  "hitArea": [[0, 0]]
 }

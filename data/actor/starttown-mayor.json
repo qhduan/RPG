@@ -4,14 +4,26 @@
   "description": "斯塔特镇的管理者",
   "type": "npc",
   "contact": {
-    "hi": "我是镇长，你好",
-    "talk": [
-      "斯塔特镇北方就是都城",
-      "斯塔特镇有一切你所需的"
-    ]
+    "问好": {
+      "condition": "true",
+      "content": [
+        "斯塔特镇北方就是都城",
+        "斯塔特镇有一切你所需的"
+      ]
+    },
+    "你是谁": {
+      "condition": "true",
+      "content": [
+        "我是斯塔特镇的镇长",
+        "我负责管理斯塔特镇的一切"
+      ]
+    }
   },
   "talk": [],
   "image": "resource\/starttown-mayor.png",
+  "centerX": 16,
+  "centerY": 36,
+  "hitArea": [[0, 0]],
   "level": 1,
   "$str": 10,
   "$dex": 10,

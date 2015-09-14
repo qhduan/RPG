@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `);
 
   document.querySelector("button#mainWindowContinue").addEventListener("click", function (event) {
-    Game.archive.load();
+    Game.Archive.load();
   });
 
   document.querySelector("button#mainWindowNew").addEventListener("click", function (event) {

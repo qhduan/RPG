@@ -64,6 +64,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       this.id = this.data.id;
       this.inner = null;
 
+      if (!this.data.x || !this.data.y) {
+        this.data.x = 0;
+        this.data.y = 0;
+      }
+
       var loader = new Sprite.Loader();
       loader.add("/item/" + this.data.image);
       loader.start();
@@ -73,8 +78,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _this.icon = image;
 
         _this.bitmap = new Sprite.Bitmap(image);
-        _this.bitmap.centerX = image.width / 2;
-        _this.bitmap.centerY = image.height / 2;
+        _this.bitmap.x = _this.data.x * 32 + 16;
+        _this.bitmap.y = _this.data.y * 32 + 16;
+
+        if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
+          _this.bitmap.centerX = _this.data.centerX;
+          _this.bitmap.centerY = _this.data.centerY;
+        } else {
+          console.log(_this.data);
+          throw new Error("Game.Item invalid centerX/centerY");
+        }
+
         _this.bitmap.name = _this.id;
 
         // 发送完成事件，第二个参数代表一次性事件
@@ -83,6 +97,43 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }
 
     _createClass(GameItem, [{
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = this.data.hitArea[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var p = _step.value;
+
+              if (x == this.x + p[0] && y == this.y + p[1]) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+
+          return false;
+        } else {
+          console.error(this.data);
+          throw new Error("Game.Actor.hitTest invalid data");
+        }
+      }
+    }, {
       key: "pickup",
       value: function pickup() {
         if (this.inner) {
@@ -90,11 +141,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
     }, {
+      key: "use",
+      value: function use(actor) {
+        if (this.data.type == "potion") {
+          for (var attribute in this.data.potion) {
+            var effect = this.data.potion[attribute];
+            if (attribute == "hp") {
+              actor.data.hp += effect;
+              if (actor.data.hp > actor.data.$hp) {
+                actor.data.hp = actor.data.$hp;
+              }
+            }
+          }
+        }
+      }
+    }, {
       key: "clone",
       value: function clone(callback) {
-        var self = this;
-
         var itemObj = new Game.Item(this.data);
+        itemObj.x = this.x;
+        itemObj.y = this.y;
+        itemObj.inner = this.inner;
         return itemObj;
       }
     }, {
@@ -110,18 +177,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "x",
       get: function get() {
-        return this.bitmap.x;
+        return this.data.x;
       },
-      set: function set(v) {
-        this.bitmap.x = v;
+      set: function set(value) {
+        this.data.x = value;
+        this.bitmap.x = value * 32 + 16;
       }
     }, {
       key: "y",
       get: function get() {
-        return this.bitmap.y;
+        return this.data.x;
       },
-      set: function set(v) {
-        this.bitmap.y = v;
+      set: function set(value) {
+        this.data.y = value;
+        this.bitmap.y = value * 32 + 16;
+      }
+    }, {
+      key: "position",
+      get: function get() {
+        return {
+          x: this.x,
+          y: this.y
+        };
+      },
+      set: function set(value) {
+        console.error(this.data);
+        throw new Error("Game.Item.position readonly");
       }
     }]);
 

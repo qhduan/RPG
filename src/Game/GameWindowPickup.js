@@ -25,8 +25,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html(`
     <div class="window-box">
-      <button id="pickupWindowClose">关闭</button>
-      <button id="pickupWindowAll">全部</button>
+      <button id="pickupWindowClose" class="brownButton">关闭</button>
+      <button id="pickupWindowAll" class="brownButton">全部(a)</button>
       <table border="1" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
@@ -67,13 +67,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `);
 
-  document.querySelector("button#pickupWindowClose").addEventListener("click", function (event) {
+  var pickupWindowClose = document.querySelector("button#pickupWindowClose");
+  var pickupWindowAll = document.querySelector("button#pickupWindowAll");
+
+  pickupWindowClose.addEventListener("click", function (event) {
     Game.windows.pickup.hide();
   });
 
   var currentItemObj = null;
 
-  document.querySelector("button#pickupWindowAll").addEventListener("click", function (event) {
+  pickupWindowAll.addEventListener("click", function (event) {
     var itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
       Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
@@ -88,9 +91,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
+  Sprite.Input.whenUp(["a", "A"], function (key) {
+    if (Game.windows.pickup.showing) {
+      pickupWindowAll.click();
+    }
+  });
+
+  Sprite.Input.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+    if (Game.windows.pickup.showing) {
+      var index = parseInt(key) - 1;
+      var button = document.querySelector(`button#pickupWindowGet-${index}`);
+      if (button) {
+        button.click();
+      }
+    }
+  });
+
   win.register("pickup", function (itemObj) {
     if (!itemObj.inner || Object.keys(itemObj.inner).length <= 0) {
-      for (var key in Game.area.bags) {
+      for (let key in Game.area.bags) {
         if (Game.area.bags[key] == itemObj) {
           delete Game.area.bags[key];
           itemObj.erase(Game.layers.itemLayer);
@@ -106,6 +125,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     while (tableBody.hasChildNodes()) {
       tableBody.removeChild(tableBody.lastChild);
     }
+
+    var index = 0;
 
     Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
       var item = Game.items[itemId];
@@ -134,7 +155,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       description.textContent = item.data.description;
 
       var pickupButton = document.createElement("button");
-      pickupButton.textContent = "捡取";
+
+      if (index < 9) {
+        pickupButton.textContent = `${index+1}捡取`;
+      } else {
+        pickupButton.textContent = "捡取";
+      }
+      pickupButton.id = `pickupWindowGet-${index}`;
+      index++;
+
+      pickupButton.classList.add("brownButton");
+
       pickupButton.addEventListener("click", function () {
         if(itemId == "gold") {
           Game.hero.data.gold += itemCount;

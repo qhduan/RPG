@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteText.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -33,73 +31,88 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function (Sprite) {
   "use strict";
 
+  var internal = Sprite.Namespace();
+
   var textCanvas = document.createElement("canvas");
   textCanvas.width = 1;
   textCanvas.height = 1;
   var textContext = textCanvas.getContext("2d");
 
+  /**
+   * Class Sprite.Text, contain text
+   * @class
+   * @extends Sprite.Display
+   */
   Sprite.Text = (function (_Sprite$Display) {
-    _inherits(Text, _Sprite$Display);
+    _inherits(SpriteText, _Sprite$Display);
 
-    function Text(config) {
-      _classCallCheck(this, Text);
+    /**
+     * construct Sprite.Text
+     * @constructor
+     */
 
-      _get(Object.getPrototypeOf(Text.prototype), "constructor", this).call(this);
-      this._config = config;
-      this._text = config.text || "Hello World!";
-      this._maxWidth = config.maxWidth || 1000;
-      this._color = config.color || "black";
-      this._fontSize = config.fontSize || 14;
-      this._fontFamily = config.fontFamily || "Ariel";
-      this._image = null;
+    function SpriteText(config) {
+      _classCallCheck(this, SpriteText);
+
+      _get(Object.getPrototypeOf(SpriteText.prototype), "constructor", this).call(this);
+      internal(this).text = config.text || "Invalid Text";
+      internal(this).maxWidth = config.maxWidth || 1000;
+      internal(this).color = config.color || "black";
+      internal(this).fontSize = config.fontSize || 14;
+      internal(this).fontFamily = config.fontFamily || "Ariel";
+      internal(this).image = null;
       this.generate();
     }
 
-    _createClass(Text, [{
+    _createClass(SpriteText, [{
       key: "clone",
       value: function clone() {
-        var text = new Text(this._config);
+        var text = new Text({
+          text: internal(this).text,
+          maxWidth: internal(this).maxWidth,
+          color: internal(this).color,
+          fontSize: internal(this).fontSize,
+          fontFamily: internal(this).fontFamily
+        });
         text.x = this.x;
         text.y = this.y;
         text.centerX = this.centerX;
         text.centerY = this.centerY;
-        text.scaleX = this.scaleX;
-        text.scaleY = this.scaleY;
         return text;
       }
     }, {
       key: "generate",
       value: function generate() {
-        textContext.font = this._fontSize + "px " + this._fontFamily;
+        textContext.font = this.fontSize + "px " + internal(this).fontFamily;
         // "龍" is the max-width & max-height Chinese word I think
         var lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-        this._width = 0;
+        internal(this).width = 0;
 
         // find the real-maximum-width of multiline text, base user's maxWidth
         var lines = [];
         var lineText = "";
-        for (var i = 0; i < this._text.length; i++) {
-          if (textContext.measureText(lineText + this._text[i]).width > this._maxWidth) {
+        for (var i = 0; i < this.text.length; i++) {
+          if (textContext.measureText(lineText + this.text[i]).width > this.maxWidth) {
             lines.push(lineText);
-            lineText = this._text[i];
+            lineText = this.text[i];
           } else {
-            lineText += this._text[i];
+            lineText += this.text[i];
           }
-          if (textContext.measureText(lineText).width > this._width) this._width = Math.ceil(textContext.measureText(lineText).width);
+          if (textContext.measureText(lineText).width > this.width) internal(this).width = Math.ceil(textContext.measureText(lineText).width);
         }
 
         if (lineText.length) {
           lines.push(lineText);
         }
 
-        this._height = lines.length * lineHeight;
+        this.height = lines.length * lineHeight;
 
         var canvas = document.createElement("canvas");
-        canvas.width = this._width;
-        canvas.height = this._height;
+        canvas.width = this.width;
+        canvas.height = this.height;
         var context = canvas.getContext("2d");
-        context.font = this._fontSize + "px " + this._fontFamily;
-        context.fillStyle = this._color;
+        context.font = this.fontSize + "px " + this.fontFamily;
+        context.fillStyle = this.color;
         context.textAlign = "center";
         context.textBaseline = "top";
         // draw each line
@@ -107,81 +120,88 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           context.fillText(element, canvas.width / 2, index * lineHeight);
         });
 
-        this._image = canvas;
+        internal(this).image = canvas;
       }
     }, {
       key: "draw",
       value: function draw(context) {
-        if (this._image && this._image.width > 0 && this._image.height > 0) {
-          this.drawImage(context, this._image, 0, 0, this._image.width, this._image.height);
+        var image = internal(this).image;
+        if (image && image.width > 0 && image.height > 0) {
+          this.drawImage(context, image, 0, 0, image.width, image.height);
         }
-      }
-    }, {
-      key: "svg",
-      get: function get() {
-        return this._svg;
-      },
-      set: function set(value) {
-        throw new TypeError("Sprite.Text.svg readonly");
       }
     }, {
       key: "text",
       get: function get() {
-        return this._text;
+        return internal(this).text;
       },
       set: function set(value) {
-        this._text = value;
-        this.generate();
+        if (value != this.text) {
+          internal(this).text = value;
+          this.generate();
+        }
       }
     }, {
       key: "width",
       get: function get() {
-        return this._width;
+        return internal(this).width;
       },
       set: function set(value) {
-        this._width = value;
-        this.generate();
+        if (value != this.width) {
+          internal(this).width = value;
+          this.generate();
+        }
       }
     }, {
       key: "height",
       get: function get() {
-        return this._height;
+        return internal(this).height;
       },
       set: function set(value) {
-        this._height = value;
-        this.generate();
+        if (value != this.height) {
+          internal(this).height = value;
+          this.generate();
+        }
       }
     }, {
       key: "color",
       get: function get() {
-        return this._color;
+        return internal(this).color;
       },
       set: function set(value) {
-        this._color = value;
-        this.generate();
+        if (value != this.color) {
+          internal(this).color = value;
+          this.generate();
+        }
       }
     }, {
       key: "fontSize",
       get: function get() {
-        return this._fontSize;
+        return internal(this).fontSize;
       },
       set: function set(value) {
-        this._fontSize = value;
-        this.generate();
+        if (value != this.fontSize) {
+          internal(this).fontSize = value;
+          this.generate();
+        }
       }
     }, {
       key: "fontFamily",
       get: function get() {
-        return this._fontFamily;
+        return internal(this).fontFamily;
       },
       set: function set(value) {
-        this._fontFamily = value;
-        this.generate();
+        if (value != this.fontFamily) {
+          internal(this).fontFamily = value;
+          this.generate();
+        }
       }
     }]);
 
-    return Text;
+    return SpriteText;
   })(Sprite.Display);
 })(Sprite);
-/// class Sprite.Text
-//# sourceMappingURL=SpriteText.js.map
+/**
+ * @fileoverview Define the Sprite.Text to show text in game
+ * @author mail@qhduan.com (QH Duan)
+ */

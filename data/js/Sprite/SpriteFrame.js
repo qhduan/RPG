@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteBitmap.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -32,24 +30,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
 (function (Sprite) {
 
+  var internal = Sprite.Namespace();
+
+  /**
+   * Class Sprite.Frame, a frame of Sprite.Sheet
+   * @class
+   */
   Sprite.Frame = (function (_Sprite$Display) {
-    _inherits(Frame, _Sprite$Display);
+    _inherits(SpriteFrame, _Sprite$Display);
 
-    function Frame(image, sx, sy, width, height) {
-      _classCallCheck(this, Frame);
+    function SpriteFrame(image, sx, sy, width, height) {
+      _classCallCheck(this, SpriteFrame);
 
-      _get(Object.getPrototypeOf(Frame.prototype), "constructor", this).call(this);
-      this._image = image;
-      this._sx = sx;
-      this._sy = sy;
-      this.width = width;
-      this.height = height;
+      _get(Object.getPrototypeOf(SpriteFrame.prototype), "constructor", this).call(this);
+      internal(this).image = image;
+      internal(this).sx = sx;
+      internal(this).sy = sy;
+      internal(this).width = width;
+      internal(this).height = height;
     }
 
-    _createClass(Frame, [{
+    /**
+     * @return {Image} Return the image this Sprite.Frame hold
+     */
+
+    _createClass(SpriteFrame, [{
       key: "clone",
+
+      /**
+       * @return {Object} Clone this Sprite.Frame
+       */
       value: function clone() {
-        var frame = new Frame(this._image, this._sx, this._sy, this.width, this.height, this.centerX, this.centerY);
+        var frame = new Sprite.Frame(this.image, this.sx, this.sy, this.width, this.height);
         frame.x = this.x;
         frame.y = this.y;
         return frame;
@@ -57,35 +69,74 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw(renderer) {
-        this.drawImage(renderer, this.image, this.sx, this.sy, this.width, this.height);
+        this.drawImage(renderer, this.image, this.sx, this.sy,
+        // width and height are super's, so we don't use this.width/this.height
+        internal(this).width, internal(this).height);
       }
     }, {
       key: "image",
       get: function get() {
-        return this._image;
+        return internal(this).image;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.image readonly");
       }
+
+      /**
+       * @return {number} Return sx
+       */
     }, {
       key: "sx",
       get: function get() {
-        return this._sx;
+        return internal(this).sx;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.sx readonly");
       }
+
+      /**
+       * @return {number} Return sy
+       */
     }, {
       key: "sy",
       get: function get() {
-        return this._sy;
+        return internal(this).sy;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.sy readonly");
       }
+
+      /**
+       * @return {number} return width
+       */
+    }, {
+      key: "width",
+      get: function get() {
+        return internal(this).width;
+      },
+      set: function set(value) {
+        console.error(value, this);
+        throw new Error("Sprite.Frame.width readonly");
+      }
+
+      /**
+       * @return {number} return height
+       */
+    }, {
+      key: "height",
+      get: function get() {
+        return internal(this).height;
+      },
+      set: function set(value) {
+        console.error(value, this);
+        throw new Error("Sprite.Frame.height readonly");
+      }
     }]);
 
-    return Frame;
+    return SpriteFrame;
   })(Sprite.Display);
 })(Sprite);
-/// class Sprite.Bitmap
+/**
+ * @fileoverview Class Sprite.Frame
+ * @author mail@qhduan.com (QH Duan)
+ */

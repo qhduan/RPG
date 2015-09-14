@@ -23,8 +23,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /// class Sprite.Container
 
 (function (Sprite) {
-
   "use strict";
+
+  let internal = Sprite.Namespace();
 
   /// @class Sprite.Container
   /// inherit the Sprite.Display
@@ -34,48 +35,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// construct a Sprite.Container object
     constructor () {
       super();
-      this._children = [];
+      internal(this).children = [];
+      internal(this).cacheCanvas = null;
     }
 
     get children () {
-      return this._children;
+      return internal(this).children;
     }
 
     set children (value) {
-      throw new TypeError("Sprite.Container.children readonly");
+      throw new Error("Sprite.Container.children readonly");
     }
 
     get cacheCanvas () {
-      return this._cacheCanvas;
+      return internal(this).cacheCanvas;
     }
 
     set cacheCanvas (value) {
-      throw new TypeError("Sprite.Container.cacheCanvas readonly");
+      throw new Error("Sprite.Container.cacheCanvas readonly");
     }
 
     /// @function Sprite.Container.cache
     /// make a cache canvas of container
     cache (x, y, width, height) {
-      var canvas = document.createElement("canvas");
+      let canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
-      var context = canvas.getContext("2d");
+      let context = canvas.getContext("2d");
       this.draw(context);
-      this._cacheCanvas = canvas;
+      internal(this).cacheCanvas = canvas;
     }
 
     /// @function Sprite.Container.hitTest
     hitTest (x, y) {
-      if (this._cacheCanvas) {
+      if (this.cacheCanvas) {
         return super.hitTest(x, y);
       } else {
         var hitted = [];
-        for (var i = 0; i < this.children.length; i++) {
-          var ret = this.children[i].hitTest(x, y);
+        for (let child of this.children) {
+          let ret = child.hitTest(x, y);
           if (ret instanceof Array) {
             hitted = hitted.concat(ret);
           } else if (ret === true) {
-            hitted.push(this.children[i]);
+            hitted.push(child);
           }
         }
         return hitted;
@@ -85,22 +87,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// @function Sprite.Container.draw
     /// draw all children in this container on context
     /// @param context, a 2d context from canvas
-    draw (context) {
+    draw (renderer) {
       if (this.visible != true)
         return;
 
-      if (this._cacheCanvas) {
-        this.drawImage(context, this._cacheCanvas,
-          0, 0, this._cacheCanvas.width, this._cacheCanvas.height,
-          0, 0, this._cacheCanvas.width, this._cacheCanvas.height);
+      if (this.cacheCanvas) {
+        this.drawImage(renderer, this.cacheCanvas,
+          0, 0, this.cacheCanvas.width, this.cacheCanvas.height,
+          0, 0, this.cacheCanvas.width, this.cacheCanvas.height);
       } else {
-        if (this._children.length <= 0) {
-          return;
+        if (this.children.length > 0) {
+          for (let child of this.children) {
+            child.draw(renderer)
+          }
         }
-
-        this._children.forEach((element) => {
-          element.draw(context);
-        });
       }
     }
 
@@ -109,18 +109,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// eg. c.appendChild(childA) c.appendChild(childA, childB)
     /// @param one or more children
     appendChild () {
-      if (arguments.length <= 0) {
-        console.log(arguments, this);
-        throw new TypeError("Sprite.Container.appendChild has an invalid arguments");
+      let args = Array.prototype.slice.call(arguments);
+
+      if (args.length <= 0) {
+        throw new Error("Sprite.Container.appendChild got an invalid arguments");
       }
 
-      for (let i = 0; i < arguments.length; i++) {
-        if (arguments[i] instanceof Sprite.Display == false) {
-          console.log(arguments[i]);
-          throw new TypeError("Sprite.Container.appendChild only can append Sprite.Display or it's sub-class");
+      for (let element of args) {
+        if (element instanceof Sprite.Display == false) {
+          console.error(element);
+          throw new Error("Sprite.Container.appendChild only accept Sprite.Display or it's sub-class");
         }
-        arguments[i].parent = this;
-        this._children.push(arguments[i]);
+        element.parent = this;
+        this.children.push(element);
       }
 
       this.emit("addedChildren");
@@ -131,19 +132,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// eg. c.appendChildAt(0, childA) c.appendChildAt(0, childA, childB)
     /// @param one or more children
     appendChildAt () {
-      if (arguments.length <= 1) {
+      let args = Array.prototype.slice.call(arguments);
+
+      if (args.length <= 1) {
         console.log(arguments, this);
         throw new TypeError("Sprite.Container.appendChildAt has an invalid arguments");
       }
 
-      var index = arguments[0];
-      for (let i = 1; i < arguments.length; i++) {
-        if (arguments[i] instanceof Sprite.Display == false) {
-          console.log(arguments[i]);
-          throw new TypeError("Sprite.Container.appendChild only can append Sprite.Display or it's sub-class");
+      let index = args[0];
+      for (let i = 1; i < args.length; i++) {
+        if (args[i] instanceof Sprite.Display == false) {
+          console.error(args[i]);
+          throw new Error("Sprite.Container.appendChildAt only can accept Sprite.Display or it's sub-class");
         }
-        arguments[i].parent = this;
-        this._children.splice(index, 0, arguments[i]);
+        args[i].parent = this;
+        this.children.splice(index, 0, args[i]);
       }
 
       this.emit("addedChildren");
@@ -154,10 +157,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// eg. c.removeChild(childA)
     /// @param the child you want to remove
     removeChild (element) {
-      var index = this._children.indexOf(element);
+      let index = this.children.indexOf(element);
       if (index != -1) { // 删除成功
-        this._children[index].parent = null;
-        this._children.splice(index, 1);
+        this.children[index].parent = null;
+        this.children.splice(index, 1);
         this.emit("removedChildren");
         return true;
       } else { // 没有找到需要删除的对象
@@ -168,10 +171,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// @function Sprite.Container.clear
     /// remove all children of container
     clear () {
-      for (var i = 0; i < this._children.length; i++) {
-        this._children[i].parent = null;
+      for (let child of this.children) {
+        child.parent = null;
       }
-      this._children = [];
+      internal(this).children = [];
       this.emit("removedChildren");
       return true;
     }

@@ -30,22 +30,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
-    for (var i = 0; i < images.length; i++) {
-      var img = images[i];
+    var length = images.length - 1; // 最后一张图是武器
+    for (let i = 0; i < length; i++) {
+      let img = images[i];
       context.drawImage(
         img, 0, 0, img.width, img.height,
         0, 0, width, height
       );
     }
 
-    callback(canvas);
-    /*
-    var img = new Image();
-    img.onload = function () {
-      callback(img);
-    };
-    img.src = canvas.toDataURL("image/png");
-    */
+    var withoutWeapon = new Image();
+    withoutWeapon.src = canvas.toDataURL("image/png");
+
+    context.drawImage(
+      images[length], 0, 0, images[length].width, images[length].height,
+      0, 0, width, height
+    );
+
+    var withWeapon = new Image();
+    withWeapon.src = canvas.toDataURL("image/png");
+
+    callback([withoutWeapon, withWeapon]);
   }
 
   // 把多张图片合成一张，并返回

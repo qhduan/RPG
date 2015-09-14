@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       button.classList.add("brownButton");
 
       button.addEventListener("click", function () {
-        if (Game.windows.choice.showing()) {
+        if (Game.windows.choice.showing) {
           Game.windows.choice.hide();
           if (typeof callback == "function") {
             callback(value);
@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenDown(["1", "2", "3", "4", "5", "6", "7", "8", "9", "esc"], function (key) {
-    if (Game.windows.choice.showing()) {
+    if (Game.windows.choice.showing) {
       if (key.match(/^\d$/)) {
         // match 1 to 9
         var num = parseInt(key) - 1; // get 0 to 8
@@ -81,3 +81,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
+//# sourceMappingURL=GameWindowChoice.js.map

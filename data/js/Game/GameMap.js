@@ -34,6 +34,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.Map = (function (_Sprite$Event) {
     _inherits(GameMap, _Sprite$Event);
 
+    _createClass(GameMap, [{
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.blockedMap[y] && this.blockedMap[y][x]) {
+          return true;
+        }
+        return false;
+      }
+    }]);
+
     function GameMap(mapData) {
       var _this = this;
 
@@ -43,11 +53,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       this.data = mapData;
       this.id = this.data.id;
-
-      if (this.data.entry) {
-        this.data.entry.x = this.data.entry.x * 32 + 16;
-        this.data.entry.y = this.data.entry.y * 32 + 16;
-      }
 
       var imageUrls = [];
       this.data.tilesets.forEach(function (element) {
@@ -75,11 +80,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         // 保存这个地图的所有地图块
-        _this.container = new Sprite.Container();
-        _this.container.name = _this.id;
+        _this.layers = [];
 
         _this.data.layers.forEach(function (element, index, array) {
           var layer = element;
+
+          var layerObj = new Sprite.Container();
+          layerObj.name = layer.name;
+
+          _this.layers.push(layerObj);
 
           if (layer.data) {
             // 渲染普通层
@@ -92,16 +101,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                   frame.x = x * _this.data.tilewidth;
                   frame.y = y * _this.data.tileheight;
 
-                  if (layer.properties && layer.properties.blocked) {
-                    _this.blockedMap[y][x] = frame;
+                  if (_this.blockedMap[y][x] != true) {
+                    if (layer.properties && layer.properties.blocked) {
+                      _this.blockedMap[y][x] = true;
+                    } else {
+                      _this.blockedMap[y][x] = null;
+                    }
                   }
 
-                  _this.container.appendChild(frame);
+                  layerObj.appendChild(frame);
                 }
               }
             }
-          } else {// 渲染对象层
-
+          } else {
+            // 渲染对象层
+            throw new Error("不是普通层");
           }
         });
 
@@ -110,8 +124,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
         // 这个cache会创建一个看不到的canvas
-        _this.container.cache(0, 0, _this.width, _this.height);
-        _this.minimap = _this.container.cacheCanvas;
+        //this.container.cache(0, 0, this.width, this.height);
+        //this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -123,20 +137,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(GameMap, [{
       key: "tile",
       value: function tile(x, y) {
-        x = x / this.data.tilewidth;
-        y = y / this.data.tileheight;
-        return {
-          x: Math.floor(x),
-          y: Math.floor(y)
-        };
+        if (x && typeof y == "undefined" && typeof x.x == "number" && typeof x.y == "number") {
+          return {
+            x: Math.floor(x.x / this.data.tilewidth),
+            y: Math.floor(x.y / this.data.tileheight)
+          };
+        } else if (typeof x == "number" && typeof y == "number") {
+          return {
+            x: Math.floor(x / this.data.tilewidth),
+            y: Math.floor(y / this.data.tileheight)
+          };
+        } else {
+          console.error(x, y);
+          throw new Error("Game.Map.tile Invalid arguments");
+        }
       }
 
       // 绘制图片，会改变Game.currentArea
     }, {
       key: "draw",
       value: function draw(layer) {
+        var _this2 = this;
+
         layer.clear();
-        layer.appendChild(this.container);
+
+        this.layers.forEach(function (element, index) {
+          var layerData = _this2.data.layers[index];
+
+          element.cache(0, 0, _this2.width, _this2.height);
+          if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
+            element.visible = false;
+          }
+          if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
+            element.alpha = layerData.opacity;
+          }
+          layer.appendChild(element);
+        });
 
         if (this.data.bgm) {
           // set loop = -1, 无限循环

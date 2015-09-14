@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.map.showing()) {
+    if (Game.windows.map.showing) {
       mapWindowClose.click();
     }
   });

@@ -25,6 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function (Sprite) {
   "use strict";
 
+  /**
+   *
+   */
   Sprite.rand = function (N, M) {
     return Math.floor(M + (1 + N - M) * Math.random());
   }
@@ -34,8 +37,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   Sprite.each = function (obj, functional) {
-    for (var key in obj) {
-      functional(obj[key], key, obj);
+    if (obj instanceof Set) {
+      for (let element of obj) {
+        functional(element, null, obj);
+      }
+    } else if (obj instanceof Map) {
+      for (let key of obj.keys()) {
+        functional(obj.get(key), key, obj);
+      }
+    } else {
+      for (let key in obj) {
+        functional(obj[key], key, obj);
+      }
     }
   };
 

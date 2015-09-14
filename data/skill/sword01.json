@@ -7,9 +7,9 @@
   "sound": "resource\/sword.ogg",
   "cost": 1,
   "distance": 0,
-  "flyspeed": 0,
-  "cooldown": 500,
+  "cooldown": 450,
   "type": "normal",
+  "needweapontype": "sword",
   "power": "1d10",
   "tileheight": 64,
   "tilewidth": 64,
@@ -18,32 +18,32 @@
       "frames": [0, 1, 2],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": 5,
+      "centerX": 0,
+      "centerY": 65,
       "actor": "slashdown"
     },
     "attackleft": {
       "frames": [3, 4, 5],
       "speed": 20,
       "next": "",
-      "x": -10,
-      "y": -5,
+      "centerX": 15,
+      "centerY": 40,
       "actor": "slashleft"
     },
     "attackright": {
       "frames": [6, 7, 8],
       "speed": 20,
       "next": "",
-      "x": 10,
-      "y": -5,
+      "centerX": 50,
+      "centerY": 40,
       "actor": "slashright"
     },
     "attackup": {
       "frames": [9, 10, 11],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": -30,
+      "centerX": 0,
+      "centerY": 30,
       "actor": "slashup"
     }
   }

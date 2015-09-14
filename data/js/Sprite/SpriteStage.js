@@ -52,8 +52,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       if (Sprite.Webgl.support()) {
         this._renderer = new Sprite.Webgl(width, height);
+        this._rendererType = "webgl";
       } else if (Sprite.Canvas.support()) {
         this._renderer = new Sprite.Canvas(width, height);
+        this._rendererType = "canvas";
       } else {
         throw new Error("Sprite.Stage all renderer not support");
       }
@@ -101,7 +103,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(Stage, [{
       key: "filter",
       value: function filter(name, value) {
-        this._renderer.filter(name, value);
+        return this.renderer.filter(name, value);
       }
     }, {
       key: "findHit",
@@ -298,4 +300,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   })(Sprite.Container);
 })(Sprite);
 /// class Sprite.Stage
-//# sourceMappingURL=SpriteStage.js.map

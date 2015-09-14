@@ -24,88 +24,129 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.AI = class AI {
 
     static hint () {
-      var heroPosition = Game.area.map.tile(Game.hero.x, Game.hero.y);
-      var heroDirection = Game.hero.sprite.currentAnimation.match(/up|left|down|right/)[0];
-      var heroFace = Sprite.copy(heroPosition);
+      if (Game.hero) {
 
-      switch (heroDirection) {
-        case "up":
-          heroFace.y -= 1;
-          break;
-        case "down":
-          heroFace.y += 1;
-          break;
-        case "left":
-          heroFace.x -= 1;
-          break;
-        case "right":
-          heroFace.x += 1;
-          break;
-      }
+        var heroPosition = Game.hero.position;
+        var heroFace = Game.hero.facePosition;
 
-      var hint = null;
+        var hint = null;
 
-      function FindUnderHero (element) {
-        if (hint != null || element == Game.hero) {
-          return;
+        function FindUnderHero (element) {
+          if (hint != null || element == Game.hero) {
+            return;
+          }
+          if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+            hint = element;
+          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+            hint = element;
+          }
         }
-        var t = Game.area.map.tile(element.x, element.y);
-        if (t.x == heroPosition.x && t.y == heroPosition.y) {
-          hint = element;
+
+        function FindFaceHero (element) {
+          if (hint != null || element == Game.hero) {
+            return;
+          }
+          if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
+            hint = element;
+          } else if (element.x == heroFace.x && element.y == heroFace.y) {
+            hint = element;
+          }
         }
-      }
 
-      function FindFaceHero (element) {
-        if (hint != null || element == Game.hero) {
-          return;
+        // 找最近可“事件”人物 Game.area.actors
+        Sprite.each(Game.area.touch, FindUnderHero);
+
+        // 找最近可“事件”人物 Game.area.actors
+        Sprite.each(Game.area.actors, FindUnderHero);
+        // 找最近尸体 Game.area.actors
+        Sprite.each(Game.area.bags, FindUnderHero);
+        // 最近的门
+        Game.area.doors.forEach(FindUnderHero);
+        // 最近的箱子
+        Game.area.chests.forEach(FindUnderHero);
+        // 最近的提示物（例如牌子）
+        Game.area.hints.forEach(FindUnderHero);
+
+
+        // 找最近可“事件”人物 Game.area.actors
+        Sprite.each(Game.area.actors, FindFaceHero);
+        // 找最近尸体 Game.area.actors
+        Sprite.each(Game.area.bags, FindFaceHero);
+        // 最近的门
+        Game.area.doors.forEach(FindFaceHero);
+        // 最近的箱子
+        Game.area.chests.forEach(FindFaceHero);
+        // 最近的提示物（例如牌子）
+        Game.area.hints.forEach(FindFaceHero);
+
+
+        if (Game.hintObject && Game.hintObject != hint) {
+          Game.hintObject = null;
+          Game.windows.interface.use.style.visibility = "hidden";
         }
-        var t = Game.area.map.tile(element.x, element.y);
-        if (t.x == heroFace.x && t.y == heroFace.y) {
-          hint = element;
-        }
-      }
 
-      // 找最近可“事件”人物 Game.area.actors
-      Sprite.each(Game.area.actors, FindUnderHero);
-      // 找最近尸体 Game.area.actors
-      Sprite.each(Game.area.bags, FindUnderHero);
-      // 最近的门
-      Game.area.doors.forEach(FindUnderHero);
-      // 最近的箱子
-      Game.area.chests.forEach(FindUnderHero);
-      // 最近的提示物（例如牌子）
-      Game.area.hints.forEach(FindUnderHero);
-
-
-      // 找最近可“事件”人物 Game.area.actors
-      Sprite.each(Game.area.actors, FindFaceHero);
-      // 找最近尸体 Game.area.actors
-      Sprite.each(Game.area.bags, FindFaceHero);
-      // 最近的门
-      Game.area.doors.forEach(FindFaceHero);
-      // 最近的箱子
-      Game.area.chests.forEach(FindFaceHero);
-      // 最近的提示物（例如牌子）
-      Game.area.hints.forEach(FindFaceHero);
-
-
-      if (Game.hintObject && Game.hintObject != hint) {
-        Game.hintObject = null;
-        Game.windows.interface.use.style.visibility = "hidden";
-      }
-
-      if (hint != null) {
-        Game.hintObject = hint;
-        Game.windows.interface.use.style.visibility = "visible";
-        if (hint.type == "door") {
-          Game.popup(hint, hint.description, 0, -30);
+        if (hint != null) {
+          Game.hintObject = hint;
+          Game.windows.interface.use.style.visibility = "visible";
+          if (hint.type == "door") {
+            Game.popup({x: hint.x*32+16, y: hint.y*32+16}, hint.description, 0, -30);
+          } else if (hint.type == "touch") {
+            if (hint.showmap) {
+              Game.layers.mapLayer.children.forEach(function (element) {
+                if (hint.showmap.indexOf(element.name) != -1) {
+                  if (element.visible == false) {
+                    element.visible = true;
+                    element.alpha = 0.01;
+                    Sprite.Tween.get(element).to({alpha: 1}, 200);
+                  }
+                }
+              });
+            } // showmap
+            if (hint.hidemap) {
+              Game.layers.mapLayer.children.forEach(function (element) {
+                if (hint.hidemap.indexOf(element.name) != -1) {
+                  if (element.alpha == 1) {
+                    element.visible = true;
+                    element.alpha = 0.99;
+                    Sprite.Tween.get(element).to({alpha: 0}, 200).call(function () {
+                      element.visible = false;
+                    });
+                  }
+                }
+              });
+            } // hidemap
+            if (hint.showactor) {
+              for (let actor of Game.area.actors) {
+                if (hint.showactor.indexOf(actor.id) != -1) {
+                  if (actor.visible == false) {
+                    actor.visible = true;
+                    actor.alpha = 0.01;
+                    Sprite.Tween.get(actor).to({alpha: 1}, 300);
+                  }
+                }
+              }
+            } // showactor
+            if (hint.hideactor) {
+              for (let actor of Game.area.actors) {
+                if (hint.hideactor.indexOf(actor.id) != -1) {
+                  if (actor.alpha == 1) {
+                    actor.visible = true;
+                    actor.alpha = 0.99;
+                    Sprite.Tween.get(actor).to({alpha: 0}, 100).call(function () {
+                      actor.visible = false;
+                    });
+                  }
+                }
+              }
+            } // hideactor
+          } // touch
         }
       }
     }
 
     static actor () {
       if (Game.area && Game.area.actors) {
-        Sprite.each(Game.area.actors, function (actor) {
+        for (let actor of Game.area.actors) {
 
           if (actor.data.type == "hero") {
             var barChanged = false;
@@ -141,7 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               actor.refreshBar();
             }
 
-            if (Game.hero && Game.hero.distance(actor) <= 32) {
+            if (Game.hero && actor.facePosition.x == Game.hero.x && actor.facePosition.y == Game.hero.y) {
               if (actor.y == Game.hero.y) { // left or right
                 if (actor.x < Game.hero.x) { // left
                   actor.fire("sword01", "right");
@@ -155,25 +196,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   actor.fire("sword01", "up");
                 }
               }
-            } else if (Game.hero && Game.hero.distance(actor) < 200) {
-              actor.goto(Game.hero.x, Game.hero.y, "walk", true);
+            } else if (Game.hero && Game.hero.distance(actor) < 10) {
+              actor.goto(Game.hero.x, Game.hero.y, "walk");
             } else if (actor.data.mode == "patrol") {
-              if (Math.random() < 0.8) {
+              if (Math.random() < 0.01) {
                 return;
               }
               var x = actor.x;
               var y = actor.y;
-              actor.goto(x + Sprite.rand(-50, 50), y + Sprite.rand(-50, 50), 4);
+              actor.goto(x + Sprite.rand(-5, 5), y + Sprite.rand(-5, 5), "walk", function () {
+                actor.stop();
+              });
             }
           }
-        });
+        };
       }
     }
 
     static start () {
       setInterval(function () {
         Game.AI.actor();
-      }, 500);
+      }, 50);
 
       var skip = 0;
       Sprite.Ticker.on("tick", function () {

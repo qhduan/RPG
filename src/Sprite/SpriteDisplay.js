@@ -13,12 +13,15 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/// @file SpriteDisplay.js
-/// @namespace Sprite
-/// class Sprite.Display
+/**
+ * @fileoverview Class Sprite.Display
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
+
+  let internal = Sprite.Namespace();
 
   var hitCanvas = document.createElement("canvas");
   hitCanvas.width = 1;
@@ -27,157 +30,178 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   hitContext.clearRect(0, 0, 1, 1);
   var hitData = hitContext.getImageData(0, 0, 1, 1).data;
 
-  /// @class Sprite.Display
-  /// inherit the Sprite.Event, a basic class
-  Sprite.Display = class Display extends Sprite.Event {
 
-    /// @function Sprite.Display.constructor
-    /// construct a Sprite.Display
+  /**
+   * Class Sprite.Display, base class for all other classes
+   * @class
+   * @extends Sprite.Event
+   */
+  Sprite.Display = class Display extends Sprite.Event {
+    /**
+     * construct Sprite.Display
+     * @constructor
+     */
     constructor () {
       super();
-
-      this._x = 0;
-      this._y = 0;
-      this._centerX = 0;
-      this._centerY = 0;
-      this._alpha = 1;
-      this._visible = true;
-      this._parent = null;
+      /**
+       * x position of object
+       @type {number}
+       */
+      internal(this).x = 0;
+      /**
+       * y position of object
+       @type {number}
+       */
+      internal(this).y = 0;
+      /**
+       * object's center x
+       @type {number}
+       */
+      internal(this).centerX = 0;
+      /**
+       * object's center y
+       @type {number}
+       */
+      internal(this).centerY = 0;
+      /**
+       * object's alpha, from 0 to 1, when alpha is 0, object is invisible
+       @type {number}
+       */
+      internal(this).alpha = 1;
+      /**
+       * object's visibility
+       @type {boolean}
+       */
+      internal(this).visible = true;
     }
-
-    get parent () {
-      return this._parent;
-    }
-
-    set parent (value) {
-      this._parent = value;
-    }
-
+    /**
+     * @return {number} return x position
+     */
     get x () {
-      return this._x;
+      return internal(this).x;
     }
-
+    /**
+     * @param {number} value new x position
+     */
     set x (value) {
-      if (value != this._x) {
-        this._x = value;
-        this.emit("change");
+      if (typeof value == "number" && !isNaN(value)) {
+        if (value != internal(this).x) {
+          internal(this).x = value;
+          this.emit("change");
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Display.set x : invalid argument");
       }
     }
-
+    /**
+     * @return {number} return y position
+     */
     get y () {
-      return this._y;
+      return internal(this).y;
     }
-
+    /**
+     * @param {number} value new y position
+     */
     set y (value) {
-      if (value != this._y) {
-        this._y = value;
-        this.emit("change");
+      if (typeof value == "number" && !isNaN(value)) {
+        if (value != internal(this).y) {
+          internal(this).y = value;
+          this.emit("change");
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Display.set y : invalid argument");
       }
     }
-
+    /**
+     * @return {number} return center x
+     */
     get centerX () {
-      return this._centerX;
+      return internal(this).centerX;
     }
-
+    /**
+     * @param {number} value new center x
+     */
     set centerX (value) {
-      if (value != this._centerX) {
-        this._centerX = value;
-        this.emit("change");
+      if (typeof value == "number" && !isNaN(value)) {
+        if (value != internal(this).centerX) {
+          internal(this).centerX = value;
+          this.emit("change");
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Display.set centerX : invalid argument");
       }
     }
-
+    /**
+     * @return {number} return center y
+     */
     get centerY () {
-      return this._centerY;
+      return internal(this).centerY;
     }
-
+    /**
+     * @param {number} value new center y
+     */
     set centerY (value) {
-      if (value != this._centerY) {
-        this._centerY = value;
-        this.emit("change");
+      if (typeof value == "number" && !isNaN(value)) {
+        if (value != internal(this).centerY) {
+          internal(this).centerY = value;
+          this.emit("change");
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Display.set centerY : invalid argument");
       }
     }
-
-
-
+    /**
+     * @return {number} return alpha
+     */
     get alpha () {
-      return this._alpha;
+      return internal(this).alpha;
     }
-
+    /**
+     * @param {number} value new alpha
+     */
     set alpha (value) {
-      if (value != this._alpha) {
-        this._alpha = value;
-        this.emit("change");
+      if (typeof value == "number" && !isNaN(value) && (value >= 0 || value <= 1)) {
+        if (value != internal(this).alpha) {
+          internal(this).alpha = value;
+          this.emit("change");
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Display.set alpha : invalid argument");
       }
     }
-
+    /**
+     * @return {boolean} return alpha
+     */
     get visible () {
-      return this._visible;
+      return internal(this).visible;
     }
-
+    /**
+     * @param {boolean} value new visible
+     */
     set visible (value) {
-      if (value != this._visible) {
-        this._visible = value;
+      if (value != internal(this).visible) {
+        internal(this).visible = value;
         this.emit("change");
       }
     }
-
-    realPosition () {
-      var scale = {
-        x: this.scaleX,
-        y: this.scaleY
-      };
-      var center = {
-        x: this.centerX,
-        y: this.centerY
-      };
-      var position = {
-        x: this.x,
-        y: this.y
-      };
-
-      var obj = this.parent;
-      while (obj) {
-        scale.x *= obj.scaleX;
-        scale.y *= obj.scaleY;
-        center.x += obj.centerX;
-        center.y += obj.centerY;
-        position.x += obj.x;
-        position.y += obj.y;
-        obj = obj.parent;
-      }
-
-      position.x = (position.x - center.x) * scale.x;
-      position.y = (position.y - center.y) * scale.y;
-      position.x = Math.floor(position.x);
-      position.y = Math.floor(position.y);
-
-      return {
-        position,
-        center,
-        scale,
-      };
-    }
-
-    /// @function Sprite.Display.draw
-    draw (context) {
+    /**
+     * Interface, sub-class should overload this method
+     * @param {Object} renderer
+     */
+    draw (renderer) {
       throw new Error("Invalid call Sprite.Display.draw");
     }
-
-    /// @function Sprite.Display.hitTest
+    /**
+     * Check if the x,y hit this object or not
+     * @param {number} x the x position for test
+     * @param {number} y the y position for test
+     */
     hitTest (x, y) {
-
-      /*
-      var data = this.realPosition();
-      var dx = Math.floor(data.position.x);
-      var dy = Math.floor(data.position.y);
-      var dwidth = Math.floor(100 * data.scaleX);
-      var dheight = Math.floor(100 * data.scaleY);
-      if (dx > x && dy > y)
-        return false;
-      if ((dx + dwidth) < x && (dy + dheight) < y)
-        return false;
-        */
-
       hitContext.clearRect(0, 0, 1, 1);
       hitContext.save();
       hitContext.translate(-x, -y);
@@ -188,45 +212,41 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (hitData[0] != newData[0] || hitData[1] != newData[1] || hitData[2] != newData[2]) {
         return true;
       }
-      /*
-      context.clearRect(x, y, 1, 1);
-      var oldData = context.getImageData(x, y, 1, 1).data;
-      this.draw(context);
-      var newData = context.getImageData(x, y, 1, 1).data;
-      if (oldData[0] != newData[0] || oldData[1] != newData[1] || oldData[2] != newData[2]) {
-        return true;
-      }
-      */
-
       return false;
     }
-
-    /// @function Sprite.Display.drawImage
-    /// image, draw a 'box' from.scaleX.scaleY to swidth,sheight on context
-    /// x=0,y=0--------------------------------------
-    /// -                                           -
-    /// -    sx.sy------------                      -
-    /// -    -               -                      -
-    /// -    ---swidth,sheight                      -
-    /// -                                           -
-    /// ---------------------image.width,image.height
-    /// draw an image on context
-    /// @param context a 2d context from canvas
-    /// @param image, the image we wang to draw
-    /// @param.scaleX the x position of image
-    /// @param.scaleY the y position of image
-    /// @param swidth the width of image we want to draw
-    /// @param sheight the height of image we want to draw
+    /**
+     * Draw an image to renderer
+     * x, y-----------------------------------------
+     * -                                           -
+     * -    sx.sy------------                      -
+     * -    -               -                      -
+     * -    ---swidth,sheight                      -
+     * -                                           -
+     * ---------------------------------------------image.width, image.height
+     * Crop image with sx, sy, swidth and sheight, draw it on renderer
+     * x, y will be calculated by this.x, this.y, this.centerX, this.centerY and some parents' attributes
+     * @param {Object} renderer A object who has drawImage method, eg. Sprite.Webgl
+     * @param {Object} image
+     * @param {number} sx
+     * @param {number} sy
+     * @param {number} swidth
+     * @param {number} sheight
+     */
     drawImage (renderer, image, sx, sy, swidth, sheight) {
+      if (this.visible != internal(this).visible) {
+        throw new Error("ssss");
+      }
       if (this.visible == true && this.alpha > 0) {
-        var center = {
+        let center = {
           x: this.centerX,
           y: this.centerY
         };
-        var position = {
+        let position = {
           x: this.x,
           y: this.y
         };
+
+        let alpha = this.alpha;
 
         var obj = this.parent;
         while (obj) {
@@ -234,17 +254,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           center.y += obj.centerY;
           position.x += obj.x;
           position.y += obj.y;
+          alpha *= obj.alpha;
+          if (alpha <= 0) {
+            return;
+          }
+          if (obj.visible == false) {
+            return;
+          }
           obj = obj.parent;
         }
 
         var dx = position.x - center.x;
         var dy = position.y - center.y;
 
-        renderer.alpha = this.alpha;
-        renderer.drawImage(
-          image, sx, sy, swidth, sheight,
-          dx, dy, swidth, sheight
-        );
+        renderer.alpha = alpha;
+        try {
+          renderer.drawImage(
+            image, sx, sy, swidth, sheight,
+            dx, dy, swidth, sheight
+          );
+        } catch (e) {
+          console.error(
+            image, sx, sy, swidth, sheight,
+            dx, dy, swidth, sheight
+          );
+          throw e;
+        }
       }
     }
   };

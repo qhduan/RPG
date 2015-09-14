@@ -67,7 +67,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   Sprite.Input.whenDown(["enter", "space"], function () {
-    if (Game.windows.dialogue.showing()) {
+    if (Game.windows.dialogue.showing) {
       if (dialogueWindowNext.style.display != "none") {
         dialogueWindowNext.click();
       } else if (dialogueWindowClose.style.display != "none") {
@@ -76,3 +76,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
+//# sourceMappingURL=GameWindowDialogue.js.map

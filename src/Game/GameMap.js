@@ -23,16 +23,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
   Game.Map = class GameMap extends Sprite.Event {
+
+    hitTest (x, y) {
+      if (this.blockedMap[y] && this.blockedMap[y][x]) {
+        return true;
+      }
+      return false;
+    }
+
     constructor (mapData) {
       super();
 
       this.data = mapData;
       this.id = this.data.id;
-
-      if (this.data.entry) {
-        this.data.entry.x = this.data.entry.x * 32 + 16;
-        this.data.entry.y = this.data.entry.y * 32 + 16;
-      }
 
       var imageUrls = [];
       this.data.tilesets.forEach((element) => {
@@ -60,32 +63,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // 保存这个地图的所有地图块
-        this.container = new Sprite.Container();
-        this.container.name = this.id;
+        this.layers = [];
 
         this.data.layers.forEach((element, index, array) => {
           var layer = element;
 
+          var layerObj = new Sprite.Container();
+          layerObj.name = layer.name;
+
+          this.layers.push(layerObj);
+
           if (layer.data) { // 渲染普通层
-            for (var y = 0; y < layer.height; y++) {
-              for (var x = 0; x < layer.width; x++) {
-                var position = x + y * layer.width;
-                var picture = layer.data[position] - 1;
+            for (let y = 0; y < layer.height; y++) {
+              for (let x = 0; x < layer.width; x++) {
+                let position = x + y * layer.width;
+                let picture = layer.data[position] - 1;
                 if (picture >= 0) {
-                  var frame = this.sheet.getFrame(picture);
+                  let frame = this.sheet.getFrame(picture);
                   frame.x = x * this.data.tilewidth;
                   frame.y = y * this.data.tileheight;
 
-                  if (layer.properties && layer.properties.blocked) {
-                    this.blockedMap[y][x] = frame;
+                  if (this.blockedMap[y][x] != true) {
+                    if (layer.properties && layer.properties.blocked) {
+                      this.blockedMap[y][x] = true;
+                    } else {
+                      this.blockedMap[y][x] = null;
+                    }
                   }
 
-                  this.container.appendChild(frame);
+                  layerObj.appendChild(frame);
                 }
               }
             }
           } else { // 渲染对象层
-
+            throw new Error("不是普通层");
           }
 
         });
@@ -95,8 +106,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
         // 这个cache会创建一个看不到的canvas
-        this.container.cache(0, 0, this.width, this.height);
-        this.minimap = this.container.cacheCanvas;
+        //this.container.cache(0, 0, this.width, this.height);
+        //this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
@@ -106,18 +117,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 返回某个坐标点所在的地格
     tile (x, y) {
-      x = x / this.data.tilewidth;
-      y = y / this.data.tileheight;
-      return {
-        x: Math.floor(x),
-        y: Math.floor(y)
-      };
+      if (x && typeof y == "undefined" && typeof x.x == "number" && typeof x.y == "number") {
+        return {
+          x: Math.floor(x.x / this.data.tilewidth),
+          y: Math.floor(x.y / this.data.tileheight)
+        };
+      } else if (typeof x == "number" && typeof y == "number") {
+        return {
+          x: Math.floor(x / this.data.tilewidth),
+          y: Math.floor(y / this.data.tileheight)
+        };
+      } else {
+        console.error(x, y);
+        throw new Error("Game.Map.tile Invalid arguments");
+      }
     }
 
     // 绘制图片，会改变Game.currentArea
     draw (layer) {
       layer.clear();
-      layer.appendChild(this.container);
+
+      this.layers.forEach((element, index) => {
+        var layerData = this.data.layers[index];
+
+        element.cache(0, 0, this.width, this.height);
+        if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
+          element.visible = false;
+        }
+        if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
+          element.alpha = layerData.opacity;
+        }
+        layer.appendChild(element);
+      });
 
       if (this.data.bgm) {
         // set loop = -1, 无限循环

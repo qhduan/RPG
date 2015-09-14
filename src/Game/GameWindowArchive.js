@@ -78,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       context.drawImage(img, 0, 0, img.width, img.height, 0, 0, 80, 45);
       var screenshot = canvas.toDataURL("image/jpeg");
 
-      Game.archive.save({
+      Game.Archive.save({
         hero: Game.hero.data,
         screenshot: screenshot
       });
@@ -93,7 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.register("open", function () {
 
-    if (Game.hero && Game.windows.main.showing() == false) {
+    if (Game.hero && Game.windows.main.showing == false) {
       archiveWindowSave.style.visibility = "visible";
     } else {
       archiveWindowSave.style.visibility = "hidden";
@@ -105,19 +105,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       table.removeChild(table.lastChild);
     }
 
-    var list = Game.archive.list();
+    var list = Game.Archive.list();
     list.forEach(function (element) {
       var div = document.createElement("div");
       div.classList.add("archiveItem");
 
-      var archive = Game.archive.get(`SAVE_${element}`);
+      var archive = Game.Archive.get(`SAVE_${element}`);
 
       var removeButton = document.createElement("button");
       removeButton.style.float = "right";
       removeButton.textContent = "REMOVE";
       div.appendChild(removeButton);
       removeButton.addEventListener("click", function () {
-        Game.archive.remove(`SAVE_${element}`);
+        Game.Archive.remove(`SAVE_${element}`);
         Game.windows.archive.execute("open");
       });
 
@@ -126,7 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       loadButton.textContent = "LOAD";
       div.appendChild(loadButton);
       loadButton.addEventListener("click", function () {
-        Game.archive.load(`SAVE_${element}`);
+        Game.Archive.load(`SAVE_${element}`);
         Game.windows.archive.hide();
       });
 

@@ -18,57 +18,107 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteBitmap.js
-/// @namespace Sprite
-/// class Sprite.Bitmap
+/**
+ * @fileoverview Class Sprite.Frame
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
 
-  Sprite.Frame = class Frame extends Sprite.Display {
+  let internal = Sprite.Namespace();
+
+  /**
+   * Class Sprite.Frame, a frame of Sprite.Sheet
+   * @class
+   */
+  Sprite.Frame = class SpriteFrame extends Sprite.Display {
 
     constructor (image, sx, sy, width, height) {
       super();
-      this._image = image;
-      this._sx = sx;
-      this._sy = sy;
-      this.width = width;
-      this.height = height;
+      internal(this).image = image;
+      internal(this).sx = sx;
+      internal(this).sy = sy;
+      internal(this).width = width;
+      internal(this).height = height;
     }
-
+    /**
+     * @return {Image} Return the image this Sprite.Frame hold
+     */
     get image () {
-      return this._image;
+      return internal(this).image;
     }
 
     set image (value) {
       throw new Error("Sprite.Frame.image readonly");
     }
 
+    /**
+     * @return {number} Return sx
+     */
     get sx () {
-      return this._sx;
+      return internal(this).sx;
     }
 
     set sx (value) {
       throw new Error("Sprite.Frame.sx readonly");
     }
 
+    /**
+     * @return {number} Return sy
+     */
     get sy () {
-      return this._sy;
+      return internal(this).sy;
     }
 
     set sy (value) {
       throw new Error("Sprite.Frame.sy readonly");
     }
 
+    /**
+     * @return {number} return width
+     */
+    get width () {
+      return internal(this).width;
+    }
+
+    set width (value) {
+      console.error(value, this);
+      throw new Error("Sprite.Frame.width readonly");
+    }
+
+    /**
+     * @return {number} return height
+     */
+    get height () {
+      return internal(this).height;
+    }
+
+    set height (value) {
+      console.error(value, this);
+      throw new Error("Sprite.Frame.height readonly");
+    }
+
+    /**
+     * @return {Object} Clone this Sprite.Frame
+     */
     clone () {
-      var frame = new Frame(this._image,
-        this._sx, this._sy, this.width, this.height, this.centerX, this.centerY);
+      let frame = new Sprite.Frame(
+        this.image,
+        this.sx, this.sy,
+        this.width, this.height
+      );
       frame.x = this.x;
       frame.y = this.y;
       return frame;
     }
 
     draw (renderer) {
-      this.drawImage(renderer, this.image, this.sx, this.sy, this.width, this.height);
+      this.drawImage(
+        renderer, this.image,
+        this.sx, this.sy,
+         // width and height are super's, so we don't use this.width/this.height
+        internal(this).width, internal(this).height
+      );
     }
 
   };

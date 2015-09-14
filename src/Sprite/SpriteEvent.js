@@ -18,105 +18,125 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteEvent.js
-/// @namespace Sprite
-/// class Sprite.Event
+/**
+ * @fileoverview Class Sprite.Event
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
-  /// @class Sprite.Event
-  Sprite.Event = class Event {
+  let internal = Sprite.Namespace();
 
-    /// @function Sprite.Event.constructor
-    /// construct a Sprite.Event
+  /**
+   * Class Sprite.Event, hold all events emit, bubble
+   * @class
+   */
+  Sprite.Event = class SpriteEvent {
+    /**
+     * construct Sprite.Event
+     * @constructor
+     */
     constructor () {
-      this._listeners = {};
-      this._once = {};
-      this._parent = null;
+      /**
+       * Contain all event and its' listeners
+       @type {Object}
+       @private
+       */
+      internal(this).listeners = {};
+      /**
+       * Contain an event is once or not
+       * @type {Object}
+       * @private
+       */
+      internal(this).once = {};
+      /**
+       * Parent of this object
+       * @type {Object}
+       */
+      internal(this).parent = null;
     }
-
+    /**
+     * @return {Object} parent we hold, an object or null
+     */
     get parent () {
-      return this._parent;
+      return internal(this).parent;
     }
-
+    /**
+     * Set parent of object
+     * @param {Object} value New parent value, or null
+     */
     set parent (value) {
-      this._parent = value;
+      internal(this).parent = value;
     }
-
-    /// @function Sprite.Event.hasEvent
-    hasEvent (event) {
-      if (this._listeners[event])
-        return true;
-      return false;
-    }
-
-    /// @function Sprite.Event.on
-    /// book a listener of event in this object
-    /// @param event, the event to book
-    /// @param listener, the listener to book
+    /**
+     * Register an event
+     * @param {string} event The event type, eg. "click"
+     * @param {function} listener The callback function when event fired
+     */
     on (event, listener) {
-      if (this._once[event]) {
+      // If event is an once event, when some client register this event after event fired, we just return it
+      if (internal(this).once[event]) {
         listener({
           type: event,
           target: this,
-          data: this._once[event]
+          data: internal(this).once[event]
         });
-        return;
+        return null;
+      } else {
+        if (!internal(this).listeners[event]) {
+          internal(this).listeners[event] = {};
+        }
+
+        let id = Sprite.uuid();
+        internal(this).listeners[event][id] = listener;
+        return id;
       }
-
-      if (!this._listeners[event])
-        this._listeners[event] = {};
-
-      var id = Sprite.uuid();
-
-      this._listeners[event][id] = listener;
-      return id;
     }
-
-    /// @function Sprite.Event.off
-    /// release a event listener
-    /// @param event, the event to release
-    /// @param id, the id on the book
+    /**
+     * Remove an event Register
+     * @param {string} event The event type you want to remove. eg. "click"
+     * @param {string} id The id of event, the id is what returned by "on" function
+     */
     off (event, id) {
-      if (this._listeners[event] && this._listeners[event][id]) {
-        delete this._listeners[event][id];
+      if (internal(this).listeners[event] && internal(this).listeners[event][id]) {
+        delete internal(this).listeners[event][id];
         return true;
       }
       return false;
     }
-
-    /// @function Sprite.Event.emit
-    /// emit a event
-    /// @param event, the event you want emit
-    /// @param once, is it an once event? eg. oncomplete onload maybe an once event
-    /// @param data, optional, the data you want send to listener
+    /**
+     * Fire an event
+     * @param {string} event The event type you want to fire
+     * @param {boolean} once Whether or not the event is once, if true, the event fire should only once, like "complete"
+     * @param {Object} data The data to listener, undefined or null is OK
+     */
     emit (event, once, data) {
       if (once) {
         if (typeof data != "undefined") {
-          this._once[event] = data;
+          internal(this).once[event] = data;
         } else {
-          this._once[event] = true;
+          internal(this).once[event] = true;
         }
       }
 
-      var pop = true;
+      // wheter or not bubble the event, default true
+      let bubble = true;
 
-      if (this._listeners[event]) {
-
-        for (let key in this._listeners[event]) {
-          if (this._listeners[event][key]({
+      if (internal(this).listeners[event]) {
+        for (let key in internal(this).listeners[event]) {
+          if (internal(this).listeners[event][key]({
             type: event,
             target: this,
             data: data
-          }) === false) {
-            pop = false;
+          }) === false) { // If client return just "false", stop propagation
+            bubble = false;
           }
         }
       }
 
-      if (this.parent && pop == true) {
-        this.parent.emit(event, false, data);
+      if (internal(this).parent && bubble == true) {
+        internal(this).parent.emit(event, false, data);
       }
     }
   };

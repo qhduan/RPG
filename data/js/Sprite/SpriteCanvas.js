@@ -59,6 +59,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       this._canvas = canvas;
       this._context = context;
+      this._alpha = 1;
     }
 
     _createClass(Canvas, [{
@@ -74,6 +75,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           throw new Error("drawImage invalid image");
         }
 
+        this._context.globalAlpha = this.alpha;
         this._context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
       }
     }, {
@@ -81,6 +83,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function clear() {
         this._context.fillStyle = "black";
         this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+      }
+    }, {
+      key: "alpha",
+      get: function get() {
+        return this._alpha;
+      },
+      set: function set(value) {
+        if (value != this._alpha) {
+          this._alpha = value;
+        }
       }
     }, {
       key: "width",
@@ -116,4 +128,3 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   })();
 })(Sprite);
 /// class Sprite.Canvas
-//# sourceMappingURL=SpriteCanvas.js.map

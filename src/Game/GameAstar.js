@@ -78,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     while (Object.keys(open).length) {
       // 找到F值最小的节点
       var best = null;
-      for (var key in open) {
+      for (let key in open) {
         if (best == null || open[key].f < best.f) {
           best = open[key];
         }
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (best.x == end.x && best.y == end.y) {
         best.front.push(tag(end));
         var result = [];
-        for (var i = 0; i < best.front.length; i++) {
+        for (let i = 0; i < best.front.length; i++) {
           var m = best.front[i].match(/(\d+)-(\d+)/);
           if (m) {
             result.push({

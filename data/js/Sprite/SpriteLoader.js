@@ -33,37 +33,69 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function (Sprite) {
   "use strict";
 
-  var Cache = {};
-  var Downloading = {};
+  var internal = Sprite.Namespace();
+
+  /**
+   * Cache all url and element
+   */
+  var Cache = new Map();
+  /**
+   * When some url in Downloading, the url is downloading,
+   * and other thread want it have to wait
+   */
+  var Downloading = new Map();
 
   function Fetch(url, callback, timeout) {
 
-    function Finish(obj) {
-      Cache[url] = obj;
+    var Finish = function Finish(obj) {
+      Cache.set(url, obj);
       if (typeof callback == "function") {
         callback(obj);
       }
-      if (Downloading.hasOwnProperty(url)) {
-        Downloading[url].forEach(function (callback) {
-          if (typeof callback == "function") {
-            callback(obj);
+      if (Downloading.has(url)) {
+        var callbacks = Downloading.get(url);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = callbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var _callback = _step.value;
+
+            if (typeof _callback == "function") {
+              _callback(obj);
+            }
           }
-        });
-        delete Downloading[url];
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        Downloading["delete"](url);
       }
-    }
+    };
 
-    if (Cache.hasOwnProperty(url)) {
-      Finish(Cache[url]);
+    if (Cache.has(url)) {
+      Finish(Cache.get(url));
       return;
     }
 
-    if (Downloading.hasOwnProperty(url)) {
-      Downloading[url].push(callback);
+    if (Downloading.has(url)) {
+      Downloading.get(url).push(callback);
       return;
     }
 
-    Downloading[url] = [];
+    Downloading.set(url, []);
 
     var req = new XMLHttpRequest();
     req.open("GET", url, true);
@@ -100,24 +132,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       if (req.readyState == 4) {
         if (req.status == 200) {
           if (type == "image") {
-            var blob = req.response;
-            var image = new Image();
-            image.onload = function () {
-              // window.URL.revokeObjectURL(image.src);
-              image.onload = null;
-              Finish(image);
-            };
-            image.src = window.URL.createObjectURL(blob);
+            (function () {
+              var blob = req.response;
+              var image = new Image();
+              image.onload = function () {
+                // window.URL.revokeObjectURL(image.src);
+                image.onload = null;
+                Finish(image);
+              };
+              image.src = window.URL.createObjectURL(blob);
+            })();
           } else if (type == "audio") {
-            var blob = req.response;
-            var audio = new Audio();
-            audio.oncanplay = function () {
-              // 如果reoke掉audio，那么audio.load()方法则不能用了
-              // window.URL.revokeObjectURL(audio.src);
-              audio.oncanplay = null;
-              Finish(audio);
-            };
-            audio.src = window.URL.createObjectURL(blob);
+            (function () {
+              var blob = req.response;
+              var audio = new Audio();
+              audio.oncanplay = function () {
+                // 如果reoke掉audio，那么audio.load()方法则不能用了
+                // window.URL.revokeObjectURL(audio.src);
+                audio.oncanplay = null;
+                Finish(audio);
+              };
+              audio.src = window.URL.createObjectURL(blob);
+            })();
           } else if (type == "json") {
             var json = req.response;
             if (!json) {
@@ -142,23 +178,49 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, Loader);
 
       _get(Object.getPrototypeOf(Loader.prototype), "constructor", this).call(this);
-      this._list = [];
-      this._progress = 0;
+
+      internal(this).list = [];
+      internal(this).progress = 0;
     }
 
     _createClass(Loader, [{
       key: "add",
       value: function add() {
-        for (var i = 0; i < arguments.length; i++) {
-          if (arguments[i] instanceof Array) {
-            this._list = this._list.concat(arguments[i]);
-          } else if (typeof arguments[i] == "string" && arguments[i].length > 0) {
-            this._list.push(arguments[i]);
-          } else {
-            console.error(i, arguments[i], arguments);
-            throw new Error("Sprite.Loader.add Error");
+        var args = Array.prototype.slice.call(arguments);
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var element = _step2.value;
+
+            if (element instanceof Array) {
+              internal(this).list = internal(this).list.concat(element);
+            } else if (typeof element == "string" && element.length > 0) {
+              internal(this).list.push(element);
+            } else {
+              console.error(element, args, this);
+              throw new Error("Sprite.Loader.add invalid argument");
+            }
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
           }
         }
+
+        return this;
       }
     }, {
       key: "start",
@@ -167,20 +229,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var done = 0;
         var ret = [];
-        ret.length = this._list.length;
+        ret.length = internal(this).list.length;
 
         var Done = function Done() {
           done++;
 
-          _this._progress = done / _this._list.length;
+          internal(_this).progress = done / ret.length;
           _this.emit("progress");
 
-          if (done >= _this._list.length) {
+          if (done >= ret.length) {
             _this.emit("complete", true, ret);
           }
         };
 
-        this._list.forEach(function (element, index) {
+        internal(this).list.forEach(function (element, index) {
           Fetch(element, function (result) {
             ret[index] = result;
             Done();
@@ -190,10 +252,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "progress",
       get: function get() {
-        return this._progress;
+        return internal(this).progress;
       },
       set: function set(value) {
-        throw new Error("Sprite.Loader progress readonly");
+        throw new Error("Sprite.Loader.progress readonly");
       }
     }]);
 
@@ -201,4 +263,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   })(Sprite.Event);
 })(Sprite);
 /// class Sprite.Loader
-//# sourceMappingURL=SpriteLoader.js.map

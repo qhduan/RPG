@@ -34,12 +34,83 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
+    whenPress (keys, callback) {
+      Sprite.Input.whenPress(keys, (key) => {
+        if (this.atop) {
+          callback(key);
+        }
+      });
+    }
+
+    whenUp (keys, callback) {
+      Sprite.Input.whenUp(keys, (key) => {
+        if (this.atop) {
+          callback(key);
+        }
+      });
+    }
+
+    whenDown (keys, callback) {
+      Sprite.Input.whenDown(keys, (key) => {
+        if (this.atop) {
+          callback(key);
+        }
+      });
+    }
+
     constructor (id) {
       super();
       this._id = id;
-      this._html = null;
       this._css = null;
+      this._index = -1;
       this._exec = {};
+
+      this._html = document.createElement("div");
+      this._html.id = this._id;
+      this._html.classList.add("GameWindowClass");
+      this._html.style.display = "none";
+      document.body.appendChild(this._html);
+
+      this._html.addEventListener("mousedown", (event) => {
+        var x = event.clientX;
+        var y = event.clientY;
+
+        var left = null;
+        var top = null;
+        var scale = null;
+
+        if (this._html.style.left) {
+          let t = this._html.style.left.match(/(\d+)px/);
+          if (t) {
+            left = parseInt(t[1]);
+          }
+        }
+
+        if (this._html.style.top) {
+          let t = this._html.style.top.match(/(\d+)px/);
+          if (t) {
+            top = parseInt(t[1]);
+          }
+        }
+
+        if (this._html.style.transform) {
+          let t = this._html.style.transform.match(/scale\((\d+), (\d+)\)/);
+          if (t) {
+            scale = parseFloat(t[1]);
+          }
+        }
+
+        if (typeof left == "number" && typeof top == "number" && typeof scale == "number") {
+          x -= left;
+          y -= top;
+          x /= scale;
+          y /= scale;
+          this.emit("mousedown", false, {
+            x: x,
+            y: y
+          });
+        }
+      });
     }
 
     register (name, callback) {
@@ -56,7 +127,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     show () {
       if (this._html) {
         this.emit("beforeShow");
-        this._html.style.zIndex = zIndex;
+        this._index = zIndex;
+        this._html.style.zIndex = this._index;
         this._html.style.display = "block";
         zIndex++;
         this.emit("afterShow");
@@ -66,43 +138,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     hide () {
       if (this._html) {
         this.emit("beforeHide");
+        this._index = -1;
+        this._html.style.zIndex = this._index;
         this._html.style.display = "none";
         this.emit("afterHide");
       }
     }
 
-    showing () {
+    get showing () {
       if (this._html && this._html.style.display != "none") {
         return true;
       }
       return false;
     }
 
-    only () {
+    set showing (value) {
+      throw new Error("Game.Window.showing readonly");
+    }
+
+    get atop () {
       var nodes = document.getElementsByClassName("GameWindowClass");
-      var showing = 0;
       for (let i = 0; i < nodes.length; i++) {
-        if (nodes[i].style.display != "none") {
-          showing++;
+        if (nodes[i].style.display != "none" && nodes[i].style.zIndex > this._index) {
+          return false;
         }
       }
-      if (showing == 1 && this.showing()) {
-        return true;
-      }
-      return false;
+      return true;
+    }
+
+    set atop (value) {
+      throw new Error("Game.Window.atop readonly");
     }
 
     html (html) {
-      if (this._html) {
-        document.body.removeChild(this._html);
-        this._html = null;
-      }
-      this._html = document.createElement("div");
-      this._html.id = this._id;
       this._html.innerHTML = html;
-      this._html.classList.add("GameWindowClass");
-      this._html.style.display = "none";
-      document.body.appendChild(this._html);
+    }
+
+    clear () {
+      this._html.innerHTML = "";
+    }
+
+    appendChild (domElement) {
+      this._html.appendChild(domElement);
     }
 
     css (css) {
@@ -154,19 +231,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var elements = document.getElementsByClassName("GameWindowClass");
       for (let i = 0; i < elements.length; i++) {
         elements[i].style.transformOrigin = "0 0 0";
-        // elements[i].style.transform = `scale(${scale}, ${scale})`;
-        elements[i].style.transform = `scale3d(${scale}, ${scale}, 1.0)`;
+        elements[i].style.transform = `scale(${scale}, ${scale})`;
         elements[i].style.left = `${leftMargin}px`;
         elements[i].style.top = `${topMargin}px`;
-      }
-
-      // 游戏画布拉伸
-      if (Game.stage && Game.stage.canvas) {
-        Game.stage.canvas.style.transformOrigin = "0 0 0";
-        // Game.stage.canvas.style.transform = `scale(${scale}, ${scale})`;
-        Game.stage.canvas.style.transform = `scale3d(${scale}, ${scale}, 1.0)`;
-        Game.stage.canvas.style.left = `${leftMargin}px`;
-        Game.stage.canvas.style.top = `${topMargin}px`;
       }
 
       if (Game.hero) {

@@ -232,6 +232,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       if (item.data.value > Game.hero.data.gold) {
         buyButton.disabled = true;
+        buyButton.style.opacity = 0.3;
       } else {
         buyButton.addEventListener("click", function () {
           Game.hero.data.gold -= item.data.value;
@@ -284,11 +285,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       sellButton.addEventListener("click", function () {
         if (itemCount == 1) {
+          Game.hero.data.bar.forEach(function (element, index, array) {
+            if (element && element.id == itemId) {
+              array[index] = null;
+            }
+          });
+          Sprite.each(Game.hero.data.equipment, function (element, key) {
+            if (element == itemId) {
+              Game.hero.data.equipment[key] = null;
+            }
+          });
           delete Game.hero.data.items[itemId];
         } else {
           Game.hero.data.items[itemId]--;
         }
         Game.hero.data.gold += item.data.value;
+        Game.windows.interface.execute("refresh");
         Game.windows.trade.execute("trade", items, filter);
       });
 

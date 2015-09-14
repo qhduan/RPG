@@ -85,3 +85,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   })(Sprite.Display);
 })(Sprite);
 /// class Sprite.Bitmap
+//# sourceMappingURL=SpriteBitmap.js.map

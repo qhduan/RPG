@@ -46,6 +46,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.id = this.data.id;
       this.inner = null;
 
+      if (!this.data.x || !this.data.y) {
+        this.data.x = 0;
+        this.data.y = 0;
+      }
+
       var loader = new Sprite.Loader();
       loader.add(`/item/${this.data.image}`);
       loader.start();
@@ -55,8 +60,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.icon = image;
 
         this.bitmap = new Sprite.Bitmap(image);
-        this.bitmap.centerX = image.width / 2;
-        this.bitmap.centerY = image.height / 2;
+        this.bitmap.x = this.data.x * 32 + 16;
+        this.bitmap.y = this.data.y * 32 + 16;
+
+        if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
+          this.bitmap.centerX = this.data.centerX;
+          this.bitmap.centerY = this.data.centerY;
+        } else {
+          console.log(this.data);
+          throw new Error("Game.Item invalid centerX/centerY");
+        }
+
         this.bitmap.name = this.id;
 
         // 发送完成事件，第二个参数代表一次性事件
@@ -65,19 +79,47 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get x () {
-      return this.bitmap.x;
+      return this.data.x;
+    }
+
+    set x (value) {
+      this.data.x = value;
+      this.bitmap.x = value * 32 + 16;
     }
 
     get y () {
-      return this.bitmap.y;
+      return this.data.x;
     }
 
-    set x (v) {
-      this.bitmap.x = v;
+    set y (value) {
+      this.data.y = value;
+      this.bitmap.y = value * 32 + 16;
     }
 
-    set y (v) {
-      this.bitmap.y = v;
+    get position () {
+      return {
+        x: this.x,
+        y: this.y
+      };
+    }
+
+    set position (value) {
+      console.error(this.data);
+      throw new Error("Game.Item.position readonly");
+    }
+
+    hitTest (x, y) {
+      if (this.data.hitArea && this.data.hitArea instanceof Array) {
+        for (let p of this.data.hitArea) {
+          if (x == this.x + p[0] && y == this.y + p[1]) {
+            return true;
+          }
+        }
+        return false;
+      } else {
+        console.error(this.data);
+        throw new Error("Game.Actor.hitTest invalid data");
+      }
     }
 
     pickup () {
@@ -86,10 +128,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    clone (callback) {
-      var self = this;
+    use (actor) {
+      if (this.data.type == "potion") {
+        for (let attribute in this.data.potion) {
+          var effect = this.data.potion[attribute];
+          if (attribute == "hp") {
+            actor.data.hp += effect;
+            if (actor.data.hp > actor.data.$hp) {
+              actor.data.hp = actor.data.$hp;
+            }
+          }
+        }
+      }
+    }
 
+    clone (callback) {
       var itemObj = new Game.Item(this.data);
+      itemObj.x = this.x;
+      itemObj.y = this.y;
+      itemObj.inner = this.inner;
       return itemObj;
     }
 

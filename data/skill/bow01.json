@@ -7,9 +7,9 @@
   "sound": "resource\/bow.ogg",
   "cost": 1,
   "distance": 50,
-  "flyspeed": 5,
-  "cooldown": 500,
+  "cooldown": 800,
   "type": "normal",
+  "needweapontype": "bow",
   "power": "1d6",
   "tileheight": 64,
   "tilewidth": 64,
@@ -18,32 +18,32 @@
       "frames": [0],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": 10,
+      "centerX": 0,
+      "centerY": 65,
       "actor": "shootdown"
     },
     "attackleft": {
       "frames": [1],
       "speed": 20,
       "next": "",
-      "x": -10,
-      "y": -15,
+      "centerX": 15,
+      "centerY": 40,
       "actor": "shootleft"
     },
     "attackright": {
       "frames": [2],
       "speed": 20,
       "next": "",
-      "x": 10,
-      "y": -15,
+      "centerX": 50,
+      "centerY": 40,
       "actor": "shootright"
     },
     "attackup": {
       "frames": [3],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": -10,
+      "centerX": 0,
+      "centerY": 30,
       "actor": "shootup"
     }
   }

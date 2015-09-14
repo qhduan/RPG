@@ -64,7 +64,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       canvas.height = height || 480;
 
       this._alpha = 1;
-      this._filters = {};
+      this._filters = {
+        brightness: 0,
+        contrast: 0
+      };
       this._textureCache = new Map();
 
       var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -133,7 +136,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(Webgl, [{
       key: "filter",
       value: function filter(name, value) {
-        this._filters[name] = value;
+        if (this._filters.hasOwnProperty(name)) {
+          if (typeof value == "number") {
+            this._filters[name] = value;
+          } else {
+            return this._filters[name];
+          }
+        }
       }
     }, {
       key: "createTexture",

@@ -6,9 +6,8 @@
   "icon": "resource\/fire_icon.png",
   "sound": "resource\/fire.ogg",
   "cost": 3,
-  "distance": 80,
-  "flyspeed": 4,
-  "cooldown": 500,
+  "distance": 50,
+  "cooldown": 800,
   "type": "magic",
   "power": "1d8",
   "tileheight": 64,
@@ -18,32 +17,32 @@
       "frames": [0],
       "speed": 50,
       "next": "",
-      "x": 0,
-      "y": 10,
+      "centerX": 0,
+      "centerY": 65,
       "actor": "spellcastdown"
     },
     "attackleft": {
       "frames": [1],
       "speed": 20,
       "next": "",
-      "x": -10,
-      "y": 0,
+      "centerX": 15,
+      "centerY": 40,
       "actor": "spellcastleft"
     },
     "attackright": {
       "frames": [2],
       "speed": 20,
       "next": "",
-      "x": 10,
-      "y": 0,
+      "centerX": 50,
+      "centerY": 40,
       "actor": "spellcastright"
     },
     "attackup": {
       "frames": [3],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": -10,
+      "centerX": 0,
+      "centerY": 30,
       "actor": "spellcastup"
     },
     "hitted": {

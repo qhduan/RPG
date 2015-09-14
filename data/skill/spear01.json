@@ -7,9 +7,9 @@
   "sound": "resource\/spear.ogg",
   "cost": 1,
   "distance": 0,
-  "flyspeed": 0,
-  "cooldown": 500,
+  "cooldown": 450,
   "type": "normal",
+  "needweapontype": "spear",
   "power": "1d8",
   "tileheight": 64,
   "tilewidth": 64,
@@ -18,32 +18,32 @@
       "frames": [0, 1, 2],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": 30,
+      "centerX": 0,
+      "centerY": 65,
       "actor": "thrustdown"
     },
     "attackleft": {
       "frames": [3, 4, 5],
       "speed": 20,
       "next": "",
-      "x": -30,
-      "y": 0,
+      "centerX": 15,
+      "centerY": 45,
       "actor": "thrustleft"
     },
     "attackright": {
       "frames": [6, 7, 8],
       "speed": 20,
       "next": "",
-      "x": 30,
-      "y": 0,
+      "centerX": 50,
+      "centerY": 45,
       "actor": "thrustright"
     },
     "attackup": {
       "frames": [9, 10, 11],
       "speed": 20,
       "next": "",
-      "x": 0,
-      "y": -30,
+      "centerX": 0,
+      "centerY": 30,
       "actor": "thrustup"
     }
   }

@@ -141,7 +141,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       canvas.height = height || 480;
 
       this._alpha = 1;
-      this._filters = {};
+      this._filters = {
+        brightness: 0,
+        contrast: 0
+      };
       this._textureCache = new Map();
 
       var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
@@ -216,7 +219,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     filter (name, value) {
-      this._filters[name] = value;
+      if (this._filters.hasOwnProperty(name)) {
+        if (typeof value == "number") {
+          this._filters[name] = value;
+        } else {
+          return this._filters[name];
+        }
+      }
     }
 
     createTexture (gl, image) {
