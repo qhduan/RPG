@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.choice = new Game.Window("choiceWindow");
+  var win = Game.Window.create("choice");
 
-  win.html("\n    <button id=\"choiceWindowNo\" class=\"brownButton\">取消</button>\n    <div style=\"width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);\">\n      <div style=\"height: 420px; overflow-y: auto; text-align: center;\">\n        <table id=\"choiceWindowTable\" style=\"width: 100%; height: 380px;\">\n          <tbody>\n            <tr>\n              <td id=\"choiceWindowButtonContainer\">\n              </td>\n            </tr>\n          </tbody>\n        </table>\n      </div>\n    </div>\n  ");
+  win.html = "\n    <div class=\"window-box\">\n      <button id=\"choiceWindowNo\" class=\"brownButton\">取消</button>\n      <div style=\"width: 100%; height: 100%;\">\n        <div style=\"height: 370px; overflow-y: auto; text-align: center;\">\n          <table id=\"choiceWindowTable\" style=\"width: 100%; height: 370px;\">\n            <tbody>\n              <tr>\n                <td id=\"choiceWindowButtonContainer\">\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  ";
 
-  win.css("\n    #choiceWindow {\n      text-align: center;\n    }\n\n    #choiceWindow div {\n      text-align: center;\n    }\n\n    button#choiceWindowNo {\n      position: absolute;\n      right: 10px;\n      top: 10px;\n      width: 100px;\n      height: 60px;\n      font-size: 30px;\n    }\n\n    #choiceWindowTable button {\n      margin: 5px auto;\n      min-width: 300px;\n      min-height: 60px;\n      font-size: 30px;\n      display: block;\n    }\n  ");
+  win.css = "\n    #choiceWindow {\n      text-align: center;\n    }\n\n    #choiceWindow div {\n      text-align: center;\n    }\n\n    button#choiceWindowNo {\n      position: absolute;\n      right: 100px;\n      top: 50px;\n      width: 100px;\n      height: 60px;\n      font-size: 30px;\n    }\n\n    #choiceWindowTable button {\n      margin: 5px auto;\n      min-width: 300px;\n      min-height: 60px;\n      font-size: 30px;\n      display: block;\n    }\n  ";
 
   var choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
   var buttonArray = [];
@@ -81,4 +81,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
-//# sourceMappingURL=GameWindowChoice.js.map

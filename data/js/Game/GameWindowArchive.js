@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.archive = new Game.Window("archiveWindow");
+  var win = Game.Window.create("archive");
 
-  win.html("\n    <div class=\"window-box\">\n      <div id=\"archiveWindowItemBar\">\n        <button id=\"archiveWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"archiveWindowSave\" class=\"brownButton\">保存</button>\n      </div>\n      <div id=\"archiveWindowTable\"></div>\n    </div>\n  ");
+  win.html = "\n    <div class=\"window-box\">\n      <div id=\"archiveWindowItemBar\">\n        <button id=\"archiveWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"archiveWindowSave\" class=\"brownButton\">保存</button>\n      </div>\n      <div id=\"archiveWindowTable\"></div>\n    </div>\n  ";
 
-  win.css("\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 360px;\n    }\n\n    .archiveItem {\n      border: 4px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ");
+  win.css = "\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 320px;\n    }\n\n    .archiveItem {\n      border: 4px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ";
 
   var archiveWindowSave = document.querySelector("button#archiveWindowSave");
   var archiveWindowClose = document.querySelector("button#archiveWindowClose");
@@ -121,4 +121,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.archive.show();
   });
 })();
-//# sourceMappingURL=GameWindowArchive.js.map

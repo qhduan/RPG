@@ -112,12 +112,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return frame;
     }
 
+    /**
+     * @param {Object} renderer
+     */
     draw (renderer) {
       this.drawImage(
         renderer, this.image,
         this.sx, this.sy,
-         // width and height are super's, so we don't use this.width/this.height
-        internal(this).width, internal(this).height
+        this.width, this.height
       );
     }
 

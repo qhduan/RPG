@@ -12,19 +12,19 @@
       ]
     },
     "关于剑": {
-      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='sword'",
+      "condition": "d.equipment.weapon && Game.items[d.equipment.weapon].data.type=='sword'",
       "content": [
         "剑是优雅的武器"
       ]
     },
     "关于枪": {
-      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='spear'",
+      "condition": "d.equipment.weapon && Game.items[d.equipment.weapon].data.type=='spear'",
       "content": [
         "枪很适合战场厮杀"
       ]
     },
     "关于弓": {
-      "condition": "Game.hero.data.equipment.weapon && Game.items[Game.hero.data.equipment.weapon].data.type=='bow'",
+      "condition": "d.equipment.weapon && Game.items[d.equipment.weapon].data.type=='bow'",
       "content": [
         "弓箭适合远程攻击，拉扯风筝"
       ]

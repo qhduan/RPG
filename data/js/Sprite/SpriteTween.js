@@ -47,13 +47,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _this = this;
 
         var splice = Math.min(100, time);
-
         var t = time / splice;
-
         var step = {};
 
         for (var key in attributes) {
-          step[key] = (attributes[key] - internal(this).object[key]) / splice;
+          if (typeof attributes[key] == "number") {
+            step[key] = attributes[key] - internal(this).object[key];
+            step[key] /= splice;
+          }
         }
 
         var count = 0;
@@ -67,11 +68,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             if (internal(_this).callback) {
               internal(_this).callback();
             }
-            return;
-          }
-
-          for (var key in step) {
-            internal(_this).object[key] += step[key];
+          } else {
+            for (var key in step) {
+              internal(_this).object[key] += step[key];
+            }
           }
         }, t);
 
@@ -83,6 +83,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         if (typeof callback == "function") {
           internal(this).callback = callback;
         }
+        return this;
+      }
+    }, {
+      key: "wait",
+      value: function wait(time) {
+        return this;
       }
     }]);
 
@@ -111,6 +117,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   })(Sprite.Event);
 })(Sprite);
 /**
- * @fileoverview Define the Sprite in window, declare the Sprite.Base
+ * @fileoverview Sprite.Tween
  * @author mail@qhduan.com (QH Duan)
  */
+//# sourceMappingURL=SpriteTween.js.map

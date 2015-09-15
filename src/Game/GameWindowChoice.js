@@ -21,25 +21,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.choice = new Game.Window("choiceWindow");
+  let win = Game.Window.create("choice");
 
-  win.html(`
-    <button id="choiceWindowNo" class="brownButton">取消</button>
-    <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
-      <div style="height: 420px; overflow-y: auto; text-align: center;">
-        <table id="choiceWindowTable" style="width: 100%; height: 380px;">
-          <tbody>
-            <tr>
-              <td id="choiceWindowButtonContainer">
-              </td>
-            </tr>
-          </tbody>
-        </table>
+  win.html = `
+    <div class="window-box">
+      <button id="choiceWindowNo" class="brownButton">取消</button>
+      <div style="width: 100%; height: 100%;">
+        <div style="height: 370px; overflow-y: auto; text-align: center;">
+          <table id="choiceWindowTable" style="width: 100%; height: 370px;">
+            <tbody>
+              <tr>
+                <td id="choiceWindowButtonContainer">
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #choiceWindow {
       text-align: center;
     }
@@ -50,8 +52,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     button#choiceWindowNo {
       position: absolute;
-      right: 10px;
-      top: 10px;
+      right: 100px;
+      top: 50px;
       width: 100px;
       height: 60px;
       font-size: 30px;
@@ -64,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 30px;
       display: block;
     }
-  `);
+  `;
 
   var choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
   var buttonArray = [];

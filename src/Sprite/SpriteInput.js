@@ -18,14 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteInput.js
-/// @namespace Sprite
-/// class Sprite.Input
+/**
+ * @fileoverview Class Sprite.Input
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
 
-
-  var keyTable = {
+  let keyTable = {
     "left": 37,
     "up": 38,
     "right": 39,
@@ -98,70 +98,114 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "9": 57
   };
 
-  var pressed = {};
+  let pressed = new Map();
 
-  document.addEventListener("keydown", function (event) {
+  window.addEventListener("keydown", function (event) {
     event = event || window.event;
-    var keyCode = event.keyCode;
-
-    pressed[keyCode] = true;
+    let keyCode = event.keyCode;
+    pressed.set(keyCode, true);
   });
 
-  document.addEventListener("keyup", function (event) {
+  window.addEventListener("keyup", function (event) {
     event = event || window.event;
-    var keyCode = event.keyCode;
-
-    if (pressed[keyCode])
-      delete pressed[keyCode];
+    let keyCode = event.keyCode;
+    if (pressed.has(keyCode)) {
+      pressed.delete(keyCode);
+    }
   });
 
-  Sprite.Input = class Input {
-    static isPressed (keyStr) {
-      if (pressed.hasOwnProperty(keyStr))
-        return pressed[keyStr];
-      return pressed[keyTable[keyStr]];
+  /**
+   * Sprite.Input, only has static methods
+   * @class
+   */
+  Sprite.Input = class SpriteInput {
+
+    /**
+     * @param {string} key Key-string ('A', 'a') or key-number (65, 97)
+     * @return {boolean} If the key is pressing, return true, otherwise, false
+     */
+    static isPressed (key) {
+      if (typeof key == "number") {
+        if (pressed.has(key)) {
+          return true;
+        }
+        return false;
+      } else if (typeof key == "string") {
+        key = keyTable[key];
+        if (pressed.has(key)) {
+          return true;
+        }
+        return false;
+      } else {
+        console.error(key);
+        throw new Error("Sprite.Input.isPressed got invalid argument");
+      }
     }
 
+    /**
+     * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
+     * @param {function} callback When key in keys is pressed, callback
+     */
     static whenPress (keys, callback) {
-      document.addEventListener("keypress", function (event) {
-        event = event || window.event;
-        var keyCode = event.keyCode;
-        for (let i = 0; i < keys.length; i++) {
-          let code = keyTable[keys[i]];
-          if (code && code == keyCode) {
-            callback(keys[i]);
-            return;
+      if (typeof callback == "function") {
+        window.addEventListener("keypress", function (event) {
+          event = event || window.event;
+          let keyCode = event.keyCode;
+          for (let key of keys) {
+            let code = keyTable[key];
+            if (code && code == keyCode) {
+              callback(key);
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.error(callback);
+        throw new Error("Sprite.Input.whenPress got invalid arguments");
+      }
     }
 
+    /**
+     * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
+     * @param {function} callback When key in keys is pressed, callback
+     */
     static whenDown (keys, callback) {
-      document.addEventListener("keydown", function (event) {
-        event = event || window.event;
-        var keyCode = event.keyCode;
-        for (let i = 0; i < keys.length; i++) {
-          let code = keyTable[keys[i]];
-          if (code && code == keyCode) {
-            callback(keys[i]);
-            return;
+      if (typeof callback == "function") {
+        window.addEventListener("keydown", function (event) {
+          event = event || window.event;
+          let keyCode = event.keyCode;
+          for (let key of keys) {
+            let code = keyTable[key];
+            if (code && code == keyCode) {
+              callback(key);
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.error(callback);
+        throw new Error("Sprite.Input.whenDown got invalid arguments");
+      }
     }
 
+    /**
+     * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
+     * @param {function} callback When key in keys is pressed, callback
+     */
     static whenUp (keys, callback) {
-      document.addEventListener("keyup", function (event) {
-        event = event || window.event;
-        var keyCode = event.keyCode;
-        for (let i = 0; i < keys.length; i++) {
-          let code = keyTable[keys[i]];
-          if (code && code == keyCode) {
-            callback(keys[i]);
-            return;
+      if (typeof callback == "function") {
+        window.addEventListener("keyup", function (event) {
+          event = event || window.event;
+          let keyCode = event.keyCode;
+          for (let key of keys) {
+            let code = keyTable[key];
+            if (code && code == keyCode) {
+              callback(key);
+            }
           }
-        }
-      });
+        });
+      } else {
+        console.error(callback);
+        throw new Error("Sprite.Input.whenUp got invalid arguments");
+      }
     }
   };
 

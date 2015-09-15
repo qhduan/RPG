@@ -366,3 +366,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @fileoverview Class Sprite.Sheet, maybe the most importent class
  * @author mail@qhduan.com (QH Duan)
  */
+//# sourceMappingURL=SpriteSheet.js.map

@@ -18,53 +18,89 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteBitmap.js
-/// @namespace Sprite
-/// class Sprite.Bitmap
+/**
+ * @fileoverview Define Sprite.Bitmap
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
+  "use strict";
 
-  Sprite.Bitmap = class Bitmap extends Sprite.Display {
+  let internal = Sprite.Namespace();
 
+  Sprite.Bitmap = class SpriteBitmap extends Sprite.Display {
+    /**
+     * Sprite.Bitmap's constructor
+     * @constructor
+     */
     constructor (image) {
       super();
-      this._image = image;
-      this._width = image.width;
-      this._height = image.height;
+
+      if (
+        !image ||
+        typeof image.width != "number" || image.width <= 0 ||
+        typeof image.width != "number" || image.height <= 0
+      ) {
+        console.error(image);
+        throw new Error("Sprite.Bitmap got invalid argument");
+      }
+
+      /**
+       * The image
+       */
+      internal(this).image = image;
     }
 
     clone () {
-      var bitmap = new Bitmap(this._image);
+      var bitmap = new Sprite.Bitmap(internal(this).image);
       bitmap.x = this.x;
       bitmap.y = this.y;
       bitmap.centerX = this.centerX;
       bitmap.centerY = this.centerY;
-      bitmap.scaleX = this.scaleX;
-      bitmap.scaleY = this.scaleY;
       return bitmap;
     }
 
+    /**
+     * @return {Image} Return Sprite.Bitmap's image
+     */
+    get image () {
+      return internal(this).image;
+    }
+
+    set image (value) {
+      console.error(this);
+      throw new Error("Sprite.Bitmap.image readonly");
+    }
+
+    /**
+     * @return {number} Return Sprite.Bitmap's width
+     */
     get width () {
-      return this._width;
+      return internal(this).image.width;
     }
 
     set width (value) {
-      this._width = value;
+      console.error(this);
+      throw new Error("Sprite.Bitmap.width readonly");
     }
 
+    /**
+     * @return {number} Return Sprite.Bitmap's height
+     */
     get height () {
-      return this._height;
+      return internal(this).image.height;
     }
 
     set height (value) {
-      this._height = value;
+      console.error(this);
+      throw new Error("Sprite.Bitmap.height readonly");
     }
 
-    draw (context) {
-      if (this._image && this._image.width > 0 && this._image.height > 0) {
-        this.drawImage(context, this._image,
-          0, 0, this._width, this._height);
-      }
+    /**
+     * @param {Object} renderer Draw image on the renderer
+     */
+    draw (renderer) {
+      this.drawImage(renderer, this.image, 0, 0, this.width, this.height);
     }
 
   };

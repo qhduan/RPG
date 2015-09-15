@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.pickup = new Game.Window("pickupWindow");
+  let win = Game.Window.create("pickup");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <button id="pickupWindowClose" class="brownButton">关闭</button>
       <button id="pickupWindowAll" class="brownButton">全部(a)</button>
@@ -40,9 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <tbody id="pickupWindowTable"></tbody>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #pickupWindow table {
       width: 100%;
     }
@@ -65,7 +65,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #pickupWindowAll {
 
     }
-  `);
+  `;
 
   var pickupWindowClose = document.querySelector("button#pickupWindowClose");
   var pickupWindowAll = document.querySelector("button#pickupWindowAll");

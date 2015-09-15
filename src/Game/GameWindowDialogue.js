@@ -21,22 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.dialogue = new Game.Window("dialogueWindow");
+  let win = Game.Window.create("dialogue");
 
-  win.html(`
-    <div style="width: 100%; height: 100%;">
-      <div style="position: absolute; left: 10%; top: 35%; width: 80%; height: 30%; background-color: rgba(100, 100, 100, 0.8);">
+  win.html = `
+    <div class="window-box">
+      <div style="width: 100%; height: 100%;">
         <span id="dialogueWindowSpeaker"></span>
         <table><tbody><tr><td>
-          <div id="dialogueWindowContent" style=""></div>
+          <span id="dialogueWindowContent"></span>
         </td></tr></tbody></table>
         <button id="dialogueWindowNext" style="display: block;" class="brownButton">继续</button>
         <button id="dialogueWindowClose" style="display: none;" class="brownButton">结束</button>
       </div>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #dialogueWindow table, dialogueWindow.tbody, dialogueWindow tr, dialogueWindow td {
       margin: 0;
       padding: 0;
@@ -47,34 +47,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     #dialogueWindowSpeaker {
       position: absolute;
-      left: 5px;
-      top: 5px;
+      left: 50px;
+      top: 50px;
+      font-size: 30px;
+      font-weight: bold;
     }
 
     #dialogueWindow button {
-      width: 60px;
-      height: 40px;
+      width: 120px;
+      height: 60px;
       font-size: 16px;
       position: absolute;
     }
 
     #dialogueWindowNext {
-      bottom: 5px;
-      right: 10px;
+      bottom: 50px;
+      right: 100px;
     }
 
     #dialogueWindowClose {
-      bottom: 5px;
-      right: 10px;
+      bottom: 50px;
+      right: 100px;
     }
 
-    #dialogueContent {
-      font-size: 30px;
-      font-weight: bold;
-      color: white;
+    #dialogueWindowContent {
+      font-size: 24px;
       text-align: center;
     }
-  `);
+  `;
 
   var dialogueWindowSpeaker = document.querySelector("#dialogueWindowSpeaker");
 

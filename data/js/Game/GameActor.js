@@ -204,10 +204,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // img or canvas
         Init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        var loader = new Sprite.Loader();
-        loader.add("/actor/" + this.data.image);
-        loader.start();
-        loader.on("complete", function (event) {
+        Sprite.Loader.create().add("/actor/" + this.data.image).start().on("complete", function (event) {
           Init(event.data);
         });
       } else {
@@ -292,8 +289,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
     }, {
-      key: "contact",
-      value: function contact() {
+      key: "heroUse",
+      value: function heroUse() {
         var _this2 = this;
 
         if (this.data.contact) {
@@ -302,7 +299,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           if (this.data.contact) {
             Sprite.each(this.data.contact, function (talk, key) {
-              if (eval(talk.condition)) {
+              var h = Game.hero;
+              var d = Game.hero.data;
+              var result = null;
+              try {
+                result = eval(talk.condition);
+              } catch (e) {
+                console.error(talk.condition);
+                console.error(e);
+                throw new Error("talk.condition eval error");
+              }
+              if (result) {
                 options[key] = key;
               }
             });
@@ -454,7 +461,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         Game.layers.actorLayer.appendChild(text);
 
-        var speed = Sprite.rand(0, 3);
+        var speed = Sprite.rand(1, 3);
 
         Sprite.Ticker.whiles(100, function (last) {
           text.y -= speed;
@@ -568,21 +575,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (this.x == x) {
             if (this.y - y == -1) {
               this.stop();
-              this.play("facedown");
+              this.face("down");
+
               return;
             } else if (this.y - y == 1) {
               this.stop();
-              this.play("faceup");
+              this.face("up");
               return;
             }
           } else if (this.y == y) {
             if (this.x - x == -1) {
               this.stop();
-              this.play("faceright");
+              this.face("right");
               return;
             } else if (this.x - x == 1) {
               this.stop();
-              this.play("faceleft");
+              this.face("left");
               return;
             }
           }
@@ -616,7 +624,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var path = null;
 
         if (destBlocked == false) {
-          Game.Astar.path(map, width, height, { x: this.x, y: this.y }, // 角色现在位置
+          path = Game.Astar.path(map, width, height, { x: this.x, y: this.y }, // 角色现在位置
           destPosition); // 目的地
         }
 
@@ -624,16 +632,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (!path) {
           var otherChoice = [];
           if (this.checkCollision(x, y - 1) == false) {
-            otherChoice.push({ x: x, y: y - 1, after: "facedown" });
+            otherChoice.push({ x: x, y: y - 1, after: "down" });
           }
           if (this.checkCollision(x, y + 1) == false) {
-            otherChoice.push({ x: x, y: y + 1, after: "faceup" });
+            otherChoice.push({ x: x, y: y + 1, after: "up" });
           }
           if (this.checkCollision(x - 1, y) == false) {
-            otherChoice.push({ x: x - 1, y: y, after: "faceright" });
+            otherChoice.push({ x: x - 1, y: y, after: "right" });
           }
           if (this.checkCollision(x + 1, y) == false) {
-            otherChoice.push({ x: x + 1, y: y, after: "faceleft" });
+            otherChoice.push({ x: x + 1, y: y, after: "left" });
           }
 
           if (otherChoice.length > 0) {
@@ -747,7 +755,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               // 正常结束
               if (after) {
                 _this5.stop();
-                _this5.play(after);
+                _this5.face(after);
               }
               _this5.going = false;
               if (typeof callback == "function") {
@@ -767,6 +775,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var animation = "face" + direction;
         if (this.animation != animation) {
           this.sprite.play(animation);
+          this.emit("change");
         }
       }
 
@@ -877,11 +886,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return false;
         }
 
-        var currentDirection = this.direction;
-        if (currentDirection != direction) {
+        if (this.direction != direction) {
           this.walking = true;
           this.face(direction);
-          // wait 8 ticks
+          // wait 4 ticks
           Sprite.Ticker.after(4, function () {
             _this6.walking = false;
           });
@@ -947,9 +955,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               _this6.x = newX;
               _this6.y = newY;
               _this6.walking = false;
+              _this6.emit("change");
 
               if (typeof callback == "function") {
-                callback();
+                Sprite.Ticker.after(2, function () {
+                  callback();
+                });
               }
             }
           });

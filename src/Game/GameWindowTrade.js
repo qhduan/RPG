@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.trade = new Game.Window("tradeWindow");
+  let win = Game.Window.create("trade");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <div id="tradeWindowItemBar">
         <button id="tradeWindowClose" class="brownButton">关闭</button>
@@ -38,11 +38,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       <span id="tradeWindowGold"></span>
 
-      <table style="width: 760px; height: 360px;" border="0" cellspacing="0" cellpadding="0">
+      <table style="width: 720px; height: 320px;" border="0" cellspacing="0" cellpadding="0">
         <tbody>
           <tr>
             <td style="vertical-align: top;">
-              <div style="width: 380px; overflow-y: auto;">
+              <div style="width: 355px; overflow-y: auto;">
                 <table style="width: 100%;" border="1" cellspacing="0" cellpadding="0">
                   <thead>
                     <tr>
@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               </div>
             </td>
             <td style="vertical-align: top;">
-              <div style="width: 380px; overflow-y: auto;">
+              <div style="width: 355px; overflow-y: auto;">
                 <table style="width: 100%;" border="1" cellspacing="0" cellpadding="0">
                   <thead>
                     <tr>
@@ -78,9 +78,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </tbody>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #tradeWindowItemBar > button {
       width: 60px;
       height: 40px;
@@ -108,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 20px;
       color: gold;
     }
-  `);
+  `;
 
   var tradeWindowClose = document.querySelector("button#tradeWindowClose");
 

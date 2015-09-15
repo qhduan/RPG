@@ -328,3 +328,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @fileoverview Class Sprite.Display
  * @author mail@qhduan.com (QH Duan)
  */
+//# sourceMappingURL=SpriteDisplay.js.map

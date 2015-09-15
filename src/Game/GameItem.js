@@ -24,10 +24,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.Item = class GameItem extends Sprite.Event {
 
     static load (id, callback) {
-      var itemLoader = new Sprite.Loader();
-      itemLoader.add(`/item/${id}.json`);
-      itemLoader.start();
-      itemLoader.on("complete", (event) => {
+      Sprite.Loader.create()
+        .add(`/item/${id}.json`)
+        .start()
+        .on("complete", (event) => {
         var itemData = event.data[0];
         var itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
@@ -51,10 +51,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.data.y = 0;
       }
 
-      var loader = new Sprite.Loader();
-      loader.add(`/item/${this.data.image}`);
-      loader.start();
-      loader.on("complete", (event) => {
+      Sprite.Loader.create()
+        .add(`/item/${this.data.image}`)
+        .start()
+        .on("complete", (event) => {
         var image = event.data[0];
 
         this.icon = image;

@@ -183,7 +183,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "x": null,
     "y": null,
     "centerX": 26,
-    "centerY": 45,
+    "centerY": 55,
     "hitArea": [[0, 0]],
 
     // 能力

@@ -66,12 +66,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         frame.y = this.y;
         return frame;
       }
+
+      /**
+       * @param {Object} renderer
+       */
     }, {
       key: "draw",
       value: function draw(renderer) {
-        this.drawImage(renderer, this.image, this.sx, this.sy,
-        // width and height are super's, so we don't use this.width/this.height
-        internal(this).width, internal(this).height);
+        this.drawImage(renderer, this.image, this.sx, this.sy, this.width, this.height);
       }
     }, {
       key: "image",

@@ -42,6 +42,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
         return false;
       }
+    }, {
+      key: "waterTest",
+      value: function waterTest(x, y) {
+        if (this.waterMap[y] && this.waterMap[y][x]) {
+          return true;
+        }
+        return false;
+      }
     }]);
 
     function GameMap(mapData) {
@@ -59,10 +67,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         imageUrls.push("/map/" + element.image);
       });
 
-      var loader = new Sprite.Loader();
-      loader.add(imageUrls);
-      loader.start();
-      loader.on("complete", function (event) {
+      Sprite.Loader.create().add(imageUrls).start().on("complete", function (event) {
 
         _this.sheet = new Sprite.Sheet({
           images: event.data,
@@ -70,10 +75,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           height: _this.data.tileheight
         });
 
+        _this.waterMap = [];
+        _this.waterMap.length = _this.data.height;
+        for (var i = 0; i < _this.waterMap.length; i++) {
+          _this.waterMap[i] = [];
+          _this.waterMap[i].length = _this.data.width;
+        }
+
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
         _this.blockedMap = [];
         _this.blockedMap.length = _this.data.height;
-
         for (var i = 0; i < _this.blockedMap.length; i++) {
           _this.blockedMap[i] = [];
           _this.blockedMap[i].length = _this.data.width;
@@ -85,37 +96,71 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _this.data.layers.forEach(function (element, index, array) {
           var layer = element;
 
-          var layerObj = new Sprite.Container();
-          layerObj.name = layer.name;
-
-          _this.layers.push(layerObj);
-
-          if (layer.data) {
-            // 渲染普通层
-            for (var y = 0; y < layer.height; y++) {
-              for (var x = 0; x < layer.width; x++) {
-                var position = x + y * layer.width;
-                var picture = layer.data[position] - 1;
-                if (picture >= 0) {
-                  var frame = _this.sheet.getFrame(picture);
-                  frame.x = x * _this.data.tilewidth;
-                  frame.y = y * _this.data.tileheight;
-
-                  if (_this.blockedMap[y][x] != true) {
-                    if (layer.properties && layer.properties.blocked) {
-                      _this.blockedMap[y][x] = true;
-                    } else {
-                      _this.blockedMap[y][x] = null;
-                    }
+          if (layer.name == "block") {
+            // 阻挡层，有东西则表示阻挡
+            if (layer.data) {
+              for (var y = 0; y < layer.height; y++) {
+                for (var x = 0; x < layer.width; x++) {
+                  var position = x + y * layer.width;
+                  var picture = layer.data[position] - 1;
+                  if (picture >= 0 && _this.blockedMap[y][x] != true) {
+                    _this.blockedMap[y][x] = true;
                   }
-
-                  layerObj.appendChild(frame);
                 }
               }
+            } else {
+              console.error(layer, _this.data);
+              throw new Error("Game.Map got invalid block layer");
+            }
+          } else if (layer.name == "water") {
+            // 水层，用来钓鱼
+            if (layer.data) {
+              for (var y = 0; y < layer.height; y++) {
+                for (var x = 0; x < layer.width; x++) {
+                  var position = x + y * layer.width;
+                  var picture = layer.data[position] - 1;
+                  if (picture >= 0 && _this.waterMap[y][x] != true) {
+                    _this.waterMap[y][x] = true;
+                  }
+                }
+              }
+            } else {
+              console.error(layer, _this.data);
+              throw new Error("Game.Map got invalid water layer");
             }
           } else {
-            // 渲染对象层
-            throw new Error("不是普通层");
+            var layerObj = new Sprite.Container();
+            layerObj.name = layer.name;
+
+            _this.layers.push(layerObj);
+
+            if (layer.data) {
+              // 渲染普通层
+              for (var y = 0; y < layer.height; y++) {
+                for (var x = 0; x < layer.width; x++) {
+                  var position = x + y * layer.width;
+                  var picture = layer.data[position] - 1;
+                  if (picture >= 0) {
+                    var frame = _this.sheet.getFrame(picture);
+                    frame.x = x * _this.data.tilewidth;
+                    frame.y = y * _this.data.tileheight;
+
+                    if (_this.blockedMap[y][x] != true) {
+                      if (layer.properties && layer.properties.blocked) {
+                        _this.blockedMap[y][x] = true;
+                      } else {
+                        _this.blockedMap[y][x] = null;
+                      }
+                    }
+
+                    layerObj.appendChild(frame);
+                  }
+                }
+              }
+            } else {
+              console.error(layer, _this.data);
+              throw new Error("Game.Map got invalid layer");
+            }
           }
         });
 
@@ -124,8 +169,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
         // 这个cache会创建一个看不到的canvas
-        //this.container.cache(0, 0, this.width, this.height);
-        //this.minimap = this.container.cacheCanvas;
+        // this.container.cache(0, 0, this.width, this.height);
+        // this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -173,6 +218,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
           layer.appendChild(element);
         });
+
+        layer.cache(0, 0, this.width, this.height);
+        this.minimap = layer.cacheCanvas;
+        layer.clearCache();
 
         if (this.data.bgm) {
           // set loop = -1, 无限循环

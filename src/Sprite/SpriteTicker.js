@@ -18,9 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteTicker.js
-/// @namespace Sprite
-/// class Sprite.Ticker
+/**
+ * @fileoverview Sprite.Ticker
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
@@ -28,7 +29,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   class Ticker extends Sprite.Event {
     constructor () {
       super();
-
       this.tick();
     }
 
@@ -40,8 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     after (times, callback) {
-      var count = 0;
-      var id = this.on("tick", () => {
+      let count = 0;
+      let id = this.on("tick", () => {
         count++;
         if (count >= times) {
           this.off("tick", id);
@@ -53,8 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     whiles (times, callback) {
-      var count = 0;
-      var id = this.on("tick", () => {
+      let count = 0;
+      let id = this.on("tick", () => {
         count++;
         if (count >= times) {
           if (typeof callback == "function") {

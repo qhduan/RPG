@@ -23,13 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows["interface"] = new Game.Window("interfaceWindow");
+  var win = Game.Window.create("interface");
 
-  win.html("\n    <div id=\"interfaceWindowBar\"></div>\n\n    <div style=\"position: absolute; bottom: 10px; left: 20px; width: 100px; height: 60px;\">\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowHP\" style=\"width: 100%; height: 100%; background-color: green;\"></div>\n      </div>\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowSP\" style=\"width: 100%; height: 100%; background-color: blue;\"></div>\n      </div>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n    <span id=\"interfaceWindowDatetime\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ");
+  win.html = "\n    <div id=\"interfaceWindowBar\"></div>\n\n    <div style=\"position: absolute; bottom: 10px; left: 20px; width: 100px; height: 60px;\">\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowHP\" style=\"width: 100%; height: 100%; background-color: green;\"></div>\n      </div>\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowSP\" style=\"width: 100%; height: 100%; background-color: blue;\"></div>\n      </div>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n    <span id=\"interfaceWindowDatetime\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ";
 
-  win.css("\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    #interfaceWindow {\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    button.interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n  ");
+  win.css = "\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    #interfaceWindow {\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    button.interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n  ";
 
   win.use = document.querySelector("button#interfaceWindowUse");
+
+  win.on("active", function () {
+    Game.start();
+  });
+
+  win.on("deactive", function () {
+    Game.pause();
+  });
 
   var interfaceWindowBar = document.querySelector("div#interfaceWindowBar");
 
@@ -112,39 +120,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.use.addEventListener("click", function (event) {
     if (Game.hintObject) {
-      if (Game.hintObject.type && Game.hintObject.type == "door") {
-
-        Game.windows.loading.execute("begin");
-
-        setTimeout(function () {
-          var destx = Game.hintObject.destx;
-          var desty = Game.hintObject.desty;
-          Game.clearStage();
-          Game.pause();
-          var newArea = Game.hintObject.dest;
-
-          Game.loadArea(newArea, function (area) {
-
-            Game.area = area;
-            area.map.draw(Game.layers.mapLayer);
-
-            Game.hero.data.area = newArea;
-            Game.hero.draw(Game.layers.actorLayer);
-            area.actors.add(Game.hero);
-            Game.hero.x = destx;
-            Game.hero.y = desty;
-            Game.windows["interface"].show();
-            Game.start();
-
-            Game.windows.loading.execute("end");
-          });
-        }, 100);
-      } else if (Game.hintObject.type && Game.hintObject.type == "chest") {} else if (Game.hintObject.type && Game.hintObject.type == "hint") {
-        Game.popup(Game.hintObject, Game.hintObject.message);
-      } else if (Game.hintObject instanceof Game.Actor) {
-        Game.hintObject.contact();
-      } else if (Game.hintObject instanceof Game.Item) {
-        Game.hintObject.pickup();
+      if (Game.hintObject.heroUse) {
+        Game.hintObject.heroUse();
       }
     }
   });
@@ -189,27 +166,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       while (minute.length < 2) minute = "0" + minute;
       datetime.textContent = "帝国历" + year + "年" + month + "月" + day + "日 " + hour + ":" + minute;
 
-      if (Game.area && Game.area.map && Game.area.map.data.type == "outdoor") {
-        if (hour >= 20 || hour < 4) {
-          // 20:00 to 4:00
-          Game.stage.filter("brightness", -0.15);
-        } else if (hour >= 4 && hour < 6) {
-          Game.stage.filter("brightness", -0.1);
-        } else if (hour >= 6 && hour < 8) {
-          Game.stage.filter("brightness", -0.05);
-        } else if (hour >= 8 && hour < 10) {
-          Game.stage.filter("brightness", 0.0);
-        } else if (hour >= 10 && hour < 12) {
-          Game.stage.filter("brightness", 0.05);
-        } else if (hour >= 12 && hour < 14) {
-          Game.stage.filter("brightness", 0.0);
-        } else if (hour >= 14 && hour < 16) {
-          Game.stage.filter("brightness", 0.0);
-        } else if (hour >= 16 && hour < 18) {
-          Game.stage.filter("brightness", -0.05);
-        } else if (hour >= 18 && hour < 20) {
-          Game.stage.filter("brightness", -0.1);
-        }
+      if (hour >= 20 || hour < 4) {
+        // 20:00 to 4:00
+        Game.stage.filter("brightness", -0.15);
+      } else if (hour >= 4 && hour < 6) {
+        Game.stage.filter("brightness", -0.1);
+      } else if (hour >= 6 && hour < 8) {
+        Game.stage.filter("brightness", -0.05);
+      } else if (hour >= 8 && hour < 10) {
+        Game.stage.filter("brightness", 0.0);
+      } else if (hour >= 10 && hour < 12) {
+        Game.stage.filter("brightness", 0.05);
+      } else if (hour >= 12 && hour < 14) {
+        Game.stage.filter("brightness", 0.0);
+      } else if (hour >= 14 && hour < 16) {
+        Game.stage.filter("brightness", 0.0);
+      } else if (hour >= 16 && hour < 18) {
+        Game.stage.filter("brightness", -0.05);
+      } else if (hour >= 18 && hour < 20) {
+        Game.stage.filter("brightness", -0.1);
       }
     }
   });
@@ -257,4 +232,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.sysmenu.show();
   });
 })();
-//# sourceMappingURL=GameWindowInterface.js.map

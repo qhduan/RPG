@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.register = new Game.Window("registerWindow");
+  let win = Game.Window.create("register");
 
-  win.html(`
+  win.html = `
         <div style="position: fixed; height: 250px; width: 64px; left: 50px; top: 70px;">
           <label id="loading">正在载入预览</label>
           <br>
@@ -267,9 +267,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </div>
 
 
-  `);
+  `;
 
-  win.css(`
+  win.css = `
 
     #registerWindow table, #registerWindow tbody, #registerWindow tr {
       width: 100%;
@@ -316,7 +316,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       background-color: #d5ab63;
       margin: 10px;
     }
-  `);
+  `;
 
   var registerWindowSubmit = document.querySelector("#registerWindowSubmit");
   var registerWindowBack = document.querySelector("#registerWindowBack");

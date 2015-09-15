@@ -18,75 +18,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteUtil.js
-/// @namespace Sprite
 "use strict";
 
 (function (Sprite) {
   "use strict";
 
   /**
-   *
+   * @param {number} N The min number
+   * @param {number} M The max number
+   * @return {number} A random integer N <= return < M, aka. [N, M)
    */
   Sprite.rand = function (N, M) {
-    return Math.floor(M + (1 + N - M) * Math.random());
+    var r = M - N;
+    r *= Math.random();
+    return N + Math.floor(r);
   };
 
-  Sprite.copy = function (obj) {
-    return JSON.parse(JSON.stringify(obj));
+  /**
+   * @param {Object} object The object we require copy
+   * @return {Object} A deep copy of object
+   */
+  Sprite.copy = function (object) {
+    return JSON.parse(JSON.stringify(object));
   };
 
   Sprite.each = function (obj, functional) {
-    if (obj instanceof Set) {
-      var _iteratorNormalCompletion = true;
-      var _didIteratorError = false;
-      var _iteratorError = undefined;
-
-      try {
-        for (var _iterator = obj[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-          var element = _step.value;
-
-          functional(element, null, obj);
-        }
-      } catch (err) {
-        _didIteratorError = true;
-        _iteratorError = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion && _iterator["return"]) {
-            _iterator["return"]();
-          }
-        } finally {
-          if (_didIteratorError) {
-            throw _iteratorError;
-          }
-        }
-      }
-    } else if (obj instanceof Map) {
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = obj.keys()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var key = _step2.value;
-
-          functional(obj.get(key), key, obj);
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
+    if (obj.forEach) {
+      obj.forEach(functional);
     } else {
       for (var key in obj) {
         functional(obj[key], key, obj);
@@ -116,4 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return decodeURIComponent(escape(window.atob(str)));
   };
 })(Sprite);
-/// class Sprite.Util
+/**
+ * @fileoverview Define some useful tools
+ * @author mail@qhduan.com (QH Duan)
+ */
+//# sourceMappingURL=SpriteUtil.js.map

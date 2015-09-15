@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.main = new Game.Window("mainWindow");
+  let win = Game.Window.create("main");
 
-  win.html(`
+  win.html = `
     <div>
       <h1>维加世界</h1>
       <button id="mainWindowContinue" class="brownButton">继续旅程</button>
@@ -33,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <button id="mainWindowLoad" class="brownButton">读取进度</button>
       <br>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #mainWindow {
       text-align: center;
       background-image: url("image/main.jpeg");
@@ -50,17 +50,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 60px;
       margin-top: 10px;
     }
-  `);
+  `;
 
-  document.querySelector("button#mainWindowContinue").addEventListener("click", function (event) {
+  let mainWindowContinue = document.querySelector("button#mainWindowContinue");
+  let mainWindowNew = document.querySelector("button#mainWindowNew");
+  let mainWindowLoad = document.querySelector("button#mainWindowLoad");
+
+  win.on("beforeShow", function () {
+    if (!Game.Archive.last()) {
+      mainWindowContinue.style.visibility = "hidden";
+    } else {
+      mainWindowContinue.style.visibility = "visible";
+    }
+  });
+
+  mainWindowContinue.addEventListener("click", function (event) {
     Game.Archive.load();
   });
 
-  document.querySelector("button#mainWindowNew").addEventListener("click", function (event) {
+  mainWindowNew.addEventListener("click", function (event) {
     Game.register.reg();
   });
 
-  document.querySelector("button#mainWindowLoad").addEventListener("click", function (event) {
+  mainWindowLoad.addEventListener("click", function (event) {
     Game.windows.archive.execute("open");
   });
 

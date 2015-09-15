@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Define the Sprite in window, declare the Sprite.Base
+ * @fileoverview Sprite.Tween
  * @author mail@qhduan.com (QH Duan)
  */
 
@@ -37,17 +37,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     to (attributes, time) {
 
       let splice = Math.min(100, time);
-
       let t = time / splice;
-
       let step = {};
 
       for (let key in attributes) {
-        step[key] = (attributes[key] - internal(this).object[key]) / splice;
+        if (typeof attributes[key] == "number") {
+          step[key] = attributes[key] - internal(this).object[key];
+          step[key] /= splice;
+        }
       }
 
-      var count = 0;
-      var inter = setInterval(() => {
+      let count = 0;
+      let inter = setInterval(() => {
         count++;
         if (count >= splice) {
           for (let key in attributes) {
@@ -57,13 +58,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (internal(this).callback) {
             internal(this).callback();
           }
-          return;
+        } else {
+          for (let key in step) {
+            internal(this).object[key] += step[key];
+          }
         }
-
-        for (let key in step) {
-          internal(this).object[key] += step[key];
-        }
-
       }, t);
 
       return this;
@@ -73,6 +72,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (typeof callback == "function") {
         internal(this).callback = callback;
       }
+      return this;
+    }
+
+    wait (time) {
+      return this;
     }
   };
 

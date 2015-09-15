@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteWebgl.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -28,6 +26,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 (function (Sprite) {
   "use strict";
+
+  var internal = Sprite.Namespace();
 
   var vertexShaderSrc = "\n  attribute vec2 position;\n  attribute vec2 a_texCoord;\n\n  uniform vec2 resolution;\n\n  varying vec2 texCoord;\n\n  void main() {\n     // convert the rectangle from pixels to 0.0 to 1.0\n     vec2 zeroToOne = position / resolution;\n\n     // convert from 0->1 to 0->2\n     vec2 zeroToTwo = zeroToOne * 2.0;\n\n     // convert from 0->2 to -1->+1 (clipspace)\n     vec2 clipSpace = zeroToTwo - 1.0;\n\n     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n\n     // pass the texCoord to the fragment shader\n     // The GPU will interpolate this value between points.\n     texCoord = a_texCoord;\n  }";
 
@@ -39,21 +39,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([x, y, x2, y, x, y2, x, y2, x2, y, x2, y2]), gl.STATIC_DRAW);
   }
 
+  /**
+   * Test a value is power of 2 or not, eg. 2 is true, 2048 is ture, 2000 is false
+   * @param {number} value The number to check
+   * @return {boolean} Whether or not the input number is power of 2
+   */
   function isPOT(value) {
     return value > 0 && (value - 1 & value) === 0;
   }
 
+  /**
+   * Renderer using webgl
+   * @class
+   */
   Sprite.Webgl = (function () {
     _createClass(Webgl, null, [{
       key: "support",
+
+      /**
+       * @static
+       * @return {boolean} The browser whether or not support WebGL
+       */
       value: function support() {
         var canvas = document.createElement("canvas");
-        var gl = canvas.getContext("webgl", { preserveDrawingBuffer: true }) || canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true });
+        var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
         if (gl) {
           return true;
         }
         return false;
       }
+
+      /**
+       * Construct a renderer width certain width and height
+       * @constructor
+       */
     }]);
 
     function Webgl(width, height) {
@@ -63,14 +82,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       canvas.width = width || 640;
       canvas.height = height || 480;
 
-      this._alpha = 1;
-      this._filters = {
-        brightness: 0,
-        contrast: 0
-      };
-      this._textureCache = new Map();
+      /** Private Properties */
+      var pp = internal(this);
 
-      var gl = canvas.getContext("webgl") || canvas.getContext("experimental-webgl");
+      pp.alpha = 1;
+      pp.color = [0, 0, 0];
+      pp.filter = new Map();
+      pp.filter.set("brightness", 0);
+      pp.filter.set("contrast", 0);
+      pp.textureCache = new Map();
+
+      var gl = canvas.getContext("webgl", { preserveDrawingBuffer: true }) || canvas.getContext("experimental-webgl", { preserveDrawingBuffer: true });
 
       if (!gl) {
         throw new Error("Sprite.Webgl webgl is not supported");
@@ -99,58 +121,51 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
-      var positionLocation = gl.getAttribLocation(program, "position");
-      var texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
-      var resolutionLocation = gl.getUniformLocation(program, "resolution");
-      var cropLocation = gl.getUniformLocation(program, "crop");
-      var brightnessLocation = gl.getUniformLocation(program, "brightness");
-      var contrastLocation = gl.getUniformLocation(program, "contrast");
-      var alphaLocation = gl.getUniformLocation(program, "alpha");
+      pp.positionLocation = gl.getAttribLocation(program, "position");
+      pp.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+      pp.resolutionLocation = gl.getUniformLocation(program, "resolution");
+      pp.cropLocation = gl.getUniformLocation(program, "crop");
+      pp.brightnessLocation = gl.getUniformLocation(program, "brightness");
+      pp.contrastLocation = gl.getUniformLocation(program, "contrast");
+      pp.alphaLocation = gl.getUniformLocation(program, "alpha");
 
-      this._positionLocation = positionLocation;
-      this._texCoordLocation = texCoordLocation;
-      this._resolutionLocation = resolutionLocation;
-      this._cropLocation = cropLocation;
-      this._brightnessLocation = brightnessLocation;
-      this._contrastLocation = contrastLocation;
-      this._alphaLocation = alphaLocation;
-
-      gl.uniform2f(resolutionLocation, canvas.width, canvas.height);
+      gl.uniform2f(pp.resolutionLocation, canvas.width, canvas.height);
 
       var texCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-      gl.enableVertexAttribArray(texCoordLocation);
-      gl.vertexAttribPointer(texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(pp.texCoordLocation);
+      gl.vertexAttribPointer(pp.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
       var buffer = gl.createBuffer();
 
       setRectangle(gl, 0, 0, 1, 1);
 
-      this._texCoordBuffer = texCoordBuffer;
-      this._buffer = buffer;
+      pp.texCoordBuffer = texCoordBuffer;
+      pp.buffer = buffer;
 
-      this._canvas = canvas;
-      this._gl = gl;
+      pp.canvas = canvas;
+      pp.gl = gl;
     }
 
     _createClass(Webgl, [{
       key: "filter",
+
+      /**
+       * @param {string} name The name of filter you want get or set
+       * @param {number} value Number or undefined, if undefined ,return current value
+       */
       value: function filter(name, value) {
-        if (this._filters.hasOwnProperty(name)) {
-          if (typeof value == "number") {
-            this._filters[name] = value;
-          } else {
-            return this._filters[name];
-          }
+        if (typeof value == "number") {
+          internal(this).filter.set(name, value);
+        } else {
+          return internal(this).get(name);
         }
       }
     }, {
       key: "createTexture",
       value: function createTexture(gl, image) {
-        //var cacheIndex = imageCache.indexOf(image);
-
-        if (this._textureCache.has(image)) {
-          return this._textureCache.get(image);
+        if (internal(this).textureCache.has(image)) {
+          return internal(this).textureCache.get(image);
         } else {
           var texture = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -167,7 +182,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
           }
 
-          this._textureCache.set(image, texture);
+          internal(this).textureCache.set(image, texture);
           gl.bindTexture(gl.TEXTURE_2D, null);
           return texture;
         }
@@ -175,11 +190,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "drawImage",
       value: function drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-        var gl = this._gl;
+        /** Private Properties */
+        var pp = internal(this);
+        var gl = pp.gl;
 
         if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
-          console.error(image);
-          throw new Error("drawImage invalid image");
+          console.error(image, this);
+          throw new Error("Sprite.Webgl.drawImage invalid image");
         }
 
         if (arguments.length == 9) {
@@ -205,36 +222,26 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             sw = image.width;
             sh = image.height;
           } else {
-            console.error(arguments);
-            throw new Error("drawImage invalid arguments");
+            console.error(arguments, this);
+            throw new Error("Sprite.Webgl.drawImage invalid arguments");
           }
 
         var texture = this.createTexture(gl, image);
 
         gl.bindTexture(gl.TEXTURE_2D, texture);
-        //setRectangle(gl, sx/image.width, sy/image.height, sw/image.width, sh/image.height);
-        gl.uniform4f(this._cropLocation, sx / image.width, sy / image.height, sw / image.width, sh / image.height);
-        //console.log(sx, sy, sw, sh, dx, dy, dw, dh, sx/image.width, sy/image.height, sw/image.width, sh/image.height)
-        //setRectangle(gl, 0, 0, 1, 1);
 
-        if (this._filters["brightness"]) {
-          gl.uniform1f(this._brightnessLocation, this._filters["brightness"]);
-        } else {
-          gl.uniform1f(this._brightnessLocation, 0.0);
-        }
+        // Set sx, sy, sw, sh, aka. image's crop
+        gl.uniform4f(pp.cropLocation, sx / image.width, sy / image.height, sw / image.width, sh / image.height);
 
-        if (this._filters["contrast"]) {
-          gl.uniform1f(this._contrastLocation, this._filters["contrast"]);
-        } else {
-          gl.uniform1f(this._contrastLocation, 0.0);
-        }
+        gl.uniform1f(pp.brightnessLocation, pp.filter.get("brightness"));
+        gl.uniform1f(pp.contrastLocation, pp.filter.get("contrast"));
+        gl.uniform1f(pp.alphaLocation, pp.alpha);
 
-        gl.uniform1f(this._alphaLocation, this._alpha);
+        gl.bindBuffer(gl.ARRAY_BUFFER, pp.buffer);
+        gl.enableVertexAttribArray(pp.positionLocation);
+        gl.vertexAttribPointer(pp.positionLocation, 2, gl.FLOAT, false, 0, 0);
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, this._buffer);
-        gl.enableVertexAttribArray(this._positionLocation);
-        gl.vertexAttribPointer(this._positionLocation, 2, gl.FLOAT, false, 0, 0);
-
+        // Set dx, dy, dw, dh, aka. image's position, width and height
         setRectangle(gl, dx, dy, dw, dh);
 
         // draw
@@ -243,48 +250,101 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "clear",
       value: function clear() {
-        var gl = this._gl;
-        gl.clearColor(0, 0, 0, 1); // black
+        var gl = internal(this).gl;
+        var color = internal(this).color;
+        gl.clearColor(color[0], color[1], color[2], 1); // black
         gl.clear(gl.COLOR_BUFFER_BIT);
       }
     }, {
       key: "alpha",
       get: function get() {
-        return this._alpha;
+        return internal(this).alpha;
       },
       set: function set(value) {
-        this._alpha = value;
+        if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
+          if (value != internal(this).alpha) {
+            internal(this).alpha = value;
+          }
+        } else {
+          console.error(value, this);
+          throw new Error("Sprite.Webgl got invalid alpha number");
+        }
+      }
+
+      /**
+       * @return {string} The color, eg "#00ff00"
+       */
+    }, {
+      key: "color",
+      get: function get() {
+        var color = internal(this).color;
+        var r = color[0].toString(16);
+        var g = color[1].toString(16);
+        var b = color[2].toString(16);
+        if (r.length < 2) r = "0" + r;
+        if (g.length < 2) g = "0" + g;
+        if (b.length < 2) b = "0" + b;
+        return "#" + r + g + b;
+      },
+
+      /**
+       * @param {string} value The new color, eg "#00ff00"
+       */
+      set: function set(value) {
+        var m = value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/);
+        if (m) {
+          var r = m[1];
+          var g = m[2];
+          var b = m[3];
+          internal(this).color[0] = parseInt(r, 16);
+          internal(this).color[1] = parseInt(g, 16);
+          internal(this).color[2] = parseInt(b, 16);
+        } else {
+          console.error(value, this);
+          throw new Error("Sprite.Webgl.color invalid color format");
+        }
       }
     }, {
       key: "width",
       get: function get() {
-        return this._canvas.width;
+        return internal(this).canvas.width;
       },
       set: function set(value) {
-        if (value != this._canvas.width) {
-          this._canvas.width = value;
-          this._gl.viewport(0, 0, this._canvas.width, this._canvas.height);
-          this._gl.uniform2f(resolutionLocation, this._canvas.width, this._canvas.height);
+        if (typeof value == "number" && !isNaN(value) && value > 0 && value < 10000) {
+          if (value != internal(this).canvas.width) {
+            internal(this).canvas.width = value;
+            internal(this).gl.viewport(0, 0, internal(this).canvas.width, internal(this).canvas.height);
+            internal(this).gl.uniform2f(internal(this).resolutionLocation, internal(this).canvas.width, internal(this).canvas.height);
+          }
+        } else {
+          console.error(value, this);
+          throw new Error("Sprite.Webgl got invalid width number");
         }
       }
     }, {
       key: "height",
       get: function get() {
-        return this._canvas.height;
+        return internal(this).canvas.height;
       },
       set: function set(value) {
-        if (value != this._canvas.height) {
-          this._canvas.height = value;
-          this._gl.viewport(0, 0, this._canvas.width, this._canvas.height);
-          this._gl.uniform2f(resolutionLocation, this._canvas.width, this._canvas.height);
+        if (typeof value == "number" && !isNaN(value) && value > 0 && value < 10000) {
+          if (value != internal(this).canvas.height) {
+            internal(this).canvas.height = value;
+            internal(this).gl.viewport(0, 0, internal(this).canvas.width, internal(this).canvas.height);
+            internal(this).gl.uniform2f(resolutionLocation, internal(this).canvas.width, internal(this).canvas.height);
+          }
+        } else {
+          console.error(value, this);
+          throw new Error("Sprite.Webgl got invalid height number");
         }
       }
     }, {
       key: "canvas",
       get: function get() {
-        return this._canvas;
+        return internal(this).canvas;
       },
       set: function set(value) {
+        console.error(value, this);
         throw new Error("Sprite.Webgl.canvas cannot write");
       }
     }]);
@@ -292,5 +352,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return Webgl;
   })();
 })(Sprite);
-/// class Sprite.Webgl
-//# sourceMappingURL=SpriteWebgl.js.map
+/**
+ * @fileoverview Define the Sprite.Webgl, a renderer, other choice from Sprite.Canvas
+ * @author mail@qhduan.com (QH Duan)
+ */

@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var last = list[0];
       return JSON.parse(window.localStorage.getItem("SAVE_" + last));
     } else {
-      throw new Error("Game.Archive.last Error");
+      return null;
     }
   };
 
@@ -94,6 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.drawHero(heroData.custom, function (heroImage) {
         heroData.image = heroImage;
         Game.hero = new Game.Actor(heroData);
+        Game.AI.attach(Game.hero);
 
         Game.hero.on("complete", function () {
 
@@ -102,13 +103,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.area = area;
             area.map.draw(Game.layers.mapLayer);
 
-            if (!Game.hero.data.x && !Game.hero.data.x) {
-              if (area.map.data.entry.x && area.map.data.entry.y) {
-                Game.hero.data.x = area.map.data.entry.x;
-                Game.hero.data.y = area.map.data.entry.y;
-              } else {
-                throw new Error("Invalid Hero Position");
-              }
+            if (area.map.data.entry.x && area.map.data.entry.y) {
+              Game.hero.data.x = area.map.data.entry.x;
+              Game.hero.data.y = area.map.data.entry.y;
+            } else {
+              throw new Error("Invalid map entry");
             }
 
             area.actors.add(Game.hero);
@@ -129,4 +128,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     //return archive[id];
   };
 })();
-//# sourceMappingURL=GameArchive.js.map

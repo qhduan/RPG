@@ -35,8 +35,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 保存Stage中的Layer的对象
     },
     config: { // 保存所有设置（默认设置）
-      walk: 4, // 角色行走速度
-      run: 8, // 角色跑动速度
       width: 800, // 渲染窗口的原始大小
       height: 450,
       scale: false, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
@@ -64,9 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.stage = new Sprite.Stage(Game.config.width, Game.config.height);
 
     // 建立一个可以自动伸缩的窗口
-    Game.windows.stage = new Game.Window("stageWindow");
-    Game.windows.stage.appendChild(Game.stage.canvas);
-    Game.windows.stage.show();
+    Game.Window.create("stage").appendChild(Game.stage.canvas).show();
 
     Game.layers.mapLayer = new Sprite.Container();
     Game.layers.mapLayer.name = "mapLayer";
@@ -98,6 +94,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     });
 
+    /*
+    setInterval(() => {
+      Game.stage.update();
+    }, 0);
+     */
     Sprite.Ticker.on("tick", function () {
       if (Game.paused == false) {
         Game.stage.update();

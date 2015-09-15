@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="description" content="RPG">
+  <meta name="author" content="longinus">
+  <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+  <link rel="icon" type="image/png" href="icon32x32.png" />
+  <title>维加世界</title>
+</head>
+<body>
+
+<script>
+function randomString() {
+    var text = "";
+    var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+
+    for( var i=0; i < 5; i++ )
+        text += possible.charAt(Math.floor(Math.random() * possible.length));
+
+    return text;
+}
+
+var a = [];
+a.length = 1000000;
+
+
+console.time("map");
+
+for (var i = 0; i < a.length; i++) {
+  a[i] = new Map();
+}
+
+console.timeEnd("map");
+console.time("obj");
+
+for (var i = 0; i < a.length; i++) {
+  a[i] = {};
+}
+
+console.timeEnd("obj");
+
+
+</script>
+
+</body>
+</html>

@@ -101,10 +101,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       imageUrls.push(`${BASE}/weapons/${heroCustom.sex}/weapons.png`);
     }
 
-    var loader = new Sprite.Loader();
-    loader.add(imageUrls);
-    loader.start();
-    loader.on("complete", function (event) {
+    Sprite.Loader.create()
+      .add(imageUrls)
+      .start()
+      .on("complete", function (event) {
       CombineHeroImage(event.data, heroCustom.width, heroCustom.height, callback);
     });
 

@@ -28,7 +28,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var Sprite = window.Sprite = {};
 
+  /**
+   * Function Sprite.Namespace, return an unique Private-Properties function
+   * for javascript private properties need, for es6
+   */
   Sprite.Namespace = function () {
+    /**
+     * Using closure variable store private properties
+     * and different file have different "privateProperties"
+     */
     var privateProperties = new WeakMap();
     return function (object) {
       if (privateProperties.has(object) == false) {

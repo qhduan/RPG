@@ -1,7 +1,6 @@
 {
   "name": "斯塔特南部森林",
   "bgm": "Dance",
-  "type": "outdoor",
   "entry": {
     "x": 14,
     "y": 2
@@ -25,18 +24,18 @@
       "mode": "patrol"
     }
   ],
-  "door":
+  "touch": [
+
+  ],
+  "onto":
   [
     {
       "x": 14,
       "y": 0,
       "dest": "starttown",
       "description": "通往斯塔特镇",
-      "destx": 28,
-      "desty": 47
+      "destx": 48,
+      "desty": 98
     }
-  ],
-  "chest":
-  [
   ]
 }

@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.status = new Game.Window("statusWindow");
+  let win = Game.Window.create("status");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <div id="statusWindowItemBar">
         <button id="statusWindowClose" class="brownButton">关闭</button>
@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
       <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-          <td style="width: 60%;">
+          <td style="width: 50%;">
             <label id="heroName"></label>
             <label id="heroHP"></label>
             <label id="heroSP"></label>
@@ -47,7 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <label id="heroMATK"></label>
             <label id="heroMDEF"></label>
           </td>
-          <td style="width: 40%;">
+          <td style="width: 50%;">
             <table id="statusWindowEquipmentTable" border="1" cellspacing="0" cellpadding="0">
               <tbody>
                 <tr>
@@ -86,9 +86,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </tr>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #statusWindowEquipmentTable button {
       width: 60px;
       height: 40px;
@@ -124,9 +124,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     #statusWindow table {
       width: 100%;
-      height: 360px;
+      height: 320px;
     }
-  `);
+  `;
 
   var statusWindowEquipment = {
     head: document.querySelector("#equipment-head"),

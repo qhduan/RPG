@@ -35,12 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     if (preloadItems.length > 0) {
-      var itemLoader = new Sprite.Loader();
+      var itemLoader = Sprite.Loader.create();
       preloadItems.forEach(function (element) {
         itemLoader.add("/item/" + element + ".json");
       });
-      itemLoader.start();
-      itemLoader.on("complete", function (event) {
+      itemLoader.start().on("complete", function (event) {
         preloadItems.forEach(function (element, index) {
           var itemData = event.data[index];
           Game.items[element] = new Game.Item(itemData);
@@ -48,11 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     }
 
-    var loader = new Sprite.Loader();
-    loader.add("map/" + id + ".json", "map/" + id + "_extra.json");
-    loader.start();
-
-    loader.on("complete", function (event) {
+    Sprite.Loader.create().add("map/" + id + ".json", "map/" + id + "_extra.json").start().on("complete", function (event) {
 
       var mapData = event.data[0];
       var mapExtra = event.data[1];
@@ -67,10 +62,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var area = {
           actors: new Set(),
           bags: {},
-          doors: [],
-          chests: [],
-          hints: [],
-          touch: [],
+          touch: [], // touch或onto会触发的地点/物品
+          onto: [], // onto会触发的地点/物品
           map: mapObj
         };
 
@@ -85,9 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (mapExtra.actors) {
           mapExtra.actors.forEach(function (element) {
             completeCount--;
-            var actorLoader = new Sprite.Loader();
-            actorLoader.add("actor/" + element.id + ".json").start();
-            actorLoader.on("complete", function (event) {
+            Sprite.Loader.create().add("actor/" + element.id + ".json").start().on("complete", function (event) {
               var actorData = Sprite.copy(event.data[0]);
               actorData.x = element.x;
               actorData.y = element.y;
@@ -105,27 +96,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           });
         }
 
-        if (mapExtra.door) {
-          mapExtra.door.forEach(function (element) {
-            var door = Sprite.copy(element);
-            door.type = "door";
-            area.doors.push(door);
-          });
-        }
-
-        if (mapExtra.chest) {
-          mapExtra.chest.forEach(function (element) {
-            var chest = Sprite.copy(element);
-            chest.type = "chest";
-            area.chests.push(chest);
-          });
-        }
-
-        if (mapExtra.hint) {
-          mapExtra.hint.forEach(function (element) {
-            var hint = Sprite.copy(element);
-            hint.type = "hint";
-            area.hints.push(hint);
+        if (mapExtra.onto) {
+          mapExtra.onto.forEach(function (element) {
+            var onto = Sprite.copy(element);
+            onto.type = "onto";
+            area.onto.push(onto);
           });
         }
 

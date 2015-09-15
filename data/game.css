@@ -10,12 +10,16 @@ html, body {
   user-select: none;
 }
 
+html, body, div, button, a, canvas {
+  cursor: url("image/cursor.gif"), default;
+}
+
 /* 去掉按钮选中时的边框（尤其在chrome中） */
 button:focus {
   outline: 0;
 }
 
-.GameWindowClass {
+.game-window {
   position: absolute;
   top: 0;
   left: 0;
@@ -25,27 +29,18 @@ button:focus {
   z-index: 10;
 }
 
-
-
-
 /* 窗口内饰 */
 .window-box {
   position: absolute;
-  width: 760px;
-  height: 410px;
-  left: 10px;
-  top: 10px;
-  padding: 5px;
-  background-color: rgba(100, 100, 100, 0.75);
-  border: 5px solid gray;
-  border-radius: 10px;
+  top: 0;
+  left: 0;
+  width: 720px;
+  height: 370px;
+  padding: 40px;
   overflow-y: auto;
+  background-image: url("image/window/background.png");
+  background-repeat: no-repeat;
 }
-
-
-
-
-
 
 
 
@@ -67,7 +62,6 @@ button:focus {
 	border-radius:3px;
 	border:1px solid #54381e;
 	display:inline-block;
-	cursor:pointer;
 	color:#ffffff;
 	font-family:Arial;
 	padding:2px 4px;

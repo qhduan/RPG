@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.confirm = new Game.Window("confirmWindow");
+  var win = Game.Window.create("confirm");
 
-  win.html("\n    <div style=\"width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);\">\n      <table>\n        <tr><td><span id=\"confirmWindowMessage\"></span></td></tr>\n        <tr><td>\n          <button id=\"confirmWindowYes\">确定</button>\n          <button id=\"confirmWindowNo\">取消</button>\n        </td></tr>\n      </table>\n    </div>\n  ");
+  win.html = "\n    <div style=\"width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);\">\n      <table>\n        <tr><td><span id=\"confirmWindowMessage\"></span></td></tr>\n        <tr><td>\n          <button id=\"confirmWindowYes\">确定</button>\n          <button id=\"confirmWindowNo\">取消</button>\n        </td></tr>\n      </table>\n    </div>\n  ";
 
-  win.css("\n    #confirmWindow {\n      text-align: center;\n    }\n\n    #confirmWindow table {\n      width: 100%;\n      height: 100%;\n    }\n\n    #confirmWindow span {\n      font-size: 16px;\n    }\n\n    #confirmWindow button {\n      width: 100px;\n      height: 60px;\n      font-size: 16px;\n      margin: 20px;\n    }\n  ");
+  win.css = "\n    #confirmWindow {\n      text-align: center;\n    }\n\n    #confirmWindow table {\n      width: 100%;\n      height: 100%;\n    }\n\n    #confirmWindow span {\n      font-size: 16px;\n    }\n\n    #confirmWindow button {\n      width: 100px;\n      height: 60px;\n      font-size: 16px;\n      margin: 20px;\n    }\n  ";
 
   var confirmHandle = null;
 
@@ -51,4 +51,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
-//# sourceMappingURL=GameWindowConfirm.js.map

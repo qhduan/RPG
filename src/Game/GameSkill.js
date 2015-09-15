@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.Skill = class GameSkill extends Sprite.Event {
     static load (id, callback) {
-      var skillLoader = new Sprite.Loader();
-      skillLoader.add(`/skill/${id}.json`);
-      skillLoader.start();
-      skillLoader.on("complete", (event) => {
+      Sprite.Loader.create()
+        .add(`/skill/${id}.json`);
+        .start();
+        .on("complete", (event) => {
         var skillData = event.data[0];
         var skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
@@ -44,12 +44,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.data = skillData;
       this.id = this.data.id;
 
-      var loader = new Sprite.Loader();
-      loader.add(`/skill/${this.data.image}`);
-      loader.add(`/skill/${this.data.icon}`);
-      loader.add(`/skill/${this.data.sound}`);
-      loader.start();
-      loader.on("complete", (event) => {
+      Sprite.Loader.create()
+        .add(`/skill/${this.data.image}`)
+        .add(`/skill/${this.data.icon}`)
+        .add(`/skill/${this.data.sound}`)
+        .start()
+        .on("complete", (event) => {
         var image = event.data[0];
         this.icon = event.data[1];
         this.sound = event.data[2];

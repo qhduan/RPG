@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.loading = new Game.Window("loadingWindow");
+  var win = Game.Window.create("loading");
 
-  win.html("\n    <table><tbody><tr><td>\n      <label>载入中...</label>\n    </td></tr></tbody></table>\n  ");
+  win.html = "\n    <table><tbody><tr><td>\n      <label>载入中...</label>\n    </td></tr></tbody></table>\n  ";
 
-  win.css("\n    #loadingWindow {\n      text-align: center;\n      background-color: gray;\n    }\n\n    #loadingWindow table, #loadingWindow tbody, #loadingWindow tr, #loadingWindow td {\n      width: 100%;\n      height: 100%;\n      margin: 0;\n      padding: 0;\n    }\n\n    #loadingWindow label {\n      font-size: 60px;\n    }\n  ");
+  win.css = "\n    #loadingWindow {\n      text-align: center;\n      background-color: gray;\n    }\n\n    #loadingWindow table, #loadingWindow tbody, #loadingWindow tr, #loadingWindow td {\n      width: 100%;\n      height: 100%;\n      margin: 0;\n      padding: 0;\n    }\n\n    #loadingWindow label {\n      font-size: 60px;\n    }\n  ";
 
   win.register("begin", function () {
     Game.windows.loading.show();
@@ -37,4 +37,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.loading.hide();
   });
 })();
-//# sourceMappingURL=GameWindowLoading.js.map

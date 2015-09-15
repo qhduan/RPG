@@ -21,15 +21,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.loading = new Game.Window("loadingWindow");
+  let win = Game.Window.create("loading");
 
-  win.html(`
+  win.html = `
     <table><tbody><tr><td>
       <label>载入中...</label>
     </td></tr></tbody></table>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #loadingWindow {
       text-align: center;
       background-color: gray;
@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #loadingWindow label {
       font-size: 60px;
     }
-  `);
+  `;
 
   win.register("begin", function () {
     Game.windows.loading.show();

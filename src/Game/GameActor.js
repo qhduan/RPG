@@ -189,12 +189,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // img or canvas
         Init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        var loader = new Sprite.Loader();
-        loader.add("/actor/" + this.data.image);
-        loader.start();
-        loader.on("complete", function (event) {
-          Init(event.data);
-        });
+        Sprite.Loader
+          .create()
+          .add("/actor/" + this.data.image)
+          .start()
+          .on("complete", function (event) {
+            Init(event.data);
+          });
       } else {
         console.error(this.id, this.data, this.data.image, this);
         throw new Error("Invalid Actor Image");
@@ -358,14 +359,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    contact () {
+    heroUse () {
       if (this.data.contact) {
 
         var options = {};
 
         if (this.data.contact) {
           Sprite.each(this.data.contact, (talk, key) => {
-            if (eval(talk.condition)) {
+            let h = Game.hero;
+            let d = Game.hero.data;
+            let result = null;
+            try {
+              result = eval(talk.condition)
+            } catch (e) {
+              console.error(talk.condition);
+              console.error(e);
+              throw new Error("talk.condition eval error");
+            }
+            if (result) {
               options[key] = key;
             }
           });
@@ -507,7 +518,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       Game.layers.actorLayer.appendChild(text);
 
-      var speed = Sprite.rand(0, 3);
+      var speed = Sprite.rand(1, 3);
 
       Sprite.Ticker.whiles(100, (last) => {
         text.y -= speed;
@@ -621,21 +632,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (this.x == x) {
           if (this.y - y == -1) {
             this.stop();
-            this.play("facedown");
+            this.face("down");
+
             return;
           } else if (this.y - y == 1) {
             this.stop();
-            this.play("faceup");
+            this.face("up");
             return;
           }
         } else if (this.y == y) {
           if (this.x - x == -1) {
             this.stop();
-            this.play("faceright");
+            this.face("right");
             return;
           } else if (this.x - x == 1) {
             this.stop();
-            this.play("faceleft");
+            this.face("left");
             return;
           }
         }
@@ -669,7 +681,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let path = null;
 
       if (destBlocked == false) {
-        Game.Astar.path(map,
+        path = Game.Astar.path(map,
           width,
           height,
           {x: this.x, y: this.y}, // 角色现在位置
@@ -680,16 +692,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (!path) {
         let otherChoice = [];
         if (this.checkCollision(x, y-1) == false) {
-          otherChoice.push({x: x, y: y-1, after: "facedown"});
+          otherChoice.push({x: x, y: y-1, after: "down"});
         }
         if (this.checkCollision(x, y+1) == false) {
-          otherChoice.push({x: x, y: y+1, after: "faceup"});
+          otherChoice.push({x: x, y: y+1, after: "up"});
         }
         if (this.checkCollision(x-1, y) == false) {
-          otherChoice.push({x: x-1, y: y, after: "faceright"});
+          otherChoice.push({x: x-1, y: y, after: "right"});
         }
         if (this.checkCollision(x+1, y) == false) {
-          otherChoice.push({x: x+1, y: y, after: "faceleft"});
+          otherChoice.push({x: x+1, y: y, after: "left"});
         }
 
         if (otherChoice.length > 0) {
@@ -702,7 +714,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (otherChoice.length > 1) {
             otherChoice.sort((a, b) => {
               return a.distance - b.distance;
-            });  
+            });
           }
 
           for (let element of otherChoice) {
@@ -762,7 +774,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else { // 正常结束
             if (after) {
               this.stop();
-              this.play(after);
+              this.face(after);
             }
             this.going = false;
             if (typeof callback == "function") {
@@ -781,6 +793,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var animation = "face" + direction;
       if (this.animation != animation) {
         this.sprite.play(animation);
+        this.emit("change");
       }
     }
 
@@ -841,11 +854,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return false;
       }
 
-      var currentDirection = this.direction;
-      if (currentDirection != direction) {
+      if (this.direction != direction) {
         this.walking = true;
         this.face(direction);
-        // wait 8 ticks
+        // wait 4 ticks
         Sprite.Ticker.after(4, () => {
           this.walking = false;
         });
@@ -911,9 +923,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             this.x = newX;
             this.y = newY;
             this.walking = false;
+            this.emit("change");
 
             if (typeof callback == "function") {
-              callback();
+              Sprite.Ticker.after(2,function () {
+                callback();
+              });
             }
 
           }

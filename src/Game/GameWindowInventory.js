@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.inventory = new Game.Window("inventoryWindow");
+  let win = Game.Window.create("inventory");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <div id="inventoryWindowItemBar">
 
@@ -54,9 +54,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <tbody id="inventoryWindowTable"></tbody>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #inventoryWindowItemBar > button {
       width: 60px;
       height: 40px;
@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 20px;
       color: gold;
     }
-  `);
+  `;
 
   var inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
   var inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");

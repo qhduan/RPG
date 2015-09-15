@@ -23,124 +23,141 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.AI = class AI {
 
-    static hint () {
-      if (Game.hero) {
+    static attach (hero) {
+      hero.on("change", function () {
+        Game.AI.heroOnto();
+        Game.AI.heroTouch();
+      });
+    }
 
-        var heroPosition = Game.hero.position;
-        var heroFace = Game.hero.facePosition;
+    static heroOnto () {
+      let heroPosition = Game.hero.position;
+      var onto = null;
 
-        var hint = null;
-
-        function FindUnderHero (element) {
-          if (hint != null || element == Game.hero) {
-            return;
-          }
-          if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
-            hint = element;
-          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
-            hint = element;
-          }
+      let FindUnderHero = function (element) {
+        if (onto != null || element == Game.hero) {
+          return;
         }
+        if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+          onto = element;
+        } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+          onto = element;
+        }
+      }
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.onto, FindUnderHero);
+      if (onto) {
+        if (onto.dest) {
+          Game.windows.loading.execute("begin");
+          setTimeout(function () {
+            Game.clearStage();
+            Game.pause();
+            Game.loadArea(onto.dest, function (area) {
 
-        function FindFaceHero (element) {
-          if (hint != null || element == Game.hero) {
-            return;
+              Game.area = area;
+              area.map.draw(Game.layers.mapLayer);
+
+              Game.hero.data.area = onto.dest;
+              Game.hero.draw(Game.layers.actorLayer);
+              area.actors.add(Game.hero);
+              Game.hero.x = onto.destx;
+              Game.hero.y = onto.desty;
+              Game.windows.interface.show();
+              Game.start();
+
+              Game.windows.loading.execute("end");
+            });
+          }, 100);
+        }
+        if (onto.showmap) {
+          Game.layers.mapLayer.children.forEach(function (element) {
+            if (onto.showmap.indexOf(element.name) != -1) {
+              element.visible = true;
+            }
+          });
+        } // showmap
+        if (onto.hidemap) {
+          Game.layers.mapLayer.children.forEach(function (element) {
+            if (onto.hidemap.indexOf(element.name) != -1) {
+                element.visible = false;
+            }
+          });
+        } // hidemap
+        if (onto.showactor) {
+          for (let actor of Game.area.actors) {
+            if (onto.showactor.indexOf(actor.id) != -1) {
+              actor.visible = true;
+            }
           }
-          if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
-            hint = element;
-          } else if (element.x == heroFace.x && element.y == heroFace.y) {
-            hint = element;
+        } // showactor
+        if (onto.hideactor) {
+          for (let actor of Game.area.actors) {
+            if (onto.hideactor.indexOf(actor.id) != -1) {
+              actor.visible = false;
+            }
           }
+        } // hideactor
+      } // touch
+    }
+
+    static heroTouch () {
+      let heroPosition = Game.hero.position;
+      let heroFace = Game.hero.facePosition;
+      let touch = null;
+
+      let FindUnderHero = function (element) {
+        if (touch != null || element == Game.hero) {
+          return;
         }
-
-        // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.touch, FindUnderHero);
-
-        // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.actors, FindUnderHero);
-        // 找最近尸体 Game.area.actors
-        Sprite.each(Game.area.bags, FindUnderHero);
-        // 最近的门
-        Game.area.doors.forEach(FindUnderHero);
-        // 最近的箱子
-        Game.area.chests.forEach(FindUnderHero);
-        // 最近的提示物（例如牌子）
-        Game.area.hints.forEach(FindUnderHero);
-
-
-        // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.actors, FindFaceHero);
-        // 找最近尸体 Game.area.actors
-        Sprite.each(Game.area.bags, FindFaceHero);
-        // 最近的门
-        Game.area.doors.forEach(FindFaceHero);
-        // 最近的箱子
-        Game.area.chests.forEach(FindFaceHero);
-        // 最近的提示物（例如牌子）
-        Game.area.hints.forEach(FindFaceHero);
-
-
-        if (Game.hintObject && Game.hintObject != hint) {
-          Game.hintObject = null;
-          Game.windows.interface.use.style.visibility = "hidden";
+        if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+          touch = element;
+        } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+          touch = element;
         }
+      }
 
-        if (hint != null) {
-          Game.hintObject = hint;
-          Game.windows.interface.use.style.visibility = "visible";
-          if (hint.type == "door") {
-            Game.popup({x: hint.x*32+16, y: hint.y*32+16}, hint.description, 0, -30);
-          } else if (hint.type == "touch") {
-            if (hint.showmap) {
-              Game.layers.mapLayer.children.forEach(function (element) {
-                if (hint.showmap.indexOf(element.name) != -1) {
-                  if (element.visible == false) {
-                    element.visible = true;
-                    element.alpha = 0.01;
-                    Sprite.Tween.get(element).to({alpha: 1}, 200);
-                  }
-                }
-              });
-            } // showmap
-            if (hint.hidemap) {
-              Game.layers.mapLayer.children.forEach(function (element) {
-                if (hint.hidemap.indexOf(element.name) != -1) {
-                  if (element.alpha == 1) {
-                    element.visible = true;
-                    element.alpha = 0.99;
-                    Sprite.Tween.get(element).to({alpha: 0}, 200).call(function () {
-                      element.visible = false;
-                    });
-                  }
-                }
-              });
-            } // hidemap
-            if (hint.showactor) {
-              for (let actor of Game.area.actors) {
-                if (hint.showactor.indexOf(actor.id) != -1) {
-                  if (actor.visible == false) {
-                    actor.visible = true;
-                    actor.alpha = 0.01;
-                    Sprite.Tween.get(actor).to({alpha: 1}, 300);
-                  }
-                }
-              }
-            } // showactor
-            if (hint.hideactor) {
-              for (let actor of Game.area.actors) {
-                if (hint.hideactor.indexOf(actor.id) != -1) {
-                  if (actor.alpha == 1) {
-                    actor.visible = true;
-                    actor.alpha = 0.99;
-                    Sprite.Tween.get(actor).to({alpha: 0}, 100).call(function () {
-                      actor.visible = false;
-                    });
-                  }
-                }
-              }
-            } // hideactor
-          } // touch
+      let FindFaceHero = function (element) {
+        if (touch != null || element == Game.hero) {
+          return;
         }
+        if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
+          touch = element;
+        } else if (element.x == heroFace.x && element.y == heroFace.y) {
+          touch = element;
+        }
+      }
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindUnderHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindUnderHero);
+      // 最近的提示物（例如牌子）
+      Game.area.touch.forEach(FindUnderHero);
+
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindFaceHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindFaceHero);
+      // 最近的提示物（例如牌子）
+      Game.area.touch.forEach(FindFaceHero);
+      // 水源
+      if (!touch && Game.area.map.waterTest(heroFace.x, heroFace.y)) {
+        touch = {
+          type: "water",
+          heroUse: function () {
+            Game.popup(Game.hero.sprite, "This is water", 0, -50);
+          }
+        };
+      }
+
+
+      if (!touch) {
+        Game.hintObject = null;
+        Game.windows.interface.use.style.visibility = "hidden";
+      } else {
+        Game.hintObject = touch;
+        Game.windows.interface.use.style.visibility = "visible";
       }
     }
 
@@ -217,15 +234,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       setInterval(function () {
         Game.AI.actor();
       }, 50);
-
-      var skip = 0;
-      Sprite.Ticker.on("tick", function () {
-        if (Game.area && Game.area.actors && Game.area.bags) {
-          skip++;
-          if (skip % 5 == 0)
-            Game.AI.hint();
-        }
-      });
     }
 
   };

@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.map = new Game.Window("mapWindow");
+  var win = Game.Window.create("map");
 
-  win.html("\n    <div class=\"window-box\">\n      <button id=\"mapWindowClose\">关闭</button>\n      <table><tbody><tr><td>\n        <div id=\"mapWindowMap\"></div>\n      </td></tr></tbody></table>\n    </div>\n  ");
+  win.html = "\n    <div class=\"window-box\">\n      <button id=\"mapWindowClose\" class=\"brownButton\">关闭</button>\n      <table><tbody><tr><td>\n        <div id=\"mapWindowMap\"></div>\n      </td></tr></tbody></table>\n    </div>\n  ";
 
-  win.css("\n    #mapWindow table, #mapWindow tbody, #mapWindow tr, #mapWindow td {\n      width: 100%;\n      height: 100%;\n      magrin: 0;\n      padding: 0;\n    }\n\n    #mapWindow {\n      text-align: center;\n    }\n\n    #mapWindowClose {\n      position: absolute;\n      right: 5px;\n      top: 5px;\n      width: 60px;\n      height: 40px;\n    }\n\n    #mapWindowMap img, #mapWindowMap canvas {\n      max-width: 750px;\n      max-height: 400px;\n    }\n  ");
+  win.css = "\n    #mapWindow table, #mapWindow tbody, #mapWindow tr, #mapWindow td {\n      width: 100%;\n      height: 100%;\n      magrin: 0;\n      padding: 0;\n    }\n\n    #mapWindow {\n      text-align: center;\n    }\n\n    #mapWindowClose {\n      position: absolute;\n      right: 50px;\n      top: 50px;\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n    }\n\n    #mapWindowMap img, #mapWindowMap canvas {\n      max-width: 700px;\n      max-height: 320px;\n    }\n  ";
 
   var mapWindowClose = document.querySelector("button#mapWindowClose");
 
@@ -51,4 +51,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
-//# sourceMappingURL=GameWindowMap.js.map

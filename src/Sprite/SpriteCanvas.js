@@ -18,30 +18,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteCanvas.js
-/// @namespace Sprite
-/// class Sprite.Canvas
+/**
+ * @fileoverview Class Sprite.Display
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
-  Sprite.Canvas = class Canvas {
+  let internal = Sprite.Namespace();
 
+  /**
+   * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
+   * @class
+   */
+  Sprite.Canvas = class SpriteCanvas {
+
+    /**
+     * @static
+     * @return {boolean} The browser whether or not support HTML5 canvas
+     */
     static support () {
-      var canvas = document.createElement("canvas");
-      var gl = canvas.getContext("2d");
-      if (gl) {
+      let canvas = document.createElement("canvas");
+      let context = canvas.getContext("2d");
+      if (context) {
         return true;
       }
       return false;
     }
 
+    /**
+     * Construct a renderer width certain width and height
+     * @constructor
+     */
     constructor (width, height) {
-      var canvas = document.createElement("canvas");
+      let canvas = document.createElement("canvas");
       canvas.width = width || 640;
       canvas.height = height || 480;
-
-      var context = canvas.getContext("2d");
+      let context = canvas.getContext("2d");
 
       if (!context) {
         throw new Error("Sprite.Canvas canvas is not supported");
@@ -49,68 +63,180 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       console.log("canvas inited");
 
-      this._canvas = canvas;
-      this._context = context;
-      this._alpha = 1;
+      /**
+       * Color after clear canvas
+       */
+      internal(this).color = "#000000";
+      /**
+       * The canvas object
+       */
+      internal(this).canvas = canvas;
+      /**
+       * Context of canvas
+       */
+      internal(this).context = context;
+      /**
+       * Global alpha
+       */
+      internal(this).alpha = 1;
+      /**
+       * Save some filter paramters, eg. brightness/contrast
+       */
+      internal(this).filter = new Map();
+      this.filter("brightness", 0);
+      this.filter("contrast", 0);
     }
 
-    filter () {
-      // for now, only Sprite.Webgl could use .filter() method
+    /**
+     * @param {string} name The name of filter you want get or set
+     * @param {number} value Number or undefined, if undefined ,return current value
+     */
+    filter (name, value) {
+      if (typeof value == "number" && !isNaN(value)) {
+        if (name == "brightness") {
+          value += 1;
+        }
+        if (name == "contrast") {
+          value += 1;
+        }
+        if (internal(this).filter.get(name) != value) {
+          internal(this).filter.set(name, value);
+          let filter = [];
+          internal(this).filter.forEach((value, key, object) => {
+            filter.push(`${key}(${value})`);
+          });
+          filter = filter.join(" ");
+          this.canvas.style.filter = filter;
+          this.canvas.style.webkitFilter = filter;
+        }
+      } else {
+        return internal(this).filter.get(name);
+      }
     }
-
+    /**
+     * Draw an image on the canvas
+     * @param {Image} image The image we are gonna draw
+     * @param {number} sx Crop image from x=sx
+     * @param {number} sy Crop image from y=sy
+     * @param {number} sw Crop image with sw width
+     * @param {number} sh Crop image width sh height
+     * @param {number} dx Draw image on canvas's x=dx
+     * @param {number} dy Draw image on canvas's x=dy
+     * @param {number} dw Change image's width to dw on canvas
+     * @param {number} dh Change image's height to dh on canvas
+     */
     drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
-      if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
-        console.error(image);
-        throw new Error("drawImage invalid image");
-      }
-
-      this._context.globalAlpha = this.alpha;
-      this._context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+      internal(this).context.globalAlpha = this.alpha;
+      internal(this).context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
+    /**
+     * Remove everything on canvas but a single color
+     */
     clear () {
-      this._context.fillStyle = "black";
-      this._context.fillRect(0, 0, this._canvas.width, this._canvas.height);
+      internal(this).context.fillStyle = internal(this).color;
+      internal(this).context.fillRect(0, 0, this.width, this.height);
     }
 
+    /**
+     * @return {string} The color, eg "#00ff00"
+     */
+    get color () {
+      return internal(this).color;
+    }
+    /**
+     * @param {string} value The new color, eg "#00ff00"
+     */
+    set color (value) {
+      if (value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/)) {
+        internal(this).color = value;
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Canvas invalid color value");
+      }
+    }
+
+    /**
+     * @return {number} The alpha, 0 to 1
+     */
     get alpha () {
-      return this._alpha;
+      return internal(this).alpha;
     }
-
+    /**
+     * @param {number} value The new alpha number
+     */
     set alpha (value) {
-      if (value != this._alpha) {
-        this._alpha = value;
+      if (typeof value == "number" &&
+        !isNaN(value) &&
+        value >= 0 &&
+        value <= 1
+      ) {
+        if (value != internal(this).alpha) {
+          internal(this).alpha = value;
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Canvas got invalid alpha number");
       }
     }
 
+    /**
+     * @return {number} Width of canvas
+     */
     get width () {
-      return this._canvas.width;
+      return internal(this).canvas.width;
     }
-
+    /**
+     * @param {number} value New width
+     */
     set width (value) {
-      if (value != this._canvas.width) {
-        this._canvas.width = value;
+      if (typeof value == "number" &&
+        !isNaN(value) &&
+        value > 0 &&
+        value < 10000
+      ) {
+        if (value != internal(this).canvas.width) {
+          internal(this).canvas.width = value;
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Canvas got invalid width number");
       }
     }
 
+    /**
+     * @return {number} Height of canvas
+     */
     get height () {
-      return this._canvas.height;
+      return internal(this).canvas.height;
     }
-
+    /**
+     * @param {number} value New height
+     */
     set height (value) {
-      if (value != this._canvas.height) {
-        this._canvas.height = value;
+      if (typeof value == "number" &&
+        !isNaN(value) &&
+        value > 0 &&
+        value < 10000
+      ) {
+        if (value != internal(this).canvas.height) {
+          internal(this).canvas.height = value;
+        }
+      } else {
+        console.error(value, this);
+        throw new Error("Sprite.Canvas got invalid height number");
       }
     }
-
+    /**
+     * @return {Object} Canvas
+     */
     get canvas () {
-      return this._canvas;
+      return internal(this).canvas;
     }
 
     set canvas (value) {
       throw new Error("Sprite.Canvas.canvas cannot write");
     }
-
 
   };
 

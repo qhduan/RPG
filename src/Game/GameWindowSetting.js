@@ -21,20 +21,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.setting = new Game.Window("settingWindow");
+  let win = Game.Window.create("setting");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <button id="settingWindowClose">关闭</button>
+
+      <div id="settingWindowRendererType"></div>
 
       <div id="settingWindowBox">
         <button id="settingWindowFullscreen">全屏</button>
         <button id="settingWindowScale">缩放</button>
       </div>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #settingWindowBox {
       width: 100%;
       height: 360px;
@@ -53,10 +55,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 16px;
       float: right;
     }
-  `);
+  `;
 
   var settingWindowClose = document.querySelector("button#settingWindowClose");
   var settingWindowScale = document.querySelector("button#settingWindowScale");
+
+  var settingWindowFullscreen = document.querySelector("button#settingWindowFullscreen");
+  var settingWindowRendererType = document.querySelector("#settingWindowRendererType");
+
+  win.on("beforeShow", function () {
+    settingWindowRendererType.textContent = Game.stage.rendererType;
+  });
 
   settingWindowClose.addEventListener("click", function (event) {
     Game.windows.setting.hide();
@@ -74,20 +83,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  document.querySelector("button#settingWindowFullscreen").addEventListener("click", function (event) {
-    var docElm = document.documentElement;
-    if (docElm.requestFullscreen) {
-        docElm.requestFullscreen();
+  function toggleFullScreen () {
+    if (!document.fullscreenElement &&    // alternative standard method
+        !document.mozFullScreenElement &&
+        !document.webkitFullscreenElement &&
+        !document.msFullscreenElement
+    ) {  // current working methods
+      if (document.documentElement.requestFullscreen) {
+        document.documentElement.requestFullscreen();
+      } else if (document.documentElement.msRequestFullscreen) {
+        document.documentElement.msRequestFullscreen();
+      } else if (document.documentElement.mozRequestFullScreen) {
+        document.documentElement.mozRequestFullScreen();
+      } else if (document.documentElement.webkitRequestFullscreen) {
+        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+      }
+    } else {
+      if (document.exitFullscreen) {
+        document.exitFullscreen();
+      } else if (document.msExitFullscreen) {
+        document.msExitFullscreen();
+      } else if (document.mozCancelFullScreen) {
+        document.mozCancelFullScreen();
+      } else if (document.webkitExitFullscreen) {
+        document.webkitExitFullscreen();
+      }
     }
-    else if (docElm.mozRequestFullScreen) {
-        docElm.mozRequestFullScreen();
-    }
-    else if (docElm.webkitRequestFullScreen) {
-        docElm.webkitRequestFullScreen();
-    }
-    else if (docElm.msRequestFullscreen) {
-        docElm.msRequestFullscreen();
-    }
+  }
+
+  settingWindowFullscreen.addEventListener("click", function (event) {
+    toggleFullScreen();
   });
 
 

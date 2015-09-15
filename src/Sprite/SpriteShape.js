@@ -18,67 +18,69 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteShape.js
-/// @namespace Sprite
-/// class Sprite.Shape
+/**
+ * @fileoverview Create a shape
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
-  Sprite.Shape = class Shape extends Sprite.Display {
+  let internal = Sprite.Namespace();
+
+  /**
+   * Class Sprite.Shape
+   * @class
+   * @extends Sprite.Display
+   */
+  Sprite.Shape = class SpriteShape extends Sprite.Display {
+    /**
+     * construct Sprite.Shape
+     * @constructor
+     */
     constructor () {
       super();
-      this._children = [];
-      this._width = 0;
-      this._height = 0;
-      this._image = null;
+      internal(this).children = [];
+      internal(this).width = 0;
+      internal(this).height = 0;
+      internal(this).image = null;
     }
 
     clone () {
-      var shape = new Shape();
-      shape._children = this._children.slice();
-      shape._width = this._width;
-      shape._height = this._height;
-      shape._image = this._image;
+      let shape = new Sprite.Shape();
+      internal(shape).children = internal(this).children.slice();
+      internal(shape).image = internal(this).image;
+      internal(shape).width = internal(this).width;
+      internal(shape).height = internal(this).height;
       shape.x = this.x;
       shape.y = this.y;
       shape.centerX = this.centerX;
       shape.centerY = this.centerY;
-      shape.scaleX = this.scaleX;
-      shape.scaleY = this.scaleY;
       return shape;
     }
 
-    get svg () {
-      return this._svg;
-    }
-
-    set svg (value) {
-      throw new TypeError("Sprite.Shape.svg readonly");
-    }
-
     get width () {
-      return this._width;
+      return internal(this).width;
     }
 
     set width (value) {
-      this._width = value;
+      internal(this).width = value;
       this.generate();
     }
 
     get height () {
-      return this._height;
+      return internal(this).height;
     }
 
     set height (value) {
-      this._height = value;
+      internal(this).height = value;
       this.generate();
     }
 
     clear () {
-      this._children = [];
-      this._width = 0;
-      this._height = 0;
+      internal(this).children = [];
+      internal(this).width = 0;
+      internal(this).height = 0;
       this.generate();
       return this;
     }
@@ -89,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           defaultConfig[key] = userConfig[key];
         }
       }
-      var ret = [];
+      let ret = [];
       for (let key in defaultConfig) {
         ret.push(`${key}="${defaultConfig[key]}"`);
       }
@@ -97,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     rect (userConfig) {
-      var config = {
+      let config = {
         "x": 0,
         "y": 0,
         "width": 10,
@@ -110,19 +112,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "opacity": 1,
       };
 
-      this._children.push(`<rect ${this.makeConfig(config, userConfig)} />`);
+      internal(this).children.push(`<rect ${this.makeConfig(config, userConfig)} />`);
 
-      if (config.x + config.width > this._width) {
-        this._width = config.x + config.width;
+      if (config.x + config.width > internal(this).width) {
+        internal(this).width = config.x + config.width;
       }
-      if (config.y + config.height > this._height) {
-        this._height = config.y + config.height;
+      if (config.y + config.height > internal(this).height) {
+        internal(this).height = config.y + config.height;
       }
       this.generate();
     }
 
     circle (userConfig) {
-      var config = {
+      let config = {
         "cx": 10,
         "cy": 10,
         "r": 10,
@@ -134,19 +136,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "opacity": 1,
       };
 
-      this._children.push(`<circle ${this.makeConfig(config, userConfig)} />`);
+      internal(this).children.push(`<circle ${this.makeConfig(config, userConfig)} />`);
 
-      if (config.cx + config.r > this._width) {
-        this._width = config.cx + config.r;
+      if (config.cx + config.r > internal(this).width) {
+        internal(this).width = config.cx + config.r;
       }
-      if (config.cy + config.r > this._height) {
-        this._height = config.cy + config.r;
+      if (config.cy + config.r > internal(this).height) {
+        internal(this).height = config.cy + config.r;
       }
       this.generate();
     }
 
     ellipse (userConfig) {
-      var config = {
+      let config = {
         "cx": 10,
         "cy": 10,
         "rx": 5,
@@ -159,19 +161,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "opacity": 1,
       };
 
-      this._children.push(`<ellipse ${this.makeConfig(config, userConfig)} />`);
+      internal(this).children.push(`<ellipse ${this.makeConfig(config, userConfig)} />`);
 
-      if (config.cx + config.rx > this._width) {
-        this._width = config.cx + config.rx;
+      if (config.cx + config.rx > internal(this).width) {
+        internal(this).width = config.cx + config.rx;
       }
-      if (config.cy + config.ry > this._height) {
-        this._height = config.cy + config.ry;
+      if (config.cy + config.ry > internal(this).height) {
+        internal(this).height = config.cy + config.ry;
       }
       this.generate();
     }
 
     line (userConfig) {
-      var config = {
+      let config = {
         "x1": 10,
         "y1": 10,
         "x2": 20,
@@ -182,19 +184,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "opacity": 1,
       };
 
-      this._children.push(`<line ${this.makeConfig(config, userConfig)} />`);
+      internal(this).children.push(`<line ${this.makeConfig(config, userConfig)} />`);
 
-      if (Math.max(config.x1, config.x2) > this._width) {
-        this._width = Math.max(config.x1, config.x2);
+      if (Math.max(config.x1, config.x2) > internal(this).width) {
+        internal(this).width = Math.max(config.x1, config.x2);
       }
-      if (Math.max(config.y1, config.y2) > this._height) {
-        this._height = Math.max(config.y1, config.y2);
+      if (Math.max(config.y1, config.y2) > internal(this).height) {
+        internal(this).height = Math.max(config.y1, config.y2);
       }
       this.generate();
     }
 
     polyline (userConfig) {
-      var defaultConfig = {
+      let config = {
         "points": "20, 20, 30, 20, 30, 30, 20, 30",
         "stroke": "black",
         "stroke-width": 1,
@@ -206,23 +208,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       this._children.push(`<polyline ${this.makeConfig(config, userConfig)} />`);
 
-      var max = -1;
+      let max = -1;
       config.points.split(/, /).forEach((element) => {
-        var number = parseInt(element);
+        let number = parseInt(element);
         if (!isNaN(number) && number > max) {
           max = number;
         }
       });
 
-      if (max != -1) {
-        this._width = max;
-        this._height = max;
+      if (max != -1 && max > internal(this).width) {
+        internal(this).width = max;
+      }
+      if (max != -1 && max > internal(this).height) {
+        internal(this).height = max;
       }
       this.generate();
     }
 
     polygon (userConfig) {
-      var config = {
+      let config = {
         "points": "20,20 30,20 30,30 20,30",
         "stroke": "black",
         "stroke-width": 1,
@@ -232,13 +236,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "opacity": 1,
       };
 
-      this._children.push(`<polyline ${this.makeConfig(config, userConfig)} />`);
+      internal(this).children.push(`<polyline ${this.makeConfig(config, userConfig)} />`);
 
-      var width = -1;
-      var height = -1;
+      let width = -1;
+      let height = -1;
       // split points by comma or space
       config.points.split(/,| /).forEach((element, index) => {
-        var number = parseInt(element);
+        let number = parseInt(element);
         if (index % 2 == 0) { // even
           if (number > width)
             width = number;
@@ -248,35 +252,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
-      if (width > 0 && width > this._width)
-        this._width = width;
-      if (height > 0 && height > this._height)
-        this._height = height;
+      if (width > 0 && width > internal(this).width)
+        internal(this).width = width;
+      if (height > 0 && height > internal(this).height)
+        internal(this).height = height;
       this.generate();
     }
 
     generate () {
-      var svg = `<?xml version="1.0"?>\n<svg width="${this._width}" height="${this._height}" ` +
+      let svg = `<?xml version="1.0"?>\n<svg width="${this._width}" height="${this._height}" ` +
         `style="width: ${this._width}px; height: ${this._height}px;" ` +
         `xmlns="http://www.w3.org/2000/svg" version="1.1">\n`;
 
-      this._children.forEach((shape) => {
-        svg += `  ${shape}\n`;
-      });
+      for (let child of internal(this).children) {
+        svg += `  ${child}\n`;
+      }
 
       svg += "</svg>";
-      this._svg = svg;
 
-      var blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
-      var url = window.URL.createObjectURL(blob);
-      var image = new Image();
+      let blob = new Blob([svg], {type: "image/svg+xml;charset=utf-8"});
+      let url = window.URL.createObjectURL(blob);
+      let image = new Image();
       image.src = url;
 
-      var Done = () => {
-        this._image = image;
-        this._width = image.width;
-        this._height = image.height;
-        window.URL.revokeObjectURL(url);
+      let Done = () => {
+        internal(this).image = image;
+        internal(this).width = image.width;
+        internal(this).height = image.height;
+        // window.URL.revokeObjectURL(url);
         this.emit("change");
       };
 
@@ -288,11 +291,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
-    draw (context) {
-      if (this._image instanceof Image && this._image.width > 0 && this._image.height > 0) {
-        this.drawImage(context, this._image,
-          0, 0, this._image.width, this._image.height,
-          0, 0, this._image.width, this._image.height
+    draw (renderer) {
+      let image = internal(this).image;
+      if (image instanceof Image && image.width > 0 && image.height > 0) {
+        this.drawImage(renderer, image,
+          0, 0, image.width, image.height,
+          0, 0, image.width, image.height
         );
       }
     }

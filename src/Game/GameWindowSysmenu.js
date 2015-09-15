@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.sysmenu = new Game.Window("sysmenuWindow");
+  let win = Game.Window.create("sysmenu");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <button id="sysmenuWindowClose" class="brownButton">关闭窗口</button>
 
@@ -42,9 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <br>
       </td></tr></tbody></table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #sysmenuWindow {
       text-align: center;
     }
@@ -65,13 +65,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     button#sysmenuWindowClose {
       position: absolute;
-      right: 5px;
-      top: 5px;
+      right: 50px;
+      top: 50px;
       width: 120px;
       height: 60px;
       font-size: 16px;
     }
-  `);
+  `;
 
   var sysmenuWindowInventory = document.querySelector("button#sysmenuWindowInventory");
   var sysmenuWindowStatus = document.querySelector("button#sysmenuWindowStatus");

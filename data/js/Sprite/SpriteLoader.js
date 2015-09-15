@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteLoader.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -171,21 +169,52 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     req.send();
   }
 
+  /**
+   * Class for fetch resources
+   * @class
+   */
   Sprite.Loader = (function (_Sprite$Event) {
-    _inherits(Loader, _Sprite$Event);
+    _inherits(SpriteLoader, _Sprite$Event);
 
-    function Loader() {
-      _classCallCheck(this, Loader);
+    _createClass(SpriteLoader, null, [{
+      key: "create",
 
-      _get(Object.getPrototypeOf(Loader.prototype), "constructor", this).call(this);
+      /**
+       * Create a Sprite.Loader object
+       * @static
+       */
+      value: function create() {
+        return new Sprite.Loader();
+      }
+
+      /**
+       * Construct Sprite.Laoder
+       * @constructor
+       */
+    }]);
+
+    function SpriteLoader() {
+      _classCallCheck(this, SpriteLoader);
+
+      _get(Object.getPrototypeOf(SpriteLoader.prototype), "constructor", this).call(this);
 
       internal(this).list = [];
       internal(this).progress = 0;
     }
 
-    _createClass(Loader, [{
+    /**
+     * @return {number} Return current download progress
+     */
+
+    _createClass(SpriteLoader, [{
       key: "add",
-      value: function add() {
+
+      /**
+       * Add one or more urls
+       * eg. add("a.txt") add("a.txt", "b.txt") add(["a.txt", "b.txt"], "c.txt")
+       * @param {Object} urls, one or more urls.
+       */
+      value: function add(urls) {
         var args = Array.prototype.slice.call(arguments);
 
         var _iteratorNormalCompletion2 = true;
@@ -222,6 +251,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         return this;
       }
+
+      /**
+       * Begin to download
+       */
     }, {
       key: "start",
       value: function start() {
@@ -248,6 +281,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             Done();
           });
         });
+        return this;
       }
     }, {
       key: "progress",
@@ -259,7 +293,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return Loader;
+    return SpriteLoader;
   })(Sprite.Event);
 })(Sprite);
-/// class Sprite.Loader
+/**
+ * @fileoverview Sprite.Loader, fetch resource
+ * @author mail@qhduan.com (QH Duan)
+ */

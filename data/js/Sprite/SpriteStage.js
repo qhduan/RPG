@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteStage.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -33,171 +31,55 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function (Sprite) {
   "use strict";
 
-  /// @class Sprite.Stage
-  /// inherit the Sprite.Container
+  var internal = Sprite.Namespace();
+
+  /**
+   * Main Stage, display object
+   * @class
+   * @extends Sprite.Container
+   */
   Sprite.Stage = (function (_Sprite$Container) {
-    _inherits(Stage, _Sprite$Container);
+    _inherits(SpriteStage, _Sprite$Container);
 
-    /// @function Sprite.Stage.constructor
-    /// consturct a Sprite.Stage with width and height
-    /// @param width, the width of stage you need
-    /// @param height, the height of stage you need
+    /** @function Sprite.Stage.constructor
+     * consturct a Sprite.Stage with width and height
+     * @constructor
+     * @param width, the width of stage you need
+     * @param height, the height of stage you need
+     */
 
-    function Stage(width, height) {
-      var _this = this;
+    function SpriteStage(width, height) {
+      _classCallCheck(this, SpriteStage);
 
-      _classCallCheck(this, Stage);
-
-      _get(Object.getPrototypeOf(Stage.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(SpriteStage.prototype), "constructor", this).call(this);
 
       if (Sprite.Webgl.support()) {
-        this._renderer = new Sprite.Webgl(width, height);
-        this._rendererType = "webgl";
+        internal(this).renderer = new Sprite.Webgl(width, height);
+        internal(this).rendererType = "webgl";
       } else if (Sprite.Canvas.support()) {
-        this._renderer = new Sprite.Canvas(width, height);
-        this._rendererType = "canvas";
+        internal(this).renderer = new Sprite.Canvas(width, height);
+        internal(this).rendererType = "canvas";
       } else {
         throw new Error("Sprite.Stage all renderer not support");
       }
 
-      var mousedown = false;
+      internal(this).color = "#000000";
 
-      this.canvas.addEventListener("mousedown", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressdown();
-      });
-
-      this.canvas.addEventListener("mousemove", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressmove();
-      });
-
-      this.canvas.addEventListener("mouseup", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressup();
-      });
-
-      this.canvas.addEventListener("touchstart", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressdown();
-      });
-
-      this.canvas.addEventListener("touchmove", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressmove();
-      });
-
-      this.canvas.addEventListener("touchend", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressup();
-      });
-
-      this.canvas.addEventListener("touchleave", function (event) {
-        event.preventDefault();
-        if (_this.convertMouseEvent(event)) _this.pressup();
-      });
-
-      this.pressdownElement = null;
+      internal(this).screenshot = null;
     }
 
-    _createClass(Stage, [{
+    _createClass(SpriteStage, [{
       key: "filter",
       value: function filter(name, value) {
-        return this.renderer.filter(name, value);
+        return internal(this).renderer.filter(name, value);
       }
     }, {
       key: "findHit",
       value: function findHit(event) {
-        var hitted = _get(Object.getPrototypeOf(Stage.prototype), "hitTest", this).call(this, this.mouseX, this.mouseY);
+        var hitted = this.hitTest(this.mouseX, this.mouseY);
         hitted.reverse();
         if (hitted.length) return hitted;
         return null;
-      }
-    }, {
-      key: "convertMouseEvent",
-      value: function convertMouseEvent(event) {
-        var x;
-        var y;
-        var type;
-        var rect = this.canvas.getBoundingClientRect();
-
-        if (event.targetTouches && event.targetTouches.length == 1) {
-          var touch = event.targetTouches[0];
-          x = touch.pageX - rect.left;
-          y = touch.pageX - rect.top;
-          type = "touch";
-        } else {
-          x = event.pageX - rect.left;
-          y = event.pageY - rect.top;
-          type = "mouse";
-        }
-
-        var scaleX = rect.width / this.width;
-        var scaleY = rect.height / this.height;
-
-        x = Math.floor(x / scaleX);
-        y = Math.floor(y / scaleY);
-
-        if (x >= 0 && y >= 0) {
-          this.mouseX = x;
-          this.mouseY = y;
-          this.mouseType = type;
-          return true;
-        } else {
-          return false;
-        }
-      }
-    }, {
-      key: "pressdown",
-      value: function pressdown() {
-        var hit = this.findHit("pressdown");
-        if (hit) {
-          hit.forEach(function (element) {
-            element.emit("pressdown", false);
-          });
-        }
-
-        hit = this.findHit("click");
-        if (hit) {
-          this.pressdownElement = hit;
-        }
-
-        this.emit("stagemousedown");
-      }
-    }, {
-      key: "pressmove",
-      value: function pressmove(mouse) {
-        var hit = this.findHit("pressmove");
-        if (hit) {
-          hit.forEach(function (element) {
-            element.emit("pressmove", false);
-          });
-        }
-      }
-    }, {
-      key: "pressup",
-      value: function pressup(mouse) {
-        var _this2 = this;
-
-        var hit = this.findHit("pressup");
-        if (hit) {
-          hit.forEach(function (element) {
-            element.emit("pressup", false);
-          });
-        }
-
-        hit = this.findHit("click");
-        if (hit) {
-          hit.forEach(function (element) {
-            if (_this2.pressdownElement && _this2.pressdownElement.indexOf(element) != -1) {
-              element.emit("click");
-            }
-          });
-        }
-
-        this.pressdownElement = null;
-
-        this.emit("stagemouseup");
       }
     }, {
       key: "clear",
@@ -205,7 +87,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// @function Sprite.Stage.clear
       /// clear the stage
       value: function clear() {
-        this.renderer.clear();
+        internal(this).renderer.clear();
       }
     }, {
       key: "update",
@@ -215,7 +97,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "requestScreenshot",
       value: function requestScreenshot(callback) {
-        this._screenshot = function (url) {
+        internal(this).screenshot = function (url) {
           var img = new Image();
           img.src = url;
           if (img.complete) {
@@ -230,21 +112,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw() {
-        var _this3 = this;
-
         this.emit("drawStart");
 
-        if (this.children.length <= 0) return false;
+        if (this.children.length <= 0) {
+          return false;
+        }
 
         this.clear();
 
-        this.children.forEach(function (element) {
-          element.draw(_this3.renderer);
-        });
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
 
-        if (this._screenshot) {
-          this._screenshot(this.canvas.toDataURL());
-          this._screenshot = null;
+        try {
+          for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var child = _step.value;
+
+            child.draw(this.renderer);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        if (internal(this).screenshot) {
+          internal(this).screenshot(this.canvas.toDataURL());
+          internal(this).screenshot = null;
         }
 
         this.emit("drawEnd");
@@ -252,39 +155,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "renderer",
       get: function get() {
-        return this._renderer;
+        return internal(this).renderer;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage renderer readonly");
       }
     }, {
-      key: "width",
+      key: "rendererType",
       get: function get() {
-        return this._renderer.width;
+        return internal(this).rendererType;
       },
       set: function set(value) {
-        this._renderer.width = value;
-        this._stageCacheCanvas.width = this._renderer.width;
+        throw new Error("Sprite.Stage.rendererType readonly");
+      }
+    }, {
+      key: "width",
+      get: function get() {
+        return internal(this).renderer.width;
+      },
+      set: function set(value) {
+        internal(this).renderer.width = value;
       }
     }, {
       key: "height",
       get: function get() {
-        return this._renderer.height;
+        return internal(this).renderer.height;
       },
       set: function set(value) {
-        this._renderer.height = value;
-        this._stageCacheCanvas.height = this._renderer.height;
+        internal(this).renderer.height = value;
       }
     }, {
       key: "color",
       get: function get() {
-        return this._color;
+        return internal(this).renderer.color;
       },
       set: function set(value) {
-        if (this._color != value) {
-          this._color = value;
-          this.update();
-        }
+        internal(this).renderer.color = value;
       }
     }, {
       key: "canvas",
@@ -296,7 +202,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return Stage;
+    return SpriteStage;
   })(Sprite.Container);
 })(Sprite);
-/// class Sprite.Stage
+/**
+ * @fileoverview Class Sprite.Stage
+ * @author mail@qhduan.com (QH Duan)
+ */

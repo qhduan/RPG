@@ -31,6 +31,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
+    waterTest (x, y) {
+      if (this.waterMap[y] && this.waterMap[y][x]) {
+        return true;
+      }
+      return false;
+    }
+
     constructor (mapData) {
       super();
 
@@ -42,10 +49,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         imageUrls.push(`/map/${element.image}`);
       });
 
-      var loader = new Sprite.Loader();
-      loader.add(imageUrls);
-      loader.start();
-      loader.on("complete", (event) => {
+      Sprite.Loader.create()
+        .add(imageUrls)
+        .start()
+        .on("complete", (event) => {
 
         this.sheet = new Sprite.Sheet({
           images: event.data,
@@ -53,10 +60,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           height: this.data.tileheight,
         });
 
+        this.waterMap = [];
+        this.waterMap.length = this.data.height;
+        for(var i = 0; i < this.waterMap.length; i++) {
+          this.waterMap[i] = [];
+          this.waterMap[i].length = this.data.width;
+        }
+
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
         this.blockedMap = [];
         this.blockedMap.length = this.data.height;
-
         for(var i = 0; i < this.blockedMap.length; i++) {
           this.blockedMap[i] = [];
           this.blockedMap[i].length = this.data.width;
@@ -68,35 +81,70 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.data.layers.forEach((element, index, array) => {
           var layer = element;
 
-          var layerObj = new Sprite.Container();
-          layerObj.name = layer.name;
-
-          this.layers.push(layerObj);
-
-          if (layer.data) { // 渲染普通层
-            for (let y = 0; y < layer.height; y++) {
-              for (let x = 0; x < layer.width; x++) {
-                let position = x + y * layer.width;
-                let picture = layer.data[position] - 1;
-                if (picture >= 0) {
-                  let frame = this.sheet.getFrame(picture);
-                  frame.x = x * this.data.tilewidth;
-                  frame.y = y * this.data.tileheight;
-
-                  if (this.blockedMap[y][x] != true) {
-                    if (layer.properties && layer.properties.blocked) {
-                      this.blockedMap[y][x] = true;
-                    } else {
-                      this.blockedMap[y][x] = null;
-                    }
+          if (layer.name == "block") {
+            // 阻挡层，有东西则表示阻挡
+            if (layer.data) {
+              for (let y = 0; y < layer.height; y++) {
+                for (let x = 0; x < layer.width; x++) {
+                  let position = x + y * layer.width;
+                  let picture = layer.data[position] - 1;
+                  if (picture >= 0 && this.blockedMap[y][x] != true) {
+                    this.blockedMap[y][x] = true;
                   }
-
-                  layerObj.appendChild(frame);
                 }
               }
+            } else {
+              console.error(layer, this.data);
+              throw new Error("Game.Map got invalid block layer");
             }
-          } else { // 渲染对象层
-            throw new Error("不是普通层");
+          } else if (layer.name == "water") {
+            // 水层，用来钓鱼
+            if (layer.data) {
+              for (let y = 0; y < layer.height; y++) {
+                for (let x = 0; x < layer.width; x++) {
+                  let position = x + y * layer.width;
+                  let picture = layer.data[position] - 1;
+                  if (picture >= 0 && this.waterMap[y][x] != true) {
+                    this.waterMap[y][x] = true;
+                  }
+                }
+              }
+            } else {
+              console.error(layer, this.data);
+              throw new Error("Game.Map got invalid water layer");
+            }
+          } else {
+            let layerObj = new Sprite.Container();
+            layerObj.name = layer.name;
+
+            this.layers.push(layerObj);
+
+            if (layer.data) { // 渲染普通层
+              for (let y = 0; y < layer.height; y++) {
+                for (let x = 0; x < layer.width; x++) {
+                  let position = x + y * layer.width;
+                  let picture = layer.data[position] - 1;
+                  if (picture >= 0) {
+                    let frame = this.sheet.getFrame(picture);
+                    frame.x = x * this.data.tilewidth;
+                    frame.y = y * this.data.tileheight;
+
+                    if (this.blockedMap[y][x] != true) {
+                      if (layer.properties && layer.properties.blocked) {
+                        this.blockedMap[y][x] = true;
+                      } else {
+                        this.blockedMap[y][x] = null;
+                      }
+                    }
+
+                    layerObj.appendChild(frame);
+                  }
+                }
+              }
+            } else {
+              console.error(layer, this.data);
+              throw new Error("Game.Map got invalid layer");
+            }
           }
 
         });
@@ -106,8 +154,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
         // 这个cache会创建一个看不到的canvas
-        //this.container.cache(0, 0, this.width, this.height);
-        //this.minimap = this.container.cacheCanvas;
+        // this.container.cache(0, 0, this.width, this.height);
+        // this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
@@ -149,6 +197,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         layer.appendChild(element);
       });
+
+      layer.cache(0, 0, this.width, this.height);
+      this.minimap = layer.cacheCanvas;
+      layer.clearCache();
 
       if (this.data.bgm) {
         // set loop = -1, 无限循环

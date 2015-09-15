@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.confirm = new Game.Window("confirmWindow");
+  let win = Game.Window.create("confirm");
 
-  win.html(`
+  win.html = `
     <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
       <table>
         <tr><td><span id="confirmWindowMessage"></span></td></tr>
@@ -33,9 +33,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         </td></tr>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #confirmWindow {
       text-align: center;
     }
@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 16px;
       margin: 20px;
     }
-  `);
+  `;
 
 
   var confirmHandle = null;

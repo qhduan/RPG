@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.archive = new Game.Window("archiveWindow");
+  let win = Game.Window.create("archive");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <div id="archiveWindowItemBar">
         <button id="archiveWindowClose" class="brownButton">关闭</button>
@@ -31,13 +31,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
       <div id="archiveWindowTable"></div>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #archiveWindowTable {
       width: 100%;
       overflow-y: auto;
-      height: 360px;
+      height: 320px;
     }
 
     .archiveItem {
@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #archiveWindowClose {
       float: right;
     }
-  `);
+  `;
 
   var archiveWindowSave = document.querySelector("button#archiveWindowSave");
   var archiveWindowClose = document.querySelector("button#archiveWindowClose");

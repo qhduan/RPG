@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteBitmap.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -31,58 +29,99 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 (function (Sprite) {
+  "use strict";
+
+  var internal = Sprite.Namespace();
 
   Sprite.Bitmap = (function (_Sprite$Display) {
-    _inherits(Bitmap, _Sprite$Display);
+    _inherits(SpriteBitmap, _Sprite$Display);
 
-    function Bitmap(image) {
-      _classCallCheck(this, Bitmap);
+    /**
+     * Sprite.Bitmap's constructor
+     * @constructor
+     */
 
-      _get(Object.getPrototypeOf(Bitmap.prototype), "constructor", this).call(this);
-      this._image = image;
-      this._width = image.width;
-      this._height = image.height;
+    function SpriteBitmap(image) {
+      _classCallCheck(this, SpriteBitmap);
+
+      _get(Object.getPrototypeOf(SpriteBitmap.prototype), "constructor", this).call(this);
+
+      if (!image || typeof image.width != "number" || image.width <= 0 || typeof image.width != "number" || image.height <= 0) {
+        console.error(image);
+        throw new Error("Sprite.Bitmap got invalid argument");
+      }
+
+      /**
+       * The image
+       */
+      internal(this).image = image;
     }
 
-    _createClass(Bitmap, [{
+    _createClass(SpriteBitmap, [{
       key: "clone",
       value: function clone() {
-        var bitmap = new Bitmap(this._image);
+        var bitmap = new Sprite.Bitmap(internal(this).image);
         bitmap.x = this.x;
         bitmap.y = this.y;
         bitmap.centerX = this.centerX;
         bitmap.centerY = this.centerY;
-        bitmap.scaleX = this.scaleX;
-        bitmap.scaleY = this.scaleY;
         return bitmap;
       }
+
+      /**
+       * @return {Image} Return Sprite.Bitmap's image
+       */
     }, {
       key: "draw",
-      value: function draw(context) {
-        if (this._image && this._image.width > 0 && this._image.height > 0) {
-          this.drawImage(context, this._image, 0, 0, this._width, this._height);
-        }
+
+      /**
+       * @param {Object} renderer Draw image on the renderer
+       */
+      value: function draw(renderer) {
+        this.drawImage(renderer, this.image, 0, 0, this.width, this.height);
       }
+    }, {
+      key: "image",
+      get: function get() {
+        return internal(this).image;
+      },
+      set: function set(value) {
+        console.error(this);
+        throw new Error("Sprite.Bitmap.image readonly");
+      }
+
+      /**
+       * @return {number} Return Sprite.Bitmap's width
+       */
     }, {
       key: "width",
       get: function get() {
-        return this._width;
+        return internal(this).image.width;
       },
       set: function set(value) {
-        this._width = value;
+        console.error(this);
+        throw new Error("Sprite.Bitmap.width readonly");
       }
+
+      /**
+       * @return {number} Return Sprite.Bitmap's height
+       */
     }, {
       key: "height",
       get: function get() {
-        return this._height;
+        return internal(this).image.height;
       },
       set: function set(value) {
-        this._height = value;
+        console.error(this);
+        throw new Error("Sprite.Bitmap.height readonly");
       }
     }]);
 
-    return Bitmap;
+    return SpriteBitmap;
   })(Sprite.Display);
 })(Sprite);
-/// class Sprite.Bitmap
+/**
+ * @fileoverview Define Sprite.Bitmap
+ * @author mail@qhduan.com (QH Duan)
+ */
 //# sourceMappingURL=SpriteBitmap.js.map

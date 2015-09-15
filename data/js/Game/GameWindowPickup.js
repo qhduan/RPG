@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.pickup = new Game.Window("pickupWindow");
+  var win = Game.Window.create("pickup");
 
-  win.html("\n    <div class=\"window-box\">\n      <button id=\"pickupWindowClose\" class=\"brownButton\">关闭</button>\n      <button id=\"pickupWindowAll\" class=\"brownButton\">全部(a)</button>\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"pickupWindowTable\"></tbody>\n      </table>\n    </div>\n  ");
+  win.html = "\n    <div class=\"window-box\">\n      <button id=\"pickupWindowClose\" class=\"brownButton\">关闭</button>\n      <button id=\"pickupWindowAll\" class=\"brownButton\">全部(a)</button>\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"pickupWindowTable\"></tbody>\n      </table>\n    </div>\n  ";
 
-  win.css("\n    #pickupWindow table {\n      width: 100%;\n    }\n\n    #pickupWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #pickupWindow button {\n      width: 60px;\n      height: 40px;\n      font-size: 16;\n    }\n\n    #pickupWindowClose {\n\n    }\n\n    #pickupWindowAll {\n\n    }\n  ");
+  win.css = "\n    #pickupWindow table {\n      width: 100%;\n    }\n\n    #pickupWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #pickupWindow button {\n      width: 60px;\n      height: 40px;\n      font-size: 16;\n    }\n\n    #pickupWindowClose {\n\n    }\n\n    #pickupWindowAll {\n\n    }\n  ";
 
   var pickupWindowClose = document.querySelector("button#pickupWindowClose");
   var pickupWindowAll = document.querySelector("button#pickupWindowAll");
@@ -150,4 +150,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.pickup.show();
   });
 })();
-//# sourceMappingURL=GameWindowPickup.js.map

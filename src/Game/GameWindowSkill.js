@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.skill = new Game.Window("skillWindow");
+  let win = Game.Window.create("skill");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
       <div id="skillWindowItemBar">
         <button id="skillWindowClose" class="brownButton">关闭</button>
@@ -40,9 +40,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <tbody id="skillWindowTable"></tbody>
       </table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #skillWindow table {
       width: 100%;
     }
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     #skillWindowClose {
       float: right;
     }
-  `);
+  `;
 
   var skillWindowClose = document.querySelector("button#skillWindowClose");
 

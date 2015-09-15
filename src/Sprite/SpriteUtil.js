@@ -18,33 +18,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteUtil.js
-/// @namespace Sprite
-/// class Sprite.Util
+/**
+ * @fileoverview Define some useful tools
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
   /**
-   *
+   * @param {number} N The min number
+   * @param {number} M The max number
+   * @return {number} A random integer N <= return < M, aka. [N, M)
    */
   Sprite.rand = function (N, M) {
-    return Math.floor(M + (1 + N - M) * Math.random());
+    let r = M - N;
+    r *= Math.random();
+    return N + Math.floor(r);
   }
 
-  Sprite.copy = function (obj) {
-    return JSON.parse(JSON.stringify(obj));
+  /**
+   * @param {Object} object The object we require copy
+   * @return {Object} A deep copy of object
+   */
+  Sprite.copy = function (object) {
+    return JSON.parse(JSON.stringify(object));
   };
 
   Sprite.each = function (obj, functional) {
-    if (obj instanceof Set) {
-      for (let element of obj) {
-        functional(element, null, obj);
-      }
-    } else if (obj instanceof Map) {
-      for (let key of obj.keys()) {
-        functional(obj.get(key), key, obj);
-      }
+    if (obj.forEach) {
+      obj.forEach(functional);
     } else {
       for (let key in obj) {
         functional(obj[key], key, obj);
@@ -55,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Sprite.uuid = function () {
     // generate a UUID
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, function (c) {
-      var r = Math.floor(Math.random() * 16);
+      let r = Math.floor(Math.random() * 16);
       if (c == "x") {
         return r.toString(16);
       } else {

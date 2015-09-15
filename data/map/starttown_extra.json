@@ -1,75 +1,87 @@
 {
   "name": "斯塔特镇",
   "bgm": "Dance",
-  "type": "outdoor",
   "entry": {
-    "x": 34,
-    "y": 31
+    "x": 54,
+    "y": 58
   },
   "actors":
   [
     {
       "id": "starttown-mayor",
-      "x": 29,
-      "y": 22,
+      "x": 54,
+      "y": 49,
       "visible": false
     },
     {
       "id": "starttown-weapontrade",
-      "x": 21,
-      "y": 11,
+      "x": 46,
+      "y": 38,
       "visible": false
     }
   ],
-  "door":
-  [
+  "touch": [
+  ],
+  "onto": [
     {
-      "x": 28,
-      "y": 49,
+      "comment": "通往斯塔特南部森林",
+      "x": 48,
+      "y": 99,
       "dest": "starttown-southforest",
-      "description": "通往斯塔特南部森林",
       "destx": 14,
       "desty": 2
-    }
-  ],
-  "chest":
-  [
-  ],
-  "hint": [
+    },
     {
-      "x": 34,
-      "y": 27,
-      "message": "欢迎来到斯塔特镇！"
-    }
-  ],
-  "touch": [
-    {
-      "x": 29,
-      "y": 25,
-      "showmap": ["longhouse-floor", "longhouse-wall"],
+      "comment": "进入长屋",
+      "x": 54,
+      "y": 52,
       "hidemap": ["longhouse-roof", "longhouse-decoration"],
       "showactor": ["starttown-mayor"]
     },
     {
-      "x": 29,
-      "y": 26,
-      "hidemap": ["longhouse-floor", "longhouse-wall"],
+      "comment": "离开长屋",
+      "x": 54,
+      "y": 53,
       "showmap": ["longhouse-roof", "longhouse-decoration"],
       "hideactor": ["starttown-mayor"]
     },
     {
-      "x": 21,
-      "y": 14,
-      "showmap": ["weapon-floor", "weapon-wall"],
+      "comment": "进入武器店",
+      "x": 46,
+      "y": 41,
       "hidemap": ["weapon-roof", "weapon-decoration"],
       "showactor": ["starttown-weapontrade"]
     },
     {
-      "x": 21,
-      "y": 15,
-      "hidemap": ["weapon-floor", "weapon-wall"],
+      "comment": "离开武器店",
+      "x": 46,
+      "y": 42,
       "showmap": ["weapon-roof", "weapon-decoration"],
       "hideactor": ["starttown-weapontrade"]
+    },
+    {
+      "comment": "进入旅馆",
+      "x": 70,
+      "y": 56,
+      "hidemap": ["inn-roof", "inn-decoration"]
+    },
+    {
+      "comment": "离开旅馆",
+      "x": 70,
+      "y": 57,
+      "showmap": ["inn-roof", "inn-decoration"]
+    },
+    {
+      "comment": "进入房屋",
+      "x": 32,
+      "y": 55,
+      "hidemap": ["house-roof", "house-decoration"]
+    },
+    {
+      "comment": "离开房屋",
+      "x": 32,
+      "y": 56,
+      "showmap": ["house-roof", "house-decoration"]
     }
   ]
 }

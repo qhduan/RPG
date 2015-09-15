@@ -18,27 +18,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteContainer.js
-/// @namespace Sprite
-/// class Sprite.Container
+/**
+ * @fileoverview Class Sprite.Container, it's a general container
+ * Contain Sprite.Sheet, Sprite.Bitmap, Sprite.Shape, Sprite.Text, Sprite.Frame or Sprite.Container
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
 
   let internal = Sprite.Namespace();
 
-  /// @class Sprite.Container
-  /// inherit the Sprite.Display
+  /**
+   * Contain everything which inherit from Sprite.Display
+   * @class
+   */
   Sprite.Container = class Container extends Sprite.Display {
 
-    /// @function Sprite.Container.constructor
-    /// construct a Sprite.Container object
+    /**
+     * Construct Sprite.Container
+     * @constructor
+     */
     constructor () {
       super();
+      /**
+       * Contain all children element
+       * @private
+       */
       internal(this).children = [];
+      /**
+       * Cached canvas
+       */
       internal(this).cacheCanvas = null;
     }
 
+    /**
+     * @return {Array} Children array
+     */
     get children () {
       return internal(this).children;
     }
@@ -47,6 +63,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Container.children readonly");
     }
 
+    /**
+     * @return {Object} Cached canvas
+     */
     get cacheCanvas () {
       return internal(this).cacheCanvas;
     }
@@ -55,8 +74,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Container.cacheCanvas readonly");
     }
 
-    /// @function Sprite.Container.cache
-    /// make a cache canvas of container
+    /**
+     * Remove canvas cache
+     */
+    clearCache () {
+      internal(this).cacheCanvas = null;
+    }
+
+    /**
+     * Prerender all children as cache
+     */
     cache (x, y, width, height) {
       let canvas = document.createElement("canvas");
       canvas.width = width;
@@ -66,7 +93,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       internal(this).cacheCanvas = canvas;
     }
 
-    /// @function Sprite.Container.hitTest
+    /**
+     * Hit test
+     */
     hitTest (x, y) {
       if (this.cacheCanvas) {
         return super.hitTest(x, y);
@@ -84,9 +113,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    /// @function Sprite.Container.draw
-    /// draw all children in this container on context
-    /// @param context, a 2d context from canvas
+    /**
+     * Draw all children in this container on context
+     * @param {Object} renderer Sprite.Webgl/Sprite.Canvas/Context
+     */
     draw (renderer) {
       if (this.visible != true)
         return;
@@ -104,10 +134,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    /// @function Sprite.Container.appendChild
-    /// append one or more children into container
-    /// eg. c.appendChild(childA) c.appendChild(childA, childB)
-    /// @param one or more children
+    /**
+     * Append one or more children into container
+     * eg. c.appendChild(childA) c.appendChild(childA, childB)
+     * @param one or more children
+     */
     appendChild () {
       let args = Array.prototype.slice.call(arguments);
 
@@ -127,10 +158,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.emit("addedChildren");
     }
 
-    /// @function Sprite.Container.appendChildAt
-    /// append one or more children into container at certain position
-    /// eg. c.appendChildAt(0, childA) c.appendChildAt(0, childA, childB)
-    /// @param one or more children
+    /**
+     * Append one or more children into container at certain position
+     * eg. c.appendChildAt(0, childA) c.appendChildAt(0, childA, childB)
+     * @param one or more children
+     */
     appendChildAt () {
       let args = Array.prototype.slice.call(arguments);
 
@@ -152,10 +184,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.emit("addedChildren");
     }
 
-    /// @function Sprite.Container.removeChild
-    /// remove one child from a container
-    /// eg. c.removeChild(childA)
-    /// @param the child you want to remove
+    /**
+     * Remove one child from a container
+     * eg. c.removeChild(childA)
+     * @param {Object} element The child you want to remove
+     * @return {boolean} If found and removed element, return true, otherwise, false
+     */
     removeChild (element) {
       let index = this.children.indexOf(element);
       if (index != -1) { // 删除成功
@@ -168,15 +202,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    /// @function Sprite.Container.clear
-    /// remove all children of container
+    /**
+     * remove all children of container
+     */
     clear () {
       for (let child of this.children) {
         child.parent = null;
       }
       internal(this).children = [];
       this.emit("removedChildren");
-      return true;
     }
 
   };

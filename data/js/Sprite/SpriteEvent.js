@@ -47,13 +47,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        @type {Object}
        @private
        */
-      internal(this).listeners = {};
+      internal(this).listeners = new Map();
       /**
        * Contain an event is once or not
        * @type {Object}
        * @private
        */
-      internal(this).once = {};
+      internal(this).once = new Map();
       /**
        * Parent of this object
        * @type {Object}
@@ -75,20 +75,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        */
       value: function on(event, listener) {
         // If event is an once event, when some client register this event after event fired, we just return it
-        if (internal(this).once[event]) {
+        if (internal(this).once.has(event)) {
           listener({
             type: event,
             target: this,
-            data: internal(this).once[event]
+            data: internal(this).once.get(event)
           });
           return null;
         } else {
-          if (!internal(this).listeners[event]) {
-            internal(this).listeners[event] = {};
+          if (internal(this).listeners.has(event) == false) {
+            internal(this).listeners.set(event, new Map());
           }
 
           var id = Sprite.uuid();
-          internal(this).listeners[event][id] = listener;
+          internal(this).listeners.get(event).set(id, listener);
           return id;
         }
       }
@@ -101,11 +101,60 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "off",
       value: function off(event, id) {
-        if (internal(this).listeners[event] && internal(this).listeners[event][id]) {
-          delete internal(this).listeners[event][id];
+        if (internal(this).listeners.has(event) && internal(this).listeners.get(event).has(id)) {
+          internal(this).listeners.get(event)["delete"](id);
+          if (internal(this).listeners.get(event).size <= 0) {
+            internal(this).listeners["delete"](event);
+          }
           return true;
         }
         return false;
+      }
+
+      /**
+       * Fire an event from children
+       * @param {string} event Event type
+       * @param {Object} target Event target
+       * @param {Object} data Data
+       */
+    }, {
+      key: "emitBubble",
+      value: function emitBubble(event, target, data) {
+        var bubble = true;
+
+        if (internal(this).listeners.has(event)) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = internal(this).listeners.get(event).values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var listener = _step.value;
+
+              if (listener({ type: event, target: target, data: data }) === false) {
+                // If client return just "false", stop propagation
+                bubble = false;
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+        }
+
+        if (internal(this).parent && bubble == true) {
+          internal(this).parent.emitBubble(event, target, data);
+        }
       }
 
       /**
@@ -119,30 +168,47 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function emit(event, once, data) {
         if (once) {
           if (typeof data != "undefined") {
-            internal(this).once[event] = data;
+            internal(this).once.set(event, data);
           } else {
-            internal(this).once[event] = true;
+            internal(this).once.set(event, null);
           }
         }
 
         // wheter or not bubble the event, default true
         var bubble = true;
 
-        if (internal(this).listeners[event]) {
-          for (var key in internal(this).listeners[event]) {
-            if (internal(this).listeners[event][key]({
-              type: event,
-              target: this,
-              data: data
-            }) === false) {
-              // If client return just "false", stop propagation
-              bubble = false;
+        if (internal(this).listeners.has(event)) {
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = internal(this).listeners.get(event).values()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var listener = _step2.value;
+
+              if (listener({ type: event, target: this, data: data }) === false) {
+                // If client return just "false", stop propagation
+                bubble = false;
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
             }
           }
         }
 
         if (internal(this).parent && bubble == true) {
-          internal(this).parent.emit(event, false, data);
+          internal(this).parent.emitBubble(event, this, data);
         }
       }
     }, {

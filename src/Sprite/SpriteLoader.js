@@ -18,9 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteLoader.js
-/// @namespace Sprite
-/// class Sprite.Loader
+/**
+ * @fileoverview Sprite.Loader, fetch resource
+ * @author mail@qhduan.com (QH Duan)
+ */
 
 (function (Sprite) {
   "use strict";
@@ -138,8 +139,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.send();
   }
 
-  Sprite.Loader = class Loader extends Sprite.Event {
+  /**
+   * Class for fetch resources
+   * @class
+   */
+  Sprite.Loader = class SpriteLoader extends Sprite.Event {
 
+    /**
+     * Create a Sprite.Loader object
+     * @static
+     */
+    static create () {
+      return new Sprite.Loader();
+    }
+
+    /**
+     * Construct Sprite.Laoder
+     * @constructor
+     */
     constructor () {
       super();
 
@@ -147,6 +164,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       internal(this).progress = 0;
     }
 
+    /**
+     * @return {number} Return current download progress
+     */
     get progress () {
       return internal(this).progress;
     }
@@ -155,7 +175,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Loader.progress readonly");
     }
 
-    add () {
+    /**
+     * Add one or more urls
+     * eg. add("a.txt") add("a.txt", "b.txt") add(["a.txt", "b.txt"], "c.txt")
+     * @param {Object} urls, one or more urls.
+     */
+    add (urls) {
       let args = Array.prototype.slice.call(arguments);
 
       for (let element of args) {
@@ -171,6 +196,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return this;
     }
 
+    /**
+     * Begin to download
+     */
     start () {
       let done = 0;
       let ret = [];
@@ -193,9 +221,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           Done();
         });
       });
-
+      return this;
     }
-  }
 
+  }
 
 })(Sprite);

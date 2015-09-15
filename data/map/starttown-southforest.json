@@ -51,11 +51,11 @@
  "tilesets":[
         {
          "firstgid":1,
-         "image":"resource\/terrain.png",
+         "image":"resource\/terrain1.png",
          "imageheight":1024,
          "imagewidth":1024,
          "margin":0,
-         "name":"terrain",
+         "name":"terrain1",
          "properties":
             {
 
@@ -66,11 +66,11 @@
         }, 
         {
          "firstgid":1025,
-         "image":"resource\/plant.png",
+         "image":"resource\/plant1.png",
          "imageheight":416,
          "imagewidth":416,
          "margin":0,
-         "name":"plant",
+         "name":"plant1",
          "properties":
             {
 

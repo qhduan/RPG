@@ -23,25 +23,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
   function CheckHeroAction () {
-    var state;
+    let state = "run";
     if (Sprite.Input.isPressed("shift")) {
-      state = "run";
-    } else {
       state = "walk";
     }
+
     if (Sprite.Input.isPressed("left")) {
-      Game.hero.go(state, "left", CheckHeroAction);
+      Game.hero.go(state, "left");
     } else if (Sprite.Input.isPressed("up")) {
-      Game.hero.go(state, "up", CheckHeroAction);
+      Game.hero.go(state, "up");
     } else if (Sprite.Input.isPressed("right")) {
-      Game.hero.go(state, "right", CheckHeroAction);
+      Game.hero.go(state, "right");
     } else if (Sprite.Input.isPressed("down")) {
-      Game.hero.go(state, "down", CheckHeroAction);
+      Game.hero.go(state, "down");
     }
   }
 
   Game.initInput = function () {
-
+/*
     var mousePressed = false;
 
     Game.stage.on("stagemousedown", function (event) {
@@ -55,21 +54,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.stage.on("mouseleave", function (event) { // mouse leave canvas
       mousePressed = false;
     });
+    */
 
     Game.windows.stage.on("mousedown", function (event) {
       var data = event.data;
+
       data.x += Game.stage.centerX;
       data.y += Game.stage.centerY;
       data.x = Math.floor(data.x / 32);
       data.y = Math.floor(data.y / 32);
 
       if (Game.hero.x != data.x || Game.hero.y != data.y) {
-        Game.hero.goto(data.x, data.y, "walk");
+        Game.hero.goto(data.x, data.y, "run");
       }
     });
 
     Sprite.Ticker.on("tick", function () {
 
+      if (Game.paused) return;
       if (!Game.hero) return;
       if (!Game.area) return;
       if (!Game.area.map) return;

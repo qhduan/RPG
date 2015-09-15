@@ -205,3 +205,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
  * @fileoverview Define the Sprite.Text to show text in game
  * @author mail@qhduan.com (QH Duan)
  */
+//# sourceMappingURL=SpriteText.js.map

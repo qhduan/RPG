@@ -18,8 +18,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-/// @file SpriteContainer.js
-/// @namespace Sprite
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -35,27 +33,52 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
   var internal = Sprite.Namespace();
 
-  /// @class Sprite.Container
-  /// inherit the Sprite.Display
+  /**
+   * Contain everything which inherit from Sprite.Display
+   * @class
+   */
   Sprite.Container = (function (_Sprite$Display) {
     _inherits(Container, _Sprite$Display);
 
-    /// @function Sprite.Container.constructor
-    /// construct a Sprite.Container object
+    /**
+     * Construct Sprite.Container
+     * @constructor
+     */
 
     function Container() {
       _classCallCheck(this, Container);
 
       _get(Object.getPrototypeOf(Container.prototype), "constructor", this).call(this);
+      /**
+       * Contain all children element
+       * @private
+       */
       internal(this).children = [];
+      /**
+       * Cached canvas
+       */
       internal(this).cacheCanvas = null;
     }
 
-    _createClass(Container, [{
-      key: "cache",
+    /**
+     * @return {Array} Children array
+     */
 
-      /// @function Sprite.Container.cache
-      /// make a cache canvas of container
+    _createClass(Container, [{
+      key: "clearCache",
+
+      /**
+       * Remove canvas cache
+       */
+      value: function clearCache() {
+        internal(this).cacheCanvas = null;
+      }
+
+      /**
+       * Prerender all children as cache
+       */
+    }, {
+      key: "cache",
       value: function cache(x, y, width, height) {
         var canvas = document.createElement("canvas");
         canvas.width = width;
@@ -65,7 +88,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         internal(this).cacheCanvas = canvas;
       }
 
-      /// @function Sprite.Container.hitTest
+      /**
+       * Hit test
+       */
     }, {
       key: "hitTest",
       value: function hitTest(x, y) {
@@ -107,9 +132,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
 
-      /// @function Sprite.Container.draw
-      /// draw all children in this container on context
-      /// @param context, a 2d context from canvas
+      /**
+       * Draw all children in this container on context
+       * @param {Object} renderer Sprite.Webgl/Sprite.Canvas/Context
+       */
     }, {
       key: "draw",
       value: function draw(renderer) {
@@ -147,10 +173,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
 
-      /// @function Sprite.Container.appendChild
-      /// append one or more children into container
-      /// eg. c.appendChild(childA) c.appendChild(childA, childB)
-      /// @param one or more children
+      /**
+       * Append one or more children into container
+       * eg. c.appendChild(childA) c.appendChild(childA, childB)
+       * @param one or more children
+       */
     }, {
       key: "appendChild",
       value: function appendChild() {
@@ -193,10 +220,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.emit("addedChildren");
       }
 
-      /// @function Sprite.Container.appendChildAt
-      /// append one or more children into container at certain position
-      /// eg. c.appendChildAt(0, childA) c.appendChildAt(0, childA, childB)
-      /// @param one or more children
+      /**
+       * Append one or more children into container at certain position
+       * eg. c.appendChildAt(0, childA) c.appendChildAt(0, childA, childB)
+       * @param one or more children
+       */
     }, {
       key: "appendChildAt",
       value: function appendChildAt() {
@@ -220,10 +248,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.emit("addedChildren");
       }
 
-      /// @function Sprite.Container.removeChild
-      /// remove one child from a container
-      /// eg. c.removeChild(childA)
-      /// @param the child you want to remove
+      /**
+       * Remove one child from a container
+       * eg. c.removeChild(childA)
+       * @param {Object} element The child you want to remove
+       * @return {boolean} If found and removed element, return true, otherwise, false
+       */
     }, {
       key: "removeChild",
       value: function removeChild(element) {
@@ -240,8 +270,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
 
-      /// @function Sprite.Container.clear
-      /// remove all children of container
+      /**
+       * remove all children of container
+       */
     }, {
       key: "clear",
       value: function clear() {
@@ -272,7 +303,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         internal(this).children = [];
         this.emit("removedChildren");
-        return true;
       }
     }, {
       key: "children",
@@ -282,6 +312,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       set: function set(value) {
         throw new Error("Sprite.Container.children readonly");
       }
+
+      /**
+       * @return {Object} Cached canvas
+       */
     }, {
       key: "cacheCanvas",
       get: function get() {
@@ -295,4 +329,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Container;
   })(Sprite.Display);
 })(Sprite);
-/// class Sprite.Container
+/**
+ * @fileoverview Class Sprite.Container, it's a general container
+ * Contain Sprite.Sheet, Sprite.Bitmap, Sprite.Shape, Sprite.Text, Sprite.Frame or Sprite.Container
+ * @author mail@qhduan.com (QH Duan)
+ */

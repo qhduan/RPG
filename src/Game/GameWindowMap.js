@@ -21,18 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.windows.map = new Game.Window("mapWindow");
+  let win = Game.Window.create("map");
 
-  win.html(`
+  win.html = `
     <div class="window-box">
-      <button id="mapWindowClose">关闭</button>
+      <button id="mapWindowClose" class="brownButton">关闭</button>
       <table><tbody><tr><td>
         <div id="mapWindowMap"></div>
       </td></tr></tbody></table>
     </div>
-  `);
+  `;
 
-  win.css(`
+  win.css = `
     #mapWindow table, #mapWindow tbody, #mapWindow tr, #mapWindow td {
       width: 100%;
       height: 100%;
@@ -46,17 +46,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     #mapWindowClose {
       position: absolute;
-      right: 5px;
-      top: 5px;
-      width: 60px;
-      height: 40px;
+      right: 50px;
+      top: 50px;
+      width: 120px;
+      height: 60px;
+      font-size: 16px;
     }
 
     #mapWindowMap img, #mapWindowMap canvas {
-      max-width: 750px;
-      max-height: 400px;
+      max-width: 700px;
+      max-height: 320px;
     }
-  `);
+  `;
 
   var mapWindowClose = document.querySelector("button#mapWindowClose");
 
