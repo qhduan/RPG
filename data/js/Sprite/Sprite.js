@@ -38,15 +38,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(SpriteCore, [{
-      key: "register",
-      value: function register(name, object) {
+      key: "assign",
+      value: function assign(name, object) {
         Object.defineProperty(this, name, {
           enumerable: false,
           configurable: false,
           writable: false,
           value: object
         });
-
         return this;
       }
     }]);
@@ -62,17 +61,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * Function Sprite.Namespace, return an unique Private-Properties function
    * for javascript private properties need, for es6
    */
-  Sprite.register("Namespace", function () {
+  Sprite.assign("Namespace", function () {
     /**
      * Using closure variable store private properties
      * and different file have different "privateProperties"
      */
-    var privateProperties = new WeakMap();
+    var privates = new WeakMap();
     return function (object) {
-      if (privateProperties.has(object) == false) {
-        privateProperties.set(object, {});
+      if (privates.has(object) == false) {
+        privates.set(object, {});
       }
-      return privateProperties.get(object);
+      return privates.get(object);
     };
   });
 
@@ -81,7 +80,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * @param {number} M The max number
    * @return {number} A random integer N <= return < M, aka. [N, M)
    */
-  Sprite.register("rand", function (N, M) {
+  Sprite.assign("rand", function (N, M) {
     var r = M - N;
     r *= Math.random();
     return N + Math.floor(r);
@@ -91,11 +90,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * @param {Object} object The object we require copy
    * @return {Object} A deep copy of object
    */
-  Sprite.register("copy", function (object) {
+  Sprite.assign("copy", function (object) {
     return JSON.parse(JSON.stringify(object));
   });
 
-  Sprite.register("each", function (obj, functional) {
+  Sprite.assign("each", function (obj, functional) {
     if (obj.forEach) {
       obj.forEach(functional);
     } else {
@@ -105,7 +104,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
   });
 
-  Sprite.register("uuid", function () {
+  Sprite.assign("uuid", function () {
     // generate a UUID
     return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, function (c) {
       var r = Math.floor(Math.random() * 16);
@@ -117,12 +116,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
   });
 
-  Sprite.register("btoa", function (str) {
+  Sprite.assign("btoa", function (str) {
     // convert str to base64
     return window.btoa(unescape(encodeURIComponent(str)));
   });
 
-  Sprite.register("atob", function (str) {
+  Sprite.assign("atob", function (str) {
     // convert base64 str to original
     return decodeURIComponent(escape(window.atob(str)));
   });

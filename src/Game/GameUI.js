@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let popupCache = new Map();
 
-  Game.popup = function (obj, text, adjustX = 0, adjustY = 0) {
+  Game.assign("popup", function (obj, text, adjustX = 0, adjustY = 0) {
 
     if (popupCache.has(obj)) {
       let popup = popupCache.get(obj);
@@ -78,29 +78,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       container: dialogueContainer,
       timer: timer
     });
-  };
-
-  Game.ui = {};
+  });
 
 
-
-  Game.ui.shortcut = function () {
-    Game.choice({
-      1:0,
-      2:1,
-      3:2,
-      4:3,
-      5:4,
-      6:5,
-      7:6,
-      8:7
-    }, function (choice) {
-      if (typeof choice == "number" && choice >= 0) {
-        Game.hero.data.bar[choice] = null;
-        Game.ui.bar();
-        Game.Window.show("uiWindow");
-      }
-    });
-  };
+  Game.assign("ui", class GameUI {
+    static shortcut () {
+      Game.choice({
+        1:0,
+        2:1,
+        3:2,
+        4:3,
+        5:4,
+        6:5,
+        7:6,
+        8:7
+      }, function (choice) {
+        if (typeof choice == "number" && choice >= 0) {
+          Game.hero.data.bar[choice] = null;
+          Game.ui.bar();
+          Game.Window.show("uiWindow");
+        }
+      });
+    }
+  });
 
 })();

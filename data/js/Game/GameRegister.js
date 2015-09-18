@@ -20,10 +20,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 (function () {
   "use strict";
-
-  Game.register = {};
 
   // 英雄组件数据
   var heroCustom = {
@@ -93,41 +95,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-  // 注册模块
-  Game.register.reg = function () {
-    document.getElementById("registerHeroName").value = "";
-    Game.windows.register.show();
-    Init();
-  };
-
-  Game.register.back = function () {
-    Game.windows.main.show();
-  };
-
-  Game.register.submit = function () {
-    var name = document.getElementById("registerHeroName").value;
-
-    if (name.trim().length <= 0) {
-      alert("Invalid Name");
-      return;
+  Game.assign("register", (function () {
+    function GameRegister() {
+      _classCallCheck(this, GameRegister);
     }
 
-    HeroDefault.id = "hero_" + name;
-    HeroDefault.name = name;
-    HeroDefault.custom = heroCustom;
-    HeroDefault.tilewidth = heroCustom.tilewidth;
-    HeroDefault.tileheight = heroCustom.tileheight;
+    _createClass(GameRegister, null, [{
+      key: "reg",
 
-    // 保存一个存档
-    Game.Archive.save({
-      hero: HeroDefault
-    });
+      // 注册模块
+      value: function reg() {
+        document.getElementById("registerHeroName").value = "";
+        Game.windows.register.show();
+        Init();
+      }
+    }, {
+      key: "back",
+      value: function back() {
+        Game.windows.main.show();
+      }
+    }, {
+      key: "submit",
+      value: function submit() {
+        var name = document.getElementById("registerHeroName").value;
 
-    Game.windows.register.hide();
+        if (name.trim().length <= 0) {
+          alert("Invalid Name");
+          return;
+        }
 
-    // 空调用，代表读取最新一个存档（last），即刚刚新建的存档
-    Game.Archive.load();
-  };
+        HeroDefault.id = "hero_" + name;
+        HeroDefault.name = name;
+        HeroDefault.custom = heroCustom;
+        HeroDefault.tilewidth = heroCustom.tilewidth;
+        HeroDefault.tileheight = heroCustom.tileheight;
+
+        // 保存一个存档
+        Game.Archive.save({
+          hero: HeroDefault
+        });
+
+        Game.windows.register.hide();
+
+        // 空调用，代表读取最新一个存档（last），即刚刚新建的存档
+        Game.Archive.load();
+      }
+    }]);
+
+    return GameRegister;
+  })());
 
   // 含有$开头的代表是基础值
   // 不含$的同名属性是计算后值，即经过各种加成，buff，nerf之后的值
@@ -174,8 +190,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "buff": [], // 有益状态
     "nerf": [], // 有害状态
 
-    "currentQuest": {}, // 当前任务
-    "pastQuest": {}, // 完成的任务
+    "quest": {
+      "current": {
+        // 当前任务
+      },
+      "past": {
+        // 完成了的任务
+      }
+    },
+
     "area": "starttown", // 当前所在地图， 初始地图为starttown
 
     "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
@@ -203,7 +226,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       "id": "bow01",
       "type": "skill"
     }, null, null, null, null, null, {
-      "id": "potionHealWeak",
+      "id": "potion.healWeak",
       "type": "item"
     }],
 
@@ -219,20 +242,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     "equipment": {
       "head": null,
-      "body": "clothNormal",
-      "feet": "shoesNormal",
-      "weapon": "swordIron",
+      "body": "cloth.normal",
+      "feet": "shoes.normal",
+      "weapon": "sword.iron",
       "neck": null,
       "ring": null
     },
 
     "items": {
-      "swordIron": 1,
-      "spearIron": 1,
-      "bowWood": 1,
-      "clothNormal": 1,
-      "shoesNormal": 1,
-      "potionHealWeak": 5
+      "sword.iron": 1,
+      "spear.iron": 1,
+      "bow.wood": 1,
+      "cloth.normal": 1,
+      "shoes.normal": 1,
+      "potion.healWeak": 5,
+      "book.gameAdventure": 1,
+      "book.vegaHistory": 1
     },
 
     "gold": 0,

@@ -120,7 +120,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Sprite.Input, only has static methods
    * @class
    */
-  Sprite.register("Input", class SpriteInput {
+  Sprite.assign("Input", class SpriteInput {
 
     /**
      * @param {string} key Key-string ('A', 'a') or key-number (65, 97)

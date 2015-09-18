@@ -1,12 +1,12 @@
 {
-  "id": "robberGreen",
   "name": "绿色强盗",
   "description": "游走在乡村小道，专门向招惹得起的人下手",
   "type": "monster",
-  "drop": {
-    "gold": "0-1"
+  "items": {
+    "gold": 2
   },
-  "image": "resource\/robberGreen.png",
+  "exp": 10,
+  "image": "resource\/robber.green.png",
   "centerX": 16,
   "centerY": 42,
   "hitArea": [[0, 0]],

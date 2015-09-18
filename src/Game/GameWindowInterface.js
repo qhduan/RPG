@@ -121,11 +121,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let interfaceWindowUse = document.querySelector("button#interfaceWindowUse");
 
-  win.register("hideUse", function () {
+  win.assign("hideUse", function () {
     interfaceWindowUse.style.visibility = "hidden";
   });
 
-  win.register("showUse", function () {
+  win.assign("showUse", function () {
     interfaceWindowUse.style.visibility = "visible";
   });
 
@@ -226,21 +226,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.register("status", function (hp, sp) {
-    let interfaceWindowHP = document.querySelector("#interfaceWindowHP");
-    let interfaceWindowSP = document.querySelector("#interfaceWindowSP");
-    interfaceWindowHP.style.width = `${hp*100}%`;
-    interfaceWindowSP.style.width = `${sp*100}%`;
-    if (hp >= 0.5) {
-      interfaceWindowHP.style.backgroundColor = "green";
-    } else if (hp >= 0.25) {
-      interfaceWindowHP.style.backgroundColor = "yellow";
-    } else {
-      interfaceWindowHP.style.backgroundColor = "red";
+  let interfaceWindowHP = document.querySelector("#interfaceWindowHP");
+  let interfaceWindowSP = document.querySelector("#interfaceWindowSP");
+
+  win.assign("status", function () {
+    if (Game.hero) {
+      let hp = Game.hero.data.hp / Game.hero.data.$hp;
+      let sp = Game.hero.data.sp / Game.hero.data.$sp;
+      interfaceWindowHP.style.width = `${hp*100}%`;
+      interfaceWindowSP.style.width = `${sp*100}%`;
+      if (hp >= 0.5) {
+        interfaceWindowHP.style.backgroundColor = "green";
+      } else if (hp >= 0.25) {
+        interfaceWindowHP.style.backgroundColor = "yellow";
+      } else {
+        interfaceWindowHP.style.backgroundColor = "red";
+      }
     }
   });
 
-  win.register("datetime", function () {
+  win.assign("datetime", function () {
     if (Game.hero && Game.hero.data && Number.isInteger(Game.hero.data.time)) {
       let YEARMIN = 60*24*30*12;
       let MONTHMIN = 60*24*30;
@@ -296,7 +301,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }, 1000);
 
-  win.register("refresh", function () {
+  win.assign("refresh", function () {
     for (let i = 0; i < 8; i++) {
       let element = Game.hero.data.bar[i];
       let button = document.querySelector(`#interfaceWindowButton-${i}`);

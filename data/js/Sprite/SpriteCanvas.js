@@ -38,7 +38,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
    * @class
    */
-  Sprite.register("Canvas", (function () {
+  Sprite.assign("Canvas", (function () {
     _createClass(SpriteCanvas, null, [{
       key: "support",
 
@@ -64,6 +64,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function SpriteCanvas(width, height) {
       _classCallCheck(this, SpriteCanvas);
 
+      var privates = internal(this);
       var canvas = document.createElement("canvas");
       canvas.width = width || 640;
       canvas.height = height || 480;
@@ -78,23 +79,23 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       /**
        * Color after clear canvas
        */
-      internal(this).color = "#000000";
+      privates.color = "#000000";
       /**
        * The canvas object
        */
-      internal(this).canvas = canvas;
+      privates.canvas = canvas;
       /**
        * Context of canvas
        */
-      internal(this).context = context;
+      privates.context = context;
       /**
        * Global alpha
        */
-      internal(this).alpha = 1;
+      privates.alpha = 1;
       /**
        * Save some filter paramters, eg. brightness/contrast
        */
-      internal(this).filter = new Map();
+      privates.filter = new Map();
       this.filter("brightness", 0);
       this.filter("contrast", 0);
     }
@@ -107,8 +108,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     _createClass(SpriteCanvas, [{
       key: "filter",
       value: function filter(name, value) {
-        var _this = this;
-
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value)) {
           if (name == "brightness") {
             value += 1;
@@ -116,20 +116,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (name == "contrast") {
             value += 1;
           }
-          if (internal(this).filter.get(name) != value) {
+          if (privates.filter.get(name) != value) {
             (function () {
-              internal(_this).filter.set(name, value);
+              privates.filter.set(name, value);
               var filter = [];
-              internal(_this).filter.forEach(function (value, key, object) {
+              privates.filter.forEach(function (value, key, object) {
                 filter.push(key + "(" + value + ")");
               });
               filter = filter.join(" ");
-              _this.canvas.style.filter = filter;
-              _this.canvas.style.webkitFilter = filter;
+              privates.canvas.style.filter = filter;
+              privates.canvas.style.webkitFilter = filter;
             })();
           }
         } else {
-          return internal(this).filter.get(name);
+          return privates.filter.get(name);
         }
       }
 
@@ -148,8 +148,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "drawImage",
       value: function drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) {
-        internal(this).context.globalAlpha = this.alpha;
-        internal(this).context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+        var privates = internal(this);
+        privates.context.globalAlpha = this.alpha;
+        privates.context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
       }
 
       /**
@@ -158,8 +159,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "clear",
       value: function clear() {
-        internal(this).context.fillStyle = internal(this).color;
-        internal(this).context.fillRect(0, 0, this.width, this.height);
+        var privates = internal(this);
+        privates.context.fillStyle = privates.color;
+        privates.context.fillRect(0, 0, this.width, this.height);
       }
 
       /**
@@ -168,15 +170,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "color",
       get: function get() {
-        return internal(this).color;
+        var privates = internal(this);
+        return privates.color;
       },
 
       /**
        * @param {string} value The new color, eg "#00ff00"
        */
       set: function set(value) {
+        var privates = internal(this);
         if (value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/)) {
-          internal(this).color = value;
+          privates.color = value;
         } else {
           console.error(value, this);
           throw new Error("Sprite.Canvas invalid color value");
@@ -189,16 +193,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "alpha",
       get: function get() {
-        return internal(this).alpha;
+        var privates = internal(this);
+        return privates.alpha;
       },
 
       /**
        * @param {number} value The new alpha number
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
-          if (value != internal(this).alpha) {
-            internal(this).alpha = value;
+          if (value != privates.alpha) {
+            privates.alpha = value;
           }
         } else {
           console.error(value, this);
@@ -212,16 +218,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "width",
       get: function get() {
-        return internal(this).canvas.width;
+        var privates = internal(this);
+        return privates.canvas.width;
       },
 
       /**
        * @param {number} value New width
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value) && value > 0 && value < 10000) {
-          if (value != internal(this).canvas.width) {
-            internal(this).canvas.width = value;
+          if (value != privates.canvas.width) {
+            privates.canvas.width = value;
           }
         } else {
           console.error(value, this);
@@ -235,16 +243,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "height",
       get: function get() {
-        return internal(this).canvas.height;
+        var privates = internal(this);
+        return privates.canvas.height;
       },
 
       /**
        * @param {number} value New height
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value) && value > 0 && value < 10000) {
-          if (value != internal(this).canvas.height) {
-            internal(this).canvas.height = value;
+          if (value != privates.canvas.height) {
+            privates.canvas.height = value;
           }
         } else {
           console.error(value, this);
@@ -258,7 +268,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "canvas",
       get: function get() {
-        return internal(this).canvas;
+        var privates = internal(this);
+        return privates.canvas;
       },
       set: function set(value) {
         throw new Error("Sprite.Canvas.canvas cannot write");

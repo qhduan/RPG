@@ -25,16 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.Window.create("loading");
 
-  win.html = "\n    <table><tbody><tr><td>\n      <label>载入中...</label>\n    </td></tr></tbody></table>\n  ";
+  win.html = "\n    <table><tbody><tr><td>\n      <label>请稍等...</label>\n    </td></tr></tbody></table>\n  ";
 
   win.css = "\n    #loadingWindow {\n      text-align: center;\n      background-color: gray;\n    }\n\n    #loadingWindow table, #loadingWindow tbody, #loadingWindow tr, #loadingWindow td {\n      width: 100%;\n      height: 100%;\n      margin: 0;\n      padding: 0;\n    }\n\n    #loadingWindow label {\n      font-size: 60px;\n    }\n  ";
 
-  win.register("begin", function () {
+  win.assign("begin", function () {
     Game.windows.loading.show();
   });
 
-  win.register("end", function () {
+  win.assign("end", function () {
     Game.windows.loading.hide();
   });
 })();
-//# sourceMappingURL=GameWindowLoading.js.map

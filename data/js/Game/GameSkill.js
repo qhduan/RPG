@@ -31,7 +31,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Game.Skill = (function (_Sprite$Event) {
+  Game.assign("Skill", (function (_Sprite$Event) {
     _inherits(GameSkill, _Sprite$Event);
 
     _createClass(GameSkill, null, [{
@@ -74,6 +74,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         sheet.centerX = Math.floor(_this.data.tilewidth / 2);
         sheet.centerY = Math.floor(_this.data.tileheight / 2);
+
+        if (_this.data.alpha) {
+          sheet.alpha = _this.data.alpha;
+        }
 
         _this.sprite = sheet;
 
@@ -301,6 +305,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     return GameSkill;
-  })(Sprite.Event);
+  })(Sprite.Event));
 })();
 //# sourceMappingURL=GameSkill.js.map

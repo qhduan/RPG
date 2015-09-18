@@ -25,31 +25,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
 (function () {
   "use strict";
 
   var internal = Sprite.Namespace();
 
-  var Tween = (function () {
-    function Tween(object) {
-      _classCallCheck(this, Tween);
+  Sprite.assign("Tween", (function (_Sprite$Event) {
+    _inherits(SpriteTween, _Sprite$Event);
 
-      internal(this).object = object;
-      internal(this).callback = null;
+    _createClass(SpriteTween, null, [{
+      key: "get",
+      value: function get(object) {
+        return new Sprite.Tween(object);
+      }
+    }]);
+
+    function SpriteTween(object) {
+      _classCallCheck(this, SpriteTween);
+
+      _get(Object.getPrototypeOf(SpriteTween.prototype), "constructor", this).call(this);
+      var privates = internal(this);
+      privates.object = object;
+      privates.callback = null;
     }
 
-    _createClass(Tween, [{
+    _createClass(SpriteTween, [{
       key: "to",
       value: function to(attributes, time) {
-        var _this = this;
+        var privates = internal(this);
 
         var splice = Math.min(100, time);
         var t = time / splice;
@@ -57,7 +68,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         for (var key in attributes) {
           if (typeof attributes[key] == "number") {
-            step[key] = attributes[key] - internal(this).object[key];
+            step[key] = attributes[key] - privates.object[key];
             step[key] /= splice;
           }
         }
@@ -67,15 +78,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           count++;
           if (count >= splice) {
             for (var key in attributes) {
-              internal(_this).object[key] = attributes[key];
+              privates.object[key] = attributes[key];
             }
             clearInterval(inter);
-            if (internal(_this).callback) {
-              internal(_this).callback();
+            if (privates.callback) {
+              privates.callback();
             }
           } else {
             for (var key in step) {
-              internal(_this).object[key] += step[key];
+              privates.object[key] += step[key];
             }
           }
         }, t);
@@ -85,8 +96,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "call",
       value: function call(callback) {
+        var privates = internal(this);
         if (typeof callback == "function") {
-          internal(this).callback = callback;
+          privates.callback = callback;
         }
         return this;
       }
@@ -94,27 +106,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "wait",
       value: function wait(time) {
         return this;
-      }
-    }]);
-
-    return Tween;
-  })();
-
-  ;
-
-  Sprite.register("Tween", (function (_Sprite$Event) {
-    _inherits(SpriteTween, _Sprite$Event);
-
-    function SpriteTween() {
-      _classCallCheck(this, SpriteTween);
-
-      _get(Object.getPrototypeOf(SpriteTween.prototype), "constructor", this).call(this);
-    }
-
-    _createClass(SpriteTween, null, [{
-      key: "get",
-      value: function get(object) {
-        return new Tween(object);
       }
     }]);
 

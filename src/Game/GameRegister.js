@@ -21,8 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  Game.register = {};
-
   // 英雄组件数据
   let heroCustom = {
     sex: "male",
@@ -92,41 +90,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   }
 
-  // 注册模块
-  Game.register.reg = function () {
-    document.getElementById("registerHeroName").value = "";
-    Game.windows.register.show();
-    Init();
-  };
+  Game.assign("register", class GameRegister {
 
-  Game.register.back = function () {
-    Game.windows.main.show();
-  };
-
-  Game.register.submit = function () {
-    let name = document.getElementById("registerHeroName").value;
-
-    if (name.trim().length <= 0) {
-      alert("Invalid Name");
-      return;
+    // 注册模块
+    static reg () {
+      document.getElementById("registerHeroName").value = "";
+      Game.windows.register.show();
+      Init();
     }
 
-    HeroDefault.id = "hero_" + name;
-    HeroDefault.name = name;
-    HeroDefault.custom = heroCustom;
-    HeroDefault.tilewidth = heroCustom.tilewidth;
-    HeroDefault.tileheight = heroCustom.tileheight;
+    static back () {
+      Game.windows.main.show();
+    }
 
-    // 保存一个存档
-    Game.Archive.save({
-      hero: HeroDefault
-    });
+    static submit () {
+      let name = document.getElementById("registerHeroName").value;
 
-    Game.windows.register.hide();
+      if (name.trim().length <= 0) {
+        alert("Invalid Name");
+        return;
+      }
 
-    // 空调用，代表读取最新一个存档（last），即刚刚新建的存档
-    Game.Archive.load();
-  };
+      HeroDefault.id = "hero_" + name;
+      HeroDefault.name = name;
+      HeroDefault.custom = heroCustom;
+      HeroDefault.tilewidth = heroCustom.tilewidth;
+      HeroDefault.tileheight = heroCustom.tileheight;
+
+      // 保存一个存档
+      Game.Archive.save({
+        hero: HeroDefault
+      });
+
+      Game.windows.register.hide();
+
+      // 空调用，代表读取最新一个存档（last），即刚刚新建的存档
+      Game.Archive.load();
+    }
+
+  });
 
 
   // 含有$开头的代表是基础值
@@ -174,8 +176,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "buff": [], // 有益状态
     "nerf": [], // 有害状态
 
-    "currentQuest": { }, // 当前任务
-    "pastQuest": { }, // 完成的任务
+    "quest": {
+      "current": {
+        // 当前任务
+      },
+      "past": {
+        // 完成了的任务
+      }
+    },
+
     "area": "starttown", // 当前所在地图， 初始地图为starttown
 
     "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
@@ -213,7 +222,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       null,
       null,
       {
-        "id": "potionHealWeak",
+        "id": "potion.healWeak",
         "type": "item"
       }
     ],
@@ -230,20 +239,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     "equipment": {
       "head": null,
-      "body": "clothNormal",
-      "feet": "shoesNormal",
-      "weapon": "swordIron",
+      "body": "cloth.normal",
+      "feet": "shoes.normal",
+      "weapon": "sword.iron",
       "neck": null,
       "ring": null
     },
 
     "items": {
-      "swordIron": 1,
-      "spearIron": 1,
-      "bowWood": 1 ,
-      "clothNormal": 1,
-      "shoesNormal": 1,
-      "potionHealWeak": 5
+      "sword.iron": 1,
+      "spear.iron": 1,
+      "bow.wood": 1 ,
+      "cloth.normal": 1,
+      "shoes.normal": 1,
+      "potion.healWeak": 5,
+      "book.gameAdventure": 1,
+      "book.vegaHistory": 1
     },
 
     "gold": 0,

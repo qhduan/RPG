@@ -37,57 +37,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Event
    */
-  Sprite.register("Display", class Display extends Sprite.Event {
+  Sprite.assign("Display", class SpriteDisplay extends Sprite.Event {
     /**
      * construct Sprite.Display
      * @constructor
      */
     constructor () {
       super();
+      let privates = internal(this);
       /**
        * x position of object
        @type {number}
        */
-      internal(this).x = 0;
+      privates.x = 0;
       /**
        * y position of object
        @type {number}
        */
-      internal(this).y = 0;
+      privates.y = 0;
       /**
        * object's center x
        @type {number}
        */
-      internal(this).centerX = 0;
+      privates.centerX = 0;
       /**
        * object's center y
        @type {number}
        */
-      internal(this).centerY = 0;
+      privates.centerY = 0;
       /**
        * object's alpha, from 0 to 1, when alpha is 0, object is invisible
        @type {number}
        */
-      internal(this).alpha = 1;
+      privates.alpha = 1;
       /**
        * object's visibility
        @type {boolean}
        */
-      internal(this).visible = true;
+      privates.visible = true;
     }
     /**
      * @return {number} return x position
      */
     get x () {
-      return internal(this).x;
+      let privates = internal(this);
+      return privates.x;
     }
     /**
      * @param {number} value new x position
      */
     set x (value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value)) {
-        if (value != internal(this).x) {
-          internal(this).x = value;
+        if (value != privates.x) {
+          privates.x = value;
           this.emit("change");
         }
       } else {
@@ -99,15 +102,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return y position
      */
     get y () {
-      return internal(this).y;
+      let privates = internal(this);
+      return privates.y;
     }
     /**
      * @param {number} value new y position
      */
     set y (value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value)) {
-        if (value != internal(this).y) {
-          internal(this).y = value;
+        if (value != privates.y) {
+          privates.y = value;
           this.emit("change");
         }
       } else {
@@ -119,15 +124,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return center x
      */
     get centerX () {
-      return internal(this).centerX;
+      let privates = internal(this);
+      return privates.centerX;
     }
     /**
      * @param {number} value new center x
      */
     set centerX (value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value)) {
-        if (value != internal(this).centerX) {
-          internal(this).centerX = value;
+        if (value != privates.centerX) {
+          privates.centerX = value;
           this.emit("change");
         }
       } else {
@@ -139,15 +146,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return center y
      */
     get centerY () {
-      return internal(this).centerY;
+      let privates = internal(this);
+      return privates.centerY;
     }
     /**
      * @param {number} value new center y
      */
     set centerY (value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value)) {
-        if (value != internal(this).centerY) {
-          internal(this).centerY = value;
+        if (value != privates.centerY) {
+          privates.centerY = value;
           this.emit("change");
         }
       } else {
@@ -159,15 +168,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return alpha
      */
     get alpha () {
-      return internal(this).alpha;
+      let privates = internal(this);
+      return privates.alpha;
     }
     /**
      * @param {number} value new alpha
      */
     set alpha (value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value) && (value >= 0 || value <= 1)) {
-        if (value != internal(this).alpha) {
-          internal(this).alpha = value;
+        if (value != privates.alpha) {
+          privates.alpha = value;
           this.emit("change");
         }
       } else {
@@ -179,14 +190,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {boolean} return alpha
      */
     get visible () {
-      return internal(this).visible;
+      let privates = internal(this);
+      return privates.visible;
     }
     /**
      * @param {boolean} value new visible
      */
     set visible (value) {
-      if (value != internal(this).visible) {
-        internal(this).visible = value;
+      let privates = internal(this);
+      if (value != privates.visible) {
+        privates.visible = value;
         this.emit("change");
       }
     }
@@ -204,7 +217,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} y the y position of screen (may 0 to 480) for test
      */
     hitTest (x, y) {
-      this.debug = true;
       hitContext.clearRect(0, 0, 1, 1);
       hitContext.save();
       hitContext.translate(-x, -y);
@@ -268,27 +280,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} sheight
      */
     drawImage (renderer, image, sx, sy, swidth, sheight) {
-      if (this.visible == true && this.alpha > 0.001) {
-
-        let d = this.drawPosition();
-        if (!d) {
-          return;
-        }
-        renderer.alpha = d.alpha;
-
-        try {
-          renderer.drawImage(
-            image, sx, sy, swidth, sheight,
-            d.x, d.y, swidth, sheight
-          );
-        } catch (e) {
-          console.error(
-            image, sx, sy, swidth, sheight,
-            dx, dy, swidth, sheight
-          );
-          throw e;
-        }
+      if (this.visible != true || this.alpha < 0.01) {
+        return
       }
+
+      let d = this.drawPosition();
+      if (!d) {
+        return;
+      }
+      renderer.alpha = d.alpha;
+
+      try {
+        renderer.drawImage(
+          image, sx, sy, swidth, sheight,
+          d.x, d.y, swidth, sheight
+        );
+      } catch (e) {
+        console.error(
+          image, sx, sy, swidth, sheight,
+          dx, dy, swidth, sheight
+        );
+        throw e;
+      }
+
     }
   });
 

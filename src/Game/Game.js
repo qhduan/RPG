@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.stage = null;
     }
 
-    register (name, object) {
+    assign (name, object) {
       Object.defineProperty(this, name, {
         enumerable: false,
         configurable: false,
@@ -61,6 +61,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /** 清理舞台，即删除舞台上所有元素 */
     clearStage () {
+      for (let actor of Game.area.actors) {
+        actor.erase();
+      }
+      for (let bag of Game.area.bags) {
+        bag.erase();
+      }
       for (let i = 0; i < Game.stage.children.length; i++) {
         this.stage.children[i].clear();
       }
@@ -170,7 +176,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   document.body.onload = function () {
     Game.init();
     Game.initInput();
-    Game.AI.start();
     Game.windows.main.show();
   };
 

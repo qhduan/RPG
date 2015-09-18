@@ -26,14 +26,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
  "use strict";
 
-  class Ticker extends Sprite.Event {
+  let tickerCount = 0;
+
+  class SpriteTicker extends Sprite.Event {
     constructor () {
       super();
       this.tick();
     }
 
     tick () {
-      this.emit("tick");
+      tickerCount++;
+      this.emit("tick", false, tickerCount);
       window.requestAnimationFrame(() => {
         this.tick();
       });
@@ -71,6 +74,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   };
 
-  Sprite.register("Ticker", new Ticker());
+  Sprite.assign("Ticker", new SpriteTicker());
 
 })();

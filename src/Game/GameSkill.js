@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  Game.Skill = class GameSkill extends Sprite.Event {
+  Game.assign("Skill", class GameSkill extends Sprite.Event {
     static load (id, callback) {
       Sprite.Loader.create()
         .add(`/skill/${id}.json`)
@@ -63,6 +63,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         sheet.centerX = Math.floor(this.data.tilewidth / 2);
         sheet.centerY = Math.floor(this.data.tileheight / 2);
+
+        if (this.data.alpha) {
+          sheet.alpha = this.data.alpha;
+        }
 
         this.sprite = sheet;
 
@@ -272,6 +276,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-  };
+  });
 
 })();

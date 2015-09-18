@@ -38,108 +38,125 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Display
    */
-  Sprite.register("Text", class SpriteText extends Sprite.Display {
+  Sprite.assign("Text", class SpriteText extends Sprite.Display {
     /**
      * construct Sprite.Text
      * @constructor
      */
     constructor (config) {
       super();
-      internal(this).text = config.text || "Invalid Text";
-      internal(this).maxWidth = config.maxWidth || 1000;
-      internal(this).color = config.color || "black";
-      internal(this).fontSize = config.fontSize || 14;
-      internal(this).fontFamily = config.fontFamily || "Ariel";
-      internal(this).image = null;
+      let privates = internal(this);
+      privates.text = config.text || "Invalid Text";
+      privates.maxWidth = config.maxWidth || 1000;
+      privates.color = config.color || "black";
+      privates.fontSize = config.fontSize || 14;
+      privates.fontFamily = config.fontFamily || "Ariel";
+      privates.image = null;
       this.generate();
     }
 
     clone () {
+      let privates = internal(this);
       let text = new Text({
-        text: internal(this).text,
-        maxWidth: internal(this).maxWidth,
-        color: internal(this).color,
-        fontSize: internal(this).fontSize,
-        fontFamily: internal(this).fontFamily
+        text: privates.text,
+        maxWidth: privates.maxWidth,
+        color: privates.color,
+        fontSize: privates.fontSize,
+        fontFamily: privates.fontFamily
       });
       text.x = this.x;
       text.y = this.y;
       text.centerX = this.centerX;
       text.centerY = this.centerY;
+      text.alpha = this.alpha;
+      text.visible = this.visible;
       return text;
     }
 
     get text () {
-      return internal(this).text;
+      let privates = internal(this);
+      return privates.text;
     }
 
     set text (value) {
+      let privates = internal(this);
       if (value != this.text) {
-        internal(this).text = value;
+        privates.text = value;
         this.generate();
       }
     }
 
     get width () {
-      return internal(this).width;
+      let privates = internal(this);
+      return privates.width;
     }
 
     set width (value) {
+      let privates = internal(this);
       if (value != this.width) {
-        internal(this).width = value;
+        privates.width = value;
         this.generate();
       }
     }
 
     get height () {
-      return internal(this).height;
+      let privates = internal(this);
+      return privates.height;
     }
 
     set height (value) {
+      let privates = internal(this);
       if (value != this.height) {
-        internal(this).height = value;
+        privates.height = value;
         this.generate();
       }
     }
 
     get color () {
-      return internal(this).color;
+      let privates = internal(this);
+      return privates.color;
     }
 
     set color (value) {
+      let privates = internal(this);
       if (value != this.color) {
-        internal(this).color = value;
+        privates.color = value;
         this.generate();
       }
     }
 
     get fontSize () {
-      return internal(this).fontSize;
+      let privates = internal(this);
+      return privates.fontSize;
     }
 
     set fontSize (value) {
+      let privates = internal(this);
       if (value != this.fontSize) {
-        internal(this).fontSize = value;
+        privates.fontSize = value;
         this.generate();
       }
     }
 
     get fontFamily () {
-      return internal(this).fontFamily;
+      let privates = internal(this);
+      return privates.fontFamily;
     }
 
     set fontFamily (value) {
+      let privates = internal(this);
       if (value != this.fontFamily) {
-        internal(this).fontFamily = value;
+        privates.fontFamily = value;
         this.generate();
       }
     }
 
     generate () {
-      textContext.font = this.fontSize + "px " + internal(this).fontFamily;
+      let privates = internal(this);
+      textContext.font = this.fontSize + "px " + privates.fontFamily;
       // "龍" is the max-width & max-height Chinese word I think
       let lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-      internal(this).width = 0;
+      privates.width = 0;
 
       // find the real-maximum-width of multiline text, base user's maxWidth
       let lines = [];
@@ -152,7 +169,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           lineText += this.text[i];
         }
         if (textContext.measureText(lineText).width > this.width)
-          internal(this).width = Math.ceil(textContext.measureText(lineText).width);
+          privates.width = Math.ceil(textContext.measureText(lineText).width);
       }
 
       if (lineText.length) {
@@ -174,11 +191,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         context.fillText(element, canvas.width/2, index*lineHeight)
       });
 
-      internal(this).image = canvas;
+      privates.image = canvas;
     }
 
     draw (context) {
-      let image = internal(this).image;
+      let privates = internal(this);
+      let image = privates.image;
       if ( image && image.width > 0 && image.height > 0) {
         this.drawImage(
           context,

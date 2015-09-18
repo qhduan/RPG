@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
    * @class
    */
-  Sprite.register("Canvas", class SpriteCanvas {
+  Sprite.assign("Canvas", class SpriteCanvas {
 
     /**
      * @static
@@ -52,6 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @constructor
      */
     constructor (width, height) {
+      let privates = internal(this);
       let canvas = document.createElement("canvas");
       canvas.width = width || 640;
       canvas.height = height || 480;
@@ -66,23 +67,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * Color after clear canvas
        */
-      internal(this).color = "#000000";
+      privates.color = "#000000";
       /**
        * The canvas object
        */
-      internal(this).canvas = canvas;
+      privates.canvas = canvas;
       /**
        * Context of canvas
        */
-      internal(this).context = context;
+      privates.context = context;
       /**
        * Global alpha
        */
-      internal(this).alpha = 1;
+      privates.alpha = 1;
       /**
        * Save some filter paramters, eg. brightness/contrast
        */
-      internal(this).filter = new Map();
+      privates.filter = new Map();
       this.filter("brightness", 0);
       this.filter("contrast", 0);
     }
@@ -92,6 +93,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} value Number or undefined, if undefined ,return current value
      */
     filter (name, value) {
+      let privates = internal(this);
       if (typeof value == "number" && !isNaN(value)) {
         if (name == "brightness") {
           value += 1;
@@ -99,18 +101,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (name == "contrast") {
           value += 1;
         }
-        if (internal(this).filter.get(name) != value) {
-          internal(this).filter.set(name, value);
+        if (privates.filter.get(name) != value) {
+          privates.filter.set(name, value);
           let filter = [];
-          internal(this).filter.forEach((value, key, object) => {
+          privates.filter.forEach((value, key, object) => {
             filter.push(`${key}(${value})`);
           });
           filter = filter.join(" ");
-          this.canvas.style.filter = filter;
-          this.canvas.style.webkitFilter = filter;
+          privates.canvas.style.filter = filter;
+          privates.canvas.style.webkitFilter = filter;
         }
       } else {
-        return internal(this).filter.get(name);
+        return privates.filter.get(name);
       }
     }
     /**
@@ -126,30 +128,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} dh Change image's height to dh on canvas
      */
     drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
-      internal(this).context.globalAlpha = this.alpha;
-      internal(this).context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
+      let privates = internal(this);
+      privates.context.globalAlpha = this.alpha;
+      privates.context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     /**
      * Remove everything on canvas but a single color
      */
     clear () {
-      internal(this).context.fillStyle = internal(this).color;
-      internal(this).context.fillRect(0, 0, this.width, this.height);
+      let privates = internal(this);
+      privates.context.fillStyle = privates.color;
+      privates.context.fillRect(0, 0, this.width, this.height);
     }
 
     /**
      * @return {string} The color, eg "#00ff00"
      */
     get color () {
-      return internal(this).color;
+      let privates = internal(this);
+      return privates.color;
     }
     /**
      * @param {string} value The new color, eg "#00ff00"
      */
     set color (value) {
+      let privates = internal(this);
       if (value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/)) {
-        internal(this).color = value;
+        privates.color = value;
       } else {
         console.error(value, this);
         throw new Error("Sprite.Canvas invalid color value");
@@ -160,19 +166,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} The alpha, 0 to 1
      */
     get alpha () {
-      return internal(this).alpha;
+      let privates = internal(this);
+      return privates.alpha;
     }
     /**
      * @param {number} value The new alpha number
      */
     set alpha (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value >= 0 &&
         value <= 1
       ) {
-        if (value != internal(this).alpha) {
-          internal(this).alpha = value;
+        if (value != privates.alpha) {
+          privates.alpha = value;
         }
       } else {
         console.error(value, this);
@@ -184,19 +192,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Width of canvas
      */
     get width () {
-      return internal(this).canvas.width;
+      let privates = internal(this);
+      return privates.canvas.width;
     }
     /**
      * @param {number} value New width
      */
     set width (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value > 0 &&
         value < 10000
       ) {
-        if (value != internal(this).canvas.width) {
-          internal(this).canvas.width = value;
+        if (value != privates.canvas.width) {
+          privates.canvas.width = value;
         }
       } else {
         console.error(value, this);
@@ -208,19 +218,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Height of canvas
      */
     get height () {
-      return internal(this).canvas.height;
+      let privates = internal(this);
+      return privates.canvas.height;
     }
     /**
      * @param {number} value New height
      */
     set height (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value > 0 &&
         value < 10000
       ) {
-        if (value != internal(this).canvas.height) {
-          internal(this).canvas.height = value;
+        if (value != privates.canvas.height) {
+          privates.canvas.height = value;
         }
       } else {
         console.error(value, this);
@@ -231,7 +243,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Object} Canvas
      */
     get canvas () {
-      return internal(this).canvas;
+      let privates = internal(this);
+      return privates.canvas;
     }
 
     set canvas (value) {

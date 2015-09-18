@@ -126,7 +126,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * Sprite.Input, only has static methods
    * @class
    */
-  Sprite.register("Input", (function () {
+  Sprite.assign("Input", (function () {
     function SpriteInput() {
       _classCallCheck(this, SpriteInput);
     }

@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Container
    */
-  Sprite.register("Stage", class SpriteStage extends Sprite.Container {
+  Sprite.assign("Stage", class SpriteStage extends Sprite.Container {
 
     /** @function Sprite.Stage.constructor
      * consturct a Sprite.Stage with width and height
@@ -43,24 +43,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor (width, height) {
       super();
+      let privates = internal(this);
 
       if (Sprite.Webgl.support()) {
-        internal(this).renderer = new Sprite.Webgl(width, height);
-        internal(this).rendererType = "webgl";
+        privates.renderer = new Sprite.Webgl(width, height);
+        privates.rendererType = "webgl";
       } else if (Sprite.Canvas.support()) {
-        internal(this).renderer = new Sprite.Canvas(width, height);
-        internal(this).rendererType = "canvas";
+        privates.renderer = new Sprite.Canvas(width, height);
+        privates.rendererType = "canvas";
       } else {
         throw new Error("Sprite.Stage all renderer not support");
       }
 
-      internal(this).color = "#000000";
+      privates.color = "#000000";
 
-      internal(this).screenshot = null;
+      privates.screenshot = null;
     }
 
     get renderer () {
-      return internal(this).renderer;
+      let privates = internal(this);
+      return privates.renderer;
     }
 
     set renderer (value) {
@@ -68,7 +70,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get rendererType () {
-      return internal(this).rendererType;
+      let privates = internal(this);
+      return privates.rendererType;
     }
 
     set rendererType (value) {
@@ -76,10 +79,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     filter (name, value) {
-      return internal(this).renderer.filter(name, value);
+      let privates = internal(this);
+      return privates.renderer.filter(name, value);
     }
 
     findHit (event) {
+      let privates = internal(this);
       let hitted = this.hitTest(this.mouseX, this.mouseY);
       hitted.reverse();
       if (hitted.length)
@@ -88,27 +93,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get width () {
-      return internal(this).renderer.width;
+      let privates = internal(this);
+      return privates.renderer.width;
     }
 
     set width (value) {
-      internal(this).renderer.width = value;
+      let privates = internal(this);
+      privates.renderer.width = value;
     }
 
     get height () {
-      return internal(this).renderer.height;
+      let privates = internal(this);
+      return privates.renderer.height;
     }
 
     set height (value) {
-      internal(this).renderer.height = value;
+      let privates = internal(this);
+      privates.renderer.height = value;
     }
 
     get color () {
-      return internal(this).renderer.color;
+      let privates = internal(this);
+      return privates.renderer.color;
     }
 
     set color (value) {
-      internal(this).renderer.color = value;
+      let privates = internal(this);
+      privates.renderer.color = value;
     }
 
     get canvas () {
@@ -122,7 +133,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// @function Sprite.Stage.clear
     /// clear the stage
     clear () {
-      internal(this).renderer.clear();
+      let privates = internal(this);
+      privates.renderer.clear();
     }
 
     update () {
@@ -130,7 +142,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     requestScreenshot (callback) {
-      internal(this).screenshot = function (url) {
+      let privates = internal(this);
+      privates.screenshot = function (url) {
         let img = new Image();
         img.src = url;
         if (img.complete) {
@@ -144,6 +157,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     draw () {
+      let privates = internal(this);
       this.emit("beforeDraw");
 
       if (this.children.length <= 0) {
@@ -156,9 +170,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         child.draw(this.renderer);
       }
 
-      if (internal(this).screenshot) {
-        internal(this).screenshot(this.canvas.toDataURL());
-        internal(this).screenshot = null;
+      if (privates.screenshot) {
+        privates.screenshot(this.canvas.toDataURL());
+        privates.screenshot = null;
       }
 
       this.emit("afterDraw");

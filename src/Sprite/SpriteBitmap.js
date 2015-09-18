@@ -28,13 +28,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let internal = Sprite.Namespace();
 
-  Sprite.register("Bitmap", class SpriteBitmap extends Sprite.Display {
+  Sprite.assign("Bitmap", class SpriteBitmap extends Sprite.Display {
     /**
      * Sprite.Bitmap's constructor
      * @constructor
      */
     constructor (image) {
       super();
+      let privates = internal(this);
 
       if (
         !image ||
@@ -48,15 +49,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * The image
        */
-      internal(this).image = image;
+      privates.image = image;
     }
 
     clone () {
-      let bitmap = new Sprite.Bitmap(internal(this).image);
+      let privates = internal(this);
+      let bitmap = new Sprite.Bitmap(privates.image);
       bitmap.x = this.x;
       bitmap.y = this.y;
       bitmap.centerX = this.centerX;
       bitmap.centerY = this.centerY;
+      bitmap.alpha = this.alpha;
+      bitmap.visible = this.visible;
       return bitmap;
     }
 
@@ -64,7 +68,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Image} Return Sprite.Bitmap's image
      */
     get image () {
-      return internal(this).image;
+      let privates = internal(this);
+      return privates.image;
     }
 
     set image (value) {
@@ -76,7 +81,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return Sprite.Bitmap's width
      */
     get width () {
-      return internal(this).image.width;
+      let privates = internal(this);
+      return privates.image.width;
     }
 
     set width (value) {
@@ -88,7 +94,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return Sprite.Bitmap's height
      */
     get height () {
-      return internal(this).image.height;
+      let privates = internal(this);
+      return privates.image.height;
     }
 
     set height (value) {
@@ -100,7 +107,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} renderer Draw image on the renderer
      */
     draw (renderer) {
-      this.drawImage(renderer, this.image, 0, 0, this.width, this.height);
+      if (this.alpha <= 0.01 || this.visible != true) {
+        return;
+      }
+      let privates = internal(this);
+      this.drawImage(renderer, privates.image,
+        0, 0, privates.image.width, privates.image.height);
     }
 
   });

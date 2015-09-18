@@ -13,6 +13,7 @@
   "power": "1d10",
   "tileheight": 64,
   "tilewidth": 64,
+  "alpha": 0.5,
   "animations": {
     "attackdown": {
       "frames": [0, 1, 2],
@@ -27,7 +28,7 @@
       "speed": 20,
       "next": "",
       "centerX": 15,
-      "centerY": 40,
+      "centerY": 50,
       "actor": "slashleft"
     },
     "attackright": {
@@ -35,7 +36,7 @@
       "speed": 20,
       "next": "",
       "centerX": 50,
-      "centerY": 40,
+      "centerY": 50,
       "actor": "slashright"
     },
     "attackup": {

@@ -38,7 +38,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
   var internal = Sprite.Namespace();
 
-  Sprite.register("Bitmap", (function (_Sprite$Display) {
+  Sprite.assign("Bitmap", (function (_Sprite$Display) {
     _inherits(SpriteBitmap, _Sprite$Display);
 
     /**
@@ -50,6 +50,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteBitmap);
 
       _get(Object.getPrototypeOf(SpriteBitmap.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
       if (!image || typeof image.width != "number" || image.width <= 0 || typeof image.width != "number" || image.height <= 0) {
         console.error(image);
@@ -59,17 +60,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /**
        * The image
        */
-      internal(this).image = image;
+      privates.image = image;
     }
 
     _createClass(SpriteBitmap, [{
       key: "clone",
       value: function clone() {
-        var bitmap = new Sprite.Bitmap(internal(this).image);
+        var privates = internal(this);
+        var bitmap = new Sprite.Bitmap(privates.image);
         bitmap.x = this.x;
         bitmap.y = this.y;
         bitmap.centerX = this.centerX;
         bitmap.centerY = this.centerY;
+        bitmap.alpha = this.alpha;
+        bitmap.visible = this.visible;
         return bitmap;
       }
 
@@ -83,12 +87,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * @param {Object} renderer Draw image on the renderer
        */
       value: function draw(renderer) {
-        this.drawImage(renderer, this.image, 0, 0, this.width, this.height);
+        if (this.alpha <= 0.01 || this.visible != true) {
+          return;
+        }
+        var privates = internal(this);
+        this.drawImage(renderer, privates.image, 0, 0, privates.image.width, privates.image.height);
       }
     }, {
       key: "image",
       get: function get() {
-        return internal(this).image;
+        var privates = internal(this);
+        return privates.image;
       },
       set: function set(value) {
         console.error(this);
@@ -101,7 +110,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        return internal(this).image.width;
+        var privates = internal(this);
+        return privates.image.width;
       },
       set: function set(value) {
         console.error(this);
@@ -114,7 +124,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "height",
       get: function get() {
-        return internal(this).image.height;
+        var privates = internal(this);
+        return privates.image.height;
       },
       set: function set(value) {
         console.error(this);

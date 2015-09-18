@@ -143,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class for fetch resources
    * @class
    */
-  Sprite.register("Loader", class SpriteLoader extends Sprite.Event {
+  Sprite.assign("Loader", class SpriteLoader extends Sprite.Event {
 
     /**
      * Create a Sprite.Loader object
@@ -159,16 +159,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor () {
       super();
+      let privates = internal(this);
 
-      internal(this).list = [];
-      internal(this).progress = 0;
+      privates.list = [];
+      privates.progress = 0;
     }
 
     /**
      * @return {number} Return current download progress
      */
     get progress () {
-      return internal(this).progress;
+      let privates = internal(this);
+      return privates.progress;
     }
 
     set progress (value) {
@@ -181,13 +183,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} urls, one or more urls.
      */
     add (urls) {
+      let privates = internal(this);
       let args = Array.prototype.slice.call(arguments);
 
       for (let element of args) {
         if (element instanceof Array) {
-          internal(this).list = internal(this).list.concat(element);
+          privates.list = privates.list.concat(element);
         } else if (typeof element == "string" && element.length > 0) {
-          internal(this).list.push(element);
+          privates.list.push(element);
         } else {
           console.error(element, args, this);
           throw new Error("Sprite.Loader.add invalid argument");
@@ -200,6 +203,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * Begin to download
      */
     start () {
+      let privates = internal(this);
       let done = 0;
       let ret = [];
       ret.length = internal(this).list.length;
@@ -207,7 +211,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let Done = () => {
         done++;
 
-        internal(this).progress = done / ret.length;
+        privates.progress = done / ret.length;
         this.emit("progress");
 
         if (done >= ret.length) {
@@ -215,7 +219,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      internal(this).list.forEach((element, index) => {
+      privates.list.forEach((element, index) => {
         Fetch(element, (result) => {
           ret[index] = result;
           Done();

@@ -43,41 +43,43 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * Contain everything which inherit from Sprite.Display
    * @class
    */
-  Sprite.register("Container", (function (_Sprite$Display) {
-    _inherits(Container, _Sprite$Display);
+  Sprite.assign("Container", (function (_Sprite$Display) {
+    _inherits(SpriteContainer, _Sprite$Display);
 
     /**
      * Construct Sprite.Container
      * @constructor
      */
 
-    function Container() {
-      _classCallCheck(this, Container);
+    function SpriteContainer() {
+      _classCallCheck(this, SpriteContainer);
 
-      _get(Object.getPrototypeOf(Container.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(SpriteContainer.prototype), "constructor", this).call(this);
+      var privates = internal(this);
       /**
        * Contain all children element
        * @private
        */
-      internal(this).children = [];
+      privates.children = [];
       /**
        * Cached canvas
        */
-      internal(this).cacheCanvas = null;
+      privates.cacheCanvas = null;
     }
 
     /**
      * @return {Array} Children array
      */
 
-    _createClass(Container, [{
+    _createClass(SpriteContainer, [{
       key: "clearCache",
 
       /**
        * Remove canvas cache
        */
       value: function clearCache() {
-        internal(this).cacheCanvas = null;
+        var privates = internal(this);
+        privates.cacheCanvas = null;
       }
 
       /**
@@ -86,12 +88,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "cache",
       value: function cache(x, y, width, height) {
+        var privates = internal(this);
         var canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
         var context = canvas.getContext("2d");
         this.draw(context);
-        internal(this).cacheCanvas = canvas;
+        privates.cacheCanvas = canvas;
       }
 
       /**
@@ -100,8 +103,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "hitTest",
       value: function hitTest(x, y) {
+        var privates = internal(this);
         if (this.cacheCanvas) {
-          return _get(Object.getPrototypeOf(Container.prototype), "hitTest", this).call(this, x, y);
+          return _get(Object.getPrototypeOf(SpriteContainer.prototype), "hitTest", this).call(this, x, y);
         } else {
           var hitted = [];
           var _iteratorNormalCompletion = true;
@@ -145,7 +149,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw(renderer) {
-        if (this.visible != true) return;
+        var privates = internal(this);
+        if (this.alpha < 0.01 || this.visible != true) {
+          return;
+        }
 
         if (this.cacheCanvas) {
           this.drawImage(renderer, this.cacheCanvas, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height);
@@ -313,7 +320,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "children",
       get: function get() {
-        return internal(this).children;
+        var privates = internal(this);
+        return privates.children;
       },
       set: function set(value) {
         throw new Error("Sprite.Container.children readonly");
@@ -325,14 +333,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "cacheCanvas",
       get: function get() {
-        return internal(this).cacheCanvas;
+        var privates = internal(this);
+        return privates.cacheCanvas;
       },
       set: function set(value) {
         throw new Error("Sprite.Container.cacheCanvas readonly");
       }
     }]);
 
-    return Container;
+    return SpriteContainer;
   })(Sprite.Display));
 })();
 //# sourceMappingURL=SpriteContainer.js.map

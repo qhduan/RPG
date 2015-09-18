@@ -31,7 +31,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  Game.Map = (function (_Sprite$Event) {
+  Game.assign("Map", (function (_Sprite$Event) {
     _inherits(GameMap, _Sprite$Event);
 
     _createClass(GameMap, [{
@@ -242,5 +242,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     return GameMap;
-  })(Sprite.Event);
+  })(Sprite.Event));
 })();
+//# sourceMappingURL=GameMap.js.map

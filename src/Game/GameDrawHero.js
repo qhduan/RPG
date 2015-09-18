@@ -55,7 +55,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   // 把多张图片合成一张，并返回
-  Game.drawHero = function (heroCustom, callback) {
+  Game.assign("drawHero", function (heroCustom, callback) {
 
     function Check (str) {
       if (typeof str == "string" && str.length > 0)
@@ -109,7 +109,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       CombineHeroImage(event.data, heroCustom.width, heroCustom.height, callback);
     });
 
-  };
+  });
 
 
 })();

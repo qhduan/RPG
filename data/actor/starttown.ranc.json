@@ -1,14 +1,12 @@
 {
-  "id": "starttown-weapontrade",
-  "name": "维朋",
-  "description": "斯塔特镇中贩卖武器装备",
+  "name": "朗克",
+  "description": "斯塔特镇里的武器商人",
   "type": "npc",
   "contact": {
-    "交谈": {
+    "闲谈": {
       "condition": "true",
       "content": [
-        "斯塔特镇的武器当然比不过都城的",
-        "不过你还是可以随便看看"
+        "斯塔特镇的商店当然比不过都城的大，不过还是应该在这里购买一些初期的冒险装备呢"
       ]
     },
     "关于剑": {
@@ -31,11 +29,11 @@
     }
   },
   "trade": {
-    "swordIron": 5,
-    "spearIron": 5,
-    "bowWood": 5
+    "sword.iron": 5,
+    "spear.iron": 5,
+    "bow.wood": 5
   },
-  "image": "resource\/starttown-mayor.png",
+  "image": "resource\/starttown.ranc.png",
   "centerX": 16,
   "centerY": 42,
   "hitArea": [[0, 0]],

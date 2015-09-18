@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <div style="width: 100%; height: 100%;">
         <span id="dialogueWindowSpeaker"></span>
         <table><tbody><tr><td>
-          <span id="dialogueWindowContent"></span>
+          <div id="dialogueWindowContent"></div>
         </td></tr></tbody></table>
         <button id="dialogueWindowNext" style="display: block;" class="brownButton">继续</button>
         <button id="dialogueWindowClose" style="display: none;" class="brownButton">结束</button>
@@ -71,6 +71,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     #dialogueWindowContent {
+      margin-left: 50px;
+      margin-right: 50px;
+      max-width: 600px;
       font-size: 24px;
       text-align: center;
     }

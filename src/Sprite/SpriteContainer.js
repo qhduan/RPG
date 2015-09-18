@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Contain everything which inherit from Sprite.Display
    * @class
    */
-  Sprite.register("Container", class Container extends Sprite.Display {
+  Sprite.assign("Container", class SpriteContainer extends Sprite.Display {
 
     /**
      * Construct Sprite.Container
@@ -41,22 +41,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor () {
       super();
+      let privates = internal(this);
       /**
        * Contain all children element
        * @private
        */
-      internal(this).children = [];
+      privates.children = [];
       /**
        * Cached canvas
        */
-      internal(this).cacheCanvas = null;
+      privates.cacheCanvas = null;
     }
 
     /**
      * @return {Array} Children array
      */
     get children () {
-      return internal(this).children;
+      let privates = internal(this);
+      return privates.children;
     }
 
     set children (value) {
@@ -67,7 +69,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Object} Cached canvas
      */
     get cacheCanvas () {
-      return internal(this).cacheCanvas;
+      let privates = internal(this);
+      return privates.cacheCanvas;
     }
 
     set cacheCanvas (value) {
@@ -78,25 +81,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * Remove canvas cache
      */
     clearCache () {
-      internal(this).cacheCanvas = null;
+      let privates = internal(this);
+      privates.cacheCanvas = null;
     }
 
     /**
      * Prerender all children as cache
      */
     cache (x, y, width, height) {
+      let privates = internal(this);
       let canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       let context = canvas.getContext("2d");
       this.draw(context);
-      internal(this).cacheCanvas = canvas;
+      privates.cacheCanvas = canvas;
     }
 
     /**
      * Hit test
      */
     hitTest (x, y) {
+      let privates = internal(this);
       if (this.cacheCanvas) {
         return super.hitTest(x, y);
       } else {
@@ -118,8 +124,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} renderer Sprite.Webgl/Sprite.Canvas/Context
      */
     draw (renderer) {
-      if (this.visible != true)
+      let privates = internal(this);
+      if (this.alpha < 0.01 || this.visible != true) {
         return;
+      }
 
       if (this.cacheCanvas) {
         this.drawImage(renderer, this.cacheCanvas,

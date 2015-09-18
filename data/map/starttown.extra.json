@@ -8,12 +8,12 @@
   "actors":
   [
     {
-      "id": "starttown-mayor",
+      "id": "starttown.tandem",
       "x": 54,
       "y": 49
     },
     {
-      "id": "starttown-weapontrade",
+      "id": "starttown.ranc",
       "x": 46,
       "y": 38
     }
@@ -46,7 +46,7 @@
       "comment": "通往斯塔特南部森林",
       "x": 48,
       "y": 99,
-      "dest": "starttown-southforest",
+      "dest": "starttown.southforest",
       "destx": 14,
       "desty": 2
     }

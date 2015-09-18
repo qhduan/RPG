@@ -38,15 +38,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   var zIndex = 227;
 
-  Game.Window = (function () {
-    function _class() {
-      _classCallCheck(this, _class);
+  Game.assign("Window", (function () {
+    function GameWindow() {
+      _classCallCheck(this, GameWindow);
     }
 
-    _createClass(_class, null, [{
+    _createClass(GameWindow, null, [{
       key: "create",
       value: function create(id) {
-        var win = new GameWindow(id);
+        var win = new GameWindowObject(id);
         windows[id] = win;
         return win;
       }
@@ -110,27 +110,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }]);
 
-    return _class;
-  })();
+    return GameWindow;
+  })());
 
   Game.Window.resize();
   window.addEventListener("resize", function () {
     Game.Window.resize();
   });
 
-  var GameWindow = (function (_Sprite$Event) {
-    _inherits(GameWindow, _Sprite$Event);
+  var GameWindowObject = (function (_Sprite$Event) {
+    _inherits(GameWindowObject, _Sprite$Event);
 
     /**
      * @constructor
      */
 
-    function GameWindow(id) {
+    function GameWindowObject(id) {
       var _this = this;
 
-      _classCallCheck(this, GameWindow);
+      _classCallCheck(this, GameWindowObject);
 
-      _get(Object.getPrototypeOf(GameWindow.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(GameWindowObject.prototype), "constructor", this).call(this);
 
       var pp = internal(this);
       pp.id = id;
@@ -186,7 +186,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       });
     }
 
-    _createClass(GameWindow, [{
+    _createClass(GameWindowObject, [{
       key: "whenPress",
       value: function whenPress(keys, callback) {
         var _this2 = this;
@@ -223,8 +223,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return this;
       }
     }, {
-      key: "register",
-      value: function register(name, object) {
+      key: "assign",
+      value: function assign(name, object) {
         Object.defineProperty(this, name, {
           enumerable: false,
           configurable: false,
@@ -343,7 +343,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }]);
 
-    return GameWindow;
+    return GameWindowObject;
   })(Sprite.Event);
 
   ;

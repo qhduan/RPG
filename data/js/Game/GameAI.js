@@ -27,7 +27,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
   "use strict";
 
-  Game.AI = (function () {
+  Game.assign("AI", (function () {
     function GameAI() {
       _classCallCheck(this, GameAI);
     }
@@ -40,9 +40,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           Game.AI.heroTouch();
           Game.AI.autoHide();
         };
-
-        hero.on("change", run);
         run();
+        // 英雄移动后运行
+        hero.on("change", run);
+        // 游戏窗口切换后运行
+        Game.windows["interface"].on("active", function () {
+          run();
+        });
       }
     }, {
       key: "autoHide",
@@ -188,10 +192,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (touch != null || element == Game.hero) {
             return;
           }
-          if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
-            touch = element;
-          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
-            touch = element;
+          if (element.heroUse) {
+            if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+              touch = element;
+            } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+              touch = element;
+            }
           }
         };
 
@@ -199,10 +205,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (touch != null || element == Game.hero) {
             return;
           }
-          if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
-            touch = element;
-          } else if (element.x == heroFace.x && element.y == heroFace.y) {
-            touch = element;
+          if (element.heroUse) {
+            if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
+              touch = element;
+            } else if (element.x == heroFace.x && element.y == heroFace.y) {
+              touch = element;
+            }
           }
         };
 
@@ -247,122 +255,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           Game.windows["interface"].showUse();
         }
       }
-    }, {
-      key: "actor",
-      value: function actor() {
-        if (Game.area && Game.area.actors) {
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
-
-          try {
-            var _loop = function () {
-              var actor = _step3.value;
-
-              if (actor.data.type == "hero") {
-                var barChanged = false;
-
-                if (actor.data.hp < actor.data.$hp) {
-                  actor.data.hp++;
-                  barChanged = true;
-                }
-
-                if (actor.data.sp < actor.data.$sp) {
-                  actor.data.sp++;
-                  barChanged = true;
-                }
-
-                if (barChanged) {
-                  actor.refreshBar();
-                }
-              } else if (actor.data.type == "monster") {
-
-                var barChanged = false;
-
-                if (actor.data.hp < actor.data.$hp) {
-                  actor.data.hp++;
-                  barChanged = true;
-                }
-
-                if (actor.data.sp < actor.data.$sp) {
-                  actor.data.sp++;
-                  barChanged = true;
-                }
-
-                if (barChanged) {
-                  actor.refreshBar();
-                }
-
-                if (Game.hero && actor.facePosition.x == Game.hero.x && actor.facePosition.y == Game.hero.y) {
-                  if (actor.y == Game.hero.y) {
-                    // left or right
-                    if (actor.x < Game.hero.x) {
-                      // left
-                      actor.fire("sword01", "right");
-                    } else {
-                      // right
-                      actor.fire("sword01", "left");
-                    }
-                  } else {
-                    // up or down
-                    if (actor.y < Game.hero.y) {
-                      // up
-                      actor.fire("sword01", "down");
-                    } else {
-                      // down
-                      actor.fire("sword01", "up");
-                    }
-                  }
-                } else if (Game.hero && Game.hero.distance(actor) < 10) {
-                  actor.goto(Game.hero.x, Game.hero.y, "walk");
-                } else if (actor.data.mode == "patrol") {
-                  if (Math.random() < 0.01) {
-                    return {
-                      v: undefined
-                    };
-                  }
-                  var x = actor.x;
-                  var y = actor.y;
-                  actor.goto(x + Sprite.rand(-5, 5), y + Sprite.rand(-5, 5), "walk", function () {
-                    actor.stop();
-                  });
-                }
-              }
-            };
-
-            for (var _iterator3 = Game.area.actors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var _ret = _loop();
-
-              if (typeof _ret === "object") return _ret.v;
-            }
-          } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-                _iterator3["return"]();
-              }
-            } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
-              }
-            }
-          }
-
-          ;
-        }
-      }
-    }, {
-      key: "start",
-      value: function start() {
-        setInterval(function () {
-          Game.AI.actor();
-        }, 50);
-      }
     }]);
 
     return GameAI;
-  })();
+  })());
 })();
-//# sourceMappingURL=GameAI.js.map

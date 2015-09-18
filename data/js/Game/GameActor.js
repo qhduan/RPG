@@ -38,7 +38,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     属性：
       this.sprite 精灵
   */
-  Game.register("Actor", (function (_Sprite$Event) {
+  Game.assign("Actor", (function (_Sprite$Event) {
     _inherits(Actor, _Sprite$Event);
 
     function Actor(actorData) {
@@ -47,8 +47,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, Actor);
 
       _get(Object.getPrototypeOf(Actor.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
-      internal(this).data = actorData;
+      privates.data = actorData;
 
       this.makeInfoBox();
 
@@ -68,6 +69,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "init",
       value: function init(images) {
         var _this2 = this;
+
+        var privates = internal(this);
 
         images.forEach(function (image) {
           if (!Number.isInteger(image.width) || !Number.isInteger(image.height) || image.width <= 0 || image.width >= 4096 || image.height <= 0 || image.height >= 4096) {
@@ -92,11 +95,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         sprite.play("facedown");
-        internal(this).sprite = sprite;
+        privates.sprite = sprite;
 
         sprite.on("change", function () {
-          internal(_this2).infoBox.x = sprite.x;
-          internal(_this2).infoBox.y = sprite.y - sprite.centerY - 20;
+          privates.infoBox.x = sprite.x;
+          privates.infoBox.y = sprite.y - sprite.centerY - 20;
         });
 
         var completeCount = -1;
@@ -153,6 +156,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "makeInfoBox",
       value: function makeInfoBox() {
+        var privates = internal(this);
         // 名字
         var text = new Sprite.Text({
           text: this.data.name,
@@ -166,60 +170,55 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         text.y = 0;
 
         // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
-        internal(this).infoBox = new Sprite.Container();
+        privates.infoBox = new Sprite.Container();
 
-        if (this.data.type == "npc") {
-          text.y += 10;
-          internal(this).infoBox.appendChild(text);
-        } else if (this.data.type == "hero") {
-          // do nothing
-        } else {
-            // 血条外面的黑框
-            var hpbarBox = new Sprite.Shape();
-            hpbarBox.centerX = 15;
-            hpbarBox.centerY = 2;
-            hpbarBox.x = 0;
-            hpbarBox.y = 9;
+        if (this.data.type != "hero") {
+          // 血条外面的黑框
+          var hpbarBox = new Sprite.Shape();
+          hpbarBox.centerX = 15;
+          hpbarBox.centerY = 2;
+          hpbarBox.x = 0;
+          hpbarBox.y = 9;
 
-            // 魔法条外面的黑框
-            var mpbarBox = new Sprite.Shape();
-            mpbarBox.centerX = 15;
-            mpbarBox.centerY = 2;
-            mpbarBox.x = 0;
-            mpbarBox.y = 12;
+          // 魔法条外面的黑框
+          var mpbarBox = new Sprite.Shape();
+          mpbarBox.centerX = 15;
+          mpbarBox.centerY = 2;
+          mpbarBox.x = 0;
+          mpbarBox.y = 12;
 
-            hpbarBox.rect({
-              x: 0,
-              y: 0,
-              width: 30,
-              height: 3,
-              "fill-opacity": 0
-            });
+          hpbarBox.rect({
+            x: 0,
+            y: 0,
+            width: 30,
+            height: 3,
+            "fill-opacity": 0
+          });
 
-            mpbarBox.rect({
-              x: 0,
-              y: 0,
-              width: 30,
-              height: 3,
-              "fill-opacity": 0
-            });
+          mpbarBox.rect({
+            x: 0,
+            y: 0,
+            width: 30,
+            height: 3,
+            "fill-opacity": 0
+          });
 
-            // 生命条
-            internal(this).hpbar = new Sprite.Shape();
-            internal(this).hpbar.centerX = 15;
-            internal(this).hpbar.centerY = 2;
-            internal(this).hpbar.x = 0;
-            internal(this).hpbar.y = 9;
+          // 生命条
+          privates.hpbar = new Sprite.Shape();
+          privates.hpbar.centerX = 15;
+          privates.hpbar.centerY = 2;
+          privates.hpbar.x = 0;
+          privates.hpbar.y = 9;
 
-            // 精力条
-            internal(this).mpbar = new Sprite.Shape();
-            internal(this).mpbar.centerX = 15;
-            internal(this).mpbar.centerY = 2;
-            internal(this).mpbar.x = 0;
-            internal(this).mpbar.y = 12;
+          // 精力条
+          privates.mpbar = new Sprite.Shape();
+          privates.mpbar.centerX = 15;
+          privates.mpbar.centerY = 2;
+          privates.mpbar.x = 0;
+          privates.mpbar.y = 12;
 
-            internal(this).infoBox.appendChild(text, hpbarBox, mpbarBox, internal(this).hpbar, internal(this).mpbar);
-          }
+          privates.infoBox.appendChild(text, hpbarBox, mpbarBox, privates.hpbar, privates.mpbar);
+        }
       }
     }, {
       key: "calculate",
@@ -277,17 +276,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "refreshBar",
       value: function refreshBar() {
-        if (Game.hero && this == Game.hero) {
-          Game.windows["interface"].status(this.data.hp / this.data.$hp, // 生命百分比
-          this.data.sp / this.data.$sp // 精神力百分比
-          );
-        }
+        var privates = internal(this);
 
-        if (internal(this).hpbar && internal(this).mpbar) {
+        if (privates.hpbar && privates.mpbar) {
           var hpcolor = "green";
           if (this.data.hp / this.data.$hp < 0.25) hpcolor = "red";else if (this.data.hp / this.data.$hp < 0.5) hpcolor = "yellow";
 
-          internal(this).hpbar.clear().rect({
+          privates.hpbar.clear().rect({
             x: 1,
             y: 1,
             width: Math.floor(this.data.hp / this.data.$hp * 28),
@@ -296,7 +291,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             "stroke-width": 0
           });
 
-          internal(this).mpbar.clear().rect({
+          privates.mpbar.clear().rect({
             x: 1,
             y: 1,
             width: Math.floor(this.data.sp / this.data.$sp * 28),
@@ -304,56 +299,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             fill: "blue",
             "stroke-width": 0
           });
-        }
-      }
-    }, {
-      key: "heroUse",
-      value: function heroUse() {
-        var _this3 = this;
-
-        if (this.data.contact) {
-          (function () {
-
-            var options = {};
-
-            if (_this3.data.contact) {
-              Sprite.each(_this3.data.contact, function (talk, key) {
-                var h = Game.hero;
-                var d = Game.hero.data;
-                var result = null;
-                try {
-                  result = eval(talk.condition);
-                } catch (e) {
-                  console.error(talk.condition);
-                  console.error(e);
-                  throw new Error("talk.condition eval error");
-                }
-                if (result) {
-                  options[key] = key;
-                }
-              });
-            }
-
-            if (_this3.data.trade) {
-              options["买入"] = "buy";
-              options["卖出"] = "sell";
-            }
-
-            Game.choice(options, function (choice) {
-              switch (choice) {
-                case "buy":
-                  Game.windows.buy.open(_this3.data.trade);
-                  break;
-                case "sell":
-                  Game.windows.sell.open(_this3.data.trade);
-                  break;
-                default:
-                  if (_this3.data.contact[choice]) {
-                    Game.dialogue(_this3.data.contact[choice].content, _this3.data.name);
-                  }
-              }
-            });
-          })();
         }
       }
     }, {
@@ -393,7 +338,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "dead",
       value: function dead() {
-        var _this4 = this;
+        var _this3 = this;
 
         if (this.data.hp <= 0) {
           if (this.data.type == "hero") {} else {
@@ -406,6 +351,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var _iterator, _step;
 
             (function () {
+
+              _this3.erase();
+              Game.area.actors["delete"](_this3);
+
+              if (!_this3.data.items || Object.keys(_this3.data.items).length <= 0) {
+                _this3.data.items = {
+                  gold: 1
+                };
+              }
+
               var bag = null;
               _iteratorNormalCompletion = true;
               _didIteratorError = false;
@@ -415,7 +370,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 for (_iterator = Game.area.bags[Symbol.iterator](); !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
                   var b = _step.value;
 
-                  if (b.hitTest(_this4.x, _this4.y)) {
+                  if (b.hitTest(_this3.x, _this3.y)) {
                     bag = b;
                   }
                 }
@@ -437,19 +392,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               if (!bag) {
                 bag = Game.items.bag.clone();
                 bag.on("complete", function () {
-                  bag.x = _this4.x;
-                  bag.y = _this4.y;
+                  bag.x = _this3.x;
+                  bag.y = _this3.y;
+                  bag.inner = {};
                   bag.draw();
                   Game.area.bags.add(bag);
                 });
               }
 
-              bag.inner = {
-                "gold": 1
-              };
-
-              _this4.remove();
-              Game.area.actors["delete"](_this4);
+              for (var key in _this3.data.items) {
+                if (bag.inner.hasOwnProperty(key)) {
+                  bag.inner[key] += _this3.data.items[key];
+                } else {
+                  bag.inner[key] = _this3.data.items[key];
+                }
+              }
             })();
           }
         }
@@ -459,11 +416,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "flash",
       value: function flash() {
-        var _this5 = this;
+        var _this4 = this;
 
         this.sprite.alpha = 0.5;
         setTimeout(function () {
-          _this5.sprite.alpha = 1;
+          _this4.sprite.alpha = 1;
         }, 200);
       }
 
@@ -471,57 +428,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "damage",
       value: function damage(attacker, skill) {
-        var _this6 = this;
 
         this.emit("damaged");
-
-        if (this == Game.hero) {
-          // 如果英雄受到了伤害
-          var touchActor = [];
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
-
-          try {
-            for (var _iterator2 = Game.area.actors[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var actor = _step2.value;
-
-              // 找到所有邻接英雄的怪物
-              if (actor != this && actor.data.type == "monster" && actor.distance(this) < 1.01) {
-                touchActor.push(actor);
-              }
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-
-          if (touchActor.length) {
-            (function () {
-              var faceAttacker = false;
-              var facePosition = _this6.facePosition;
-              touchActor.forEach(function (actor) {
-                if (actor.hitTest(facePosition.x, facePosition.y)) {
-                  faceAttacker = true;
-                }
-              });
-              // 如果英雄现在没面对任何一个邻接的怪物，面向它
-              if (faceAttacker == false) {
-                _this6.goto(touchActor[0].x, touchActor[0].y);
-              }
-            })();
-          }
-        }
 
         var power = skill.power;
         var type = skill.type;
@@ -639,7 +547,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "fire",
       value: function fire(id, direction) {
-        var _this7 = this;
+        var _this5 = this;
 
         // 同一时间只能施展一个skill
         if (this.attacking) return 0;
@@ -669,10 +577,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.refreshBar();
 
           skill.fire(this, direction, function (hitted) {
-            _this7.attacking = false;
+            _this5.attacking = false;
             if (hitted.length > 0) {
-              hitted[0].damage(_this7, skill);
+              hitted[0].damage(_this5, skill);
             }
+            _this5.emit("change");
           });
 
           return skill.data.cooldown;
@@ -685,14 +594,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "goto",
       value: function goto(x, y, state, callback) {
-        var _this8 = this;
+        var _this6 = this;
 
         state = state || "run";
         callback = typeof callback == "function" ? callback : function () {};
 
         if (this.going) {
           this.goingNext = function () {
-            _this8.goto(x, y, state, callback);
+            _this6.goto(x, y, state, callback);
           };
           return "wait";
         }
@@ -772,9 +681,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
 
           if (otherChoice.length > 0) {
-            var _iteratorNormalCompletion3 = true;
+            var _iteratorNormalCompletion2 = true;
 
             // 找到四个邻接地址中最近的
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
+
+            try {
+              for (var _iterator2 = otherChoice[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var element = _step2.value;
+
+                // 计算地址距离
+                element.distance = this.distance(element.x, element.y);
+              }
+            } catch (err) {
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                  _iterator2["return"]();
+                }
+              } finally {
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
+                }
+              }
+            }
+
+            if (otherChoice.length > 1) {
+              otherChoice.sort(function (a, b) {
+                return a.distance - b.distance;
+              });
+            }
+
+            var _iteratorNormalCompletion3 = true;
             var _didIteratorError3 = false;
             var _iteratorError3 = undefined;
 
@@ -782,8 +723,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               for (var _iterator3 = otherChoice[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
                 var element = _step3.value;
 
-                // 计算地址距离
-                element.distance = this.distance(element.x, element.y);
+                path = Game.Astar.path(map, width, height, { x: this.x, y: this.y }, { x: element.x, y: element.y });
+                if (path) {
+                  // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
+                  after = element.after;
+                  break;
+                }
               }
             } catch (err) {
               _didIteratorError3 = true;
@@ -799,57 +744,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 }
               }
             }
-
-            if (otherChoice.length > 1) {
-              otherChoice.sort(function (a, b) {
-                return a.distance - b.distance;
-              });
-            }
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-              for (var _iterator4 = otherChoice[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var element = _step4.value;
-
-                path = Game.Astar.path(map, width, height, { x: this.x, y: this.y }, { x: element.x, y: element.y });
-                if (path) {
-                  // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
-                  after = element.after;
-                  break;
-                }
-              }
-            } catch (err) {
-              _didIteratorError4 = true;
-              _iteratorError4 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-                  _iterator4["return"]();
-                }
-              } finally {
-                if (_didIteratorError4) {
-                  throw _iteratorError4;
-                }
-              }
-            }
           }
         }
 
         if (path && path.length && path.length > 1) {
           (function () {
-            _this8.going = true;
+            _this6.going = true;
             var index = 1;
             var Walk = function Walk() {
-              if (_this8.goingNext) {
-                var c = _this8.goingNext;
-                _this8.goingNext = null;
-                _this8.going = false;
+              if (_this6.goingNext) {
+                var c = _this6.goingNext;
+                _this6.goingNext = null;
+                _this6.going = false;
                 c();
               } else if (index < path.length) {
-                var current = { x: _this8.x, y: _this8.y };
+                var current = { x: _this6.x, y: _this6.y };
                 var dest = path[index];
                 var direction = null;
                 if (dest.x == current.x) {
@@ -867,25 +776,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 }
 
                 if (direction) {
-                  var currentDirection = _this8.direction;
+                  var currentDirection = _this6.direction;
                   if (direction != currentDirection) {
-                    _this8.face(direction);
+                    _this6.face(direction);
                   }
-                  var goResult = _this8.go(state, direction, function () {
+                  var goResult = _this6.go(state, direction, function () {
                     return Walk();
                   });
                   if (goResult != true) {
-                    _this8.going = false;
+                    _this6.going = false;
                   }
                   index++;
                 }
               } else {
                 // 正常结束
                 if (after) {
-                  _this8.stop();
-                  _this8.face(after);
+                  _this6.stop();
+                  _this6.face(after);
                 }
-                _this8.going = false;
+                _this6.going = false;
                 callback();
               }
             };
@@ -922,15 +831,48 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 角色碰撞
         if (Game.area.actors) {
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = Game.area.actors[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var actor = _step4.value;
+
+              if (actor != this && actor.hitTest(x, y)) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                _iterator4["return"]();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+        }
+        return false;
+      }
+    }, {
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
           var _iteratorNormalCompletion5 = true;
           var _didIteratorError5 = false;
           var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator5 = Game.area.actors[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var actor = _step5.value;
+            for (var _iterator5 = this.data.hitArea[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var p = _step5.value;
 
-              if (actor != this && actor.hitTest(x, y)) {
+              if (x == this.x + p[0] && y == this.y + p[1]) {
                 return true;
               }
             }
@@ -948,39 +890,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           }
-        }
-        return false;
-      }
-    }, {
-      key: "hitTest",
-      value: function hitTest(x, y) {
-        if (this.data.hitArea && this.data.hitArea instanceof Array) {
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
-
-          try {
-            for (var _iterator6 = this.data.hitArea[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var p = _step6.value;
-
-              if (x == this.x + p[0] && y == this.y + p[1]) {
-                return true;
-              }
-            }
-          } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-                _iterator6["return"]();
-              }
-            } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
-              }
-            }
-          }
 
           return false;
         } else {
@@ -991,7 +900,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "go",
       value: function go(state, direction) {
-        var _this9 = this;
+        var _this7 = this;
 
         var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
@@ -1013,7 +922,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.face(direction);
           // wait 4 ticks
           Sprite.Ticker.after(4, function () {
-            _this9.walking = false;
+            _this7.walking = false;
           });
           return false;
         }
@@ -1041,14 +950,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var newPositionKey = newX + "," + newY;
 
         if (this.checkCollision(newX, newY) == false) {
-          var _ret5 = (function () {
+          var _ret3 = (function () {
             // 没碰撞，开始行走
-            _this9.walking = true;
+            _this7.walking = true;
 
             // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
             // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
-            _this9.data.x = newX;
-            _this9.data.y = newY;
+            _this7.data.x = newX;
+            _this7.data.y = newY;
 
             var speed = 2;
             if (state == "run") {
@@ -1061,24 +970,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             Sprite.Ticker.whiles(times, function (last) {
               switch (direction) {
                 case "up":
-                  _this9.sprite.y -= speed;
+                  _this7.sprite.y -= speed;
                   break;
                 case "down":
-                  _this9.sprite.y += speed;
+                  _this7.sprite.y += speed;
                   break;
                 case "left":
-                  _this9.sprite.x -= speed;
+                  _this7.sprite.x -= speed;
                   break;
                 case "right":
-                  _this9.sprite.x += speed;
+                  _this7.sprite.x += speed;
                   break;
               }
 
               if (last) {
-                _this9.x = newX;
-                _this9.y = newY;
-                _this9.walking = false;
-                _this9.emit("change");
+                _this7.x = newX;
+                _this7.y = newY;
+                _this7.walking = false;
+                _this7.emit("change");
 
                 if (typeof callback == "function") {
                   Sprite.Ticker.after(2, function () {
@@ -1089,13 +998,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             });
 
             // 播放行走动画
-            _this9.play(state + direction, 1);
+            _this7.play(state + direction, 1);
             return {
               v: true
             };
           })();
 
-          if (typeof _ret5 === "object") return _ret5.v;
+          if (typeof _ret3 === "object") return _ret3.v;
         }
 
         this.play("face" + direction, 0);
@@ -1105,16 +1014,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       /** 在Game.actorLayer上删除人物 */
     }, {
-      key: "remove",
-      value: function remove() {
+      key: "erase",
+      value: function erase() {
+        var privates = internal(this);
         Game.layers.actorLayer.removeChild(this.sprite);
-        Game.layers.actorLayer.removeChild(internal(this).infoBox);
+        Game.layers.actorLayer.removeChild(privates.infoBox);
       }
 
       /** 在Game.actorLayer上显示人物 */
     }, {
       key: "draw",
       value: function draw() {
+        var privates = internal(this);
         if (Number.isInteger(this.x) && Number.isInteger(this.y)) {
           this.x = this.data.x;
           this.y = this.data.y;
@@ -1123,7 +1034,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
           Game.layers.actorLayer.appendChild(this.sprite);
-          Game.layers.actorLayer.appendChild(internal(this).infoBox);
+          Game.layers.actorLayer.appendChild(privates.infoBox);
         } else {
           console.error(this.data.x, this.data.y, this.data);
           throw new Error("Game.Actor.draw invalid data.x/data.y");
@@ -1134,8 +1045,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "focus",
       value: function focus() {
-        internal(this).infoBox.x = this.sprite.x;
-        internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
+        var privates = internal(this);
+        privates.infoBox.x = this.sprite.x;
+        privates.infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
         Game.stage.centerX = Math.round(this.sprite.x - Game.config.width / 2);
         Game.stage.centerY = Math.round(this.sprite.y - Game.config.height / 2);
@@ -1143,7 +1055,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "data",
       get: function get() {
-        return internal(this).data;
+        var privates = internal(this);
+        return privates.data;
       },
       set: function set(value) {
         throw new Error("Game.Actor.data readonly");
@@ -1151,7 +1064,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "id",
       get: function get() {
-        return internal(this).data.id;
+        var privates = internal(this);
+        return privates.data.id;
       },
       set: function set(value) {
         throw new Error("Game.Actor.id readonly");
@@ -1159,7 +1073,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "sprite",
       get: function get() {
-        return internal(this).sprite;
+        var privates = internal(this);
+        return privates.sprite;
       },
       set: function set(value) {
         throw new Error("Game.Actor.sprite readonly");
@@ -1198,8 +1113,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       },
       set: function set(value) {
         if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
-          internal(this).sprite.alpha = value;
-          internal(this).infoBox.alpha = value;
+          this.sprite.alpha = value;
+          this.infoBox.alpha = value;
         } else {
           console.error(value, this);
           throw new Error("Game.Actor.alpha got invalid value");
@@ -1252,4 +1167,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
-//# sourceMappingURL=GameActor.js.map

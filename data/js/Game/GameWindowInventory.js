@@ -90,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var lastFilter = null;
   var lastSelect = -1;
 
-  win.register("open", function (filter, select) {
+  win.assign("open", function (filter, select) {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -224,7 +224,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         options["丢弃"] = "drop";
 
         Game.choice(options, function (choice) {
-          // console.log(choice);
           switch (choice) {
             case "puton":
               var type = item.data.type;
@@ -239,8 +238,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               return win.open(lastFilter);
               break;
             case "use":
+              if (item.heroUse) {
+                item.heroUse();
+              }
               break;
             case "read":
+              if (item.heroUse) {
+                item.heroUse();
+              }
               break;
             case "drop":
               if (equipment) Game.hero.data.equipment[equipment] = null;

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  Game.Map = class GameMap extends Sprite.Event {
+  Game.assign("Map", class GameMap extends Sprite.Event {
 
     hitTest (x, y) {
       if (this.blockedMap[y] && this.blockedMap[y][x]) {
@@ -217,7 +217,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         //bgm.setVolume(0.2);
       }
     }
-  };
+  });
 
 
 })();

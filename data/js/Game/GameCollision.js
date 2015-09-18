@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
-  Game.actorCollision = function (actorSprite, blockSprite) {
+  Game.assign("actorCollision", function (actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
     var actorRect = actorSprite.getFrame(0);
     // 阻挡的块则检测当前frame
@@ -132,10 +132,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  };
+  });
 
   // 技能碰撞检测
-  Game.skillCollision = function (skillSprite, actorSprite) {
+  Game.assign("skillCollision", function (skillSprite, actorSprite) {
     var skillRect = skillSprite.getFrame();
     var actorRect = actorSprite.getFrame();
 
@@ -145,6 +145,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  };
+  });
 })();
 //# sourceMappingURL=GameCollision.js.map

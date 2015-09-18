@@ -13,6 +13,7 @@
   "power": "1d8",
   "tileheight": 64,
   "tilewidth": 64,
+  "alpha": 0.5,
   "animations": {
     "attackdown": {
       "frames": [0, 1, 2],

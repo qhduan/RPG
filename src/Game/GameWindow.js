@@ -28,9 +28,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let zIndex = 227;
 
-  Game.Window = class {
+  Game.assign("Window", class GameWindow {
     static create (id) {
-      let win = new GameWindow(id)
+      let win = new GameWindowObject(id)
       windows[id] = win;
       return win;
     }
@@ -93,14 +93,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
     }
-  };
+  });
 
   Game.Window.resize();
   window.addEventListener("resize", function () {
     Game.Window.resize();
   });
 
-  class GameWindow extends Sprite.Event {
+  class GameWindowObject extends Sprite.Event {
     /**
      * @constructor
      */
@@ -188,7 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return this;
     }
 
-    register (name, object) {
+    assign (name, object) {
       Object.defineProperty(this, name, {
         enumerable: false,
         configurable: false,

@@ -21,11 +21,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  Game.Astar = class Astar {
+  Game.assign("Astar", class Astar {
     static path (map, width, height, start, end) {
       return astar(map, width, height, start, end);
     }
-  };
+  });
 
   function astar(map, width, height, start, end) {
     // 用一个点结构的x和y值返回一个字符串的key

@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.register("open", function (itemObj, select) {
+  win.assign("open", function (itemObj, select) {
     if (typeof select == "undefined") {
       select = -1;
     }

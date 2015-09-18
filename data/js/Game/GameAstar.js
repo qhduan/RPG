@@ -27,7 +27,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
   "use strict";
 
-  Game.Astar = (function () {
+  Game.assign("Astar", (function () {
     function Astar() {
       _classCallCheck(this, Astar);
     }
@@ -40,7 +40,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }]);
 
     return Astar;
-  })();
+  })());
 
   function astar(map, width, height, start, end) {
     // 用一个点结构的x和y值返回一个字符串的key

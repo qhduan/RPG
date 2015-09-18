@@ -23,11 +23,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   // 加载区域，把括地图，角色，物品
-  Game.loadArea = function (id, callback) {
+  Game.assign("loadArea", function (id, callback) {
 
     let preloadItems = ["bag", "gold"];
     preloadItems = preloadItems.filter(function (element) {
-      if (Game.items && Game.items[element]) {
+      if (Game.items && Game.items.hasOwnProperty(element)) {
         return false;
       }
       return true;
@@ -35,25 +35,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     if (preloadItems.length > 0) {
       let itemLoader = Sprite.Loader.create();
-      preloadItems.forEach(function (element) {
-        itemLoader.add(`/item/${element}.json`);
-      });
-      itemLoader.start().on("complete", function (event) {
-        preloadItems.forEach(function (element, index) {
-          let itemData = event.data[index];
-          Game.items[element] = new Game.Item(itemData);
-        })
+      preloadItems.forEach(function (id) {
+        Game.Item.load(id)
       });
     }
 
     Sprite.Loader
       .create()
-      .add(`map/${id}.json`, `map/${id}_extra.json`)
+      .add(`map/${id}.json`, `map/${id}.extra.json`)
       .start()
       .on("complete", function (event) {
 
       let mapData = event.data[0];
       let mapExtra = event.data[1];
+      mapData.id = id;
 
       for (let key in mapExtra) {
         mapData[key] = mapExtra[key];
@@ -87,10 +82,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               .start()
               .on("complete", function (event) {
               let actorData = Sprite.copy(event.data[0]);
+              actorData.id = id;
               for (let key in element) {
                 actorData[key] = element[key];
               }
-              let actorObj = new Game.Actor(actorData);
+              let actorObj = null;
+
+              if (actorData.type == "ally") {
+                actorObj = new Game.ActorAlly(actorData);
+              } else if (actorData.type == "monster") {
+                actorObj = new Game.ActorMonster(actorData);
+              } else if (actorData.type == "npc") {
+                actorObj = new Game.ActorNPC(actorData);
+              } else if (actorData.type == "pet") {
+                actorObj = new Game.ActorPet(actorData);
+              } else {
+                console.error(actorData.type, actorData);
+                throw new Error("Invalid actor type");
+              }
+
               actorObj.on("complete", function () {
                 area.actors.add(actorObj);
                 actorObj.draw(Game.layers.actorLayer);
@@ -118,6 +128,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Complete();
       });
     });
-  };
+  });
 
 })();

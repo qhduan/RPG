@@ -136,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Renderer using webgl
    * @class
    */
-  Sprite.register("Webgl", class Webgl {
+  Sprite.assign("Webgl", class Webgl {
 
     /**
      * @static
@@ -157,19 +157,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @constructor
      */
     constructor (width, height) {
+      let privates = internal(this);
       let canvas = document.createElement("canvas");
       canvas.width = width || 640;
       canvas.height = height || 480;
 
-      /** Private Properties */
-      let pp = internal(this);
-
-      pp.alpha = 1;
-      pp.color = [0, 0, 0];
-      pp.filter = new Map();
-      pp.filter.set("brightness", 0);
-      pp.filter.set("contrast", 0);
-      pp.textureCache = new Map();
+      privates.alpha = 1;
+      privates.color = [0, 0, 0];
+      privates.filter = new Map();
+      privates.filter.set("brightness", 0);
+      privates.filter.set("contrast", 0);
+      privates.textureCache = new Map();
 
       let gl = canvas.getContext("webgl", {preserveDrawingBuffer: true})
         || canvas.getContext("experimental-webgl", {preserveDrawingBuffer: true});
@@ -201,30 +199,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
-      pp.positionLocation = gl.getAttribLocation(program, "position");
-      pp.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
-      pp.resolutionLocation = gl.getUniformLocation(program, "resolution");
-      pp.cropLocation = gl.getUniformLocation(program, "crop");
-      pp.brightnessLocation = gl.getUniformLocation(program, "brightness");
-      pp.contrastLocation = gl.getUniformLocation(program, "contrast");
-      pp.alphaLocation = gl.getUniformLocation(program, "alpha");
+      privates.positionLocation = gl.getAttribLocation(program, "position");
+      privates.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
+      privates.resolutionLocation = gl.getUniformLocation(program, "resolution");
+      privates.cropLocation = gl.getUniformLocation(program, "crop");
+      privates.brightnessLocation = gl.getUniformLocation(program, "brightness");
+      privates.contrastLocation = gl.getUniformLocation(program, "contrast");
+      privates.alphaLocation = gl.getUniformLocation(program, "alpha");
 
-      gl.uniform2f(pp.resolutionLocation, canvas.width, canvas.height);
+      gl.uniform2f(privates.resolutionLocation, canvas.width, canvas.height);
 
       let texCoordBuffer = gl.createBuffer();
       gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-      gl.enableVertexAttribArray(pp.texCoordLocation);
-      gl.vertexAttribPointer(pp.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
+      gl.enableVertexAttribArray(privates.texCoordLocation);
+      gl.vertexAttribPointer(privates.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
       let buffer = gl.createBuffer();
 
       setRectangle(gl, 0, 0, 1, 1);
 
-      pp.texCoordBuffer = texCoordBuffer;
-      pp.buffer = buffer;
+      privates.texCoordBuffer = texCoordBuffer;
+      privates.buffer = buffer;
 
-      pp.canvas = canvas;
-      pp.gl = gl;
+      privates.canvas = canvas;
+      privates.gl = gl;
     }
 
     get alpha () {
@@ -315,9 +313,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
-      /** Private Properties */
-      let pp = internal(this);
-      let gl = pp.gl;
+      let privates = internal(this);
+      let gl = privates.gl;
 
       if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
         console.error(image, this);
@@ -356,16 +353,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       gl.bindTexture(gl.TEXTURE_2D, texture);
 
       // Set sx, sy, sw, sh, aka. image's crop
-      gl.uniform4f(pp.cropLocation,
+      gl.uniform4f(privates.cropLocation,
         sx/image.width, sy/image.height, sw/image.width, sh/image.height);
 
-      gl.uniform1f(pp.brightnessLocation, pp.filter.get("brightness"));
-      gl.uniform1f(pp.contrastLocation, pp.filter.get("contrast"));
-      gl.uniform1f(pp.alphaLocation, pp.alpha);
+      gl.uniform1f(privates.brightnessLocation, privates.filter.get("brightness"));
+      gl.uniform1f(privates.contrastLocation, privates.filter.get("contrast"));
+      gl.uniform1f(privates.alphaLocation, privates.alpha);
 
-      gl.bindBuffer(gl.ARRAY_BUFFER, pp.buffer);
-      gl.enableVertexAttribArray(pp.positionLocation);
-      gl.vertexAttribPointer(pp.positionLocation, 2, gl.FLOAT, false, 0, 0);
+      gl.bindBuffer(gl.ARRAY_BUFFER, privates.buffer);
+      gl.enableVertexAttribArray(privates.positionLocation);
+      gl.vertexAttribPointer(privates.positionLocation, 2, gl.FLOAT, false, 0, 0);
 
       // Set dx, dy, dw, dh, aka. image's position, width and height
       setRectangle(gl, dx, dy, dw, dh);
@@ -375,26 +372,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     clear () {
-      let gl = internal(this).gl;
-      let color = internal(this).color;
+      let privates = internal(this);
+      let gl = privates.gl;
+      let color = privates.color;
       gl.clearColor(color[0], color[1], color[2], 1); // black
       gl.clear(gl.COLOR_BUFFER_BIT);
     }
 
     get width () {
-      return internal(this).canvas.width;
+      let privates = internal(this);
+      return privates.canvas.width;
     }
 
     set width (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value > 0 &&
         value < 10000
       ) {
-        if (value != internal(this).canvas.width) {
-          internal(this).canvas.width = value;
-          internal(this).gl.viewport(0, 0, internal(this).canvas.width, internal(this).canvas.height);
-          internal(this).gl.uniform2f(internal(this).resolutionLocation, internal(this).canvas.width, internal(this).canvas.height);
+        if (value != privates.canvas.width) {
+          privates.canvas.width = value;
+          privates.gl.viewport(0, 0, privates.canvas.width, privates.canvas.height);
+          privates.gl.uniform2f(
+            privates.resolutionLocation,
+            privates.canvas.width,
+            privates.canvas.height
+          );
         }
       } else {
         console.error(value, this);
@@ -403,19 +407,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get height () {
-      return internal(this).canvas.height;
+      let privates = internal(this);
+      return privates.canvas.height;
     }
 
     set height (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value > 0 &&
         value < 10000
       ) {
-        if (value != internal(this).canvas.height) {
-          internal(this).canvas.height = value;
-          internal(this).gl.viewport(0, 0, internal(this).canvas.width, internal(this).canvas.height);
-          internal(this).gl.uniform2f(resolutionLocation, internal(this).canvas.width, internal(this).canvas.height);
+        if (value != privates.canvas.height) {
+          privates.canvas.height = value;
+          privates.gl.viewport(0, 0, privates.canvas.width, privates.canvas.height);
+          privates.gl.uniform2f(resolutionLocation, privates.canvas.width, privates.canvas.height);
         }
       } else {
         console.error(value, this);
@@ -424,7 +430,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get canvas () {
-      return internal(this).canvas;
+      let privates = internal(this);
+      return privates.canvas;
     }
 
     set canvas (value) {

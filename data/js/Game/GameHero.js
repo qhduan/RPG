@@ -20,75 +20,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
+var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
 (function () {
   "use strict";
 
-  // 合并图片
-  // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
-  function CombineHeroImage(images, width, height, callback) {
-    var canvas = document.createElement("canvas");
-    canvas.height = height;
-    canvas.width = width;
-    var context = canvas.getContext("2d");
-    context.clearRect(0, 0, width, height);
+  var internal = Sprite.Namespace();
 
-    var length = images.length - 1; // 最后一张图是武器
-    for (var i = 0; i < length; i++) {
-      var img = images[i];
-      context.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
+  /**
+    英雄类
+    属性：
+      this.sprite 精灵
+  */
+  Game.assign("Hero", (function (_Game$Actor) {
+    _inherits(GameHero, _Game$Actor);
+
+    function GameHero(actorData) {
+      _classCallCheck(this, GameHero);
+
+      _get(Object.getPrototypeOf(GameHero.prototype), "constructor", this).call(this, actorData);
     }
 
-    var withoutWeapon = new Image();
-    withoutWeapon.src = canvas.toDataURL("image/png");
-
-    context.drawImage(images[length], 0, 0, images[length].width, images[length].height, 0, 0, width, height);
-
-    var withWeapon = new Image();
-    withWeapon.src = canvas.toDataURL("image/png");
-
-    callback([withoutWeapon, withWeapon]);
-  }
-
-  // 把多张图片合成一张，并返回
-  Game.drawHero = function (heroCustom, callback) {
-
-    function Check(str) {
-      if (typeof str == "string" && str.length > 0) return true;
-      return false;
-    }
-
-    var BASE = "/hero";
-    var imageUrls = [];
-
-    if (Check(heroCustom.sex) && Check(heroCustom.body)) {
-      // 必须按顺序
-      // 身体
-      imageUrls.push(BASE + "/body/" + heroCustom.sex + "/" + heroCustom.body + ".png");
-      // 眼睛
-      if (Check(heroCustom.eyes)) imageUrls.push(BASE + "/body/" + heroCustom.sex + "/eyes/" + heroCustom.eyes + ".png");
-      // 衣服
-      if (Check(heroCustom.shirts)) imageUrls.push(BASE + "/shirts/" + heroCustom.sex + "/" + heroCustom.shirts + ".png");
-      if (Check(heroCustom.pants)) imageUrls.push(BASE + "/pants/" + heroCustom.sex + "/" + heroCustom.pants + ".png");
-      if (Check(heroCustom.shoes))
-        // 盔甲
-        imageUrls.push(BASE + "/shoes/" + heroCustom.sex + "/" + heroCustom.shoes + ".png");
-      if (Check(heroCustom.armorchest)) imageUrls.push(BASE + "/armor/chest/" + heroCustom.sex + "/" + heroCustom.armorchest + ".png");
-      if (Check(heroCustom.armorarm)) imageUrls.push(BASE + "/armor/arm/" + heroCustom.sex + "/" + heroCustom.armorarm + ".png");
-      if (Check(heroCustom.armorlegs)) imageUrls.push(BASE + "/armor/legs/" + heroCustom.sex + "/" + heroCustom.armorlegs + ".png");
-      if (Check(heroCustom.armorfeet)) imageUrls.push(BASE + "/armor/feet/" + heroCustom.sex + "/" + heroCustom.armorfeet + ".png");
-      // 头发
-      if (Check(heroCustom.hair) && Check(heroCustom.haircolor)) imageUrls.push(BASE + "/hair/" + heroCustom.sex + "/" + heroCustom.hair + "/" + heroCustom.haircolor + ".png");
-      // 头
-      if (Check(heroCustom.head)) imageUrls.push(BASE + "/head/" + heroCustom.sex + "/" + heroCustom.head + ".png");
-      // 头盔
-      if (Check(heroCustom.armorhelms)) imageUrls.push(BASE + "/armor/helms/" + heroCustom.sex + "/" + heroCustom.armorhelms + ".png");
-      // 武器（包括所有武器）
-      imageUrls.push(BASE + "/weapons/" + heroCustom.sex + "/weapons.png");
-    }
-
-    Sprite.Loader.create().add(imageUrls).start().on("complete", function (event) {
-      CombineHeroImage(event.data, heroCustom.width, heroCustom.height, callback);
-    });
-  };
+    return GameHero;
+  })(Game.Actor));
 })();
-//# sourceMappingURL=GameHero.js.map

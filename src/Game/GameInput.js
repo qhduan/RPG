@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-  Game.initInput = function () {
+  Game.assign("initInput", function () {
   /*
     let mousePressed = false;
 
@@ -97,7 +97,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       Game.hero.focus();
     });
-  }; // Game.oninit
+  }); // Game.oninit
 
 
 })();

@@ -48,7 +48,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Display
    */
-  Sprite.register("Text", (function (_Sprite$Display) {
+  Sprite.assign("Text", (function (_Sprite$Display) {
     _inherits(SpriteText, _Sprite$Display);
 
     /**
@@ -60,38 +60,43 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteText);
 
       _get(Object.getPrototypeOf(SpriteText.prototype), "constructor", this).call(this);
-      internal(this).text = config.text || "Invalid Text";
-      internal(this).maxWidth = config.maxWidth || 1000;
-      internal(this).color = config.color || "black";
-      internal(this).fontSize = config.fontSize || 14;
-      internal(this).fontFamily = config.fontFamily || "Ariel";
-      internal(this).image = null;
+      var privates = internal(this);
+      privates.text = config.text || "Invalid Text";
+      privates.maxWidth = config.maxWidth || 1000;
+      privates.color = config.color || "black";
+      privates.fontSize = config.fontSize || 14;
+      privates.fontFamily = config.fontFamily || "Ariel";
+      privates.image = null;
       this.generate();
     }
 
     _createClass(SpriteText, [{
       key: "clone",
       value: function clone() {
+        var privates = internal(this);
         var text = new Text({
-          text: internal(this).text,
-          maxWidth: internal(this).maxWidth,
-          color: internal(this).color,
-          fontSize: internal(this).fontSize,
-          fontFamily: internal(this).fontFamily
+          text: privates.text,
+          maxWidth: privates.maxWidth,
+          color: privates.color,
+          fontSize: privates.fontSize,
+          fontFamily: privates.fontFamily
         });
         text.x = this.x;
         text.y = this.y;
         text.centerX = this.centerX;
         text.centerY = this.centerY;
+        text.alpha = this.alpha;
+        text.visible = this.visible;
         return text;
       }
     }, {
       key: "generate",
       value: function generate() {
-        textContext.font = this.fontSize + "px " + internal(this).fontFamily;
+        var privates = internal(this);
+        textContext.font = this.fontSize + "px " + privates.fontFamily;
         // "龍" is the max-width & max-height Chinese word I think
         var lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-        internal(this).width = 0;
+        privates.width = 0;
 
         // find the real-maximum-width of multiline text, base user's maxWidth
         var lines = [];
@@ -103,7 +108,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           } else {
             lineText += this.text[i];
           }
-          if (textContext.measureText(lineText).width > this.width) internal(this).width = Math.ceil(textContext.measureText(lineText).width);
+          if (textContext.measureText(lineText).width > this.width) privates.width = Math.ceil(textContext.measureText(lineText).width);
         }
 
         if (lineText.length) {
@@ -125,12 +130,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           context.fillText(element, canvas.width / 2, index * lineHeight);
         });
 
-        internal(this).image = canvas;
+        privates.image = canvas;
       }
     }, {
       key: "draw",
       value: function draw(context) {
-        var image = internal(this).image;
+        var privates = internal(this);
+        var image = privates.image;
         if (image && image.width > 0 && image.height > 0) {
           this.drawImage(context, image, 0, 0, image.width, image.height);
         }
@@ -138,66 +144,78 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "text",
       get: function get() {
-        return internal(this).text;
+        var privates = internal(this);
+        return privates.text;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.text) {
-          internal(this).text = value;
+          privates.text = value;
           this.generate();
         }
       }
     }, {
       key: "width",
       get: function get() {
-        return internal(this).width;
+        var privates = internal(this);
+        return privates.width;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.width) {
-          internal(this).width = value;
+          privates.width = value;
           this.generate();
         }
       }
     }, {
       key: "height",
       get: function get() {
-        return internal(this).height;
+        var privates = internal(this);
+        return privates.height;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.height) {
-          internal(this).height = value;
+          privates.height = value;
           this.generate();
         }
       }
     }, {
       key: "color",
       get: function get() {
-        return internal(this).color;
+        var privates = internal(this);
+        return privates.color;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.color) {
-          internal(this).color = value;
+          privates.color = value;
           this.generate();
         }
       }
     }, {
       key: "fontSize",
       get: function get() {
-        return internal(this).fontSize;
+        var privates = internal(this);
+        return privates.fontSize;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.fontSize) {
-          internal(this).fontSize = value;
+          privates.fontSize = value;
           this.generate();
         }
       }
     }, {
       key: "fontFamily",
       get: function get() {
-        return internal(this).fontFamily;
+        var privates = internal(this);
+        return privates.fontFamily;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (value != this.fontFamily) {
-          internal(this).fontFamily = value;
+          privates.fontFamily = value;
           this.generate();
         }
       }

@@ -105,7 +105,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }, 20);
   });
 
-  win.register("update", function (select) {
+  win.assign("update", function (select) {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -186,7 +186,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.register("open", function (select) {
+  win.assign("open", function (select) {
     win.update(select);
     win.show();
   });

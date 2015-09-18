@@ -38,7 +38,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * Class Sprite.Event, hold all events emit, bubble
    * @class
    */
-  Sprite.register("Event", (function () {
+  Sprite.assign("Event", (function () {
     /**
      * construct Sprite.Event
      * @constructor
@@ -47,23 +47,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     function SpriteEvent() {
       _classCallCheck(this, SpriteEvent);
 
+      var privates = internal(this);
       /**
        * Contain all event and its' listeners
        @type {Object}
        @private
        */
-      internal(this).listeners = new Map();
+      privates.listeners = new Map();
       /**
        * Contain an event is once or not
        * @type {Object}
        * @private
        */
-      internal(this).once = new Map();
+      privates.once = new Map();
       /**
        * Parent of this object
        * @type {Object}
        */
-      internal(this).parent = null;
+      privates.parent = null;
     }
 
     /**
@@ -79,21 +80,22 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        * @param {function} listener The callback function when event fired
        */
       value: function on(event, listener) {
+        var privates = internal(this);
         // If event is an once event, when some client register this event after event fired, we just return it
-        if (internal(this).once.has(event)) {
+        if (privates.once.has(event)) {
           listener({
             type: event,
             target: this,
-            data: internal(this).once.get(event)
+            data: privates.once.get(event)
           });
           return null;
         } else {
-          if (internal(this).listeners.has(event) == false) {
-            internal(this).listeners.set(event, new Map());
+          if (privates.listeners.has(event) == false) {
+            privates.listeners.set(event, new Map());
           }
 
           var id = Sprite.uuid();
-          internal(this).listeners.get(event).set(id, listener);
+          privates.listeners.get(event).set(id, listener);
           return id;
         }
       }
@@ -106,10 +108,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "off",
       value: function off(event, id) {
-        if (internal(this).listeners.has(event) && internal(this).listeners.get(event).has(id)) {
-          internal(this).listeners.get(event)["delete"](id);
-          if (internal(this).listeners.get(event).size <= 0) {
-            internal(this).listeners["delete"](event);
+        var privates = internal(this);
+        if (privates.listeners.has(event) && privates.listeners.get(event).has(id)) {
+          privates.listeners.get(event)["delete"](id);
+          if (privates.listeners.get(event).size <= 0) {
+            privates.listeners["delete"](event);
           }
           return true;
         }
@@ -125,15 +128,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "emitBubble",
       value: function emitBubble(event, target, data) {
+        var privates = internal(this);
         var bubble = true;
 
-        if (internal(this).listeners.has(event)) {
+        if (privates.listeners.has(event)) {
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
           var _iteratorError = undefined;
 
           try {
-            for (var _iterator = internal(this).listeners.get(event).values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            for (var _iterator = privates.listeners.get(event).values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
               var listener = _step.value;
 
               if (listener({ type: event, target: target, data: data }) === false) {
@@ -157,8 +161,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
-        if (internal(this).parent && bubble == true) {
-          internal(this).parent.emitBubble(event, target, data);
+        if (privates.parent && bubble == true) {
+          privates.parent.emitBubble(event, target, data);
         }
       }
 
@@ -171,24 +175,25 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "emit",
       value: function emit(event, once, data) {
+        var privates = internal(this);
         if (once) {
           if (typeof data != "undefined") {
-            internal(this).once.set(event, data);
+            privates.once.set(event, data);
           } else {
-            internal(this).once.set(event, null);
+            privates.once.set(event, null);
           }
         }
 
         // wheter or not bubble the event, default true
         var bubble = true;
 
-        if (internal(this).listeners.has(event)) {
+        if (privates.listeners.has(event)) {
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
           var _iteratorError2 = undefined;
 
           try {
-            for (var _iterator2 = internal(this).listeners.get(event).values()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            for (var _iterator2 = privates.listeners.get(event).values()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
               var listener = _step2.value;
 
               if (listener({ type: event, target: this, data: data }) === false) {
@@ -212,14 +217,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
-        if (internal(this).parent && bubble == true) {
-          internal(this).parent.emitBubble(event, this, data);
+        if (privates.parent && bubble == true) {
+          privates.parent.emitBubble(event, this, data);
         }
       }
     }, {
       key: "parent",
       get: function get() {
-        return internal(this).parent;
+        var privates = internal(this);
+        return privates.parent;
       },
 
       /**
@@ -227,7 +233,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        * @param {Object} value New parent value, or null
        */
       set: function set(value) {
-        internal(this).parent = value;
+        var privates = internal(this);
+        privates.parent = value;
       }
     }]);
 

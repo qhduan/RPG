@@ -28,13 +28,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let internal = Sprite.Namespace();
 
-  class Tween {
+  Sprite.assign("Tween", class SpriteTween extends Sprite.Event {
+
+    static get (object) {
+      return new Sprite.Tween(object);
+    }
+
     constructor (object) {
-      internal(this).object = object;
-      internal(this).callback = null;
+      super();
+      let privates = internal(this);
+      privates.object = object;
+      privates.callback = null;
     }
 
     to (attributes, time) {
+      let privates = internal(this);
 
       let splice = Math.min(100, time);
       let t = time / splice;
@@ -42,7 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       for (let key in attributes) {
         if (typeof attributes[key] == "number") {
-          step[key] = attributes[key] - internal(this).object[key];
+          step[key] = attributes[key] - privates.object[key];
           step[key] /= splice;
         }
       }
@@ -52,15 +60,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         count++;
         if (count >= splice) {
           for (let key in attributes) {
-            internal(this).object[key] = attributes[key];
+            privates.object[key] = attributes[key];
           }
           clearInterval(inter);
-          if (internal(this).callback) {
-            internal(this).callback();
+          if (privates.callback) {
+            privates.callback();
           }
         } else {
           for (let key in step) {
-            internal(this).object[key] += step[key];
+            privates.object[key] += step[key];
           }
         }
       }, t);
@@ -69,25 +77,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     call (callback) {
+      let privates = internal(this);
       if (typeof callback == "function") {
-        internal(this).callback = callback;
+        privates.callback = callback;
       }
       return this;
     }
 
     wait (time) {
       return this;
-    }
-  };
-
-  Sprite.register("Tween", class SpriteTween extends Sprite.Event {
-
-    constructor () {
-      super();
-    }
-
-    static get (object) {
-      return new Tween(object);
     }
   });
 

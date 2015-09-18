@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <table><tbody><tr><td>
-      <label>载入中...</label>
+      <label>请稍等...</label>
     </td></tr></tbody></table>
   `;
 
@@ -47,11 +47,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  win.register("begin", function () {
+  win.assign("begin", function () {
     Game.windows.loading.show();
   });
 
-  win.register("end", function () {
+  win.assign("end", function () {
     Game.windows.loading.hide();
   });
 

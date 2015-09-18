@@ -1,26 +1,17 @@
 {
-  "id": "starttown-mayor",
-  "name": "斯塔特镇长",
-  "description": "斯塔特镇的管理者",
+  "name": "坦德姆",
+  "description": "斯塔特镇镇长",
   "type": "npc",
   "contact": {
-    "问好": {
+    "闲谈": {
       "condition": "true",
       "content": [
-        "斯塔特镇北方就是都城",
-        "斯塔特镇有一切你所需的"
-      ]
-    },
-    "你是谁": {
-      "condition": "true",
-      "content": [
-        "我是斯塔特镇的镇长",
-        "我负责管理斯塔特镇的一切"
+        "我看你是新来的冒险者吧，我是斯塔特镇的镇长",
+        "斯塔特镇北方就是都城，是很方便的城镇。在这里可以购买日用品，装备，方便以后的冒险。"
       ]
     }
   },
-  "talk": [],
-  "image": "resource\/starttown-mayor.png",
+  "image": "resource\/starttown.tandem.png",
   "centerX": 16,
   "centerY": 42,
   "hitArea": [[0, 0]],

@@ -43,7 +43,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Display
    */
-  Sprite.register("Sheet", (function (_Sprite$Display) {
+  Sprite.assign("Sheet", (function (_Sprite$Display) {
     _inherits(SpriteSheet, _Sprite$Display);
 
     /**
@@ -56,6 +56,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteSheet);
 
       _get(Object.getPrototypeOf(SpriteSheet.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
       if (!config.images || !config.images.length || !Number.isInteger(config.width) || isNaN(config.width) || config.width <= 0 || !Number.isInteger(config.height) || isNaN(config.height) || config.height <= 0) {
         console.error(config);
@@ -67,50 +68,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        @type {Array}
        @private
        */
-      internal(this).images = config.images;
+      privates.images = config.images;
       /**
        * Width of each frame
        @type {number}
        @private
        */
-      internal(this).tilewidth = config.width;
+      privates.tilewidth = config.width;
       /**
        * Height of each frame
        @type {number}
        @private
        */
-      internal(this).tileheight = config.height;
+      privates.tileheight = config.height;
       /**
        * Animations of this sprite sheet, eg. { "walkdown": [0, 2, "", 40], "walkup", [3, 5, "", 40] }
        @type {Object}
        @private
        */
-      internal(this).animations = config.animations || {};
+      privates.animations = config.animations || {};
       /**
        * Current animation's name, eg. "walkdown", "attackright"
        @type {string}
        @private
        */
-      internal(this).currentAnimation = null;
+      privates.currentAnimation = null;
       /**
        * Current frame number, eg. 0, 1, 2, 3
        @type {number}
        @private
        */
-      internal(this).currentFrame = 0;
+      privates.currentFrame = 0;
       /**
        * If animationTimer is not null, it points an animation is running
        * it will be null or an handler from setInterval
        @type {Object}
        @private
        */
-      internal(this).animationTimer = null;
+      privates.animationTimer = null;
       /**
        * Contain frames cache
        @type {Array}
        @private
        */
-      internal(this).frames = [];
+      privates.frames = [];
 
       var _iteratorNormalCompletion = true;
 
@@ -123,23 +124,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       var _iteratorError = undefined;
 
       try {
-        for (var _iterator = internal(this).images[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+        for (var _iterator = privates.images[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var image = _step.value;
 
           if (image && image.width && image.height) {
-            var col = Math.floor(image.width / internal(this).tilewidth);
-            var row = Math.floor(image.height / internal(this).tileheight);
+            var col = Math.floor(image.width / privates.tilewidth);
+            var row = Math.floor(image.height / privates.tileheight);
             for (var j = 0; j < row; j++) {
               for (var i = 0; i < col; i++) {
-                internal(this).frames.push({
+                privates.frames.push({
                   image: image,
-                  x: i * internal(this).tilewidth,
-                  y: j * internal(this).tileheight
+                  x: i * privates.tilewidth,
+                  y: j * privates.tileheight
                 });
               }
             }
           } else {
-            console.error(image, internal(this).images, this);
+            console.error(image, privates.images, this);
             throw new Error("Sprite.Sheet got an invalid image");
           }
         }
@@ -158,10 +159,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
 
-      internal(this).frameCount = internal(this).frames.length;
+      privates.frameCount = privates.frames.length;
 
-      if (internal(this).frameCount <= 0) {
-        console.error(internal(this).frames, this);
+      if (privates.frameCount <= 0) {
+        console.error(privates.frames, this);
         throw new Error("Sprite.Sheet got invalid frameCount, something wrong");
       }
     }
@@ -174,17 +175,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(SpriteSheet, [{
       key: "clone",
       value: function clone() {
+        var privates = internal(this);
         var sheet = new Sprite.Sheet({
-          images: internal(this).images,
-          width: internal(this).tilewidth,
-          height: internal(this).tileheight,
-          animations: internal(this).animations
+          images: privates.images,
+          width: privates.tilewidth,
+          height: privates.tileheight,
+          animations: privates.animations
         });
         sheet.x = this.x;
         sheet.y = this.y;
         sheet.centerX = this.centerX;
         sheet.centerY = this.centerY;
         sheet.play(this.currentFrame);
+        sheet.alpha = this.alpha;
+        sheet.visible = this.visible;
         return sheet;
       }
 
@@ -201,29 +205,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function play(choice) {
         var _this = this;
 
-        if (internal(this).animationTimer) {
-          clearInterval(internal(this).animationTimer);
-          internal(this).animationTimer = null;
+        var privates = internal(this);
+        if (privates.animationTimer) {
+          clearInterval(privates.animationTimer);
+          privates.animationTimer = null;
         }
 
-        if (typeof choice == "number") {
+        if (Number.isInteger(choice)) {
           // Argument points a frame
-          internal(this).currentFrame = choice;
+          privates.currentFrame = choice;
           this.emit("change");
         } else if (typeof choice == "string") {
           var _ret = (function () {
             // Argument points an animation name
-            var animation = internal(_this).animations[choice];
+            var animation = privates.animations[choice];
 
             if (!animation) {
               // if animation is not exist
-              console.error(animation, internal(_this).animations, choice);
+              console.error(animation, privates.animations, choice);
               throw new Error("Sprite.Sheet.play invalid animation");
             }
 
             // if animation is single frame number
             if (typeof animation == "number") {
-              internal(_this).currentAnimation = choice;
+              privates.currentAnimation = choice;
               return {
                 v: _this.play(animation)
               };
@@ -253,28 +258,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
 
             if ( // Data ensure
-            typeof begin != "number" || begin < 0 || begin >= internal(_this).frameCount || typeof end != "number" || end < 0 || end >= internal(_this).frameCount || typeof time != "number" || time <= 0) {
+            typeof begin != "number" || begin < 0 || begin >= privates.frameCount || typeof end != "number" || end < 0 || end >= privates.frameCount || typeof time != "number" || time <= 0) {
               console.error(begin, end, time, _this);
               throw new Error("Sprite.Sheet.play Invalid animation data");
             }
 
             // Play first frame in animation
-            internal(_this).currentAnimation = choice;
-            internal(_this).currentFrame = begin;
+            privates.currentAnimation = choice;
+            privates.currentFrame = begin;
             _this.emit("change");
 
             // Play other frame in animation
-            internal(_this).animationTimer = setInterval(function () {
-              internal(_this).currentFrame++;
+            privates.animationTimer = setInterval(function () {
+              privates.currentFrame++;
 
-              if (internal(_this).currentFrame > end) {
-                clearInterval(internal(_this).animationTimer);
-                internal(_this).animationTimer = null;
+              if (privates.currentFrame > end) {
+                clearInterval(privates.animationTimer);
+                privates.animationTimer = null;
 
-                if (next && next.length && internal(_this).animations[next]) {
+                if (next && next.length && privates.animations[next]) {
                   _this.play(next);
                 } else {
-                  internal(_this).currentFrame--;
+                  privates.currentFrame--;
                 }
                 _this.emit("animationend");
               }
@@ -298,15 +303,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "getFrame",
       value: function getFrame(index) {
+        var privates = internal(this);
         if (!Number.isInteger(index)) {
-          index = internal(this).currentFrame;
+          index = privates.currentFrame;
         }
-        if (index < 0 || index >= internal(this).frameCount) {
+        if (index < 0 || index >= privates.frameCount) {
           console.error(index, this);
           throw new Error("Sprite.Sheet.getFrame invalid index");
         }
-        var frame = internal(this).frames[index];
-        var frameObj = new Sprite.Frame(frame.image, frame.x, frame.y, internal(this).tilewidth, internal(this).tileheight);
+        var frame = privates.frames[index];
+        var frameObj = new Sprite.Frame(frame.image, frame.x, frame.y, privates.tilewidth, privates.tileheight);
         frameObj.parent = this;
         return frameObj;
       }
@@ -318,6 +324,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw(renderer) {
+        var privates = internal(this);
         var frame = this.getFrame(this.currentFrame);
 
         if (!frame || !frame.image) {
@@ -330,7 +337,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "paused",
       get: function get() {
-        if (internal(this).animationTimer) {
+        var privates = internal(this);
+        if (privates.animationTimer) {
           return false;
         }
         return true;
@@ -345,7 +353,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "currentFrame",
       get: function get() {
-        return internal(this).currentFrame;
+        var privates = internal(this);
+        return privates.currentFrame;
       },
       set: function set(value) {
         throw new Error("Sprite.Sheet.currentFrame readonly");
@@ -357,7 +366,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "currentAnimation",
       get: function get() {
-        return internal(this).currentAnimation;
+        var privates = internal(this);
+        return privates.currentAnimation;
       },
       set: function set(value) {
         throw new Error("Sprite.Sheet.currentAnimation readonly");

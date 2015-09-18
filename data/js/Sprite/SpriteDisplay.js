@@ -45,55 +45,56 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Event
    */
-  Sprite.register("Display", (function (_Sprite$Event) {
-    _inherits(Display, _Sprite$Event);
+  Sprite.assign("Display", (function (_Sprite$Event) {
+    _inherits(SpriteDisplay, _Sprite$Event);
 
     /**
      * construct Sprite.Display
      * @constructor
      */
 
-    function Display() {
-      _classCallCheck(this, Display);
+    function SpriteDisplay() {
+      _classCallCheck(this, SpriteDisplay);
 
-      _get(Object.getPrototypeOf(Display.prototype), "constructor", this).call(this);
+      _get(Object.getPrototypeOf(SpriteDisplay.prototype), "constructor", this).call(this);
+      var privates = internal(this);
       /**
        * x position of object
        @type {number}
        */
-      internal(this).x = 0;
+      privates.x = 0;
       /**
        * y position of object
        @type {number}
        */
-      internal(this).y = 0;
+      privates.y = 0;
       /**
        * object's center x
        @type {number}
        */
-      internal(this).centerX = 0;
+      privates.centerX = 0;
       /**
        * object's center y
        @type {number}
        */
-      internal(this).centerY = 0;
+      privates.centerY = 0;
       /**
        * object's alpha, from 0 to 1, when alpha is 0, object is invisible
        @type {number}
        */
-      internal(this).alpha = 1;
+      privates.alpha = 1;
       /**
        * object's visibility
        @type {boolean}
        */
-      internal(this).visible = true;
+      privates.visible = true;
     }
 
     /**
      * @return {number} return x position
      */
 
-    _createClass(Display, [{
+    _createClass(SpriteDisplay, [{
       key: "draw",
 
       /**
@@ -113,7 +114,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "hitTest",
       value: function hitTest(x, y) {
-        this.debug = true;
         hitContext.clearRect(0, 0, 1, 1);
         hitContext.save();
         hitContext.translate(-x, -y);
@@ -180,35 +180,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "drawImage",
       value: function drawImage(renderer, image, sx, sy, swidth, sheight) {
-        if (this.visible == true && this.alpha > 0.001) {
+        if (this.visible != true || this.alpha < 0.01) {
+          return;
+        }
 
-          var d = this.drawPosition();
-          if (!d) {
-            return;
-          }
-          renderer.alpha = d.alpha;
+        var d = this.drawPosition();
+        if (!d) {
+          return;
+        }
+        renderer.alpha = d.alpha;
 
-          try {
-            renderer.drawImage(image, sx, sy, swidth, sheight, d.x, d.y, swidth, sheight);
-          } catch (e) {
-            console.error(image, sx, sy, swidth, sheight, dx, dy, swidth, sheight);
-            throw e;
-          }
+        try {
+          renderer.drawImage(image, sx, sy, swidth, sheight, d.x, d.y, swidth, sheight);
+        } catch (e) {
+          console.error(image, sx, sy, swidth, sheight, dx, dy, swidth, sheight);
+          throw e;
         }
       }
     }, {
       key: "x",
       get: function get() {
-        return internal(this).x;
+        var privates = internal(this);
+        return privates.x;
       },
 
       /**
        * @param {number} value new x position
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value)) {
-          if (value != internal(this).x) {
-            internal(this).x = value;
+          if (value != privates.x) {
+            privates.x = value;
             this.emit("change");
           }
         } else {
@@ -223,16 +226,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "y",
       get: function get() {
-        return internal(this).y;
+        var privates = internal(this);
+        return privates.y;
       },
 
       /**
        * @param {number} value new y position
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value)) {
-          if (value != internal(this).y) {
-            internal(this).y = value;
+          if (value != privates.y) {
+            privates.y = value;
             this.emit("change");
           }
         } else {
@@ -247,16 +252,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "centerX",
       get: function get() {
-        return internal(this).centerX;
+        var privates = internal(this);
+        return privates.centerX;
       },
 
       /**
        * @param {number} value new center x
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value)) {
-          if (value != internal(this).centerX) {
-            internal(this).centerX = value;
+          if (value != privates.centerX) {
+            privates.centerX = value;
             this.emit("change");
           }
         } else {
@@ -271,16 +278,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "centerY",
       get: function get() {
-        return internal(this).centerY;
+        var privates = internal(this);
+        return privates.centerY;
       },
 
       /**
        * @param {number} value new center y
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value)) {
-          if (value != internal(this).centerY) {
-            internal(this).centerY = value;
+          if (value != privates.centerY) {
+            privates.centerY = value;
             this.emit("change");
           }
         } else {
@@ -295,16 +304,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "alpha",
       get: function get() {
-        return internal(this).alpha;
+        var privates = internal(this);
+        return privates.alpha;
       },
 
       /**
        * @param {number} value new alpha
        */
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value) && (value >= 0 || value <= 1)) {
-          if (value != internal(this).alpha) {
-            internal(this).alpha = value;
+          if (value != privates.alpha) {
+            privates.alpha = value;
             this.emit("change");
           }
         } else {
@@ -319,21 +330,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "visible",
       get: function get() {
-        return internal(this).visible;
+        var privates = internal(this);
+        return privates.visible;
       },
 
       /**
        * @param {boolean} value new visible
        */
       set: function set(value) {
-        if (value != internal(this).visible) {
-          internal(this).visible = value;
+        var privates = internal(this);
+        if (value != privates.visible) {
+          privates.visible = value;
           this.emit("change");
         }
       }
     }]);
 
-    return Display;
+    return SpriteDisplay;
   })(Sprite.Event));
 })();
 //# sourceMappingURL=SpriteDisplay.js.map

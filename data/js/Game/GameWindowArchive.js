@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }, 20);
   });
 
-  win.register("open", function () {
+  win.assign("open", function () {
 
     if (Game.hero && Game.windows.main.atop == false) {
       archiveWindowSave.style.visibility = "visible";

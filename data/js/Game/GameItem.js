@@ -33,7 +33,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
   var internal = Sprite.Namespace();
 
-  Game.Item = (function (_Sprite$Event) {
+  Game.assign("Item", (function (_Sprite$Event) {
     _inherits(GameItem, _Sprite$Event);
 
     _createClass(GameItem, null, [{
@@ -41,6 +41,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function load(id, callback) {
         Sprite.Loader.create().add("/item/" + id + ".json").start().on("complete", function (event) {
           var itemData = event.data[0];
+          itemData.id = id;
           var itemObj = new Game.Item(itemData);
           Game.items[id] = itemObj;
           itemObj.on("complete", function () {
@@ -134,10 +135,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (this.inner) {
           Game.windows.pickup.open(this);
         }
-      }
-    }, {
-      key: "use",
-      value: function use(actor) {
+
         if (this.data.type == "potion") {
           for (var attribute in this.data.potion) {
             var effect = this.data.potion[attribute];
@@ -148,7 +146,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           }
-        }
+        } // potion
+
+        if (this.data.type == "book") {
+          Game.dialogue(this.data.read, "《" + this.data.name + "》");
+        } // book
       }
     }, {
       key: "clone",
@@ -260,6 +262,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     return GameItem;
-  })(Sprite.Event);
+  })(Sprite.Event));
 })();
 //# sourceMappingURL=GameItem.js.map

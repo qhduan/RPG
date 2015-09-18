@@ -178,7 +178,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * Class for fetch resources
    * @class
    */
-  Sprite.register("Loader", (function (_Sprite$Event) {
+  Sprite.assign("Loader", (function (_Sprite$Event) {
     _inherits(SpriteLoader, _Sprite$Event);
 
     _createClass(SpriteLoader, null, [{
@@ -202,9 +202,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteLoader);
 
       _get(Object.getPrototypeOf(SpriteLoader.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
-      internal(this).list = [];
-      internal(this).progress = 0;
+      privates.list = [];
+      privates.progress = 0;
     }
 
     /**
@@ -220,6 +221,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * @param {Object} urls, one or more urls.
        */
       value: function add(urls) {
+        var privates = internal(this);
         var args = Array.prototype.slice.call(arguments);
 
         var _iteratorNormalCompletion2 = true;
@@ -231,9 +233,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var element = _step2.value;
 
             if (element instanceof Array) {
-              internal(this).list = internal(this).list.concat(element);
+              privates.list = privates.list.concat(element);
             } else if (typeof element == "string" && element.length > 0) {
-              internal(this).list.push(element);
+              privates.list.push(element);
             } else {
               console.error(element, args, this);
               throw new Error("Sprite.Loader.add invalid argument");
@@ -265,6 +267,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function start() {
         var _this = this;
 
+        var privates = internal(this);
         var done = 0;
         var ret = [];
         ret.length = internal(this).list.length;
@@ -272,7 +275,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var Done = function Done() {
           done++;
 
-          internal(_this).progress = done / ret.length;
+          privates.progress = done / ret.length;
           _this.emit("progress");
 
           if (done >= ret.length) {
@@ -280,7 +283,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         };
 
-        internal(this).list.forEach(function (element, index) {
+        privates.list.forEach(function (element, index) {
           Fetch(element, function (result) {
             ret[index] = result;
             Done();
@@ -291,7 +294,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "progress",
       get: function get() {
-        return internal(this).progress;
+        var privates = internal(this);
+        return privates.progress;
       },
       set: function set(value) {
         throw new Error("Sprite.Loader.progress readonly");

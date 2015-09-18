@@ -1,12 +1,12 @@
 {
-  "id": "batPurple",
   "name": "紫蝙蝠",
   "description": "实力很弱的妖兽",
   "type": "monster",
-  "drop": {
-    "gold": "0-1"
+  "items": {
+    "gold": 1
   },
-  "image": "resource\/batPurple.png",
+  "exp": 10,
+  "image": "resource\/bat.purple.png",
   "centerX": 16,
   "centerY": 32,
   "hitArea": [[0, 0]],

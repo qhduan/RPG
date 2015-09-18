@@ -36,22 +36,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
-  var Ticker = (function (_Sprite$Event) {
-    _inherits(Ticker, _Sprite$Event);
+  var tickerCount = 0;
 
-    function Ticker() {
-      _classCallCheck(this, Ticker);
+  var SpriteTicker = (function (_Sprite$Event) {
+    _inherits(SpriteTicker, _Sprite$Event);
 
-      _get(Object.getPrototypeOf(Ticker.prototype), "constructor", this).call(this);
+    function SpriteTicker() {
+      _classCallCheck(this, SpriteTicker);
+
+      _get(Object.getPrototypeOf(SpriteTicker.prototype), "constructor", this).call(this);
       this.tick();
     }
 
-    _createClass(Ticker, [{
+    _createClass(SpriteTicker, [{
       key: "tick",
       value: function tick() {
         var _this = this;
 
-        this.emit("tick");
+        tickerCount++;
+        this.emit("tick", false, tickerCount);
         window.requestAnimationFrame(function () {
           _this.tick();
         });
@@ -94,11 +97,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }]);
 
-    return Ticker;
+    return SpriteTicker;
   })(Sprite.Event);
 
   ;
 
-  Sprite.register("Ticker", new Ticker());
+  Sprite.assign("Ticker", new SpriteTicker());
 })();
-//# sourceMappingURL=SpriteTicker.js.map

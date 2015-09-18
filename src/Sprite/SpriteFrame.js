@@ -32,21 +32,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
    */
-  Sprite.register("Frame", class SpriteFrame extends Sprite.Display {
+  Sprite.assign("Frame", class SpriteFrame extends Sprite.Display {
 
     constructor (image, sx, sy, width, height) {
       super();
-      internal(this).image = image;
-      internal(this).sx = sx;
-      internal(this).sy = sy;
-      internal(this).width = width;
-      internal(this).height = height;
+      let privates = internal(this);
+      privates.image = image;
+      privates.sx = sx;
+      privates.sy = sy;
+      privates.width = width;
+      privates.height = height;
     }
     /**
      * @return {Image} Return the image this Sprite.Frame hold
      */
     get image () {
-      return internal(this).image;
+      let privates = internal(this);
+      return privates.image;
     }
 
     set image (value) {
@@ -57,7 +59,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return sx
      */
     get sx () {
-      return internal(this).sx;
+      let privates = internal(this);
+      return privates.sx;
     }
 
     set sx (value) {
@@ -68,7 +71,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return sy
      */
     get sy () {
-      return internal(this).sy;
+      let privates = internal(this);
+      return privates.sy;
     }
 
     set sy (value) {
@@ -79,7 +83,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return width
      */
     get width () {
-      return internal(this).width;
+      let privates = internal(this);
+      return privates.width;
     }
 
     set width (value) {
@@ -91,7 +96,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return height
      */
     get height () {
-      return internal(this).height;
+      let privates = internal(this);
+      return privates.height;
     }
 
     set height (value) {
@@ -110,6 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       );
       frame.x = this.x;
       frame.y = this.y;
+      frame.parent = this.parent;
       return frame;
     }
 

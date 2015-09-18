@@ -27,7 +27,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
   "use strict";
 
-  Game.Archive = (function () {
+  Game.assign("Archive", (function () {
     function GameArchive() {
       _classCallCheck(this, GameArchive);
     }
@@ -108,30 +108,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           (function () {
 
             Game.windows.loading.begin();
-
             var heroData = data.hero;
-
-            console.time("hero");
 
             Game.drawHero(heroData.custom, function (heroImage) {
               heroData.image = heroImage;
-              Game.hero = new Game.Actor(heroData);
+              Game.hero = new Game.ActorHero(heroData);
 
               Game.hero.on("complete", function () {
 
-                console.timeEnd("hero");
-                console.time("area");
-
                 Game.loadArea(heroData.area, function (area) {
-
-                  console.timeEnd("area");
-                  console.time("other1");
 
                   Game.area = area;
                   area.map.draw(Game.layers.mapLayer);
-
-                  console.timeEnd("other1");
-                  console.time("other1.5");
 
                   if (!Number.isInteger(Game.hero.data.x) || !Number.isInteger(Game.hero.data.y)) {
                     if (area.map.data.entry && Number.isInteger(area.map.data.entry.x) && Number.isInteger(area.map.data.entry.y)) {
@@ -144,20 +132,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   }
 
                   area.actors.add(Game.hero);
-
-                  console.timeEnd("other1.5");
-                  console.time("other2");
-                  Game.hero.draw(Game.layers.actorLayer);
+                  Game.hero.draw();
                   Game.hero.focus();
-                  console.timeEnd("other2");
-                  console.time("other3");
                   Game.windows.main.hide();
                   Game.windows["interface"].show();
-                  console.timeEnd("other3");
-                  console.time("other4");
                   Game.AI.attach(Game.hero);
                   Game.start();
-                  console.timeEnd("other4");
 
                   Game.windows.loading.end();
                 });
@@ -166,11 +146,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           })();
         } else {
           console.error("id:", id);
-          throw "Invalid id, Game.Archive.load";
+          throw new Error("Invalid id, Game.Archive.load");
         }
       }
     }]);
 
     return GameArchive;
-  })();
+  })());
 })();

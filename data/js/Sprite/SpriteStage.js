@@ -43,7 +43,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Container
    */
-  Sprite.register("Stage", (function (_Sprite$Container) {
+  Sprite.assign("Stage", (function (_Sprite$Container) {
     _inherits(SpriteStage, _Sprite$Container);
 
     /** @function Sprite.Stage.constructor
@@ -57,30 +57,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteStage);
 
       _get(Object.getPrototypeOf(SpriteStage.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
       if (Sprite.Webgl.support()) {
-        internal(this).renderer = new Sprite.Webgl(width, height);
-        internal(this).rendererType = "webgl";
+        privates.renderer = new Sprite.Webgl(width, height);
+        privates.rendererType = "webgl";
       } else if (Sprite.Canvas.support()) {
-        internal(this).renderer = new Sprite.Canvas(width, height);
-        internal(this).rendererType = "canvas";
+        privates.renderer = new Sprite.Canvas(width, height);
+        privates.rendererType = "canvas";
       } else {
         throw new Error("Sprite.Stage all renderer not support");
       }
 
-      internal(this).color = "#000000";
+      privates.color = "#000000";
 
-      internal(this).screenshot = null;
+      privates.screenshot = null;
     }
 
     _createClass(SpriteStage, [{
       key: "filter",
       value: function filter(name, value) {
-        return internal(this).renderer.filter(name, value);
+        var privates = internal(this);
+        return privates.renderer.filter(name, value);
       }
     }, {
       key: "findHit",
       value: function findHit(event) {
+        var privates = internal(this);
         var hitted = this.hitTest(this.mouseX, this.mouseY);
         hitted.reverse();
         if (hitted.length) return hitted;
@@ -92,7 +95,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// @function Sprite.Stage.clear
       /// clear the stage
       value: function clear() {
-        internal(this).renderer.clear();
+        var privates = internal(this);
+        privates.renderer.clear();
       }
     }, {
       key: "update",
@@ -102,7 +106,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "requestScreenshot",
       value: function requestScreenshot(callback) {
-        internal(this).screenshot = function (url) {
+        var privates = internal(this);
+        privates.screenshot = function (url) {
           var img = new Image();
           img.src = url;
           if (img.complete) {
@@ -117,6 +122,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw() {
+        var privates = internal(this);
         this.emit("beforeDraw");
 
         if (this.children.length <= 0) {
@@ -150,9 +156,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        if (internal(this).screenshot) {
-          internal(this).screenshot(this.canvas.toDataURL());
-          internal(this).screenshot = null;
+        if (privates.screenshot) {
+          privates.screenshot(this.canvas.toDataURL());
+          privates.screenshot = null;
         }
 
         this.emit("afterDraw");
@@ -160,7 +166,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "renderer",
       get: function get() {
-        return internal(this).renderer;
+        var privates = internal(this);
+        return privates.renderer;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage renderer readonly");
@@ -168,7 +175,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "rendererType",
       get: function get() {
-        return internal(this).rendererType;
+        var privates = internal(this);
+        return privates.rendererType;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage.rendererType readonly");
@@ -176,26 +184,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        return internal(this).renderer.width;
+        var privates = internal(this);
+        return privates.renderer.width;
       },
       set: function set(value) {
-        internal(this).renderer.width = value;
+        var privates = internal(this);
+        privates.renderer.width = value;
       }
     }, {
       key: "height",
       get: function get() {
-        return internal(this).renderer.height;
+        var privates = internal(this);
+        return privates.renderer.height;
       },
       set: function set(value) {
-        internal(this).renderer.height = value;
+        var privates = internal(this);
+        privates.renderer.height = value;
       }
     }, {
       key: "color",
       get: function get() {
-        return internal(this).renderer.color;
+        var privates = internal(this);
+        return privates.renderer.color;
       },
       set: function set(value) {
-        internal(this).renderer.color = value;
+        var privates = internal(this);
+        privates.renderer.color = value;
       }
     }, {
       key: "canvas",

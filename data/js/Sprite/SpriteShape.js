@@ -43,7 +43,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Display
    */
-  Sprite.register("Shape", (function (_Sprite$Display) {
+  Sprite.assign("Shape", (function (_Sprite$Display) {
     _inherits(SpriteShape, _Sprite$Display);
 
     /**
@@ -55,20 +55,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteShape);
 
       _get(Object.getPrototypeOf(SpriteShape.prototype), "constructor", this).call(this);
-      internal(this).children = [];
-      internal(this).width = 0;
-      internal(this).height = 0;
-      internal(this).image = null;
+      var privates = internal(this);
+      privates.children = [];
+      privates.width = 0;
+      privates.height = 0;
+      privates.image = null;
     }
 
     _createClass(SpriteShape, [{
       key: "clone",
       value: function clone() {
+        var privates = internal(this);
         var shape = new Sprite.Shape();
-        internal(shape).children = internal(this).children.slice();
-        internal(shape).image = internal(this).image;
-        internal(shape).width = internal(this).width;
-        internal(shape).height = internal(this).height;
+        internal(shape).children = privates.children.slice();
+        internal(shape).image = privates.image;
+        internal(shape).width = privates.width;
+        internal(shape).height = privates.height;
         shape.x = this.x;
         shape.y = this.y;
         shape.centerX = this.centerX;
@@ -78,9 +80,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "clear",
       value: function clear() {
-        internal(this).children = [];
-        internal(this).width = 0;
-        internal(this).height = 0;
+        var privates = internal(this);
+        privates.children = [];
+        privates.width = 0;
+        privates.height = 0;
         this.generate();
         return this;
       }
@@ -101,6 +104,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "rect",
       value: function rect(userConfig) {
+        var privates = internal(this);
         var config = {
           "x": 0,
           "y": 0,
@@ -114,19 +118,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        internal(this).children.push("<rect " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<rect " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.x + config.width > internal(this).width) {
-          internal(this).width = config.x + config.width;
+        if (config.x + config.width > privates.width) {
+          privates.width = config.x + config.width;
         }
-        if (config.y + config.height > internal(this).height) {
-          internal(this).height = config.y + config.height;
+        if (config.y + config.height > privates.height) {
+          privates.height = config.y + config.height;
         }
         this.generate();
       }
     }, {
       key: "circle",
       value: function circle(userConfig) {
+        var privates = internal(this);
         var config = {
           "cx": 10,
           "cy": 10,
@@ -139,19 +144,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        internal(this).children.push("<circle " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<circle " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.cx + config.r > internal(this).width) {
-          internal(this).width = config.cx + config.r;
+        if (config.cx + config.r > privates.width) {
+          privates.width = config.cx + config.r;
         }
-        if (config.cy + config.r > internal(this).height) {
-          internal(this).height = config.cy + config.r;
+        if (config.cy + config.r > privates.height) {
+          privates.height = config.cy + config.r;
         }
         this.generate();
       }
     }, {
       key: "ellipse",
       value: function ellipse(userConfig) {
+        var privates = internal(this);
         var config = {
           "cx": 10,
           "cy": 10,
@@ -165,19 +171,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        internal(this).children.push("<ellipse " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<ellipse " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.cx + config.rx > internal(this).width) {
-          internal(this).width = config.cx + config.rx;
+        if (config.cx + config.rx > privates.width) {
+          privates.width = config.cx + config.rx;
         }
-        if (config.cy + config.ry > internal(this).height) {
-          internal(this).height = config.cy + config.ry;
+        if (config.cy + config.ry > privates.height) {
+          privates.height = config.cy + config.ry;
         }
         this.generate();
       }
     }, {
       key: "line",
       value: function line(userConfig) {
+        var privates = internal(this);
         var config = {
           "x1": 10,
           "y1": 10,
@@ -189,19 +196,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        internal(this).children.push("<line " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<line " + this.makeConfig(config, userConfig) + " />");
 
-        if (Math.max(config.x1, config.x2) > internal(this).width) {
-          internal(this).width = Math.max(config.x1, config.x2);
+        if (Math.max(config.x1, config.x2) > privates.width) {
+          privates.width = Math.max(config.x1, config.x2);
         }
-        if (Math.max(config.y1, config.y2) > internal(this).height) {
-          internal(this).height = Math.max(config.y1, config.y2);
+        if (Math.max(config.y1, config.y2) > privates.height) {
+          privates.height = Math.max(config.y1, config.y2);
         }
         this.generate();
       }
     }, {
       key: "polyline",
       value: function polyline(userConfig) {
+        var privates = internal(this);
         var config = {
           "points": "20, 20, 30, 20, 30, 30, 20, 30",
           "stroke": "black",
@@ -212,7 +220,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        this._children.push("<polyline " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<polyline " + this.makeConfig(config, userConfig) + " />");
 
         var max = -1;
         config.points.split(/, /).forEach(function (element) {
@@ -222,17 +230,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         });
 
-        if (max != -1 && max > internal(this).width) {
-          internal(this).width = max;
+        if (max != -1 && max > privates.width) {
+          privates.width = max;
         }
-        if (max != -1 && max > internal(this).height) {
-          internal(this).height = max;
+        if (max != -1 && max > privates.height) {
+          privates.height = max;
         }
         this.generate();
       }
     }, {
       key: "polygon",
       value: function polygon(userConfig) {
+        var privates = internal(this);
         var config = {
           "points": "20,20 30,20 30,30 20,30",
           "stroke": "black",
@@ -243,7 +252,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           "opacity": 1
         };
 
-        internal(this).children.push("<polyline " + this.makeConfig(config, userConfig) + " />");
+        privates.children.push("<polyline " + this.makeConfig(config, userConfig) + " />");
 
         var width = -1;
         var height = -1;
@@ -259,8 +268,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         });
 
-        if (width > 0 && width > internal(this).width) internal(this).width = width;
-        if (height > 0 && height > internal(this).height) internal(this).height = height;
+        if (width > 0 && width > privates.width) privates.width = width;
+        if (height > 0 && height > privates.height) privates.height = height;
         this.generate();
       }
     }, {
@@ -268,6 +277,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function generate() {
         var _this = this;
 
+        var privates = internal(this);
         var svg = "<?xml version=\"1.0\"?>\n<svg width=\"" + this._width + "\" height=\"" + this._height + "\" " + ("style=\"width: " + this._width + "px; height: " + this._height + "px;\" ") + "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
 
         var _iteratorNormalCompletion = true;
@@ -275,7 +285,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = internal(this).children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          for (var _iterator = privates.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var child = _step.value;
 
             svg += "  " + child + "\n";
@@ -303,9 +313,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         image.src = url;
 
         var Done = function Done() {
-          internal(_this).image = image;
-          internal(_this).width = image.width;
-          internal(_this).height = image.height;
+          privates.image = image;
+          privates.width = image.width;
+          privates.height = image.height;
           // window.URL.revokeObjectURL(url);
           _this.emit("change");
         };
@@ -319,7 +329,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw(renderer) {
-        var image = internal(this).image;
+        var privates = internal(this);
+        var image = privates.image;
         if (image instanceof Image && image.width > 0 && image.height > 0) {
           this.drawImage(renderer, image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
         }
@@ -327,19 +338,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        return internal(this).width;
+        var privates = internal(this);
+        return privates.width;
       },
       set: function set(value) {
-        internal(this).width = value;
+        var privates = internal(this);
+        privates.width = value;
         this.generate();
       }
     }, {
       key: "height",
       get: function get() {
-        return internal(this).height;
+        var privates = internal(this);
+        return privates.height;
       },
       set: function set(value) {
-        internal(this).height = value;
+        var privates = internal(this);
+        privates.height = value;
         this.generate();
       }
     }]);

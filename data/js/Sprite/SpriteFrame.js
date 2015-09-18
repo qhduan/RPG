@@ -42,18 +42,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
    */
-  Sprite.register("Frame", (function (_Sprite$Display) {
+  Sprite.assign("Frame", (function (_Sprite$Display) {
     _inherits(SpriteFrame, _Sprite$Display);
 
     function SpriteFrame(image, sx, sy, width, height) {
       _classCallCheck(this, SpriteFrame);
 
       _get(Object.getPrototypeOf(SpriteFrame.prototype), "constructor", this).call(this);
-      internal(this).image = image;
-      internal(this).sx = sx;
-      internal(this).sy = sy;
-      internal(this).width = width;
-      internal(this).height = height;
+      var privates = internal(this);
+      privates.image = image;
+      privates.sx = sx;
+      privates.sy = sy;
+      privates.width = width;
+      privates.height = height;
     }
 
     /**
@@ -70,6 +71,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var frame = new Sprite.Frame(this.image, this.sx, this.sy, this.width, this.height);
         frame.x = this.x;
         frame.y = this.y;
+        frame.parent = this.parent;
         return frame;
       }
 
@@ -84,7 +86,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "image",
       get: function get() {
-        return internal(this).image;
+        var privates = internal(this);
+        return privates.image;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.image readonly");
@@ -96,7 +99,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "sx",
       get: function get() {
-        return internal(this).sx;
+        var privates = internal(this);
+        return privates.sx;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.sx readonly");
@@ -108,7 +112,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "sy",
       get: function get() {
-        return internal(this).sy;
+        var privates = internal(this);
+        return privates.sy;
       },
       set: function set(value) {
         throw new Error("Sprite.Frame.sy readonly");
@@ -120,7 +125,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        return internal(this).width;
+        var privates = internal(this);
+        return privates.width;
       },
       set: function set(value) {
         console.error(value, this);
@@ -133,7 +139,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "height",
       get: function get() {
-        return internal(this).height;
+        var privates = internal(this);
+        return privates.height;
       },
       set: function set(value) {
         console.error(value, this);

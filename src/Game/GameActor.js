@@ -28,11 +28,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.register("Actor", class Actor extends Sprite.Event {
+  Game.assign("Actor", class Actor extends Sprite.Event {
     constructor (actorData) {
       super();
+      let privates = internal(this);
 
-      internal(this).data = actorData;
+      privates.data = actorData;
 
       this.makeInfoBox();
 
@@ -53,6 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     init (images) {
+      let privates = internal(this);
 
       images.forEach(function (image) {
         if (
@@ -81,11 +83,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       sprite.play("facedown");
-      internal(this).sprite = sprite;
+      privates.sprite = sprite;
 
       sprite.on("change", () => {
-        internal(this).infoBox.x = sprite.x;
-        internal(this).infoBox.y = sprite.y - sprite.centerY - 20
+        privates.infoBox.x = sprite.x;
+        privates.infoBox.y = sprite.y - sprite.centerY - 20
       });
 
       let completeCount = -1;
@@ -141,7 +143,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get data () {
-      return internal(this).data;
+      let privates = internal(this);
+      return privates.data;
     }
 
     set data (value) {
@@ -149,7 +152,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get id () {
-      return internal(this).data.id;
+      let privates = internal(this);
+      return privates.data.id;
     }
 
     set id (value) {
@@ -157,7 +161,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get sprite () {
-      return internal(this).sprite;
+      let privates = internal(this);
+      return privates.sprite;
     }
 
     set sprite (value) {
@@ -165,6 +170,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     makeInfoBox () {
+      let privates = internal(this);
       // 名字
       let text = new Sprite.Text({
         text: this.data.name,
@@ -178,14 +184,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       text.y = 0;
 
       // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
-      internal(this).infoBox = new Sprite.Container();
+      privates.infoBox = new Sprite.Container();
 
-      if (this.data.type == "npc") {
-        text.y += 10;
-        internal(this).infoBox.appendChild(text);
-      } else if (this.data.type == "hero") {
-        // do nothing
-      } else {
+      if (this.data.type != "hero") {
         // 血条外面的黑框
         let hpbarBox = new Sprite.Shape();
         hpbarBox.centerX = 15;
@@ -217,25 +218,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
 
         // 生命条
-        internal(this).hpbar = new Sprite.Shape();
-        internal(this).hpbar.centerX = 15;
-        internal(this).hpbar.centerY = 2;
-        internal(this).hpbar.x = 0;
-        internal(this).hpbar.y = 9;
+        privates.hpbar = new Sprite.Shape();
+        privates.hpbar.centerX = 15;
+        privates.hpbar.centerY = 2;
+        privates.hpbar.x = 0;
+        privates.hpbar.y = 9;
 
         // 精力条
-        internal(this).mpbar = new Sprite.Shape();
-        internal(this).mpbar.centerX = 15;
-        internal(this).mpbar.centerY = 2;
-        internal(this).mpbar.x = 0;
-        internal(this).mpbar.y = 12;
+        privates.mpbar = new Sprite.Shape();
+        privates.mpbar.centerX = 15;
+        privates.mpbar.centerY = 2;
+        privates.mpbar.x = 0;
+        privates.mpbar.y = 12;
 
-        internal(this).infoBox.appendChild(
+        privates.infoBox.appendChild(
           text,
           hpbarBox,
           mpbarBox,
-          internal(this).hpbar,
-          internal(this).mpbar
+          privates.hpbar,
+          privates.mpbar
         );
       }
     }
@@ -315,8 +316,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set alpha (value) {
       if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
-        internal(this).sprite.alpha = value;
-        internal(this).infoBox.alpha = value;
+        this.sprite.alpha = value;
+        this.infoBox.alpha = value;
       } else {
         console.error(value, this);
         throw new Error("Game.Actor.alpha got invalid value");
@@ -379,21 +380,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     refreshBar () {
-      if (Game.hero && this == Game.hero) {
-        Game.windows.interface.status(
-          this.data.hp / this.data.$hp, // 生命百分比
-          this.data.sp / this.data.$sp // 精神力百分比
-        );
-      }
+      let privates = internal(this);
 
-      if (internal(this).hpbar && internal(this).mpbar) {
+      if (privates.hpbar && privates.mpbar) {
         let hpcolor = "green";
         if ((this.data.hp / this.data.$hp) < 0.25)
           hpcolor = "red";
         else if ((this.data.hp / this.data.$hp) < 0.5)
           hpcolor = "yellow";
 
-        internal(this).hpbar.clear().rect({
+        privates.hpbar.clear().rect({
           x: 1,
           y: 1,
           width: Math.floor((this.data.hp / this.data.$hp) * 28),
@@ -402,58 +398,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           "stroke-width": 0
         });
 
-        internal(this).mpbar.clear().rect({
+        privates.mpbar.clear().rect({
           x: 1,
           y: 1,
           width: Math.floor((this.data.sp / this.data.$sp) * 28),
           height: 2,
           fill: "blue",
           "stroke-width": 0
-        });
-      }
-    }
-
-    heroUse () {
-      if (this.data.contact) {
-
-        let options = {};
-
-        if (this.data.contact) {
-          Sprite.each(this.data.contact, (talk, key) => {
-            let h = Game.hero;
-            let d = Game.hero.data;
-            let result = null;
-            try {
-              result = eval(talk.condition)
-            } catch (e) {
-              console.error(talk.condition);
-              console.error(e);
-              throw new Error("talk.condition eval error");
-            }
-            if (result) {
-              options[key] = key;
-            }
-          });
-        }
-
-        if (this.data.trade) {
-          options["买入"] = "buy";
-          options["卖出"] = "sell";
-        }
-
-        Game.choice(options, (choice) => {
-          switch (choice) {
-            case "buy":
-              Game.windows.buy.open(this.data.trade);
-              break;
-            case "sell":
-              Game.windows.sell.open(this.data.trade);
-              break;
-            default:
-              if (this.data.contact[choice]) {
-                Game.dialogue(this.data.contact[choice].content, this.data.name);
-              }
-          }
         });
       }
     }
@@ -493,6 +444,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (this.data.type == "hero") {
 
         } else {
+
+          this.erase();
+          Game.area.actors.delete(this);
+
+          if (!this.data.items || Object.keys(this.data.items).length <= 0) {
+            this.data.items = {
+              gold: 1
+            };
+          }
+
           let bag = null;
           for (let b of Game.area.bags) {
             if (b.hitTest(this.x, this.y)) {
@@ -504,17 +465,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             bag.on("complete", () => {
               bag.x = this.x;
               bag.y = this.y;
+              bag.inner = {};
               bag.draw();
               Game.area.bags.add(bag);
             });
           }
 
-          bag.inner = {
-            "gold": 1
-          };
+          for (let key in this.data.items) {
+            if (bag.inner.hasOwnProperty(key)) {
+              bag.inner[key] += this.data.items[key];
+            } else {
+              bag.inner[key] = this.data.items[key];
+            }
+          }
 
-          this.remove();
-          Game.area.actors.delete(this);
         }
       }
     }
@@ -531,30 +495,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     damage (attacker, skill) {
 
       this.emit("damaged");
-
-      if (this == Game.hero) {
-        // 如果英雄受到了伤害
-        let touchActor = [];
-        for (let actor of Game.area.actors) {
-          // 找到所有邻接英雄的怪物
-          if (actor != this && actor.data.type == "monster" && actor.distance(this) < 1.01) {
-            touchActor.push(actor);
-          }
-        }
-        if (touchActor.length) {
-          let faceAttacker = false;
-          let facePosition = this.facePosition;
-          touchActor.forEach(function (actor) {
-            if (actor.hitTest(facePosition.x, facePosition.y)) {
-              faceAttacker = true;
-            }
-          });
-          // 如果英雄现在没面对任何一个邻接的怪物，面向它
-          if (faceAttacker == false) {
-            this.goto(touchActor[0].x, touchActor[0].y);
-          }
-        }
-      }
 
       let power = skill.power;
       let type = skill.type;
@@ -705,6 +645,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (hitted.length > 0) {
             hitted[0].damage(this, skill);
           }
+          this.emit("change");
         });
 
         return skill.data.cooldown;
@@ -934,7 +875,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     go (state, direction, callback = null) {
 
       // 如果正在战斗动画，则不走
-      if (this.sprite.paused == false && this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)) {
+      if (
+        this.sprite.paused == false &&
+        this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)
+      ) {
         return false;
       }
 
@@ -1037,13 +981,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     /** 在Game.actorLayer上删除人物 */
-    remove () {
+    erase () {
+      let privates = internal(this);
       Game.layers.actorLayer.removeChild(this.sprite);
-      Game.layers.actorLayer.removeChild(internal(this).infoBox);
+      Game.layers.actorLayer.removeChild(privates.infoBox);
     }
 
     /** 在Game.actorLayer上显示人物 */
     draw () {
+      let privates = internal(this);
       if (Number.isInteger(this.x) && Number.isInteger(this.y)) {
         this.x = this.data.x;
         this.y = this.data.y;
@@ -1052,7 +998,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
         Game.layers.actorLayer.appendChild(this.sprite);
-        Game.layers.actorLayer.appendChild(internal(this).infoBox);
+        Game.layers.actorLayer.appendChild(privates.infoBox);
       } else {
         console.error(this.data.x, this.data.y, this.data);
         throw new Error("Game.Actor.draw invalid data.x/data.y");
@@ -1061,8 +1007,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /** 镜头集中 */
     focus () {
-      internal(this).infoBox.x = this.sprite.x;
-      internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
+      let privates = internal(this);
+      privates.infoBox.x = this.sprite.x;
+      privates.infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
       Game.stage.centerX = Math.round(this.sprite.x - Game.config.width / 2);
       Game.stage.centerY = Math.round(this.sprite.y - Game.config.height / 2);

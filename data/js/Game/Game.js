@@ -47,8 +47,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(GameCore, [{
-      key: "register",
-      value: function register(name, object) {
+      key: "assign",
+      value: function assign(name, object) {
         Object.defineProperty(this, name, {
           enumerable: false,
           configurable: false,
@@ -77,6 +77,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "clearStage",
       value: function clearStage() {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = Game.area.actors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var actor = _step.value;
+
+            actor.erase();
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = Game.area.bags[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var bag = _step2.value;
+
+            bag.erase();
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+
         for (var i = 0; i < Game.stage.children.length; i++) {
           this.stage.children[i].clear();
         }
@@ -185,8 +235,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   document.body.onload = function () {
     Game.init();
     Game.initInput();
-    Game.AI.start();
     Game.windows.main.show();
   };
 })();
-//# sourceMappingURL=Game.js.map

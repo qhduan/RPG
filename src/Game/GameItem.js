@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let internal = Sprite.Namespace();
 
-  Game.Item = class GameItem extends Sprite.Event {
+  Game.assign("Item", class GameItem extends Sprite.Event {
 
     static load (id, callback) {
       Sprite.Loader.create()
@@ -31,6 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         .start()
         .on("complete", (event) => {
         let itemData = event.data[0];
+        itemData.id = id;
         let itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
         itemObj.on("complete", () => {
@@ -181,9 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.inner) {
         Game.windows.pickup.open(this);
       }
-    }
 
-    use (actor) {
       if (this.data.type == "potion") {
         for (let attribute in this.data.potion) {
           let effect = this.data.potion[attribute];
@@ -194,7 +193,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
           }
         }
-      }
+      } // potion
+
+      if (this.data.type == "book") {
+        Game.dialogue(this.data.read, `《${this.data.name}》`);
+      } // book
     }
 
     clone (callback) {
@@ -217,7 +220,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.layers.itemLayer.appendChild(internal(this).bitmap);
     }
 
-  };
+  });
 
 
 })();

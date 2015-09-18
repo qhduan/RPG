@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Display
    */
-  Sprite.register("Sheet", class SpriteSheet extends Sprite.Display {
+  Sprite.assign("Sheet", class SpriteSheet extends Sprite.Display {
     /**
      * construct Sprite.Sheet
      * @param config
@@ -41,6 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor (config) {
       super();
+      let privates = internal(this);
 
       if (
           !config.images || !config.images.length ||
@@ -56,66 +57,66 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        @type {Array}
        @private
        */
-      internal(this).images = config.images;
+      privates.images = config.images;
       /**
        * Width of each frame
        @type {number}
        @private
        */
-      internal(this).tilewidth = config.width;
+      privates.tilewidth = config.width;
       /**
        * Height of each frame
        @type {number}
        @private
        */
-      internal(this).tileheight = config.height;
+      privates.tileheight = config.height;
       /**
        * Animations of this sprite sheet, eg. { "walkdown": [0, 2, "", 40], "walkup", [3, 5, "", 40] }
        @type {Object}
        @private
        */
-      internal(this).animations = config.animations || {};
+      privates.animations = config.animations || {};
       /**
        * Current animation's name, eg. "walkdown", "attackright"
        @type {string}
        @private
        */
-      internal(this).currentAnimation = null;
+      privates.currentAnimation = null;
       /**
        * Current frame number, eg. 0, 1, 2, 3
        @type {number}
        @private
        */
-      internal(this).currentFrame = 0;
+      privates.currentFrame = 0;
       /**
        * If animationTimer is not null, it points an animation is running
        * it will be null or an handler from setInterval
        @type {Object}
        @private
        */
-      internal(this).animationTimer = null;
+      privates.animationTimer = null;
       /**
        * Contain frames cache
        @type {Array}
        @private
        */
-      internal(this).frames = [];
+      privates.frames = [];
 
-      for (let image of internal(this).images) {
+      for (let image of privates.images) {
         if (image && image.width && image.height) {
-          let col = Math.floor(image.width / internal(this).tilewidth);
-          let row = Math.floor(image.height / internal(this).tileheight);
+          let col = Math.floor(image.width / privates.tilewidth);
+          let row = Math.floor(image.height / privates.tileheight);
           for (let j = 0; j < row; j++) {
             for (let i = 0; i < col; i++) {
-              internal(this).frames.push({
+              privates.frames.push({
                 image: image,
-                x: i * internal(this).tilewidth,
-                y: j * internal(this).tileheight
+                x: i * privates.tilewidth,
+                y: j * privates.tileheight
               });
             }
           }
         } else {
-          console.error(image, internal(this).images, this);
+          console.error(image, privates.images, this);
           throw new Error("Sprite.Sheet got an invalid image");
         }
       }
@@ -125,10 +126,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        @type {number}
        @private
        */
-      internal(this).frameCount = internal(this).frames.length;
+      privates.frameCount = privates.frames.length;
 
-      if (internal(this).frameCount <= 0) {
-        console.error(internal(this).frames, this);
+      if (privates.frameCount <= 0) {
+        console.error(privates.frames, this);
         throw new Error("Sprite.Sheet got invalid frameCount, something wrong");
       }
     }
@@ -137,24 +138,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Object} Return an copy of this
      */
     clone () {
+      let privates = internal(this);
       let sheet = new Sprite.Sheet({
-        images: internal(this).images,
-        width: internal(this).tilewidth,
-        height: internal(this).tileheight,
-        animations: internal(this).animations
+        images: privates.images,
+        width: privates.tilewidth,
+        height: privates.tileheight,
+        animations: privates.animations
       });
       sheet.x = this.x;
       sheet.y = this.y;
       sheet.centerX = this.centerX;
       sheet.centerY = this.centerY;
       sheet.play(this.currentFrame);
+      sheet.alpha = this.alpha;
+      sheet.visible = this.visible;
       return sheet;
     }
     /**
      * @return {boolean} Return false if an animation is running
      */
     get paused () {
-      if (internal(this).animationTimer) {
+      let privates = internal(this);
+      if (privates.animationTimer) {
         return false;
       }
       return true;
@@ -168,7 +173,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return current frame number
      */
     get currentFrame () {
-      return internal(this).currentFrame;
+      let privates = internal(this);
+      return privates.currentFrame;
     }
 
     set currentFrame (value) {
@@ -179,7 +185,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {string} Return
      */
     get currentAnimation () {
-      return internal(this).currentAnimation;
+      let privates = internal(this);
+      return privates.currentAnimation;
     }
 
     set currentAnimation (value) {
@@ -191,27 +198,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} choice frame number of animation name, eg. 0 for frame or "walkdown" for animation
      */
     play (choice) {
-      if (internal(this).animationTimer) {
-        clearInterval(internal(this).animationTimer);
-        internal(this).animationTimer = null;
+      let privates = internal(this);
+      if (privates.animationTimer) {
+        clearInterval(privates.animationTimer);
+        privates.animationTimer = null;
       }
 
-      if (typeof choice == "number") {
+      if (Number.isInteger(choice)) {
         // Argument points a frame
-        internal(this).currentFrame = choice;
+        privates.currentFrame = choice;
         this.emit("change");
       } else if (typeof choice == "string") {
         // Argument points an animation name
-        let animation = internal(this).animations[choice];
+        let animation = privates.animations[choice];
 
         if (!animation) { // if animation is not exist
-          console.error(animation, internal(this).animations, choice);
+          console.error(animation, privates.animations, choice);
           throw new Error("Sprite.Sheet.play invalid animation");
         }
 
         // if animation is single frame number
         if (typeof animation == "number") {
-          internal(this).currentAnimation = choice;
+          privates.currentAnimation = choice;
           return this.play(animation);
         }
 
@@ -239,8 +247,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if ( // Data ensure
-          typeof begin != "number" || begin < 0 || begin >= internal(this).frameCount ||
-          typeof end != "number" || end < 0 || end >= internal(this).frameCount ||
+          typeof begin != "number" || begin < 0 || begin >= privates.frameCount ||
+          typeof end != "number" || end < 0 || end >= privates.frameCount ||
           typeof time != "number" || time <= 0
         ) {
           console.error(begin, end, time, this);
@@ -248,22 +256,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         // Play first frame in animation
-        internal(this).currentAnimation = choice;
-        internal(this).currentFrame = begin;
+        privates.currentAnimation = choice;
+        privates.currentFrame = begin;
         this.emit("change");
 
         // Play other frame in animation
-        internal(this).animationTimer = setInterval(() => {
-          internal(this).currentFrame++;
+        privates.animationTimer = setInterval(() => {
+          privates.currentFrame++;
 
-          if (internal(this).currentFrame > end) {
-            clearInterval(internal(this).animationTimer);
-            internal(this).animationTimer = null;
+          if (privates.currentFrame > end) {
+            clearInterval(privates.animationTimer);
+            privates.animationTimer = null;
 
-            if (next && next.length && internal(this).animations[next]) {
+            if (next && next.length && privates.animations[next]) {
               this.play(next);
             } else {
-              internal(this).currentFrame--;
+              privates.currentFrame--;
             }
             this.emit("animationend");
           }
@@ -283,20 +291,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Object} An Sprite.Frame object
      */
     getFrame (index) {
+      let privates = internal(this);
       if (!Number.isInteger(index)) {
-        index = internal(this).currentFrame;
+        index = privates.currentFrame;
       }
-      if (index < 0 || index >= internal(this).frameCount) {
+      if (index < 0 || index >= privates.frameCount) {
         console.error(index, this);
         throw new Error("Sprite.Sheet.getFrame invalid index")
       }
-      let frame = internal(this).frames[index];
+      let frame = privates.frames[index];
       let frameObj = new Sprite.Frame(
         frame.image,
         frame.x,
         frame.y,
-        internal(this).tilewidth,
-        internal(this).tileheight
+        privates.tilewidth,
+        privates.tileheight
       );
       frameObj.parent = this;
       return frameObj;
@@ -307,6 +316,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} renderer A renderer engine, eg. Sprite.Webgl
      */
     draw (renderer) {
+      let privates = internal(this);
       let frame = this.getFrame(this.currentFrame);
 
       if (!frame || !frame.image) {

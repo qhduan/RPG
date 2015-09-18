@@ -8,17 +8,17 @@
   "actors":
   [
     {
-      "id": "batPurple",
+      "id": "bat.purple",
       "x": 11,
       "y": 9,
       "mode": "patrol"
     }, {
-      "id": "batPurple",
+      "id": "bat.purple",
       "x": 20,
       "y": 13,
       "mode": "patrol"
     }, {
-      "id": "robberGreen",
+      "id": "robber.green",
       "x": 26,
       "y": 25,
       "mode": "patrol"
