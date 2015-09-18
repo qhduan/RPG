@@ -1,0 +1,49 @@
+{
+  "id": "fist01",
+  "name": "拳攻击Level1",
+  "description": "拳攻击Level1",
+  "image": "resource\/fist.png",
+  "icon": "resource\/fist_icon.png",
+  "sound": "resource\/fist.ogg",
+  "cost": 1,
+  "distance": 0,
+  "cooldown": 250,
+  "type": "normal",
+  "power": "1d3",
+  "tileheight": 64,
+  "tilewidth": 64,
+  "animations": {
+    "attackdown": {
+      "frames": [0, 1, 2],
+      "speed": 20,
+      "next": "",
+      "centerX": 0,
+      "centerY": 65,
+      "actor": "meleedown"
+    },
+    "attackleft": {
+      "frames": [3, 4, 5],
+      "speed": 20,
+      "next": "",
+      "centerX": 15,
+      "centerY": 55,
+      "actor": "meleeleft"
+    },
+    "attackright": {
+      "frames": [6, 7, 8],
+      "speed": 20,
+      "next": "",
+      "centerX": 50,
+      "centerY": 55,
+      "actor": "meleeright"
+    },
+    "attackup": {
+      "frames": [9, 10, 11],
+      "speed": 20,
+      "next": "",
+      "centerX": 0,
+      "centerY": 30,
+      "actor": "meleeup"
+    }
+  }
+}

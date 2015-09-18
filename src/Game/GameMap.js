@@ -21,7 +21,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-
   Game.Map = class GameMap extends Sprite.Event {
 
     hitTest (x, y) {
@@ -38,13 +37,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
+    hitAutoHide (x, y) {
+      if (this.autoHideMap[y] && this.autoHideMap[y][x]) {
+        return this.autoHideMap[y][x];
+      }
+      return null;
+    }
+
     constructor (mapData) {
       super();
+
 
       this.data = mapData;
       this.id = this.data.id;
 
-      var imageUrls = [];
+      let imageUrls = [];
       this.data.tilesets.forEach((element) => {
         imageUrls.push(`/map/${element.image}`);
       });
@@ -62,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         this.waterMap = [];
         this.waterMap.length = this.data.height;
-        for(var i = 0; i < this.waterMap.length; i++) {
+        for(let i = 0; i < this.waterMap.length; i++) {
           this.waterMap[i] = [];
           this.waterMap[i].length = this.data.width;
         }
@@ -70,20 +77,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
         this.blockedMap = [];
         this.blockedMap.length = this.data.height;
-        for(var i = 0; i < this.blockedMap.length; i++) {
+        for(let i = 0; i < this.blockedMap.length; i++) {
           this.blockedMap[i] = [];
           this.blockedMap[i].length = this.data.width;
+        }
+
+        this.autoHideMap = [];
+        this.autoHideMap.length = this.data.height;
+        for(let i = 0; i < this.autoHideMap.length; i++) {
+          this.autoHideMap[i] = [];
+          this.autoHideMap[i].length = this.data.width;
         }
 
         // 保存这个地图的所有地图块
         this.layers = [];
 
         this.data.layers.forEach((element, index, array) => {
-          var layer = element;
+          let layer = element;
 
           if (layer.name == "block") {
             // 阻挡层，有东西则表示阻挡
-            if (layer.data) {
+            if (layer.hasOwnProperty("data")) {
               for (let y = 0; y < layer.height; y++) {
                 for (let x = 0; x < layer.width; x++) {
                   let position = x + y * layer.width;
@@ -99,7 +113,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
           } else if (layer.name == "water") {
             // 水层，用来钓鱼
-            if (layer.data) {
+            if (layer.hasOwnProperty("data")) {
               for (let y = 0; y < layer.height; y++) {
                 for (let x = 0; x < layer.width; x++) {
                   let position = x + y * layer.width;
@@ -119,7 +133,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             this.layers.push(layerObj);
 
-            if (layer.data) { // 渲染普通层
+            if (layer.hasOwnProperty("data")) { // 渲染普通层
               for (let y = 0; y < layer.height; y++) {
                 for (let x = 0; x < layer.width; x++) {
                   let position = x + y * layer.width;
@@ -129,12 +143,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     frame.x = x * this.data.tilewidth;
                     frame.y = y * this.data.tileheight;
 
-                    if (this.blockedMap[y][x] != true) {
-                      if (layer.properties && layer.properties.blocked) {
-                        this.blockedMap[y][x] = true;
-                      } else {
-                        this.blockedMap[y][x] = null;
-                      }
+                    if (layer.hasOwnProperty("properties") && layer.properties.hasOwnProperty("autohide")) {
+                      this.autoHideMap[y][x] = layer.properties.autohide;
                     }
 
                     layerObj.appendChild(frame);
@@ -151,11 +161,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         this.width = this.data.width * this.data.tilewidth;
         this.height = this.data.height * this.data.tileheight;
-
-        // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
-        // 这个cache会创建一个看不到的canvas
-        // this.container.cache(0, 0, this.width, this.height);
-        // this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
@@ -182,32 +187,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // 绘制图片，会改变Game.currentArea
-    draw (layer) {
-      layer.clear();
+    draw () {
+      Game.layers.mapLayer.clear();
 
       this.layers.forEach((element, index) => {
-        var layerData = this.data.layers[index];
+        let layerData = this.data.layers[index];
 
+        //console.time("cache " + layerData.name);
         element.cache(0, 0, this.width, this.height);
+        //console.timeEnd("cache " + layerData.name);
+
         if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
           element.visible = false;
         }
         if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
           element.alpha = layerData.opacity;
         }
-        layer.appendChild(element);
+
+        Game.layers.mapLayer.appendChild(element);
       });
 
-      layer.cache(0, 0, this.width, this.height);
-      this.minimap = layer.cacheCanvas;
-      layer.clearCache();
+      //Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+      //this.minimap = Game.layers.mapLayer.cacheCanvas;
+      //Game.layers.mapLayer.clearCache();
 
       if (this.data.bgm) {
         // set loop = -1, 无限循环
-        //var bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
+        //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
         //bgm.setVolume(0.2);
       }
     }
   };
+
 
 })();

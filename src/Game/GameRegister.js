@@ -23,10 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.register = {};
 
-
-
   // 英雄组件数据
-  var heroCustom = {
+  let heroCustom = {
     sex: "male",
     body: "light",
     eyes: "blue",
@@ -58,8 +56,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function Init () {
 
     window.SelectHero = function (event) {
-      var value = event.target.value;
-      var type = event.target.getAttribute("data-type");
+      let value = event.target.value;
+      let type = event.target.getAttribute("data-type");
       if (heroCustom[type] != value) {
         if (type == "sex") {
           heroCustom.hair = "";
@@ -80,8 +78,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     function DisplayHero () {
 
-      var canvas = document.getElementById("registerPreview");
-      var context = canvas.getContext("2d");
+      let canvas = document.getElementById("registerPreview");
+      let context = canvas.getContext("2d");
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       document.getElementById("loading").innerHTML = "正在载入预览";
@@ -106,7 +104,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   Game.register.submit = function () {
-    var name = document.getElementById("registerHeroName").value;
+    let name = document.getElementById("registerHeroName").value;
 
     if (name.trim().length <= 0) {
       alert("Invalid Name");
@@ -133,7 +131,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   // 含有$开头的代表是基础值
   // 不含$的同名属性是计算后值，即经过各种加成，buff，nerf之后的值
-  var HeroDefault = {
+  let HeroDefault = {
     "level": 1, // 等级
     "exp": 0, // 经验值
     // 337年6月4日 9时25分
@@ -190,6 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 能力
     "skills": [
+      "fist01",
       "sword01", // 剑攻击Level1
       "spear01", // 枪攻击Level1
       "bow01", // 弓攻击Level1

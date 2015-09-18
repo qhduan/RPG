@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -143,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class for fetch resources
    * @class
    */
-  Sprite.Loader = class SpriteLoader extends Sprite.Event {
+  Sprite.register("Loader", class SpriteLoader extends Sprite.Event {
 
     /**
      * Create a Sprite.Loader object
@@ -224,6 +224,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return this;
     }
 
-  }
+  });
 
-})(Sprite);
+
+})();

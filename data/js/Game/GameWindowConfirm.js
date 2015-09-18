@@ -25,29 +25,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.Window.create("confirm");
 
-  win.html = "\n    <div style=\"width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);\">\n      <table>\n        <tr><td><span id=\"confirmWindowMessage\"></span></td></tr>\n        <tr><td>\n          <button id=\"confirmWindowYes\">确定</button>\n          <button id=\"confirmWindowNo\">取消</button>\n        </td></tr>\n      </table>\n    </div>\n  ";
+  win.html = "\n  <div class=\"window-box\">\n    <div style=\"width: 100%; height: 100%;\">\n      <table>\n        <tr><td><span id=\"confirmWindowMessage\"></span></td></tr>\n        <tr><td>\n          <button id=\"confirmWindowYes\" class=\"brownButton\">确定</button>\n          <button id=\"confirmWindowNo\" class=\"brownButton\">取消</button>\n        </td></tr>\n      </table>\n    </div>\n  </div>\n  ";
 
-  win.css = "\n    #confirmWindow {\n      text-align: center;\n    }\n\n    #confirmWindow table {\n      width: 100%;\n      height: 100%;\n    }\n\n    #confirmWindow span {\n      font-size: 16px;\n    }\n\n    #confirmWindow button {\n      width: 100px;\n      height: 60px;\n      font-size: 16px;\n      margin: 20px;\n    }\n  ";
+  win.css = "\n    #confirmWindow {\n      text-align: center;\n    }\n\n    #confirmWindow table {\n      width: 100%;\n      height: 100%;\n    }\n\n    #confirmWindow span {\n      font-size: 16px;\n    }\n\n    #confirmWindow button {\n      width: 100px;\n      height: 60px;\n      font-size: 16px;\n      margin: 20px;\n    }\n\n    #confirmWindowMessage {\n      color: black;\n      font-size: 20px;\n    }\n  ";
+
+  var confirmWindowMessage = document.querySelector("#confirmWindowMessage");
+  var confirmWindowYes = document.querySelector("button#confirmWindowYes");
+  var confirmWindowNo = document.querySelector("button#confirmWindowNo");
 
   var confirmHandle = null;
 
   Game.confirm = function (message, callback) {
-    document.getElementById("confirmWindowMessage").textContent = message;
+    if (typeof callback != "function") {
+      console.error(callback, message);
+      throw new Error("Game.onfirm got invalid callback");
+    }
+    confirmWindowMessage.textContent = message;
     confirmHandle = callback;
-    Game.windows.confirm.show();
+    win.show();
   };
 
-  document.querySelector("button#confirmWindowYes").addEventListener("click", function () {
-    Game.windows.confirm.hide();
-    if (typeof confirmHandle == "function") {
-      confirmHandle(true);
-    }
+  win.whenUp(["y", "Y"], function () {
+    confirmWindowYes.click();
   });
 
-  document.querySelector("button#confirmWindowNo").addEventListener("click", function () {
-    Game.windows.confirm.hide();
-    if (typeof confirmHandle == "function") {
-      confirmHandle(false);
-    }
+  win.whenUp(["n", "N"], function () {
+    confirmWindowNo.click();
+  });
+
+  confirmWindowYes.addEventListener("click", function () {
+    win.hide();
+    confirmHandle(true);
+  });
+
+  confirmWindowNo.addEventListener("click", function () {
+    win.hide();
+    confirmHandle(false);
   });
 })();
+//# sourceMappingURL=GameWindowConfirm.js.map

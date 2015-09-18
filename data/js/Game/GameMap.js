@@ -50,6 +50,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
         return false;
       }
+    }, {
+      key: "hitAutoHide",
+      value: function hitAutoHide(x, y) {
+        if (this.autoHideMap[y] && this.autoHideMap[y][x]) {
+          return this.autoHideMap[y][x];
+        }
+        return null;
+      }
     }]);
 
     function GameMap(mapData) {
@@ -90,6 +98,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           _this.blockedMap[i].length = _this.data.width;
         }
 
+        _this.autoHideMap = [];
+        _this.autoHideMap.length = _this.data.height;
+        for (var i = 0; i < _this.autoHideMap.length; i++) {
+          _this.autoHideMap[i] = [];
+          _this.autoHideMap[i].length = _this.data.width;
+        }
+
         // 保存这个地图的所有地图块
         _this.layers = [];
 
@@ -98,7 +113,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           if (layer.name == "block") {
             // 阻挡层，有东西则表示阻挡
-            if (layer.data) {
+            if (layer.hasOwnProperty("data")) {
               for (var y = 0; y < layer.height; y++) {
                 for (var x = 0; x < layer.width; x++) {
                   var position = x + y * layer.width;
@@ -114,7 +129,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           } else if (layer.name == "water") {
             // 水层，用来钓鱼
-            if (layer.data) {
+            if (layer.hasOwnProperty("data")) {
               for (var y = 0; y < layer.height; y++) {
                 for (var x = 0; x < layer.width; x++) {
                   var position = x + y * layer.width;
@@ -134,7 +149,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
             _this.layers.push(layerObj);
 
-            if (layer.data) {
+            if (layer.hasOwnProperty("data")) {
               // 渲染普通层
               for (var y = 0; y < layer.height; y++) {
                 for (var x = 0; x < layer.width; x++) {
@@ -145,12 +160,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                     frame.x = x * _this.data.tilewidth;
                     frame.y = y * _this.data.tileheight;
 
-                    if (_this.blockedMap[y][x] != true) {
-                      if (layer.properties && layer.properties.blocked) {
-                        _this.blockedMap[y][x] = true;
-                      } else {
-                        _this.blockedMap[y][x] = null;
-                      }
+                    if (layer.hasOwnProperty("properties") && layer.properties.hasOwnProperty("autohide")) {
+                      _this.autoHideMap[y][x] = layer.properties.autohide;
                     }
 
                     layerObj.appendChild(frame);
@@ -166,11 +177,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         _this.width = _this.data.width * _this.data.tilewidth;
         _this.height = _this.data.height * _this.data.tileheight;
-
-        // 创建一个cache，地图很大可能会很大，所以以后可能还要想别的办法
-        // 这个cache会创建一个看不到的canvas
-        // this.container.cache(0, 0, this.width, this.height);
-        // this.minimap = this.container.cacheCanvas;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -201,31 +207,35 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       // 绘制图片，会改变Game.currentArea
     }, {
       key: "draw",
-      value: function draw(layer) {
+      value: function draw() {
         var _this2 = this;
 
-        layer.clear();
+        Game.layers.mapLayer.clear();
 
         this.layers.forEach(function (element, index) {
           var layerData = _this2.data.layers[index];
 
+          //console.time("cache " + layerData.name);
           element.cache(0, 0, _this2.width, _this2.height);
+          //console.timeEnd("cache " + layerData.name);
+
           if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
             element.visible = false;
           }
           if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
             element.alpha = layerData.opacity;
           }
-          layer.appendChild(element);
+
+          Game.layers.mapLayer.appendChild(element);
         });
 
-        layer.cache(0, 0, this.width, this.height);
-        this.minimap = layer.cacheCanvas;
-        layer.clearCache();
+        //Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+        //this.minimap = Game.layers.mapLayer.cacheCanvas;
+        //Game.layers.mapLayer.clearCache();
 
         if (this.data.bgm) {
           // set loop = -1, 无限循环
-          //var bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
+          //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
           //bgm.setVolume(0.2);
         }
       }

@@ -31,6 +31,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
+  var internal = Sprite.Namespace();
+
   Game.Item = (function (_Sprite$Event) {
     _inherits(GameItem, _Sprite$Event);
 
@@ -57,9 +59,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       _get(Object.getPrototypeOf(GameItem.prototype), "constructor", this).call(this);
 
-      this.data = itemData;
-      this.id = this.data.id;
-      this.inner = null;
+      internal(this).data = itemData;
+      internal(this).inner = null;
 
       if (!this.data.x || !this.data.y) {
         this.data.x = 0;
@@ -69,21 +70,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       Sprite.Loader.create().add("/item/" + this.data.image).start().on("complete", function (event) {
         var image = event.data[0];
 
-        _this.icon = image;
+        internal(_this).icon = image;
 
-        _this.bitmap = new Sprite.Bitmap(image);
-        _this.bitmap.x = _this.data.x * 32 + 16;
-        _this.bitmap.y = _this.data.y * 32 + 16;
+        internal(_this).bitmap = new Sprite.Bitmap(image);
+        internal(_this).bitmap.x = _this.data.x * 32 + 16;
+        internal(_this).bitmap.y = _this.data.y * 32 + 16;
 
         if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
-          _this.bitmap.centerX = _this.data.centerX;
-          _this.bitmap.centerY = _this.data.centerY;
+          internal(_this).bitmap.centerX = _this.data.centerX;
+          internal(_this).bitmap.centerY = _this.data.centerY;
         } else {
           console.log(_this.data);
           throw new Error("Game.Item invalid centerX/centerY");
         }
 
-        _this.bitmap.name = _this.id;
+        internal(_this).bitmap.name = _this.id;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -128,10 +129,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
     }, {
-      key: "pickup",
-      value: function pickup() {
+      key: "heroUse",
+      value: function heroUse() {
         if (this.inner) {
-          Game.windows.pickup.execute("pickup", this);
+          Game.windows.pickup.open(this);
         }
       }
     }, {
@@ -152,39 +153,97 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "clone",
       value: function clone(callback) {
-        var itemObj = new Game.Item(this.data);
+        var itemObj = new Game.Item(Sprite.copy(this.data));
         itemObj.x = this.x;
         itemObj.y = this.y;
+        itemObj.centerX = this.centerX;
+        itemObj.centerY = this.centerY;
+        itemObj.alpha = this.alpha;
+        itemObj.visible = this.visible;
         itemObj.inner = this.inner;
         return itemObj;
       }
     }, {
       key: "erase",
       value: function erase(layer) {
-        layer.removeChild(this.bitmap);
+        Game.layers.itemLayer.removeChild(internal(this).bitmap);
       }
     }, {
       key: "draw",
-      value: function draw(layer) {
-        layer.appendChild(this.bitmap);
+      value: function draw() {
+        Game.layers.itemLayer.appendChild(internal(this).bitmap);
+      }
+    }, {
+      key: "id",
+      get: function get() {
+        return internal(this).data.id;
+      },
+      set: function set(value) {
+        throw new Error("Game.Item.id readonly");
+      }
+    }, {
+      key: "icon",
+      get: function get() {
+        return internal(this).bitmap.image;
+      },
+      set: function set(value) {
+        throw new Error("Game.Item.icon readonly");
+      }
+    }, {
+      key: "data",
+      get: function get() {
+        return internal(this).data;
+      },
+      set: function set(value) {
+        console.error(this);
+        throw new Error("Game.Item.data readonly");
+      }
+    }, {
+      key: "inner",
+      get: function get() {
+        return internal(this).inner;
+      },
+      set: function set(value) {
+        internal(this).inner = value;
       }
     }, {
       key: "x",
       get: function get() {
-        return this.data.x;
+        return internal(this).data.x;
       },
       set: function set(value) {
-        this.data.x = value;
-        this.bitmap.x = value * 32 + 16;
+        internal(this).data.x = value;
+        internal(this).bitmap.x = value * 32 + 16;
       }
     }, {
       key: "y",
       get: function get() {
-        return this.data.x;
+        return internal(this).data.y;
       },
       set: function set(value) {
-        this.data.y = value;
-        this.bitmap.y = value * 32 + 16;
+        internal(this).data.y = value;
+        internal(this).bitmap.y = value * 32 + 16;
+      }
+    }, {
+      key: "visible",
+      get: function get() {
+        return internal(this).bitmap.visible;
+      },
+      set: function set(value) {
+        internal(this).bitmap.visible = value;
+      }
+    }, {
+      key: "alpha",
+      get: function get() {
+        return internal(this).bitmap.alpha;
+      },
+      set: function set(value) {
+        if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
+          internal(this).bitmap.alpha = value;
+        } else {
+          console.error(value, this);
+          throw new Error("Game.Item.alpha got invalid value");
+        }
       }
     }, {
       key: "position",
@@ -203,3 +262,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameItem;
   })(Sprite.Event);
 })();
+//# sourceMappingURL=GameItem.js.map

@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
    * @class
    */
-  Sprite.Canvas = class SpriteCanvas {
+  Sprite.register("Canvas", class SpriteCanvas {
 
     /**
      * @static
@@ -238,6 +238,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Canvas.canvas cannot write");
     }
 
-  };
+  });
 
-})(Sprite);
+
+})();

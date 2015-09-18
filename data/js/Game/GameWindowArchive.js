@@ -27,97 +27,75 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = "\n    <div class=\"window-box\">\n      <div id=\"archiveWindowItemBar\">\n        <button id=\"archiveWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"archiveWindowSave\" class=\"brownButton\">保存</button>\n      </div>\n      <div id=\"archiveWindowTable\"></div>\n    </div>\n  ";
 
-  win.css = "\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 320px;\n    }\n\n    .archiveItem {\n      border: 4px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ";
+  win.css = "\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 320px;\n    }\n\n    .archiveItem {\n      border: 1px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ";
 
   var archiveWindowSave = document.querySelector("button#archiveWindowSave");
   var archiveWindowClose = document.querySelector("button#archiveWindowClose");
   var archiveWindowTable = document.querySelector("#archiveWindowTable");
 
   archiveWindowSave.addEventListener("click", function () {
-    Game.stage.requestScreenshot(function (img) {
-      var canvas = document.createElement("canvas");
-      canvas.width = 80;
-      canvas.height = 45;
-      var context = canvas.getContext("2d");
-      context.drawImage(img, 0, 0, img.width, img.height, 0, 0, 80, 45);
-      var screenshot = canvas.toDataURL("image/jpeg");
+    var canvas = document.createElement("canvas");
+    canvas.width = 80;
+    canvas.height = 45;
+    var context = canvas.getContext("2d");
+    context.drawImage(Game.stage.canvas, 0, 0, Game.stage.canvas.width, Game.stage.canvas.height, 0, 0, 80, 45);
 
-      Game.Archive.save({
-        hero: Game.hero.data,
-        screenshot: screenshot
-      });
-
-      Game.windows.archive.execute("open");
+    Game.Archive.save({
+      hero: Game.hero.data,
+      screenshot: canvas.toDataURL("image/jpeg")
     });
+
+    win.open();
   });
 
   archiveWindowClose.addEventListener("click", function () {
-    Game.windows.archive.hide();
+    win.hide();
+  });
+
+  win.whenUp(["esc"], function (key) {
+    setTimeout(function () {
+      win.hide();
+    }, 20);
   });
 
   win.register("open", function () {
 
-    if (Game.hero && Game.windows.main.showing == false) {
+    if (Game.hero && Game.windows.main.atop == false) {
       archiveWindowSave.style.visibility = "visible";
     } else {
       archiveWindowSave.style.visibility = "hidden";
     }
 
-    var table = archiveWindowTable;
-
-    while (table.hasChildNodes()) {
-      table.removeChild(table.lastChild);
-    }
-
+    var table = "";
     var list = Game.Archive.list();
     list.forEach(function (element) {
-      var div = document.createElement("div");
-      div.classList.add("archiveItem");
-
+      var line = "<div class=\"archiveItem\">\n";
       var archive = Game.Archive.get("SAVE_" + element);
-
-      var removeButton = document.createElement("button");
-      removeButton.style.float = "right";
-      removeButton.textContent = "REMOVE";
-      div.appendChild(removeButton);
-      removeButton.addEventListener("click", function () {
-        Game.Archive.remove("SAVE_" + element);
-        Game.windows.archive.execute("open");
-      });
-
-      var loadButton = document.createElement("button");
-      loadButton.style.float = "right";
-      loadButton.textContent = "LOAD";
-      div.appendChild(loadButton);
-      loadButton.addEventListener("click", function () {
-        Game.Archive.load("SAVE_" + element);
-        Game.windows.archive.hide();
-      });
-
-      var screenshot = new Image();
-      screenshot.width = "80";
-      screenshot.height = "45";
-      screenshot.alt = "存档截图";
-      if (archive.screenshot) {
-        screenshot.src = archive.screenshot;
-      }
-      screenshot.style.display = "inline-block";
-      screenshot.style.margin = "5px";
-      div.appendChild(screenshot);
-
-      var heroName = document.createElement("label");
-      heroName.innerHTML = archive.name;
-      heroName.style.fontSize = "20px";
-      heroName.style.margin = "10px";
-      div.appendChild(heroName);
-
-      var time = document.createElement("label");
-      time.innerHTML = archive.date;
-      div.appendChild(time);
-
-      table.appendChild(div);
+      line += "  <button data-type=\"remove\" data-id=\"SAVE_" + element + "\" class=\"brownButton\" style=\"float: right;\">删除</button>\n";
+      line += "  <button data-type=\"load\" data-id=\"SAVE_" + element + "\" class=\"brownButton\" style=\"float: right;\">读取</button>\n";
+      line += "  <img alt=\"\" src=\"" + (archive.screenshot || "") + "\" width=\"80\" height=\"45\" style=\"display: inline-block; margin: 5px;\">\n";
+      line += "  <label style=\"font-size: 20px; margin: 10px;\">" + archive.name + "</label>\n";
+      line += "  <label style=\"margin: 10px;\">" + archive.date + "</label>\n";
+      line += "</div>\n";
+      table += line;
     });
 
+    archiveWindowTable.innerHTML = table;
     Game.windows.archive.show();
   });
+
+  archiveWindowTable.addEventListener("click", function (event) {
+    var type = event.target.getAttribute("data-type");
+    var id = event.target.getAttribute("data-id");
+    if (type && id) {
+      if (type == "remove") {
+        Game.Archive.remove(id);
+        win.open();
+      } else if (type == "load") {
+        Game.Archive.load(id);
+        win.hide();
+      }
+    }
+  });
 })();
+//# sourceMappingURL=GameWindowArchive.js.map

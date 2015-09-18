@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Event, hold all events emit, bubble
    * @class
    */
-  Sprite.Event = class SpriteEvent {
+  Sprite.register("Event", class SpriteEvent {
     /**
      * construct Sprite.Event
      * @constructor
@@ -150,7 +150,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // wheter or not bubble the event, default true
       let bubble = true;
-      
+
       if (internal(this).listeners.has(event)) {
         for (let listener of internal(this).listeners.get(event).values()) {
           if (listener({ type: event, target: this, data: data }) === false) {
@@ -167,6 +167,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         internal(this).parent.emitBubble(event, this, data);
       }
     }
-  };
+  });
 
-})(Sprite);
+
+})();

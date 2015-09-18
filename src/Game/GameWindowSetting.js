@@ -57,18 +57,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var settingWindowClose = document.querySelector("button#settingWindowClose");
-  var settingWindowScale = document.querySelector("button#settingWindowScale");
+  let settingWindowClose = document.querySelector("button#settingWindowClose");
+  let settingWindowScale = document.querySelector("button#settingWindowScale");
 
-  var settingWindowFullscreen = document.querySelector("button#settingWindowFullscreen");
-  var settingWindowRendererType = document.querySelector("#settingWindowRendererType");
+  let settingWindowFullscreen = document.querySelector("button#settingWindowFullscreen");
+  let settingWindowRendererType = document.querySelector("#settingWindowRendererType");
 
   win.on("beforeShow", function () {
     settingWindowRendererType.textContent = Game.stage.rendererType;
   });
 
   settingWindowClose.addEventListener("click", function (event) {
-    Game.windows.setting.hide();
+    win.hide();
   });
 
   settingWindowScale.addEventListener("click", function (event) {
@@ -77,10 +77,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.setting.showing) {
-      settingWindowClose.click();
-    }
+  win.whenUp(["esc"], function (key) {
+    settingWindowClose.click();
   });
 
   function toggleFullScreen () {
@@ -116,4 +114,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
 
-}());
+})();

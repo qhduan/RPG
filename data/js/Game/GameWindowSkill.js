@@ -30,109 +30,144 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.css = "\n    #skillWindow table {\n      width: 100%;\n    }\n\n    #skillWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #skillWindow button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #skillWindowItemBar button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #skillWindowClose {\n      float: right;\n    }\n  ";
 
   var skillWindowClose = document.querySelector("button#skillWindowClose");
+  var skillWindowTable = document.querySelector("#skillWindowTable");
+
+  var lastSelect = -1;
 
   skillWindowClose.addEventListener("click", function (event) {
-    Game.windows.skill.hide();
+    win.hide();
   });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.skill.showing) {
-      skillWindowClose.click();
-    }
+  win.whenUp(["esc"], function (key) {
+    setTimeout(function () {
+      win.hide();
+    }, 20);
   });
 
-  win.register("open", function () {
-    var tableBody = document.querySelector("tbody#skillWindowTable");
-    while (tableBody.hasChildNodes()) {
-      tableBody.removeChild(tableBody.lastChild);
+  win.register("open", function (select) {
+
+    if (typeof select == "undefined") {
+      select = -1;
     }
 
-    for (var i = 0; i < Game.hero.data.skillcount; i++) {
-      (function (index) {
-        var line = document.createElement("tr");
+    lastSelect = select;
 
-        var icon = document.createElement("td");
-        line.appendChild(icon);
+    var index = 0;
+    var table = "";
+    Game.hero.data.skills.forEach(function (skillId) {
+      var skill = Game.skills[skillId];
 
-        var name = document.createElement("td");
-        line.appendChild(name);
+      var line = "";
 
-        var description = document.createElement("td");
-        line.appendChild(description);
+      if (select == index) {
+        line += "<tr style=\"background-color: green;\">\n";
+      } else {
+        line += "<tr>\n";
+      }
 
-        var manage = document.createElement("td");
-        line.appendChild(manage);
+      line += "  <td><img alt=\"\" src=\"" + skill.icon.src + "\"></td>\n";
+      line += "  <td>" + skill.data.name + "</td>\n";
+      line += "  <td>" + skill.data.description + "</td>\n";
+      line += "  <td><button data-id=\"" + skillId + "\" class=\"brownButton\">管理</button></td>\n";
+      line += "</tr>\n";
+      table += line;
+      index++;
+    });
 
-        var skillId = Game.hero.data.skills[index];
-        if (skillId) {
-          var skill = Game.skills[skillId];
-          icon.appendChild(skill.icon);
-          name.textContent = skill.data.name;
-          description.textContent = skill.data.description;
-
-          var manageButton = document.createElement("button");
-          manageButton.textContent = "操作";
-          manage.appendChild(manageButton);
-
-          manageButton.classList.add("brownButton");
-
-          manageButton.addEventListener("click", function () {
-            Game.choice({
-              "快捷栏": "shortcut",
-              "升级": "levelup",
-              "遗忘": "remove"
-            }, function (choice) {
-              switch (choice) {
-                case "shortcut":
-                  Game.choice({
-                    1: 0,
-                    2: 1,
-                    3: 2,
-                    4: 3,
-                    5: 4,
-                    6: 5,
-                    7: 6,
-                    8: 7
-                  }, function (choice) {
-                    if (typeof choice == "number" && choice >= 0) {
-                      Game.hero.data.bar[choice] = {
-                        id: skillId,
-                        type: "skill"
-                      };
-                      Game.windows["interface"].execute("refresh");
-                    }
-                  });
-                  break;
-                case "levelup":
-                  if (skill.data.next && skill.data.exp && Game.hero.data.exp > skill.data.exp) {
-                    // level up
-                  }
-                  break;
-                case "remove":
-                  Game.confirm("真的要遗忘 " + skill.data.name + " 技能吗？", function (yes) {
-                    if (yes) {
-                      Game.hero.data.bar.forEach(function (element, index, array) {
-                        if (element && element.id == skillId) {
-                          array[index] = null;
-                        }
-                      });
-                      Game.hero.data.skills.splice(index, 1);
-                      Game.windows["interface"].execute("refresh");
-                      Game.windows.skill.execute("open");
-                    }
-                  });
-                  break;
-              }
-            });
-          });
-        } else {
-          name.textContent = "空";
-        }
-
-        tableBody.appendChild(line);
-      })(i);
-    }
-
+    skillWindowTable.innerHTML = table;
     Game.windows.skill.show();
   });
+
+  win.whenUp(["enter"], function () {
+    var buttons = skillWindowTable.querySelectorAll("button");
+    if (lastSelect >= 0 && lastSelect < buttons.length) {
+      buttons[lastSelect].click();
+    }
+  });
+
+  win.whenUp(["up", "down"], function (key) {
+    var count = skillWindowTable.querySelectorAll("button").length;
+
+    if (lastSelect == -1) {
+      if (key == "down") {
+        win.open(0);
+      } else if (key == "up") {
+        win.open(count - 1);
+      }
+    } else {
+      if (key == "down") {
+        var select = lastSelect + 1;
+        if (select >= count) {
+          select = 0;
+        }
+        win.open(select);
+      } else if (key == "up") {
+        var select = lastSelect - 1;
+        if (select < 0) {
+          select = count - 1;
+        }
+        win.open(select);
+      }
+    }
+  });
+
+  skillWindowTable.addEventListener("click", function (event) {
+    var skillId = event.target.getAttribute("data-id");
+    var index = Game.hero.data.skills.indexOf(skillId);
+    if (skillId && Game.skills.hasOwnProperty(skillId) && index != -1) {
+      (function () {
+
+        var skill = Game.skills[skillId];
+
+        Game.choice({
+          "快捷栏": "shortcut",
+          "升级": "levelup",
+          "遗忘": "remove"
+        }, function (choice) {
+          switch (choice) {
+            case "shortcut":
+              Game.choice({
+                1: 0,
+                2: 1,
+                3: 2,
+                4: 3,
+                5: 4,
+                6: 5,
+                7: 6,
+                8: 7
+              }, function (choice) {
+                if (typeof choice == "number" && choice >= 0) {
+                  Game.hero.data.bar[choice] = {
+                    id: skillId,
+                    type: "skill"
+                  };
+                  Game.windows["interface"].refresh();
+                }
+              });
+              break;
+            case "levelup":
+              if (skill.data.next && skill.data.exp && Game.hero.data.exp > skill.data.exp) {
+                // level up
+              }
+              break;
+            case "remove":
+              Game.confirm("真的要遗忘 " + skill.data.name + " 技能吗？", function (yes) {
+                if (yes) {
+                  Game.hero.data.bar.forEach(function (element, index, array) {
+                    if (element && element.id == skillId) {
+                      array[index] = null;
+                    }
+                  });
+                  Game.hero.data.skills.splice(index, 1);
+                  Game.windows["interface"].refresh();
+                  win.open();
+                }
+              });
+              break;
+          }
+        });
+      })();
+    }
+  });
 })();
+//# sourceMappingURL=GameWindowSkill.js.map

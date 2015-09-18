@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function (Game) {
+(function () {
   "use strict";
 
   Game.Astar = class Astar {
@@ -30,15 +30,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function astar(map, width, height, start, end) {
     // 用一个点结构的x和y值返回一个字符串的key
     // 例如{x: 9, y: 8}返回"9-8"
-    var tag = function (point) {
+    let tag = function (point) {
       return point.x.toString() + "-" + point.y.toString();
     };
     // 计算点结构a和b之间的曼哈顿距离，即不带斜走的直线距离
-    var manhattan = function (a, b) {
+    let manhattan = function (a, b) {
       return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
     };
     // 粗略验证一个点是否可用，是否超出边界，地图上是否是墙
-    var valid = function (x, y) {
+    let valid = function (x, y) {
       if (x < 0 || y < 0 || x >= width || y >= height)
         return false;
       if (map[y][x])
@@ -46,8 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     };
     // 通过坐标x，y，当前最好的节点best和一个附加值（直线10，斜线14），返回一个新节点
-    var make = function (x, y, best, addition, direction) {
-      var t = {
+    let make = function (x, y, best, addition, direction) {
+      let t = {
         x: x,
         y: y,
         g: best.g + addition
@@ -61,8 +61,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     };
 
     // 开启列表和关闭列表
-    var open = {};
-    var close = {};
+    let open = {};
+    let close = {};
 
     //构建起始节点
     open[tag(start)] = {
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     while (Object.keys(open).length) {
       // 找到F值最小的节点
-      var best = null;
+      let best = null;
       for (let key in open) {
         if (best == null || open[key].f < best.f) {
           best = open[key];
@@ -90,9 +90,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 如果这个最好的节点就是结尾节点，则返回
       if (best.x == end.x && best.y == end.y) {
         best.front.push(tag(end));
-        var result = [];
+        let result = [];
         for (let i = 0; i < best.front.length; i++) {
-          var m = best.front[i].match(/(\d+)-(\d+)/);
+          let m = best.front[i].match(/(\d+)-(\d+)/);
           if (m) {
             result.push({
               x: parseInt(m[1]),
@@ -104,7 +104,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       // 记录上下左右，和四个斜方向的可能值
-      var possible = [];
+      let possible = [];
 
       if (valid(best.x, best.y - 1)) { // 验证up
         possible.push(make(best.x, best.y - 1, best, 10));
@@ -121,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 去除已经在开启列表和关闭列表中的
       possible.forEach(function (element) {
-        var t = tag(element);
+        let t = tag(element);
         if (open[t]) return;
         if (close[t]) return;
         open[t] = element;
@@ -132,4 +132,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return null;
   }
 
-})(Game);
+})();

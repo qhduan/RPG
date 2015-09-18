@@ -18,21 +18,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function (Game) {
+
+(function () {
   "use strict";
 
-  Game.AI = class AI {
+  Game.AI = class GameAI {
 
     static attach (hero) {
-      hero.on("change", function () {
+      let run = function () {
         Game.AI.heroOnto();
         Game.AI.heroTouch();
+        Game.AI.autoHide();
+      };
+
+      hero.on("change", run);
+      run();
+    }
+
+    static autoHide () {
+      let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
+      Game.area.map.layers.forEach((layer, index) => {
+        layer.visible = true;
+        let layerData = Game.area.map.data.layers[index];
+        if (
+          heroHide &&
+          layerData.hasOwnProperty("properties") &&
+          layerData.properties.hasOwnProperty("autohide") &&
+          layerData.properties.autohide == heroHide
+        ) {
+          layer.visible = false;
+        }
       });
+
+      for (let actor of Game.area.actors) {
+        if (actor != Game.hero) {
+          let actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
+          if (actorHide && actorHide == heroHide) {
+            actor.visible = true;
+          } else {
+            if (actorHide) {
+              actor.visible = false;
+            } else {
+              actor.visible = true;
+            }
+          }
+        }
+      }
+
+      for (let bag of Game.area.bags) {
+        let bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
+        if (bagHide && bagHide == heroHide) {
+          bag.visible = true;
+        } else {
+          if (bagHide) {
+            bag.visible = false;
+          } else {
+            bag.visible = true;
+          }
+        }
+      }
     }
 
     static heroOnto () {
+      if (!Game.area) return;
+      if (!Game.area.onto) return;
+
       let heroPosition = Game.hero.position;
-      var onto = null;
+      let onto = null;
 
       let FindUnderHero = function (element) {
         if (onto != null || element == Game.hero) {
@@ -48,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Sprite.each(Game.area.onto, FindUnderHero);
       if (onto) {
         if (onto.dest) {
-          Game.windows.loading.execute("begin");
+          Game.windows.loading.begin();
           setTimeout(function () {
             Game.clearStage();
             Game.pause();
@@ -65,42 +117,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               Game.windows.interface.show();
               Game.start();
 
-              Game.windows.loading.execute("end");
+              Game.windows.loading.end();
             });
           }, 100);
-        }
-        if (onto.showmap) {
-          Game.layers.mapLayer.children.forEach(function (element) {
-            if (onto.showmap.indexOf(element.name) != -1) {
-              element.visible = true;
-            }
-          });
-        } // showmap
-        if (onto.hidemap) {
-          Game.layers.mapLayer.children.forEach(function (element) {
-            if (onto.hidemap.indexOf(element.name) != -1) {
-                element.visible = false;
-            }
-          });
-        } // hidemap
-        if (onto.showactor) {
-          for (let actor of Game.area.actors) {
-            if (onto.showactor.indexOf(actor.id) != -1) {
-              actor.visible = true;
-            }
-          }
-        } // showactor
-        if (onto.hideactor) {
-          for (let actor of Game.area.actors) {
-            if (onto.hideactor.indexOf(actor.id) != -1) {
-              actor.visible = false;
-            }
-          }
-        } // hideactor
+        } // dest, aka. door
       } // touch
     }
 
     static heroTouch () {
+      if (!Game.area) return;
+      if (!Game.area.actors) return;
+      if (!Game.area.bags) return;
+      if (!Game.area.touch) return;
+
       let heroPosition = Game.hero.position;
       let heroFace = Game.hero.facePosition;
       let touch = null;
@@ -151,13 +180,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         };
       }
 
-
       if (!touch) {
         Game.hintObject = null;
-        Game.windows.interface.use.style.visibility = "hidden";
+        Game.windows.interface.hideUse();
       } else {
+
+        if (touch.type == "message") {
+          touch.heroUse = function () {
+            Game.popup({
+              x: touch.x * 32 + 16,
+              y: touch.y * 32 + 16
+            }, touch.content, 0, -30);
+          };
+        }
+
         Game.hintObject = touch;
-        Game.windows.interface.use.style.visibility = "visible";
+        Game.windows.interface.showUse();
       }
     }
 
@@ -166,7 +204,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         for (let actor of Game.area.actors) {
 
           if (actor.data.type == "hero") {
-            var barChanged = false;
+            let barChanged = false;
 
             if (actor.data.hp < actor.data.$hp) {
               actor.data.hp++;
@@ -183,7 +221,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
           } else if (actor.data.type == "monster") {
 
-            var barChanged = false;
+            let barChanged = false;
 
             if (actor.data.hp < actor.data.$hp) {
               actor.data.hp++;
@@ -219,8 +257,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               if (Math.random() < 0.01) {
                 return;
               }
-              var x = actor.x;
-              var y = actor.y;
+              let x = actor.x;
+              let y = actor.y;
               actor.goto(x + Sprite.rand(-5, 5), y + Sprite.rand(-5, 5), "walk", function () {
                 actor.stop();
               });
@@ -237,4 +275,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
   };
-})(Game);
+
+})();

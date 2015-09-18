@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Container
    */
-  Sprite.Stage = class SpriteStage extends Sprite.Container {
+  Sprite.register("Stage", class SpriteStage extends Sprite.Container {
 
     /** @function Sprite.Stage.constructor
      * consturct a Sprite.Stage with width and height
@@ -144,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     draw () {
-      this.emit("drawStart");
+      this.emit("beforeDraw");
 
       if (this.children.length <= 0) {
         return false;
@@ -161,9 +161,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         internal(this).screenshot = null;
       }
 
-      this.emit("drawEnd");
+      this.emit("afterDraw");
     }
 
-  };
+  });
 
-})(Sprite);
+
+})();

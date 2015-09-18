@@ -30,14 +30,14 @@
       ]
     }
   },
-  "trade": [
-    "swordIron",
-    "spearIron",
-    "bowWood"
-  ],
+  "trade": {
+    "swordIron": 5,
+    "spearIron": 5,
+    "bowWood": 5
+  },
   "image": "resource\/starttown-mayor.png",
   "centerX": 16,
-  "centerY": 36,
+  "centerY": 42,
   "hitArea": [[0, 0]],
   "level": 1,
   "$str": 10,

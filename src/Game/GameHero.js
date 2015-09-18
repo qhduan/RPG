@@ -18,19 +18,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+
 (function () {
   "use strict";
 
   // 合并图片
   // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
   function CombineHeroImage (images, width, height, callback) {
-    var canvas = document.createElement("canvas");
+    let canvas = document.createElement("canvas");
     canvas.height = height;
     canvas.width = width;
-    var context = canvas.getContext("2d");
+    let context = canvas.getContext("2d");
     context.clearRect(0, 0, width, height);
 
-    var length = images.length - 1; // 最后一张图是武器
+    let length = images.length - 1; // 最后一张图是武器
     for (let i = 0; i < length; i++) {
       let img = images[i];
       context.drawImage(
@@ -39,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       );
     }
 
-    var withoutWeapon = new Image();
+    let withoutWeapon = new Image();
     withoutWeapon.src = canvas.toDataURL("image/png");
 
     context.drawImage(
@@ -47,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       0, 0, width, height
     );
 
-    var withWeapon = new Image();
+    let withWeapon = new Image();
     withWeapon.src = canvas.toDataURL("image/png");
 
     callback([withoutWeapon, withWeapon]);
@@ -62,8 +63,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
-    var BASE = "/hero";
-    var imageUrls = [];
+    let BASE = "/hero";
+    let imageUrls = [];
 
     if (Check(heroCustom.sex) && Check(heroCustom.body)) {
       // 必须按顺序
@@ -109,5 +110,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
   };
+
 
 })();

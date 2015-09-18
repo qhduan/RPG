@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   class Ticker extends Sprite.Event {
     constructor () {
@@ -71,6 +71,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   };
 
-  Sprite.Ticker = new Ticker();
+  Sprite.register("Ticker", new Ticker());
 
-})(Sprite);
+})();

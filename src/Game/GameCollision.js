@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   function boxCollide (spriteA, spriteB, rectA, rectB) {
-    var A = {
+    let A = {
       x: spriteA.x - rectA.centerX,
       y: spriteA.y - rectA.centerY,
       w: rectA.width,
@@ -34,7 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       image: rectA.image
     };
 
-    var B = {
+    let B = {
       x: spriteB.x - rectB.centerX,
       y: spriteB.y - rectB.centerY,
       w: rectB.width,
@@ -46,13 +46,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       image: rectB.image
     };
 
-    var bigX = Math.max(A.x + A.w, B.x + B.w);
-    var smallX = Math.min(A.x, B.x);
-    var bigY = Math.max(A.y + A.h, B.y + B.h);
-    var smallY = Math.min(A.y, B.y);
+    let bigX = Math.max(A.x + A.w, B.x + B.w);
+    let smallX = Math.min(A.x, B.x);
+    let bigY = Math.max(A.y + A.h, B.y + B.h);
+    let smallY = Math.min(A.y, B.y);
 
-    var width = bigX - smallX;
-    var height = bigY - smallY;
+    let width = bigX - smallX;
+    let height = bigY - smallY;
 
     if (width < (A.w + B.w) && height < (A.h + B.h)) {
       return {
@@ -63,17 +63,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return false;
   }
 
-  var collideCavansCache = new Map();
+  let collideCavansCache = new Map();
 
   function pixelCollide (A, B) {
     // 对图像进行某种意义上的移动，例如把上面的图的A和B都平移到左上角，也就是AA的左上角变为0,0坐标
 
-    var now = (new Date().getTime());
+    let now = (new Date().getTime());
 
     // WWWHHH
-    var key = A.w * 1000 + A.h;
-    var canvas;
-    var context;
+    let key = A.w * 1000 + A.h;
+    let canvas;
+    let context;
     if (collideCavansCache.has(key)) {
       canvas = collideCavansCache.get(key).canvas;
       context = collideCavansCache.get(key).context;
@@ -102,9 +102,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       B.sx, B.sy, B.sw, B.sh,
       B.x - A.x, B.y - A.y, B.w, B.h);
 
-    var pixel = context.getImageData(0, 0, A.w, A.h).data;
+    let pixel = context.getImageData(0, 0, A.w, A.h).data;
 
-    var collision = false;
+    let collision = false;
 
     for (let i = 3; i < pixel.length; i += 3) {
       if (pixel[i] != 0) {
@@ -118,14 +118,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
   Game.actorCollision = function (actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
-    var actorRect = actorSprite.getFrame(0);
+    let actorRect = actorSprite.getFrame(0);
     // 阻挡的块则检测当前frame
-    var blockRect = blockSprite.getFrame();
-    var data = boxCollide(actorSprite, blockSprite, actorRect, blockRect);
+    let blockRect = blockSprite.getFrame();
+    let data = boxCollide(actorSprite, blockSprite, actorRect, blockRect);
     if (data) {
       // 计算一个delta，即只碰撞角色的下半部分
       // deltaY偏移0.85，大概意思是只检测角色最下方15%的地方
-      var deltaY = Math.floor(actorRect.height * 0.85);
+      let deltaY = Math.floor(actorRect.height * 0.85);
       data.A.y += deltaY;
       data.A.sy += deltaY;
       data.A.h -= deltaY;
@@ -138,17 +138,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   // 技能碰撞检测
   Game.skillCollision = function (skillSprite, actorSprite) {
-    var skillRect = skillSprite.getFrame();
-    var actorRect = actorSprite.getFrame();
+    let skillRect = skillSprite.getFrame();
+    let actorRect = actorSprite.getFrame();
 
-    var data = boxCollide(skillSprite, actorSprite, skillRect, actorRect);
+    let data = boxCollide(skillSprite, actorSprite, skillRect, actorRect);
     if (data) {
       // 和角色碰撞检测对比，技能碰撞检测无delta
       return pixelCollide(data.A, data.B);
     }
     return false;
   };
-
-
 
 })();

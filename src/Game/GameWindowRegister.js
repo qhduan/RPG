@@ -318,15 +318,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var registerWindowSubmit = document.querySelector("#registerWindowSubmit");
-  var registerWindowBack = document.querySelector("#registerWindowBack");
+  let registerWindowSubmit = document.querySelector("#registerWindowSubmit");
+  let registerWindowBack = document.querySelector("#registerWindowBack");
 
   registerWindowSubmit.addEventListener("click", function () {
     Game.register.submit();
   });
 
   registerWindowBack.addEventListener("click", function () {
-    Game.windows.register.hide();
+    win.hide();
   });
 
-}());
+
+})();

@@ -18,20 +18,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+/**
+ * @fileoverview Define the Sprite.Webgl, a renderer, other choice from Sprite.Canvas
+ * @author mail@qhduan.com (QH Duan)
+ */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-(function (Sprite) {
+(function () {
   "use strict";
 
   var internal = Sprite.Namespace();
 
-  var vertexShaderSrc = "\n  attribute vec2 position;\n  attribute vec2 a_texCoord;\n\n  uniform vec2 resolution;\n\n  varying vec2 texCoord;\n\n  void main() {\n     // convert the rectangle from pixels to 0.0 to 1.0\n     vec2 zeroToOne = position / resolution;\n\n     // convert from 0->1 to 0->2\n     vec2 zeroToTwo = zeroToOne * 2.0;\n\n     // convert from 0->2 to -1->+1 (clipspace)\n     vec2 clipSpace = zeroToTwo - 1.0;\n\n     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n\n     // pass the texCoord to the fragment shader\n     // The GPU will interpolate this value between points.\n     texCoord = a_texCoord;\n  }";
+  var vertexShaderSrc = "\n  precision lowp float;\n  attribute vec2 position;\n  attribute vec2 a_texCoord;\n\n  uniform vec2 resolution;\n\n  varying vec2 texCoord;\n\n  void main(void) {\n     // convert the rectangle from pixels to 0.0 to 1.0\n     vec2 zeroToOne = position / resolution;\n\n     // convert from 0->1 to 0->2\n     vec2 zeroToTwo = zeroToOne * 2.0;\n\n     // convert from 0->2 to -1->+1 (clipspace)\n     vec2 clipSpace = zeroToTwo - 1.0;\n\n     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);\n\n     // pass the texCoord to the fragment shader\n     // The GPU will interpolate this value between points.\n     texCoord = a_texCoord;\n  }";
 
-  var fragmentShaderSrc = "\n  // precision mediump float;\n  precision highp float;\n\n  // texture crop\n  uniform vec4 crop;\n\n  // texture brightness\n  uniform float brightness;\n\n  // texture alpha\n  uniform float alpha;\n\n  // texture contrast\n  uniform float contrast;\n\n  // our texture\n  uniform sampler2D image;\n\n  // the texCoords passed in from the vertex shader.\n  varying vec2 texCoord;\n\n  void main() {\n     // Look up a color from the texture.\n     // gl_FragColor = texture2D(image, texCoord);\n\n     // use crop to cut image\n     vec4 color = texture2D(\n       image,\n       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy\n     ).rgba;\n\n     // brightness and contrast's formular from https://github.com/evanw/glfx.js\n\n     // add the brightness to rgb, but not alpha (a of rgba)\n     color.xyz = color.xyz + brightness;\n\n     // apply contrast\n     if (contrast > 0.0) {\n       color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;\n     } else {\n       color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;\n     }\n\n     // apply alpha\n     color.a = color.a * alpha;\n\n     gl_FragColor = color;\n  }";
+  var fragmentShaderSrc = "\n  // precision mediump float;\n  precision highp float;\n\n  // texture crop\n  uniform vec4 crop;\n\n  // texture brightness\n  uniform float brightness;\n\n  // texture alpha\n  uniform float alpha;\n\n  // texture contrast\n  uniform float contrast;\n\n  // our texture\n  uniform sampler2D image;\n\n  // the texCoords passed in from the vertex shader.\n  varying vec2 texCoord;\n\n  void main(void) {\n     // Look up a color from the texture.\n     // gl_FragColor = texture2D(image, texCoord);\n\n     // use crop to cut image\n     vec4 color = texture2D(\n       image,\n       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy\n     ).rgba;\n\n     // brightness and contrast's formular from https://github.com/evanw/glfx.js\n\n     // add the brightness to rgb, but not alpha (a of rgba)\n     color.xyz = color.xyz + brightness;\n\n     // apply contrast\n     if (contrast > 0.0) {\n       color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;\n     } else {\n       color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;\n     }\n\n     // apply alpha\n     color.a = color.a * alpha;\n\n     gl_FragColor = color;\n  }";
 
   function setRectangle(gl, x, y, width, height) {
     var x2 = x + width;
@@ -52,7 +57,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * Renderer using webgl
    * @class
    */
-  Sprite.Webgl = (function () {
+  Sprite.register("Webgl", (function () {
     _createClass(Webgl, null, [{
       key: "support",
 
@@ -350,9 +355,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }]);
 
     return Webgl;
-  })();
-})(Sprite);
-/**
- * @fileoverview Define the Sprite.Webgl, a renderer, other choice from Sprite.Canvas
- * @author mail@qhduan.com (QH Duan)
- */
+  })());
+})();
+//# sourceMappingURL=SpriteWebgl.js.map

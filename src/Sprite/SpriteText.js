@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+ (function () {
+   "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Display
    */
-  Sprite.Text = class SpriteText extends Sprite.Display {
+  Sprite.register("Text", class SpriteText extends Sprite.Display {
     /**
      * construct Sprite.Text
      * @constructor
@@ -190,7 +190,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         );
       }
     }
-  }
+  });
 
 
-})(Sprite);
+})();

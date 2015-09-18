@@ -13,6 +13,11 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/**
+ * @fileoverview Class Sprite.Display
+ * @author mail@qhduan.com (QH Duan)
+ */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -23,7 +28,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-(function (Sprite) {
+(function () {
   "use strict";
 
   var internal = Sprite.Namespace();
@@ -40,7 +45,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * @class
    * @extends Sprite.Event
    */
-  Sprite.Display = (function (_Sprite$Event) {
+  Sprite.register("Display", (function (_Sprite$Event) {
     _inherits(Display, _Sprite$Event);
 
     /**
@@ -96,17 +101,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * @param {Object} renderer
        */
       value: function draw(renderer) {
+        console.error("sub-class should override this function");
         throw new Error("Invalid call Sprite.Display.draw");
       }
 
       /**
        * Check if the x,y hit this object or not
-       * @param {number} x the x position for test
-       * @param {number} y the y position for test
+       * @param {number} x the x position of screen (may 0 to 640) for test
+       * @param {number} y the y position of screen (may 0 to 480) for test
        */
     }, {
       key: "hitTest",
       value: function hitTest(x, y) {
+        this.debug = true;
         hitContext.clearRect(0, 0, 1, 1);
         hitContext.save();
         hitContext.translate(-x, -y);
@@ -118,6 +125,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return true;
         }
         return false;
+      }
+    }, {
+      key: "drawPosition",
+      value: function drawPosition() {
+
+        var centerX = this.centerX;
+        var centerY = this.centerY;
+        var x = this.x;
+        var y = this.y;
+        var alpha = this.alpha;
+
+        var parent = this.parent;
+        while (parent) {
+          centerX += parent.centerX;
+          centerY += parent.centerY;
+          x += parent.x;
+          y += parent.y;
+          alpha *= parent.alpha;
+          if (alpha <= 0.001) {
+            return null;
+          }
+          if (parent.visible == false) {
+            return null;
+          }
+          parent = parent.parent;
+        }
+
+        return {
+          x: x - centerX,
+          y: y - centerY,
+          alpha: alpha
+        };
       }
 
       /**
@@ -141,43 +180,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "drawImage",
       value: function drawImage(renderer, image, sx, sy, swidth, sheight) {
-        if (this.visible != internal(this).visible) {
-          throw new Error("ssss");
-        }
-        if (this.visible == true && this.alpha > 0) {
-          var center = {
-            x: this.centerX,
-            y: this.centerY
-          };
-          var position = {
-            x: this.x,
-            y: this.y
-          };
+        if (this.visible == true && this.alpha > 0.001) {
 
-          var alpha = this.alpha;
-
-          var obj = this.parent;
-          while (obj) {
-            center.x += obj.centerX;
-            center.y += obj.centerY;
-            position.x += obj.x;
-            position.y += obj.y;
-            alpha *= obj.alpha;
-            if (alpha <= 0) {
-              return;
-            }
-            if (obj.visible == false) {
-              return;
-            }
-            obj = obj.parent;
+          var d = this.drawPosition();
+          if (!d) {
+            return;
           }
+          renderer.alpha = d.alpha;
 
-          var dx = position.x - center.x;
-          var dy = position.y - center.y;
-
-          renderer.alpha = alpha;
           try {
-            renderer.drawImage(image, sx, sy, swidth, sheight, dx, dy, swidth, sheight);
+            renderer.drawImage(image, sx, sy, swidth, sheight, d.x, d.y, swidth, sheight);
           } catch (e) {
             console.error(image, sx, sy, swidth, sheight, dx, dy, swidth, sheight);
             throw e;
@@ -322,10 +334,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     return Display;
-  })(Sprite.Event);
-})(Sprite);
-/**
- * @fileoverview Class Sprite.Display
- * @author mail@qhduan.com (QH Duan)
- */
+  })(Sprite.Event));
+})();
 //# sourceMappingURL=SpriteDisplay.js.map

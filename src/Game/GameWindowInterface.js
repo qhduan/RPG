@@ -53,6 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     #interfaceWindow {
+      /** 让interface窗口的主要窗口，不接受事件 */
       pointer-events: none;
     }
 
@@ -65,6 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       border-radius: 10px;
       background-color: rgba(100, 100, 100, 0.5);
       display: inline-block;
+      /** 让interface窗口的按钮，接受事件 */
       pointer-events: auto;
       background-repeat: no-repeat;
       background-size: cover;
@@ -117,7 +119,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  win.use = document.querySelector("button#interfaceWindowUse");
+  let interfaceWindowUse = document.querySelector("button#interfaceWindowUse");
+
+  win.register("hideUse", function () {
+    interfaceWindowUse.style.visibility = "hidden";
+  });
+
+  win.register("showUse", function () {
+    interfaceWindowUse.style.visibility = "visible";
+  });
 
   win.on("active", function () {
     Game.start();
@@ -127,12 +137,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.pause();
   })
 
-  var interfaceWindowBar = document.querySelector("div#interfaceWindowBar");
+  let interfaceWindowBar = document.querySelector("div#interfaceWindowBar");
 
-  var interfaceWindowMap = document.querySelector("span#interfaceWindowMap");
-  var interfaceWindowMenu = document.querySelector("button#interfaceWindowMenu");
+  let interfaceWindowMap = document.querySelector("span#interfaceWindowMap");
+  let interfaceWindowMenu = document.querySelector("button#interfaceWindowMenu");
 
-  Sprite.Input.whenUp(["esc"], function (key) {
+  win.whenUp(["esc"], function (key) {
     if (Game.windows.interface.atop) {
       setTimeout(function () {
         interfaceWindowMenu.click();
@@ -143,12 +153,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 设置技能栏
   for (let i = 0; i < 8; i++) {
     (function (index) {
-      var button = document.createElement("button");
+      let button = document.createElement("button");
       button.id = `interfaceWindowButton-${index}`;
       button.classList.add("interfaceWindowButton");
       interfaceWindowBar.appendChild(button);
 
-      var text = document.createElement("label");
+      let text = document.createElement("label");
       text.id = `interfaceWindowButtonText-${index}`;
       text.style.position = "absolute";
       text.style.backgroundColor = "white";
@@ -157,20 +167,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       button.appendChild(text);
 
       button.addEventListener("click", function (event) {
-        var element = Game.hero.data.bar[index];
+        let element = Game.hero.data.bar[index];
         if (element) {
           if (element.type == "skill")
             Game.hero.fire(element.id);
           else if (element.type == "item") {
-            var itemId = element.id;
-            var item = Game.items[itemId];
+            let itemId = element.id;
+            let item = Game.items[itemId];
             item.use(Game.hero);
             Game.hero.data.items[itemId]--;
             if (Game.hero.data.items[itemId] <= 0) {
               delete Game.hero.data.items[itemId];
               Game.hero.data.bar[index] = null;
             }
-            Game.windows.interface.execute("refresh");
+            Game.windows.interface.refresh();
           }
         }
       });
@@ -178,11 +188,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   function SkillFire (num) {
-    var element = Game.hero.data.bar[num];
+    let element = Game.hero.data.bar[num];
     if (element) {
       if (element.type == "skill") {
-        var cooldown = Game.hero.fire(element.id);
-        var button = document.querySelector(`#interfaceWindowButton-${num}`);
+        let cooldown = Game.hero.fire(element.id);
+        let button = document.querySelector(`#interfaceWindowButton-${num}`);
         button.disabled = true;
         setTimeout(function () {
           button.disabled = false;
@@ -194,33 +204,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-  Sprite.Input.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
-    var num = parseInt(key);
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
+    let num = parseInt(key);
     // 只有在interface窗口是only存在的时候才使用快捷键
     if (Number.isInteger(num) && Game.windows.interface.atop) {
       SkillFire(num - 1);
     }
   });
 
-  Sprite.Input.whenUp(["e", "E"], function (key) {
+  win.whenUp(["e", "E", "space", "enter"], function (key) {
     if (Game.windows.interface.showing) {
-      if (Game.hintObject) {
-        win.use.click();
-      }
-    }
-  });
-
-  win.use.addEventListener("click", function (event) {
-    if (Game.hintObject) {
-      if (Game.hintObject.heroUse) {
+      if (Game.hintObject && Game.hintObject.heroUse) {
         Game.hintObject.heroUse();
       }
     }
   });
 
+  interfaceWindowUse.addEventListener("click", function (event) {
+    if (Game.hintObject && Game.hintObject.heroUse) {
+      Game.hintObject.heroUse();
+    }
+  });
+
   win.register("status", function (hp, sp) {
-    var interfaceWindowHP = document.querySelector("#interfaceWindowHP");
-    var interfaceWindowSP = document.querySelector("#interfaceWindowSP");
+    let interfaceWindowHP = document.querySelector("#interfaceWindowHP");
+    let interfaceWindowSP = document.querySelector("#interfaceWindowSP");
     interfaceWindowHP.style.width = `${hp*100}%`;
     interfaceWindowSP.style.width = `${sp*100}%`;
     if (hp >= 0.5) {
@@ -234,21 +242,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.register("datetime", function () {
     if (Game.hero && Game.hero.data && Number.isInteger(Game.hero.data.time)) {
-      var YEARMIN = 60*24*30*12;
-      var MONTHMIN = 60*24*30;
-      var DAYMIN = 60*24;
-      var HOURMIN = 60;
-      var datetime = document.querySelector("span#interfaceWindowDatetime");
-      var time = Game.hero.data.time;
-      var year = Math.floor(time/YEARMIN);
+      let YEARMIN = 60*24*30*12;
+      let MONTHMIN = 60*24*30;
+      let DAYMIN = 60*24;
+      let HOURMIN = 60;
+      let datetime = document.querySelector("span#interfaceWindowDatetime");
+      let time = Game.hero.data.time;
+      let year = Math.floor(time/YEARMIN);
       time = time % YEARMIN;
-      var month = Math.floor(time/MONTHMIN);
+      let month = Math.floor(time/MONTHMIN);
       time = time % MONTHMIN;
-      var day = Math.floor(time/DAYMIN);
+      let day = Math.floor(time/DAYMIN);
       time = time % DAYMIN;
-      var hour = Math.floor(time/HOURMIN);
+      let hour = Math.floor(time/HOURMIN);
       time = time % HOURMIN;
-      var minute = time;
+      let minute = time;
       year++;
       month++;
       day++;
@@ -284,25 +292,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   setInterval(function () {
     if (Game.hero) {
       Game.hero.data.time++;
-      Game.windows.interface.execute("datetime");
+      Game.windows.interface.datetime();
     }
   }, 1000);
 
   win.register("refresh", function () {
     for (let i = 0; i < 8; i++) {
-      var element = Game.hero.data.bar[i];
-      var button = document.querySelector(`#interfaceWindowButton-${i}`);
-      var text = document.querySelector(`#interfaceWindowButtonText-${i}`);
+      let element = Game.hero.data.bar[i];
+      let button = document.querySelector(`#interfaceWindowButton-${i}`);
+      let text = document.querySelector(`#interfaceWindowButtonText-${i}`);
 
       if (element) {
-        var id = element.id;
-        var type = element.type;
+        let id = element.id;
+        let type = element.type;
         if (type == "skill") {
-          var skill = Game.skills[id];
+          let skill = Game.skills[id];
           button.style.backgroundImage = `url("${skill.icon.src}")`;
           text.textContent = skill.data.cost;
         } else if (type == "item") {
-          var item = Game.items[id];
+          let item = Game.items[id];
           button.style.backgroundImage = `url("${item.icon.src}")`;
           text.textContent = Game.hero.data.items[id];
         }
@@ -317,11 +325,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   win.on("beforeShow", function () {
-    Game.windows.interface.execute("refresh");
+    Game.windows.interface.refresh();
   });
 
   interfaceWindowMenu.addEventListener("click", function (event) {
     Game.windows.sysmenu.show();
   });
 
-}());
+
+})();

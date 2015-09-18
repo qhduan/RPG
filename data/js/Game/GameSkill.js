@@ -37,10 +37,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(GameSkill, null, [{
       key: "load",
       value: function load(id, callback) {
-        var skillLoader = new Sprite.Loader();
-        skillLoader.add("/skill/" + id + ".json");
-        skillLoader.start();
-        skillLoader.on("complete", function (event) {
+        Sprite.Loader.create().add("/skill/" + id + ".json").start().on("complete", function (event) {
           var skillData = event.data[0];
           var skillObj = new Game.Skill(skillData);
           Game.skills[id] = skillObj;
@@ -63,12 +60,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       this.data = skillData;
       this.id = this.data.id;
 
-      var loader = new Sprite.Loader();
-      loader.add("/skill/" + this.data.image);
-      loader.add("/skill/" + this.data.icon);
-      loader.add("/skill/" + this.data.sound);
-      loader.start();
-      loader.on("complete", function (event) {
+      Sprite.Loader.create().add("/skill/" + this.data.image).add("/skill/" + this.data.icon).add("/skill/" + this.data.sound).start().on("complete", function (event) {
         var image = event.data[0];
         _this.icon = event.data[1];
         _this.sound = event.data[2];

@@ -28,11 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <div id="statusWindowItemBar">
         <button id="statusWindowClose" class="brownButton">关闭</button>
         <button id="statusWindowInventory" class="brownButton">物品</button>
+        <label id="heroName"></label>
       </div>
       <table border="0" cellspacing="0" cellpadding="0">
         <tr>
-          <td style="width: 50%;">
-            <label id="heroName"></label>
+          <td id="statusWindowTable">
             <label id="heroHP"></label>
             <label id="heroSP"></label>
             <label id="heroLevel"></label>
@@ -89,6 +89,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
+    #heroName {
+      font-size: 24px;
+      margin-left: 240px;
+    }
+
+    #statusWindowTable {
+      width: 50%;
+    }
+
+    #statusWindowTable label {
+      font-size: 18px;
+      margin-left: 80px;
+    }
+
     #statusWindowEquipmentTable button {
       width: 60px;
       height: 40px;
@@ -112,6 +126,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       margin-right: 5px;
       margin-top: 0px;
       margin-bottom: 5px;
+      text-align: center;
     }
 
     #statusWindowClose {
@@ -128,7 +143,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var statusWindowEquipment = {
+  let statusWindowEquipment = {
     head: document.querySelector("#equipment-head"),
     body: document.querySelector("#equipment-body"),
     feet: document.querySelector("#equipment-feet"),
@@ -137,7 +152,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     ring: document.querySelector("#equipment-ring")
   };
 
-  var statusWindowEquipmentButton = {
+  let statusWindowEquipmentButton = {
     head: document.querySelector("#equipmentButton-head"),
     body: document.querySelector("#equipmentButton-body"),
     feet: document.querySelector("#equipmentButton-feet"),
@@ -146,49 +161,71 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     ring: document.querySelector("#equipmentButton-ring")
   };
 
+  let lastSelect = -1;
+
   Sprite.each(statusWindowEquipmentButton, function (button, key) {
     button.addEventListener("click", function () {
       if (Game.hero.data.equipment[key]) {
         Game.hero.data.equipment[key] = null;
-        Game.windows.status.execute("update");
+      } else {
+        if (key == "weapon") {
+          Game.windows.inventory.open("sword|spear|bow");
+        } else {
+          Game.windows.inventory.open("head|body|feet");
+        }
       }
+      win.update();
     });
   });
 
-  var heroName = document.getElementById("heroName");
-  var heroHP = document.getElementById("heroHP")
-  var heroSP = document.getElementById("heroSP");
-  var heroLevel = document.getElementById("heroLevel");
-  var heroEXP = document.getElementById("heroEXP");
-  var heroSTR = document.getElementById("heroSTR");
-  var heroDEX = document.getElementById("heroDEX");
-  var heroCON = document.getElementById("heroCON");
-  var heroINT = document.getElementById("heroINT");
-  var heroCHA = document.getElementById("heroCHA");
-  var heroATK = document.getElementById("heroATK");
-  var heroDEF = document.getElementById("heroDEF");
-  var heroMATK = document.getElementById("heroMATK");
-  var heroMDEF = document.getElementById("heroMDEF");
+  let heroName = document.querySelector("#heroName");
+  let heroHP = document.querySelector("#heroHP")
+  let heroSP = document.querySelector("#heroSP");
+  let heroLevel = document.querySelector("#heroLevel");
+  let heroEXP = document.querySelector("#heroEXP");
+  let heroSTR = document.querySelector("#heroSTR");
+  let heroDEX = document.querySelector("#heroDEX");
+  let heroCON = document.querySelector("#heroCON");
+  let heroINT = document.querySelector("#heroINT");
+  let heroCHA = document.querySelector("#heroCHA");
+  let heroATK = document.querySelector("#heroATK");
+  let heroDEF = document.querySelector("#heroDEF");
+  let heroMATK = document.querySelector("#heroMATK");
+  let heroMDEF = document.querySelector("#heroMDEF");
 
-  var statusWindowClose = document.querySelector("button#statusWindowClose");
-  var statusWindowInventory = document.querySelector("button#statusWindowInventory");
+  let statusWindowClose = document.querySelector("button#statusWindowClose");
+  let statusWindowInventory = document.querySelector("button#statusWindowInventory");
+  let statusWindowEquipmentTable = document.querySelector("#statusWindowEquipmentTable");
 
   statusWindowClose.addEventListener("click", function (event) {
-    Game.windows.status.hide();
+    win.hide();
   });
 
   statusWindowInventory.addEventListener("click", function (event) {
-    Game.windows.status.hide();
-    Game.windows.inventory.execute("open");
+    win.hide();
+    Game.windows.inventory.open();
   });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.status.showing) {
-      statusWindowClose.click();
+  win.whenUp(["tab"], function () {
+    setTimeout(function () {
+      win.hide();
+      Game.windows.inventory.open();
+    }, 20);
+  });
+
+  win.whenUp(["esc"], function (key) {
+    setTimeout(function () {
+      win.hide();
+    }, 20)
+  });
+
+  win.register("update", function (select) {
+
+    if (typeof select == "undefined") {
+      select = -1;
     }
-  });
 
-  win.register("update", function () {
+    lastSelect = select;
 
     heroName.textContent = `名字：${Game.hero.data.name}`;
     heroHP.textContent = `生命力：${Game.hero.data.hp}/${Game.hero.data.$hp}`;
@@ -205,28 +242,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     heroMATK.textContent = `魔法攻击：${Game.hero.data.matk}`;
     heroMDEF.textContent = `魔法防御：${Game.hero.data.mdef}`;
 
-    Sprite.each(Game.hero.data.equipment, function (element, key) {
-      var dom = statusWindowEquipment[key];
-      while (dom.hasChildNodes())
-        dom.removeChild(dom.lastChild);
+    let lines = statusWindowEquipmentTable.querySelectorAll("tr");
+    for (let i = 0; i < lines.length; i++) {
+      if (select == i) {
+        lines[i].style.backgroundColor = "green";
+      } else {
+        lines[i].style.backgroundColor = "";
+      }
+    }
 
-      var button = statusWindowEquipmentButton[key];
+    Sprite.each(Game.hero.data.equipment, function (element, key) {
+      let button = statusWindowEquipmentButton[key];
 
       if (element) {
-        dom.appendChild(Game.items[element].icon);
-        var text = document.createElement("span");
-        text.textContent = Game.items[element].data.name;
-        dom.appendChild(text);
-        button.style.visibility = "visible";
+        let line = "";
+        line += `<img alt="" src="${Game.items[element].icon.src}">`;
+        line += `<span>${Game.items[element].data.name}</span>`;
+        statusWindowEquipment[key].innerHTML = line;
+        button.textContent = "卸下";
       } else {
-        button.style.visibility = "hidden";
+        statusWindowEquipment[key].innerHTML = "";
+        button.textContent = "装备";
       }
     });
   });
 
-  win.register("open", function () {
-    Game.windows.status.execute("update");
-    Game.windows.status.show();
+  win.whenUp(["enter"], function () {
+    let buttons = statusWindowEquipmentTable.querySelectorAll("button");
+    if (lastSelect >= 0 && lastSelect < buttons.length) {
+      buttons[lastSelect].click();
+    }
   });
 
-}());
+  win.whenUp(["up", "down"], function (key) {
+    let count = statusWindowEquipmentTable.querySelectorAll("button").length;
+
+    if (lastSelect == -1) {
+      if (key == "down") {
+        win.open(0);
+      } else if (key == "up") {
+        win.open(count - 1);
+      }
+    } else {
+      if (key == "down") {
+        let select = lastSelect + 1;
+        if (select >= count) {
+          select = 0;
+        }
+        win.open(select);
+      } else if (key == "up") {
+        let select = lastSelect - 1;
+        if (select < 0) {
+          select = count - 1;
+        }
+        win.open(select);
+      }
+    }
+  });
+
+  win.register("open", function (select) {
+    win.update(select);
+    win.show();
+  });
+
+
+})();

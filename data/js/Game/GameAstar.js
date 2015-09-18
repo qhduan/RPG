@@ -24,7 +24,7 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-(function (Game) {
+(function () {
   "use strict";
 
   Game.Astar = (function () {
@@ -147,5 +147,5 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     return null;
   }
-})(Game);
+})();
 //# sourceMappingURL=GameAstar.js.map

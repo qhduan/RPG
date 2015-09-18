@@ -18,13 +18,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+
 (function () {
   "use strict";
 
   // 加载区域，把括地图，角色，物品
   Game.loadArea = function (id, callback) {
 
-    var preloadItems = ["bag", "gold"];
+    let preloadItems = ["bag", "gold"];
     preloadItems = preloadItems.filter(function (element) {
       if (Game.items && Game.items[element]) {
         return false;
@@ -33,13 +34,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     if (preloadItems.length > 0) {
-      var itemLoader = Sprite.Loader.create();
+      let itemLoader = Sprite.Loader.create();
       preloadItems.forEach(function (element) {
         itemLoader.add(`/item/${element}.json`);
       });
       itemLoader.start().on("complete", function (event) {
         preloadItems.forEach(function (element, index) {
-          var itemData = event.data[index];
+          let itemData = event.data[index];
           Game.items[element] = new Game.Item(itemData);
         })
       });
@@ -51,26 +52,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       .start()
       .on("complete", function (event) {
 
-      var mapData = event.data[0];
-      var mapExtra = event.data[1];
+      let mapData = event.data[0];
+      let mapExtra = event.data[1];
 
       for (let key in mapExtra) {
         mapData[key] = mapExtra[key];
       }
 
-      var mapObj = new Game.Map(mapData);
+      let mapObj = new Game.Map(mapData);
       mapObj.on("complete", function () {
 
-        var area = {
+        let area = {
           actors: new Set(),
-          bags: {},
+          bags: new Set(),
           touch: [], // touch或onto会触发的地点/物品
           onto: [], // onto会触发的地点/物品
           map: mapObj
         };
 
-        var completeCount = -1;
-        var Complete = () => {
+        let completeCount = -1;
+        let Complete = () => {
           completeCount++;
           if (completeCount >= 0) {
             callback(area);
@@ -85,17 +86,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               .add(`actor/${element.id}.json`)
               .start()
               .on("complete", function (event) {
-              var actorData = Sprite.copy(event.data[0]);
-              actorData.x = element.x;
-              actorData.y = element.y;
-              actorData.mode = element.mode;
-              var actorObj = new Game.Actor(actorData);
+              let actorData = Sprite.copy(event.data[0]);
+              for (let key in element) {
+                actorData[key] = element[key];
+              }
+              let actorObj = new Game.Actor(actorData);
               actorObj.on("complete", function () {
                 area.actors.add(actorObj);
                 actorObj.draw(Game.layers.actorLayer);
-                if (element.hasOwnProperty("visible")) {
-                  actorObj.visible = element.visible;
-                }
                 Complete();
               });
             });
@@ -104,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (mapExtra.onto) {
           mapExtra.onto.forEach(function (element) {
-            var onto = Sprite.copy(element);
+            let onto = Sprite.copy(element);
             onto.type = "onto";
             area.onto.push(onto);
           });
@@ -112,8 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (mapExtra.touch) {
           mapExtra.touch.forEach(function (element) {
-            var touch = Sprite.copy(element);
-            touch.type = "touch";
+            let touch = Sprite.copy(element);
             area.touch.push(touch);
           });
         }

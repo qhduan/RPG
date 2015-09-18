@@ -59,21 +59,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var mapWindowClose = document.querySelector("button#mapWindowClose");
+  let mapWindowClose = document.querySelector("button#mapWindowClose");
 
   mapWindowClose.addEventListener("click", function (event) {
     Game.windows.map.hide();
   });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.map.showing) {
-      mapWindowClose.click();
-    }
+  win.whenUp(["esc"], function (key) {
+    mapWindowClose.click();
   });
 
   win.on("beforeShow", function (event) {
     if (Game.area && Game.area.map.minimap) {
-      var div = document.querySelector("div#mapWindowMap");
+      let div = document.querySelector("div#mapWindowMap");
       while(div.hasChildNodes()) {
         div.removeChild(div.lastChild);
       }
@@ -81,4 +79,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-}());
+
+})();

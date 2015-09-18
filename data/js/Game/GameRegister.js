@@ -187,7 +187,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "hitArea": [[0, 0]],
 
     // 能力
-    "skills": ["sword01", // 剑攻击Level1
+    "skills": ["fist01", "sword01", // 剑攻击Level1
     "spear01", // 枪攻击Level1
     "bow01", // 弓攻击Level1
     "fire01"],

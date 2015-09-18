@@ -77,47 +77,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   sysmenuWindowInventory.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
-    Game.windows.inventory.execute("open");
+    win.hide();
+    Game.windows.inventory.open();
   });
 
   sysmenuWindowStatus.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
-    Game.windows.status.execute("open");
+    win.hide();
+    Game.windows.status.open();
   });
 
   sysmenuWindowSkill.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
-    Game.windows.skill.execute("open");
+    win.hide();
+    Game.windows.skill.open();
   });
 
   sysmenuWindowQuest.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
+    win.hide();
     Game.windows.quest.show();
   });
 
   sysmenuWindowMap.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
+    win.hide();
     Game.windows.map.show();
   });
 
   sysmenuWindowSetting.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
+    win.hide();
     Game.windows.setting.show();
   });
 
   sysmenuWindowArchive.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
-    Game.windows.archive.execute("open");
+    win.hide();
+    Game.windows.archive.open();
   });
 
   sysmenuWindowExit.addEventListener("click", function (event) {
     Game.clearStage();
-    Game.windows.sysmenu.hide();
+    win.hide();
     Game.windows.main.show();
   });
 
   sysmenuWindowClose.addEventListener("click", function (event) {
-    Game.windows.sysmenu.hide();
+    win.hide();
   });
 })();
+//# sourceMappingURL=GameWindowSysmenu.js.map

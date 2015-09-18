@@ -34,7 +34,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   var internal = Sprite.Namespace();
 
   var windows = {};
-
   Game.windows = windows;
 
   var zIndex = 227;
@@ -138,7 +137,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       pp.css = document.createElement("style");
       pp.html = document.createElement("div");
       pp.index = -1;
-      pp.exec = {};
 
       pp.html.id = id + "Window";
       pp.html.classList.add("game-window");
@@ -226,16 +224,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }, {
       key: "register",
-      value: function register(name, callback) {
-        internal(this).exec[name] = callback;
-        return this;
-      }
-    }, {
-      key: "execute",
-      value: function execute(name) {
-        var args = Array.prototype.slice.call(arguments);
-        args.splice(0, 1);
-        internal(this).exec[name].apply(this, args);
+      value: function register(name, object) {
+        Object.defineProperty(this, name, {
+          enumerable: false,
+          configurable: false,
+          writable: false,
+          value: object
+        });
+
         return this;
       }
     }, {
@@ -352,3 +348,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   ;
 })();
+//# sourceMappingURL=GameWindow.js.map

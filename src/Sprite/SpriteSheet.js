@@ -1,4 +1,4 @@
-/*
+/*import "js/Sprite/SpriteDisplay";
 
 2D Game Sprite Library, Built using JavaScript ES6
 Copyright (C) 2015 qhduan(http://qhduan.com)
@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Display
    */
-  Sprite.Sheet = class SpriteSheet extends Sprite.Display {
+  Sprite.register("Sheet", class SpriteSheet extends Sprite.Display {
     /**
      * construct Sprite.Sheet
      * @param config
@@ -317,6 +317,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       frame.draw(renderer);
     }
 
-  };
+  });
 
-})(Sprite);
+
+})();

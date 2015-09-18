@@ -21,34 +21,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var popupCache = new Map();
+  let popupCache = new Map();
 
   Game.popup = function (obj, text, adjustX = 0, adjustY = 0) {
 
     if (popupCache.has(obj)) {
-      var popup = popupCache.get(obj);
+      let popup = popupCache.get(obj);
       Game.layers.dialogueLayer.removeChild(popup.container);
       clearInterval(popup.timer);
       popupCache.delete(obj);
     }
 
-    var dialogueText = new Sprite.Text({
+    let dialogueText = new Sprite.Text({
       text: text,
       maxWidth: 200,
     });
 
-    var w = dialogueText.width;
-    var h = dialogueText.height;
-    var middle = Math.round((w + 10) / 2);
+    let w = dialogueText.width;
+    let h = dialogueText.height;
+    let middle = Math.round((w + 10) / 2);
 
-    var dialogueBox = new Sprite.Shape();
+    let dialogueBox = new Sprite.Shape();
 
     dialogueBox.polygon({
       points: `0,0 ${w+10},0 ${w+10},${h+10} ${middle+5},${h+10} ${middle},${h+15} ${middle-5},${h+10} 0,${h+10} 0,0`,
       fill: "white"
     });
 
-    var dialogueContainer = new Sprite.Container();
+    let dialogueContainer = new Sprite.Container();
     dialogueContainer.appendChild(dialogueBox, dialogueText);
     dialogueText.x = 5;
     dialogueText.y = 5;
@@ -66,9 +66,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     }
 
-    var timer = setTimeout(() => {
+    let timer = setTimeout(() => {
       if (popupCache.has(obj)) {
-        var popup = popupCache.get(obj);
+        let popup = popupCache.get(obj);
         Game.layers.dialogueLayer.removeChild(popup.container);
         popupCache.delete(obj);
       }
@@ -103,4 +103,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   };
 
-}());
+})();

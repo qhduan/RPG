@@ -27,9 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = "\n    <div id=\"interfaceWindowBar\"></div>\n\n    <div style=\"position: absolute; bottom: 10px; left: 20px; width: 100px; height: 60px;\">\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowHP\" style=\"width: 100%; height: 100%; background-color: green;\"></div>\n      </div>\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowSP\" style=\"width: 100%; height: 100%; background-color: blue;\"></div>\n      </div>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n    <span id=\"interfaceWindowDatetime\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ";
 
-  win.css = "\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    #interfaceWindow {\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    button.interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n  ";
+  win.css = "\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    #interfaceWindow {\n      /** 让interface窗口的主要窗口，不接受事件 */\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      /** 让interface窗口的按钮，接受事件 */\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    button.interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n  ";
 
-  win.use = document.querySelector("button#interfaceWindowUse");
+  var interfaceWindowUse = document.querySelector("button#interfaceWindowUse");
+
+  win.register("hideUse", function () {
+    interfaceWindowUse.style.visibility = "hidden";
+  });
+
+  win.register("showUse", function () {
+    interfaceWindowUse.style.visibility = "visible";
+  });
 
   win.on("active", function () {
     Game.start();
@@ -44,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var interfaceWindowMap = document.querySelector("span#interfaceWindowMap");
   var interfaceWindowMenu = document.querySelector("button#interfaceWindowMenu");
 
-  Sprite.Input.whenUp(["esc"], function (key) {
+  win.whenUp(["esc"], function (key) {
     if (Game.windows["interface"].atop) {
       setTimeout(function () {
         interfaceWindowMenu.click();
@@ -80,7 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               delete Game.hero.data.items[itemId];
               Game.hero.data.bar[index] = null;
             }
-            Game.windows["interface"].execute("refresh");
+            Game.windows["interface"].refresh();
           }
         }
       });
@@ -91,18 +99,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var element = Game.hero.data.bar[num];
     if (element) {
       if (element.type == "skill") {
-        var cooldown = Game.hero.fire(element.id);
-        var button = document.querySelector("#interfaceWindowButton-" + num);
-        button.disabled = true;
-        setTimeout(function () {
-          button.disabled = false;
-        }, cooldown);
-        //button.style.disabled = "true";
+        (function () {
+          var cooldown = Game.hero.fire(element.id);
+          var button = document.querySelector("#interfaceWindowButton-" + num);
+          button.disabled = true;
+          setTimeout(function () {
+            button.disabled = false;
+          }, cooldown);
+          //button.style.disabled = "true";
+        })();
       } else if (element.type == "item") {}
     }
   }
 
-  Sprite.Input.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
     var num = parseInt(key);
     // 只有在interface窗口是only存在的时候才使用快捷键
     if (Number.isInteger(num) && Game.windows["interface"].atop) {
@@ -110,19 +120,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  Sprite.Input.whenUp(["e", "E"], function (key) {
+  win.whenUp(["e", "E", "space", "enter"], function (key) {
     if (Game.windows["interface"].showing) {
-      if (Game.hintObject) {
-        win.use.click();
+      if (Game.hintObject && Game.hintObject.heroUse) {
+        Game.hintObject.heroUse();
       }
     }
   });
 
-  win.use.addEventListener("click", function (event) {
-    if (Game.hintObject) {
-      if (Game.hintObject.heroUse) {
-        Game.hintObject.heroUse();
-      }
+  interfaceWindowUse.addEventListener("click", function (event) {
+    if (Game.hintObject && Game.hintObject.heroUse) {
+      Game.hintObject.heroUse();
     }
   });
 
@@ -192,7 +200,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   setInterval(function () {
     if (Game.hero) {
       Game.hero.data.time++;
-      Game.windows["interface"].execute("datetime");
+      Game.windows["interface"].datetime();
     }
   }, 1000);
 
@@ -225,10 +233,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   win.on("beforeShow", function () {
-    Game.windows["interface"].execute("refresh");
+    Game.windows["interface"].refresh();
   });
 
   interfaceWindowMenu.addEventListener("click", function (event) {
     Game.windows.sysmenu.show();
   });
 })();
+//# sourceMappingURL=GameWindowInterface.js.map

@@ -40,8 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   Game.initInput = function () {
-/*
-    var mousePressed = false;
+  /*
+    let mousePressed = false;
 
     Game.stage.on("stagemousedown", function (event) {
       mousePressed = true;
@@ -57,15 +57,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     */
 
     Game.windows.stage.on("mousedown", function (event) {
-      var data = event.data;
+      let data = event.data;
+
+      // console.log(data.x, data.y, Game.hero.sprite.x, Game.hero.sprite.y, Game.hero.sprite.hitTest(data.x, data.y));
 
       data.x += Game.stage.centerX;
       data.y += Game.stage.centerY;
+
       data.x = Math.floor(data.x / 32);
       data.y = Math.floor(data.y / 32);
 
       if (Game.hero.x != data.x || Game.hero.y != data.y) {
-        Game.hero.goto(data.x, data.y, "run");
+        Game.hero.goto(data.x, data.y, "run", function () {
+          if (Game.hintObject && Game.hintObject.heroUse) {
+            Game.hintObject.heroUse();
+          }
+        });
       }
     });
 
@@ -76,7 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (!Game.area) return;
       if (!Game.area.map) return;
 
-      var state;
+      let state;
       if (Sprite.Input.isPressed("shift")) {
         state = "run";
       } else {
@@ -91,5 +98,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.hero.focus();
     });
   }; // Game.oninit
+
 
 })();

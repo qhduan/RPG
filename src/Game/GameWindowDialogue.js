@@ -76,22 +76,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var dialogueWindowSpeaker = document.querySelector("#dialogueWindowSpeaker");
+  let dialogueWindowSpeaker = document.querySelector("#dialogueWindowSpeaker");
 
-  var dialogueContent = [];
-  var dialogueIndex = 0;
-  var dialogueWindowNext = document.getElementById("dialogueWindowNext");
-  var dialogueWindowClose = document.getElementById("dialogueWindowClose");
-  var dialogueWindowContent = document.getElementById("dialogueWindowContent");
+  let dialogueContent = [];
+  let dialogueIndex = 0;
+  let dialogueWindowNext = document.getElementById("dialogueWindowNext");
+  let dialogueWindowClose = document.getElementById("dialogueWindowClose");
+  let dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
   dialogueWindowNext.addEventListener("click", function () {
     DialogueNext();
   });
 
   dialogueWindowClose.addEventListener("click", function () {
-    Game.windows.dialogue.hide();
-    dialogueContent = [];
-    dialogueIndex = 0;
+    setTimeout(function () {
+      Game.windows.dialogue.hide();
+      dialogueContent = [];
+      dialogueIndex = 0;
+    }, 20);
   });
 
   Game.dialogue = function (content, name) {
@@ -113,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  Sprite.Input.whenDown(["enter", "space"], function () {
+  win.whenUp(["enter", "space", "esc"], function () {
     if (Game.windows.dialogue.showing) {
       if (dialogueWindowNext.style.display != "none") {
         dialogueWindowNext.click();
@@ -123,4 +125,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-}());
+
+})();

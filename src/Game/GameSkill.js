@@ -24,11 +24,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.Skill = class GameSkill extends Sprite.Event {
     static load (id, callback) {
       Sprite.Loader.create()
-        .add(`/skill/${id}.json`);
-        .start();
+        .add(`/skill/${id}.json`)
+        .start()
         .on("complete", (event) => {
-        var skillData = event.data[0];
-        var skillObj = new Game.Skill(skillData);
+        let skillData = event.data[0];
+        let skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
         skillObj.on("complete", () => {
           if (typeof callback == "function") {
@@ -50,11 +50,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         .add(`/skill/${this.data.sound}`)
         .start()
         .on("complete", (event) => {
-        var image = event.data[0];
+        let image = event.data[0];
         this.icon = event.data[1];
         this.sound = event.data[2];
 
-        var sheet = new Sprite.Sheet({
+        let sheet = new Sprite.Sheet({
           images: [image],
           width: this.data.tilewidth,
           height: this.data.tileheight,
@@ -75,10 +75,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (typeof this.data.power == "number") {
         return this.data.power;
       } else if (typeof this.data.power == "string") {
-        var m = this.data.power.match(/(\d+)d(\d+)/);
-        var times = parseInt(m[1]);
-        var dice = parseInt(m[2]);
-        var sum = 0;
+        let m = this.data.power.match(/(\d+)d(\d+)/);
+        let times = parseInt(m[1]);
+        let dice = parseInt(m[2]);
+        let sum = 0;
         for (let i = 0; i < times; i++) {
           sum += Sprite.rand(0, dice);
         }
@@ -102,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     can (attacker) {
-      var Type2Text = {
+      let Type2Text = {
         sword: "剑",
         spear: "枪",
         bow: "弓"
@@ -110,7 +110,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       if (this.data.needweapontype && attacker == Game.hero) {
         if (Game.hero.data.equipment.weapon) {
-          var weapon = Game.items[Game.hero.data.equipment.weapon];
+          let weapon = Game.items[Game.hero.data.equipment.weapon];
           if (weapon.data.type != this.data.needweapontype) {
             Game.popup(Game.hero.sprite, `这个技能需要装备 '${Type2Text[this.data.needweapontype]}' 类型的武器`, 0, -40);
             return false;
@@ -131,8 +131,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.sound.play();
       }
 
-      var animation = "attack" + direction;
-      var sprite = this.sprite.clone();
+      let animation = "attack" + direction;
+      let sprite = this.sprite.clone();
 
       // 矫正武器效果位置
       sprite.x = attacker.sprite.x;
@@ -163,12 +163,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
       // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的举例
-      var distance = 0;
+      let distance = 0;
       // 被命中的actor列表
-      var hitted = [];
-      var CheckHit = () => {
+      let hitted = [];
+      let CheckHit = () => {
         // 技能所在当前方格
-        var l1 = Game.area.map.tile(sprite);
+        let l1 = Game.area.map.tile(sprite);
         if (this.data.distance > 0
           && (l1.x < 0
             || l1.y < 0
@@ -188,7 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       };
 
-      var listener = Sprite.Ticker.on("tick", () => {
+      let listener = Sprite.Ticker.on("tick", () => {
 
         if (this.data.distance > 0) {
           distance += 4;
@@ -229,11 +229,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
       // 攻击结束时运行Stop函数
-      var Finish = () => {
+      let Finish = () => {
         Sprite.Ticker.off("tick", listener);
 
         if (hitted.length > 0 && this.data.animations["hitted"]) {
-          var actor = hitted[0];
+          let actor = hitted[0];
           sprite.x = actor.sprite.x;
           sprite.y = actor.sprite.y;
           sprite.play("hitted");

@@ -18,17 +18,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
-  var hitCanvas = document.createElement("canvas");
+  let hitCanvas = document.createElement("canvas");
   hitCanvas.width = 1;
   hitCanvas.height = 1;
-  var hitContext = hitCanvas.getContext("2d");
+  let hitContext = hitCanvas.getContext("2d");
   hitContext.clearRect(0, 0, 1, 1);
-  var hitData = hitContext.getImageData(0, 0, 1, 1).data;
+  let hitData = hitContext.getImageData(0, 0, 1, 1).data;
 
 
   /**
@@ -36,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * @class
    * @extends Sprite.Event
    */
-  Sprite.Display = class Display extends Sprite.Event {
+  Sprite.register("Display", class Display extends Sprite.Event {
     /**
      * construct Sprite.Display
      * @constructor
@@ -194,25 +195,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} renderer
      */
     draw (renderer) {
+      console.error("sub-class should override this function");
       throw new Error("Invalid call Sprite.Display.draw");
     }
     /**
      * Check if the x,y hit this object or not
-     * @param {number} x the x position for test
-     * @param {number} y the y position for test
+     * @param {number} x the x position of screen (may 0 to 640) for test
+     * @param {number} y the y position of screen (may 0 to 480) for test
      */
     hitTest (x, y) {
+      this.debug = true;
       hitContext.clearRect(0, 0, 1, 1);
       hitContext.save();
       hitContext.translate(-x, -y);
       this.draw(hitContext);
       hitContext.restore();
-      var newData = hitContext.getImageData(0, 0, 1, 1).data;
+      let newData = hitContext.getImageData(0, 0, 1, 1).data;
 
       if (hitData[0] != newData[0] || hitData[1] != newData[1] || hitData[2] != newData[2]) {
         return true;
       }
       return false;
+    }
+
+
+    drawPosition () {
+
+      let centerX = this.centerX;
+      let centerY = this.centerY;
+      let x = this.x;
+      let y = this.y;
+      let alpha = this.alpha;
+
+      let parent = this.parent;
+      while (parent) {
+        centerX += parent.centerX;
+        centerY += parent.centerY;
+        x += parent.x;
+        y += parent.y;
+        alpha *= parent.alpha;
+        if (alpha <= 0.001) {
+          return null;
+        }
+        if (parent.visible == false) {
+          return null;
+        }
+        parent = parent.parent;
+      }
+
+      return {
+        x: x - centerX,
+        y: y - centerY,
+        alpha: alpha
+      };
     }
     /**
      * Draw an image to renderer
@@ -233,45 +268,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} sheight
      */
     drawImage (renderer, image, sx, sy, swidth, sheight) {
-      if (this.visible != internal(this).visible) {
-        throw new Error("ssss");
-      }
-      if (this.visible == true && this.alpha > 0) {
-        let center = {
-          x: this.centerX,
-          y: this.centerY
-        };
-        let position = {
-          x: this.x,
-          y: this.y
-        };
+      if (this.visible == true && this.alpha > 0.001) {
 
-        let alpha = this.alpha;
-
-        var obj = this.parent;
-        while (obj) {
-          center.x += obj.centerX;
-          center.y += obj.centerY;
-          position.x += obj.x;
-          position.y += obj.y;
-          alpha *= obj.alpha;
-          if (alpha <= 0) {
-            return;
-          }
-          if (obj.visible == false) {
-            return;
-          }
-          obj = obj.parent;
+        let d = this.drawPosition();
+        if (!d) {
+          return;
         }
+        renderer.alpha = d.alpha;
 
-        var dx = position.x - center.x;
-        var dy = position.y - center.y;
-
-        renderer.alpha = alpha;
         try {
           renderer.drawImage(
             image, sx, sy, swidth, sheight,
-            dx, dy, swidth, sheight
+            d.x, d.y, swidth, sheight
           );
         } catch (e) {
           console.error(
@@ -282,6 +290,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
     }
-  };
+  });
 
-})(Sprite);
+
+})();

@@ -35,16 +35,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     if (preloadItems.length > 0) {
-      var itemLoader = Sprite.Loader.create();
-      preloadItems.forEach(function (element) {
-        itemLoader.add("/item/" + element + ".json");
-      });
-      itemLoader.start().on("complete", function (event) {
-        preloadItems.forEach(function (element, index) {
-          var itemData = event.data[index];
-          Game.items[element] = new Game.Item(itemData);
+      (function () {
+        var itemLoader = Sprite.Loader.create();
+        preloadItems.forEach(function (element) {
+          itemLoader.add("/item/" + element + ".json");
         });
-      });
+        itemLoader.start().on("complete", function (event) {
+          preloadItems.forEach(function (element, index) {
+            var itemData = event.data[index];
+            Game.items[element] = new Game.Item(itemData);
+          });
+        });
+      })();
     }
 
     Sprite.Loader.create().add("map/" + id + ".json", "map/" + id + "_extra.json").start().on("complete", function (event) {
@@ -61,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         var area = {
           actors: new Set(),
-          bags: {},
+          bags: new Set(),
           touch: [], // touch或onto会触发的地点/物品
           onto: [], // onto会触发的地点/物品
           map: mapObj
@@ -80,16 +82,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             completeCount--;
             Sprite.Loader.create().add("actor/" + element.id + ".json").start().on("complete", function (event) {
               var actorData = Sprite.copy(event.data[0]);
-              actorData.x = element.x;
-              actorData.y = element.y;
-              actorData.mode = element.mode;
+              for (var key in element) {
+                actorData[key] = element[key];
+              }
               var actorObj = new Game.Actor(actorData);
               actorObj.on("complete", function () {
                 area.actors.add(actorObj);
                 actorObj.draw(Game.layers.actorLayer);
-                if (element.hasOwnProperty("visible")) {
-                  actorObj.visible = element.visible;
-                }
                 Complete();
               });
             });
@@ -107,7 +106,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (mapExtra.touch) {
           mapExtra.touch.forEach(function (element) {
             var touch = Sprite.copy(element);
-            touch.type = "touch";
             area.touch.push(touch);
           });
         }
@@ -117,3 +115,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   };
 })();
+//# sourceMappingURL=GameArea.js.map

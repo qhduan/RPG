@@ -35,10 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.map.hide();
   });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.map.showing) {
-      mapWindowClose.click();
-    }
+  win.whenUp(["esc"], function (key) {
+    mapWindowClose.click();
   });
 
   win.on("beforeShow", function (event) {
@@ -51,3 +49,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
+//# sourceMappingURL=GameWindowMap.js.map

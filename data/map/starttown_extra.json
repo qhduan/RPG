@@ -10,17 +10,36 @@
     {
       "id": "starttown-mayor",
       "x": 54,
-      "y": 49,
-      "visible": false
+      "y": 49
     },
     {
       "id": "starttown-weapontrade",
       "x": 46,
-      "y": 38,
-      "visible": false
+      "y": 38
     }
   ],
   "touch": [
+    {
+      "comment": "提示信息",
+      "x": 60,
+      "y": 51,
+      "type": "message",
+      "content": "镇长家"
+    },
+    {
+      "comment": "提示信息",
+      "x": 66,
+      "y": 55,
+      "type": "message",
+      "content": "旅馆"
+    },
+    {
+      "comment": "提示信息",
+      "x": 51,
+      "y": 40,
+      "type": "message",
+      "content": "武器店"
+    }
   ],
   "onto": [
     {
@@ -30,58 +49,6 @@
       "dest": "starttown-southforest",
       "destx": 14,
       "desty": 2
-    },
-    {
-      "comment": "进入长屋",
-      "x": 54,
-      "y": 52,
-      "hidemap": ["longhouse-roof", "longhouse-decoration"],
-      "showactor": ["starttown-mayor"]
-    },
-    {
-      "comment": "离开长屋",
-      "x": 54,
-      "y": 53,
-      "showmap": ["longhouse-roof", "longhouse-decoration"],
-      "hideactor": ["starttown-mayor"]
-    },
-    {
-      "comment": "进入武器店",
-      "x": 46,
-      "y": 41,
-      "hidemap": ["weapon-roof", "weapon-decoration"],
-      "showactor": ["starttown-weapontrade"]
-    },
-    {
-      "comment": "离开武器店",
-      "x": 46,
-      "y": 42,
-      "showmap": ["weapon-roof", "weapon-decoration"],
-      "hideactor": ["starttown-weapontrade"]
-    },
-    {
-      "comment": "进入旅馆",
-      "x": 70,
-      "y": 56,
-      "hidemap": ["inn-roof", "inn-decoration"]
-    },
-    {
-      "comment": "离开旅馆",
-      "x": 70,
-      "y": 57,
-      "showmap": ["inn-roof", "inn-decoration"]
-    },
-    {
-      "comment": "进入房屋",
-      "x": 32,
-      "y": 55,
-      "hidemap": ["house-roof", "house-decoration"]
-    },
-    {
-      "comment": "离开房屋",
-      "x": 32,
-      "y": 56,
-      "showmap": ["house-roof", "house-decoration"]
     }
   ]
 }

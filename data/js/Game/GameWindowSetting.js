@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   settingWindowClose.addEventListener("click", function (event) {
-    Game.windows.setting.hide();
+    win.hide();
   });
 
   settingWindowScale.addEventListener("click", function (event) {
@@ -48,10 +48,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.Window.resize();
   });
 
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.setting.showing) {
-      settingWindowClose.click();
-    }
+  win.whenUp(["esc"], function (key) {
+    settingWindowClose.click();
   });
 
   function toggleFullScreen() {
@@ -84,3 +82,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     toggleFullScreen();
   });
 })();
+//# sourceMappingURL=GameWindowSetting.js.map

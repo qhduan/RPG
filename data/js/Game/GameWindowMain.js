@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   mainWindowLoad.addEventListener("click", function (event) {
-    Game.windows.archive.execute("open");
+    Game.windows.archive.open();
   });
 })();
+//# sourceMappingURL=GameWindowMain.js.map

@@ -48,34 +48,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var lastItems = null;
 
   tradeWindowAll.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, null);
+    Game.windows.trade.open(lastItems, null);
   });
 
   tradeWindowWeapon.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "sword|spear|bow");
+    Game.windows.trade.open(lastItems, "sword|spear|bow");
   });
 
   tradeWindowArmor.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "head|body|feet");
+    Game.windows.trade.open(lastItems, "head|body|feet");
   });
 
   tradeWindowPotion.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "potion");
+    Game.windows.trade.open(lastItems, "potion");
   });
 
   tradeWindowMaterial.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "material");
+    Game.windows.trade.open(lastItems, "material");
   });
 
   tradeWindowBook.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "book|scroll|letter");
+    Game.windows.trade.open(lastItems, "book|scroll|letter");
   });
 
   tradeWindowMisc.addEventListener("click", function (event) {
-    Game.windows.trade.execute("trade", lastItems, "misc");
+    Game.windows.trade.open(lastItems, "misc");
   });
 
-  win.register("trade", function (items, filter) {
+  win.register("open", function (items, filter) {
 
     lastItems = items;
 
@@ -159,7 +159,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else {
             Game.hero.data.items[itemId] = 1;
           }
-          Game.windows.trade.execute("trade", items, filter);
+          win.open(items, filter);
         });
       }
 
@@ -217,13 +217,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           Game.hero.data.items[itemId]--;
         }
         Game.hero.data.gold += item.data.value;
-        Game.windows["interface"].execute("refresh");
-        Game.windows.trade.execute("trade", items, filter);
+        Game.windows["interface"].refresh();
+        win.open(items, filter);
       });
 
       tradeHeroTable.appendChild(line);
     });
 
-    Game.windows.trade.show();
+    win.show();
   });
 })();
+//# sourceMappingURL=GameWindowTrade.js.map

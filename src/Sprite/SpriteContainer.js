@@ -24,8 +24,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Contain everything which inherit from Sprite.Display
    * @class
    */
-  Sprite.Container = class Container extends Sprite.Display {
+  Sprite.register("Container", class Container extends Sprite.Display {
 
     /**
      * Construct Sprite.Container
@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.cacheCanvas) {
         return super.hitTest(x, y);
       } else {
-        var hitted = [];
+        let hitted = [];
         for (let child of this.children) {
           let ret = child.hitTest(x, y);
           if (ret instanceof Array) {
@@ -213,6 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.emit("removedChildren");
     }
 
-  };
+  });
 
-})(Sprite);
+
+})();

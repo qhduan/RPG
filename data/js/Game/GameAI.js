@@ -24,25 +24,114 @@ var _createClass = (function () { function defineProperties(target, props) { for
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-(function (Game) {
+(function () {
   "use strict";
 
   Game.AI = (function () {
-    function AI() {
-      _classCallCheck(this, AI);
+    function GameAI() {
+      _classCallCheck(this, GameAI);
     }
 
-    _createClass(AI, null, [{
+    _createClass(GameAI, null, [{
       key: "attach",
       value: function attach(hero) {
-        hero.on("change", function () {
+        var run = function run() {
           Game.AI.heroOnto();
           Game.AI.heroTouch();
+          Game.AI.autoHide();
+        };
+
+        hero.on("change", run);
+        run();
+      }
+    }, {
+      key: "autoHide",
+      value: function autoHide() {
+        var heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
+        Game.area.map.layers.forEach(function (layer, index) {
+          layer.visible = true;
+          var layerData = Game.area.map.data.layers[index];
+          if (heroHide && layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide") && layerData.properties.autohide == heroHide) {
+            layer.visible = false;
+          }
         });
+
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = Game.area.actors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var actor = _step.value;
+
+            if (actor != Game.hero) {
+              var actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
+              if (actorHide && actorHide == heroHide) {
+                actor.visible = true;
+              } else {
+                if (actorHide) {
+                  actor.visible = false;
+                } else {
+                  actor.visible = true;
+                }
+              }
+            }
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = Game.area.bags[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var bag = _step2.value;
+
+            var bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
+            if (bagHide && bagHide == heroHide) {
+              bag.visible = true;
+            } else {
+              if (bagHide) {
+                bag.visible = false;
+              } else {
+                bag.visible = true;
+              }
+            }
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
       }
     }, {
       key: "heroOnto",
       value: function heroOnto() {
+        if (!Game.area) return;
+        if (!Game.area.onto) return;
+
         var heroPosition = Game.hero.position;
         var onto = null;
 
@@ -60,7 +149,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         Sprite.each(Game.area.onto, FindUnderHero);
         if (onto) {
           if (onto.dest) {
-            Game.windows.loading.execute("begin");
+            Game.windows.loading.begin();
             setTimeout(function () {
               Game.clearStage();
               Game.pause();
@@ -77,85 +166,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 Game.windows["interface"].show();
                 Game.start();
 
-                Game.windows.loading.execute("end");
+                Game.windows.loading.end();
               });
             }, 100);
-          }
-          if (onto.showmap) {
-            Game.layers.mapLayer.children.forEach(function (element) {
-              if (onto.showmap.indexOf(element.name) != -1) {
-                element.visible = true;
-              }
-            });
-          } // showmap
-          if (onto.hidemap) {
-            Game.layers.mapLayer.children.forEach(function (element) {
-              if (onto.hidemap.indexOf(element.name) != -1) {
-                element.visible = false;
-              }
-            });
-          } // hidemap
-          if (onto.showactor) {
-            var _iteratorNormalCompletion = true;
-            var _didIteratorError = false;
-            var _iteratorError = undefined;
-
-            try {
-              for (var _iterator = Game.area.actors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                var actor = _step.value;
-
-                if (onto.showactor.indexOf(actor.id) != -1) {
-                  actor.visible = true;
-                }
-              }
-            } catch (err) {
-              _didIteratorError = true;
-              _iteratorError = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion && _iterator["return"]) {
-                  _iterator["return"]();
-                }
-              } finally {
-                if (_didIteratorError) {
-                  throw _iteratorError;
-                }
-              }
-            }
-          } // showactor
-          if (onto.hideactor) {
-            var _iteratorNormalCompletion2 = true;
-            var _didIteratorError2 = false;
-            var _iteratorError2 = undefined;
-
-            try {
-              for (var _iterator2 = Game.area.actors[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-                var actor = _step2.value;
-
-                if (onto.hideactor.indexOf(actor.id) != -1) {
-                  actor.visible = false;
-                }
-              }
-            } catch (err) {
-              _didIteratorError2 = true;
-              _iteratorError2 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-                  _iterator2["return"]();
-                }
-              } finally {
-                if (_didIteratorError2) {
-                  throw _iteratorError2;
-                }
-              }
-            }
-          } // hideactor
+          } // dest, aka. door
         } // touch
       }
     }, {
       key: "heroTouch",
       value: function heroTouch() {
+        if (!Game.area) return;
+        if (!Game.area.actors) return;
+        if (!Game.area.bags) return;
+        if (!Game.area.touch) return;
+
         var heroPosition = Game.hero.position;
         var heroFace = Game.hero.facePosition;
         var touch = null;
@@ -207,10 +231,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         if (!touch) {
           Game.hintObject = null;
-          Game.windows["interface"].use.style.visibility = "hidden";
+          Game.windows["interface"].hideUse();
         } else {
+
+          if (touch.type == "message") {
+            touch.heroUse = function () {
+              Game.popup({
+                x: touch.x * 32 + 16,
+                y: touch.y * 32 + 16
+              }, touch.content, 0, -30);
+            };
+          }
+
           Game.hintObject = touch;
-          Game.windows["interface"].use.style.visibility = "visible";
+          Game.windows["interface"].showUse();
         }
       }
     }, {
@@ -226,7 +260,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
               var actor = _step3.value;
 
               if (actor.data.type == "hero") {
-                barChanged = false;
+                var barChanged = false;
 
                 if (actor.data.hp < actor.data.$hp) {
                   actor.data.hp++;
@@ -242,7 +276,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   actor.refreshBar();
                 }
               } else if (actor.data.type == "monster") {
-                barChanged = false;
+
+                var barChanged = false;
 
                 if (actor.data.hp < actor.data.$hp) {
                   actor.data.hp++;
@@ -286,9 +321,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                       v: undefined
                     };
                   }
-                  x = actor.x;
-                  y = actor.y;
-
+                  var x = actor.x;
+                  var y = actor.y;
                   actor.goto(x + Sprite.rand(-5, 5), y + Sprite.rand(-5, 5), "walk", function () {
                     actor.stop();
                   });
@@ -297,11 +331,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             };
 
             for (var _iterator3 = Game.area.actors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var barChanged;
-              var barChanged;
-              var x;
-              var y;
-
               var _ret = _loop();
 
               if (typeof _ret === "object") return _ret.v;
@@ -333,6 +362,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }]);
 
-    return AI;
+    return GameAI;
   })();
-})(Game);
+})();
+//# sourceMappingURL=GameAI.js.map

@@ -23,8 +23,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  Sprite.Tween = class SpriteTween extends Sprite.Event {
+  Sprite.register("Tween", class SpriteTween extends Sprite.Event {
 
     constructor () {
       super();
@@ -89,6 +89,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     static get (object) {
       return new Tween(object);
     }
-  };
+  });
 
-})(Sprite);
+})();

@@ -23,12 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
   let vertexShaderSrc = `
+  precision lowp float;
   attribute vec2 position;
   attribute vec2 a_texCoord;
 
@@ -36,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   varying vec2 texCoord;
 
-  void main() {
+  void main(void) {
      // convert the rectangle from pixels to 0.0 to 1.0
      vec2 zeroToOne = position / resolution;
 
@@ -75,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // the texCoords passed in from the vertex shader.
   varying vec2 texCoord;
 
-  void main() {
+  void main(void) {
      // Look up a color from the texture.
      // gl_FragColor = texture2D(image, texCoord);
 
@@ -134,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Renderer using webgl
    * @class
    */
-  Sprite.Webgl = class Webgl {
+  Sprite.register("Webgl", class Webgl {
 
     /**
      * @static
@@ -430,7 +432,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Webgl.canvas cannot write");
     }
 
+  });
 
-  };
 
-})(Sprite);
+
+})();

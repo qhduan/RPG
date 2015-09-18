@@ -9,6 +9,6 @@
   "type": "spear",
   "image": "resource\/spearIron.png",
   "centerX": 17,
-  "centerY": 17,
+  "centerY": 25,
   "hitArea": [[0, 0]]
 }

@@ -24,15 +24,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let win = Game.Window.create("confirm");
 
   win.html = `
-    <div style="width: 100%; height: 100%; background-color: rgba(100, 100, 100, 0.8);">
+  <div class="window-box">
+    <div style="width: 100%; height: 100%;">
       <table>
         <tr><td><span id="confirmWindowMessage"></span></td></tr>
         <tr><td>
-          <button id="confirmWindowYes">确定</button>
-          <button id="confirmWindowNo">取消</button>
+          <button id="confirmWindowYes" class="brownButton">确定</button>
+          <button id="confirmWindowNo" class="brownButton">取消</button>
         </td></tr>
       </table>
     </div>
+  </div>
   `;
 
   win.css = `
@@ -55,29 +57,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-size: 16px;
       margin: 20px;
     }
+
+    #confirmWindowMessage {
+      color: black;
+      font-size: 20px;
+    }
   `;
 
+  let confirmWindowMessage = document.querySelector("#confirmWindowMessage");
+  let confirmWindowYes = document.querySelector("button#confirmWindowYes");
+  let confirmWindowNo = document.querySelector("button#confirmWindowNo");
 
-  var confirmHandle = null;
+  let confirmHandle = null;
 
   Game.confirm = function (message, callback) {
-    document.getElementById("confirmWindowMessage").textContent = message;
+    if (typeof callback != "function") {
+      console.error(callback, message);
+      throw new Error("Game.onfirm got invalid callback");
+    }
+    confirmWindowMessage.textContent = message;
     confirmHandle = callback;
-    Game.windows.confirm.show();
+    win.show();
   };
 
-  document.querySelector("button#confirmWindowYes").addEventListener("click", function () {
-    Game.windows.confirm.hide();
-    if (typeof confirmHandle == "function") {
-      confirmHandle(true);
-    }
+  win.whenUp(["y", "Y"], function () {
+    confirmWindowYes.click();
   });
 
-  document.querySelector("button#confirmWindowNo").addEventListener("click", function () {
-    Game.windows.confirm.hide();
-    if (typeof confirmHandle == "function") {
-      confirmHandle(false);
-    }
+  win.whenUp(["n", "N"], function () {
+    confirmWindowNo.click();
   });
 
-}());
+  confirmWindowYes.addEventListener("click", function () {
+    win.hide();
+    confirmHandle(true);
+  });
+
+  confirmWindowNo.addEventListener("click", function () {
+    win.hide();
+    confirmHandle(false);
+  });
+
+
+})();

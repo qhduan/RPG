@@ -18,6 +18,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
+/**
+ * @fileoverview Class Sprite.Frame
+ * @author mail@qhduan.com (QH Duan)
+ */
+
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -28,7 +33,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
-(function (Sprite) {
+(function () {
+  "use strict";
 
   var internal = Sprite.Namespace();
 
@@ -36,7 +42,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
    */
-  Sprite.Frame = (function (_Sprite$Display) {
+  Sprite.register("Frame", (function (_Sprite$Display) {
     _inherits(SpriteFrame, _Sprite$Display);
 
     function SpriteFrame(image, sx, sy, width, height) {
@@ -136,9 +142,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }]);
 
     return SpriteFrame;
-  })(Sprite.Display);
-})(Sprite);
-/**
- * @fileoverview Class Sprite.Frame
- * @author mail@qhduan.com (QH Duan)
- */
+  })(Sprite.Display));
+})();
+//# sourceMappingURL=SpriteFrame.js.map

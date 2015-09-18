@@ -42,9 +42,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   dialogueWindowClose.addEventListener("click", function () {
-    Game.windows.dialogue.hide();
-    dialogueContent = [];
-    dialogueIndex = 0;
+    setTimeout(function () {
+      Game.windows.dialogue.hide();
+      dialogueContent = [];
+      dialogueIndex = 0;
+    }, 20);
   });
 
   Game.dialogue = function (content, name) {
@@ -66,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  Sprite.Input.whenDown(["enter", "space"], function () {
+  win.whenUp(["enter", "space", "esc"], function () {
     if (Game.windows.dialogue.showing) {
       if (dialogueWindowNext.style.display != "none") {
         dialogueWindowNext.click();
@@ -76,3 +78,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
+//# sourceMappingURL=GameWindowDialogue.js.map

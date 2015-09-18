@@ -23,12 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function (Sprite) {
-  "use strict";
+(function () {
+ "use strict";
 
   let internal = Sprite.Namespace();
 
-  Sprite.Bitmap = class SpriteBitmap extends Sprite.Display {
+  Sprite.register("Bitmap", class SpriteBitmap extends Sprite.Display {
     /**
      * Sprite.Bitmap's constructor
      * @constructor
@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     clone () {
-      var bitmap = new Sprite.Bitmap(internal(this).image);
+      let bitmap = new Sprite.Bitmap(internal(this).image);
       bitmap.x = this.x;
       bitmap.y = this.y;
       bitmap.centerX = this.centerX;
@@ -103,6 +103,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.drawImage(renderer, this.image, 0, 0, this.width, this.height);
     }
 
-  };
+  });
 
-})(Sprite);
+
+})();

@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let internal = Sprite.Namespace();
 
   let windows = {};
-
   Game.windows = windows;
 
   let zIndex = 227;
@@ -37,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     static clear () {
-      var nodes = document.getElementsByClassName("game-window");
+      let nodes = document.getElementsByClassName("game-window");
       for (let i = 0; i < nodes.length; i++) {
         nodes[i].style.display = "none";
       }
@@ -45,11 +44,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 当窗口大小改变时改变游戏窗口大小
     static resize () {
-      var width = window.innerWidth;
-      var height = window.innerHeight;
-      var scale = 1;
-      var leftMargin = 0;
-      var topMargin = 0;
+      let width = window.innerWidth;
+      let height = window.innerHeight;
+      let scale = 1;
+      let leftMargin = 0;
+      let topMargin = 0;
 
       if (Game.config.scale == false) {
         // 不拉伸游戏窗口，按原始大小计算窗口居中
@@ -57,10 +56,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         topMargin = Math.floor((height - Game.config.height) / 2);
       } else {
         // 拉伸游戏窗口，首先计算游戏原始大小比例
-        var ratio = Game.config.width / Game.config.height;
+        let ratio = Game.config.width / Game.config.height;
         // width first
-        var w = width;
-        var h = w / ratio;
+        let w = width;
+        let h = w / ratio;
         // then height
         if (h > height) {
           h = height;
@@ -81,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       // html窗口拉伸（css中控制了原始大小）
-      var elements = document.getElementsByClassName("game-window");
+      let elements = document.getElementsByClassName("game-window");
       for (let i = 0; i < elements.length; i++) {
         elements[i].style.transformOrigin = "0 0 0";
         elements[i].style.transform = `scale(${scale}, ${scale})`;
@@ -113,7 +112,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       pp.css = document.createElement("style");
       pp.html = document.createElement("div");
       pp.index = -1;
-      pp.exec = {};
 
       pp.html.id = id + "Window";
       pp.html.classList.add("game-window");
@@ -122,12 +120,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.body.appendChild(pp.css)
 
       pp.html.addEventListener("mousedown", (event) => {
-        var x = event.clientX;
-        var y = event.clientY;
+        let x = event.clientX;
+        let y = event.clientY;
 
-        var left = null;
-        var top = null;
-        var scale = null;
+        let left = null;
+        let top = null;
+        let scale = null;
 
         if (pp.html.style.left) {
           let t = pp.html.style.left.match(/(\d+)px/);
@@ -190,15 +188,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return this;
     }
 
-    register (name, callback) {
-      internal(this).exec[name] = callback;
-      return this;
-    }
+    register (name, object) {
+      Object.defineProperty(this, name, {
+        enumerable: false,
+        configurable: false,
+        writable: false,
+        value: object
+      });
 
-    execute (name) {
-      let args = Array.prototype.slice.call(arguments);
-      args.splice(0, 1);
-      internal(this).exec[name].apply(this, args);
       return this;
     }
 
@@ -306,4 +303,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   };
 
-}());
+})();

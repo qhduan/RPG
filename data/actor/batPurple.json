@@ -8,7 +8,7 @@
   },
   "image": "resource\/batPurple.png",
   "centerX": 16,
-  "centerY": 16,
+  "centerY": 32,
   "hitArea": [[0, 0]],
   "level": 1,
   "$str": 5,

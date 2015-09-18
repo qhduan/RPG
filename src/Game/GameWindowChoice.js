@@ -68,56 +68,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
-  var buttonArray = [];
+  let choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
+  let choiceWindowNo = document.querySelector("button#choiceWindowNo");
+  let buttonArray = [];
 
   Game.choice = function (options, callback) {
-
-    while (choiceWindowButtonContainer.hasChildNodes()) {
-      choiceWindowButtonContainer.removeChild(choiceWindowButtonContainer.lastChild);
-    }
+    choiceWindowButtonContainer.innerHTML = "";
     buttonArray = [];
 
-    Game.windows.choice.show();
+    win.show();
     Sprite.each(options, function (value, key) {
-      var button = document.createElement("button");
+      let button = document.createElement("button");
       button.textContent = `${buttonArray.length+1}. ${key}`;
+      button.classList.add("brownButton");
+
       choiceWindowButtonContainer.appendChild(button);
       buttonArray.push(button);
 
-      button.classList.add("brownButton");
-
       button.addEventListener("click", function () {
-        if (Game.windows.choice.showing) {
-          Game.windows.choice.hide();
-          if (typeof callback == "function") {
+        if (win.atop) {
+          win.hide();
+          if (typeof callback == "function")
             callback(value);
-          }
         }
       });
     });
   };
 
-  document.querySelector("button#choiceWindowNo").addEventListener("click", function () {
-    Game.windows.choice.hide();
-    if (typeof choiceHandle == "function") {
+  choiceWindowNo.addEventListener("click", function () {
+    win.hide();
+    if (typeof choiceHandle == "function")
       choiceHandle(null);
+  });
+
+  win.whenUp(["esc"], function () {
+    setTimeout(function () {
+      win.hide();
+      if (typeof choiceHandle == "function")
+        choiceHandle(null);
+    }, 20);
+  });
+
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+    // match 1 to 9
+    let num = parseInt(key) - 1; // get 0 to 8
+    let element = buttonArray[num];
+    if (element) {
+      element.click();
     }
   });
 
-  Sprite.Input.whenDown(["1", "2", "3", "4", "5", "6", "7", "8", "9", "esc"], function (key) {
-    if (Game.windows.choice.showing) {
-      if (key.match(/^\d$/)) {
-        // match 1 to 9
-        var num = parseInt(key) - 1; // get 0 to 8
-        var element = buttonArray[num];
-        if (element) {
-          element.click();
-        }
-      } else if (key == "esc") {
-        document.querySelector("button#choiceWindowNo").click();
-      }
-    }
-  });
 
-}());
+})();

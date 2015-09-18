@@ -74,8 +74,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // WWWHHH
     var key = A.w * 1000 + A.h;
-    var canvas;
-    var context;
+    var canvas = undefined;
+    var context = undefined;
     if (collideCavansCache.has(key)) {
       canvas = collideCavansCache.get(key).canvas;
       context = collideCavansCache.get(key).context;

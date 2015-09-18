@@ -37,6 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   registerWindowBack.addEventListener("click", function () {
-    Game.windows.register.hide();
+    win.hide();
   });
 })();
+//# sourceMappingURL=GameWindowRegister.js.map

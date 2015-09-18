@@ -26,12 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html = `
     <div class="window-box">
       <button id="pickupWindowClose" class="brownButton">关闭</button>
-      <button id="pickupWindowAll" class="brownButton">全部(a)</button>
+      <button id="pickupWindowAll" class="brownButton">A 全部</button>
       <table border="1" cellspacing="0" cellpadding="0">
         <thead>
           <tr>
             <td style="width: 40px;"></td>
             <td style="width: 120px;"></td>
+            <td style="width: 30px;"></td>
             <td style="width: 30px;"></td>
             <td></td>
             <td style="width: 60px;"></td>
@@ -67,107 +68,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  var pickupWindowClose = document.querySelector("button#pickupWindowClose");
-  var pickupWindowAll = document.querySelector("button#pickupWindowAll");
+  let pickupWindowClose = document.querySelector("button#pickupWindowClose");
+  let pickupWindowAll = document.querySelector("button#pickupWindowAll");
+  let pickupWindowTable = document.querySelector("#pickupWindowTable");
+
+  let currentItemObj = null;
+  let lastSelect = -1;
 
   pickupWindowClose.addEventListener("click", function (event) {
     Game.windows.pickup.hide();
   });
 
-  var currentItemObj = null;
-
   pickupWindowAll.addEventListener("click", function (event) {
-    var itemObj = currentItemObj;
+    let itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
       Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
-        if (Game.hero.data.items[itemId]) {
-          Game.hero.data.items[itemId] += itemCount;
-        } else {
-          Game.hero.data.items[itemId] = itemCount;
-        }
-        delete inner[itemId];
-      });
-      Game.windows.pickup.execute("pickup", itemObj);
-    }
-  });
-
-  Sprite.Input.whenUp(["a", "A"], function (key) {
-    if (Game.windows.pickup.showing) {
-      pickupWindowAll.click();
-    }
-  });
-
-  Sprite.Input.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
-    if (Game.windows.pickup.showing) {
-      var index = parseInt(key) - 1;
-      var button = document.querySelector(`button#pickupWindowGet-${index}`);
-      if (button) {
-        button.click();
-      }
-    }
-  });
-
-  win.register("pickup", function (itemObj) {
-    if (!itemObj.inner || Object.keys(itemObj.inner).length <= 0) {
-      for (let key in Game.area.bags) {
-        if (Game.area.bags[key] == itemObj) {
-          delete Game.area.bags[key];
-          itemObj.erase(Game.layers.itemLayer);
-        }
-      }
-      Game.windows.pickup.hide();
-      return;
-    }
-
-    currentItemObj = itemObj;
-
-    var tableBody = document.getElementById("pickupWindowTable");
-    while (tableBody.hasChildNodes()) {
-      tableBody.removeChild(tableBody.lastChild);
-    }
-
-    var index = 0;
-
-    Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
-      var item = Game.items[itemId];
-
-      var line = document.createElement("tr");
-
-      var icon = document.createElement("td");
-      line.appendChild(icon);
-
-      var name = document.createElement("td");
-      line.appendChild(name);
-
-      var count = document.createElement("td");
-      count.style.textAlign = "center";
-      line.appendChild(count);
-
-      var description = document.createElement("td");
-      line.appendChild(description);
-
-      var pickup = document.createElement("td");
-      line.appendChild(pickup);
-
-      icon.appendChild(item.icon);
-      name.textContent = item.data.name;
-      count.textContent = itemCount;
-      description.textContent = item.data.description;
-
-      var pickupButton = document.createElement("button");
-
-      if (index < 9) {
-        pickupButton.textContent = `${index+1}捡取`;
-      } else {
-        pickupButton.textContent = "捡取";
-      }
-      pickupButton.id = `pickupWindowGet-${index}`;
-      index++;
-
-      pickupButton.classList.add("brownButton");
-
-      pickupButton.addEventListener("click", function () {
-        if(itemId == "gold") {
+        if (itemId == "gold") {
           Game.hero.data.gold += itemCount;
         } else {
           if (Game.hero.data.items[itemId]) {
@@ -176,16 +92,132 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.hero.data.items[itemId] = itemCount;
           }
         }
-
         delete inner[itemId];
-        Game.windows.pickup.execute("pickup", itemObj);
       });
-      pickup.appendChild(pickupButton);
+      Game.windows.pickup.open(itemObj);
+    }
+  });
 
-      tableBody.appendChild(line);
+  win.whenUp(["a", "A"], function (key) {
+    pickupWindowAll.click();
+  });
+
+  win.whenUp(["esc"], function (key) {
+    setTimeout(function () {
+      win.hide();
+    }, 20);
+  });
+
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+    let buttons = pickupWindowTable.querySelectorAll("button");
+    for (let i = 0; i < buttons.length; i++) {
+      let buttonIndex = buttons[i].getAttribute("data-index");
+      if (buttonIndex) {
+        if (buttonIndex == key) {
+          buttons[i].click();
+        }
+      }
+    }
+  });
+
+  win.register("open", function (itemObj, select) {
+    if (typeof select == "undefined") {
+      select = -1;
+    }
+
+    lastSelect = select;
+
+    if (!itemObj.inner || Object.keys(itemObj.inner).length <= 0) {
+      for (let bag of Game.area.bags) {
+        if (bag == itemObj) {
+          Game.area.bags.delete(bag);
+          itemObj.erase();
+        }
+      }
+      Game.windows.pickup.hide();
+      return;
+    }
+
+    currentItemObj = itemObj;
+
+    let index = 1;
+    let table = "";
+    Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+      let item = Game.items[itemId];
+
+      let line = "";
+
+      if (select == (index - 1)) {
+        line += `<tr style="background-color: green;">\n`;
+      } else {
+        line += `<tr>\n`;
+      }
+
+      line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+      line += `  <td>${item.data.name}</td>\n`;
+      line += `  <td style="text-align: center;">${item.data.value}G</td>\n`;
+      line += `  <td style="text-align: center;">${itemCount}</td>\n`;
+      line += `  <td>${item.data.description}</td>\n`;
+      line += `  <td><button data-id="${itemId}" data-index="${index}" class="brownButton">${index<=9?(index):""} 拿取</button></td>\n`;
+
+      line += "</tr>\n";
+      table += line;
+      index++;
     });
 
+    pickupWindowTable.innerHTML = table;
     Game.windows.pickup.show();
   });
 
-}());
+  win.whenUp(["enter"], function () {
+    let buttons = pickupWindowTable.querySelectorAll("button");
+    if (lastSelect >= 0 && lastSelect < buttons.length) {
+      buttons[lastSelect].click();
+    }
+  });
+
+  win.whenUp(["up", "down"], function (key) {
+    let count = pickupWindowTable.querySelectorAll("button").length;
+
+    if (lastSelect == -1) {
+      if (key == "down") {
+        win.open(currentItemObj, 0);
+      } else if (key == "up") {
+        win.open(currentItemObj, count - 1);
+      }
+    } else {
+      if (key == "down") {
+        let select = lastSelect + 1;
+        if (select >= count) {
+          select = 0;
+        }
+        win.open(currentItemObj, select);
+      } else if (key == "up") {
+        let select = lastSelect - 1;
+        if (select < 0) {
+          select = count - 1;
+        }
+        win.open(currentItemObj, select);
+      }
+    }
+  });
+
+  pickupWindowTable.addEventListener("click", function (event) {
+    let itemId = event.target.getAttribute("data-id");
+    if (itemId && currentItemObj.inner && currentItemObj.inner.hasOwnProperty(itemId)) {
+      let itemCount = currentItemObj.inner[itemId];
+      if(itemId == "gold") {
+        Game.hero.data.gold += itemCount;
+      } else {
+        if (Game.hero.data.items.hasOwnProperty(itemId)) {
+          Game.hero.data.items[itemId] += itemCount;
+        } else {
+          Game.hero.data.items[itemId] = itemCount;
+        }
+      }
+      delete currentItemObj.inner[itemId];
+      win.open(currentItemObj);
+    }
+  });
+
+})();

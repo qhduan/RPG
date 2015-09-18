@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.Window.create("inventory");
 
-  win.html = "\n    <div class=\"window-box\">\n      <div id=\"inventoryWindowItemBar\">\n\n        <button id=\"inventoryWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"inventoryWindowStatus\" class=\"brownButton\">状态</button>\n\n        <button id=\"inventoryWindowAll\" class=\"brownButton\">全部</button>\n        <button id=\"inventoryWindowWeapon\" class=\"brownButton\">武器</button>\n        <button id=\"inventoryWindowArmor\" class=\"brownButton\">护甲</button>\n        <button id=\"inventoryWindowPotion\" class=\"brownButton\">药水</button>\n        <button id=\"inventoryWindowMaterial\" class=\"brownButton\">材料</button>\n        <button id=\"inventoryWindowBook\" class=\"brownButton\">书籍</button>\n        <button id=\"inventoryWindowMisc\" class=\"brownButton\">其他</button>\n      </div>\n\n      <span id=\"inventoryWindowGold\"></span>\n\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"inventoryWindowTable\"></tbody>\n      </table>\n    </div>\n  ";
+  win.html = "\n    <div class=\"window-box\">\n      <div id=\"inventoryWindowItemBar\">\n\n        <button id=\"inventoryWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"inventoryWindowStatus\" class=\"brownButton\">状态</button>\n\n        <button id=\"inventoryWindowAll\" class=\"brownButton\">全部</button>\n        <button id=\"inventoryWindowWeapon\" class=\"brownButton\">武器</button>\n        <button id=\"inventoryWindowArmor\" class=\"brownButton\">护甲</button>\n        <button id=\"inventoryWindowPotion\" class=\"brownButton\">药水</button>\n        <button id=\"inventoryWindowMaterial\" class=\"brownButton\">材料</button>\n        <button id=\"inventoryWindowBook\" class=\"brownButton\">书籍</button>\n        <button id=\"inventoryWindowMisc\" class=\"brownButton\">其他</button>\n      </div>\n\n      <span id=\"inventoryWindowGold\"></span>\n\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"inventoryWindowTable\"></tbody>\n      </table>\n    </div>\n  ";
 
-  win.css = "\n    #inventoryWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #inventoryWindowClose {\n      float: right;\n    }\n\n    #inventoryWindowStatus {\n      float: right;\n    }\n\n    #inventoryWindow table {\n      width: 100%;\n    }\n\n    #inventoryWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #inventoryWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #inventoryWindowGold {\n      position: absolute;\n      right: 30px;\n      bottom: 5px;\n      font-size: 20px;\n      color: gold;\n    }\n  ";
+  win.css = "\n    #inventoryWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #inventoryWindowClose {\n      float: right;\n    }\n\n    #inventoryWindowStatus {\n      float: right;\n    }\n\n    #inventoryWindow table {\n      width: 100%;\n    }\n\n    #inventoryWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #inventoryWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #inventoryWindowGold {\n      position: absolute;\n      right: 100px;\n      bottom: 30px;\n      font-size: 20px;\n      color: black;\n    }\n  ";
 
   var inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
   var inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");
@@ -41,55 +41,63 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   var inventoryWindowMisc = document.querySelector("button#inventoryWindowMisc");
 
   var inventoryWindowGold = document.querySelector("span#inventoryWindowGold");
+  var inventoryWindowTable = document.querySelector("#inventoryWindowTable");
 
   inventoryWindowClose.addEventListener("click", function (event) {
-    Game.windows.inventory.hide();
-  });
-
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.inventory.showing) {
-      inventoryWindowClose.click();
-    }
+    win.hide();
   });
 
   inventoryWindowStatus.addEventListener("click", function (event) {
-    Game.windows.inventory.hide();
-    Game.windows.status.execute("open");
+    win.hide();
+    Game.windows.status.open();
+  });
+
+  win.whenUp(["tab"], function () {
+    setTimeout(function () {
+      win.hide();
+      Game.windows.status.open();
+    }, 20);
   });
 
   inventoryWindowAll.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", null);
+    win.open();
   });
 
   inventoryWindowWeapon.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "sword|spear|bow");
+    win.open("sword|spear|bow");
   });
 
   inventoryWindowArmor.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "head|body|feet");
+    win.open("head|body|feet");
   });
 
   inventoryWindowPotion.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "potion");
+    win.open("potion");
   });
 
   inventoryWindowMaterial.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "material");
+    win.open("material");
   });
 
   inventoryWindowBook.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "book|scroll|letter");
+    win.open("book|scroll|letter");
   });
 
   inventoryWindowMisc.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "misc");
+    win.open("misc");
   });
 
-  win.register("open", function (filter) {
-    var tableBody = document.querySelector("tbody#inventoryWindowTable");
-    while (tableBody.hasChildNodes()) {
-      tableBody.removeChild(tableBody.lastChild);
+  var lastFilter = null;
+  var lastSelect = -1;
+
+  win.register("open", function (filter, select) {
+
+    if (typeof select == "undefined") {
+      select = -1;
     }
+
+    lastFilter = filter;
+    lastSelect = select;
 
     var defaultColor = "white";
     var activeColor = "yellow";
@@ -120,6 +128,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     inventoryWindowGold.textContent = Game.hero.data.gold + "G";
 
+    var table = "";
+    var index = 0;
     var ids = Object.keys(Game.hero.data.items);
     ids.sort();
     ids.forEach(function (itemId) {
@@ -133,34 +143,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       if (filter && filter.indexOf(item.data.type) == -1) return;
 
-      var line = document.createElement("tr");
+      var line = "";
 
-      var icon = document.createElement("td");
-      icon.appendChild(item.icon);
-      line.appendChild(icon);
+      if (select == index) {
+        line += "<tr style=\"background-color: green;\">\n";
+      } else {
+        line += "<tr>\n";
+      }
 
-      var name = document.createElement("td");
-      name.textContent = item.data.name;
-      if (equipment) name.style.color = "red";
-      line.appendChild(name);
+      line += "  <td><img alt=\"\" src=\"" + item.icon.src + "\"></td>\n";
+      line += "  <td>" + (equipment ? "*" : "") + item.data.name + "</td>\n";
+      line += "  <td style=\"text-align: center;\">" + item.data.value + "G</td>\n";
+      line += "  <td style=\"text-align: center;\">" + itemCount + "</td>\n";
+      line += "  <td>" + item.data.description + "</td>\n";
+      line += "  <td><button data-id=\"" + itemId + "\" class=\"brownButton\">操作</button></td>\n";
+      line += "</tr>\n";
+      table += line;
+      index++;
+    });
 
-      var count = document.createElement("td");
-      count.textContent = itemCount;
-      count.style.textAlign = "center";
-      line.appendChild(count);
+    inventoryWindowTable.innerHTML = table;
+    win.show();
+  });
 
-      var description = document.createElement("td");
-      description.textContent = item.data.description;
-      line.appendChild(description);
+  win.whenUp(["enter"], function () {
+    var buttons = inventoryWindowTable.querySelectorAll("button");
+    if (lastSelect >= 0 && lastSelect < buttons.length) {
+      buttons[lastSelect].click();
+    }
+  });
 
-      var manage = document.createElement("td");
-      var manageButton = document.createElement("button");
-      manageButton.textContent = "操作";
-      manage.appendChild(manageButton);
+  win.whenUp(["up", "down"], function (key) {
+    var count = inventoryWindowTable.querySelectorAll("button").length;
 
-      manageButton.classList.add("brownButton");
+    if (lastSelect == -1) {
+      if (key == "down") {
+        win.open(lastFilter, 0);
+      } else if (key == "up") {
+        win.open(lastFilter, count - 1);
+      }
+    } else {
+      if (key == "down") {
+        var select = lastSelect + 1;
+        if (select >= count) {
+          select = 0;
+        }
+        win.open(lastFilter, select);
+      } else if (key == "up") {
+        var select = lastSelect - 1;
+        if (select < 0) {
+          select = count - 1;
+        }
+        win.open(lastFilter, select);
+      }
+    }
+  });
 
-      manageButton.addEventListener("click", function () {
+  inventoryWindowTable.addEventListener("click", function (event) {
+    var itemId = event.target.getAttribute("data-id");
+    if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
+      (function () {
+        var item = Game.items[itemId];
+        var itemCount = Game.hero.data.items[itemId];
+        var equipment = null;
+
+        Sprite.each(Game.hero.data.equipment, function (element, key) {
+          if (element == item.id) equipment = key;
+        });
+
         var options = {};
         if (item.data.type.match(/potion/)) {
           options["使用"] = "use";
@@ -182,11 +232,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 type = "weapon";
               }
               Game.hero.data.equipment[type] = item.id;
-              return Game.windows.inventory.execute("open", filter);
+              return win.open(lastFilter);
               break;
             case "takeoff":
               if (item.data.type.match(/sword|spear|bow/)) Game.hero.data.equipment.weapon = null;else Game.hero.data.equipment[item.data.type] = null;
-              return Game.windows.inventory.execute("open", filter);
+              return win.open(lastFilter);
               break;
             case "use":
               break;
@@ -194,15 +244,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               break;
             case "drop":
               if (equipment) Game.hero.data.equipment[equipment] = null;
-              var dead = Game.items.bag.clone();
-              dead.x = Game.hero.x;
-              dead.y = Game.hero.y;
-              dead.draw(Game.layers.itemLayer);
-              dead.inner = {};
-              dead.inner[item.id] = itemCount;
-              Game.area.bags[Sprite.uuid()] = dead;
-              delete Game.hero.data.items[item.id];
-              return Game.windows.inventory.execute("open", filter);
+
+              var bag = null;
+              var _iteratorNormalCompletion = true;
+              var _didIteratorError = false;
+              var _iteratorError = undefined;
+
+              try {
+                for (var _iterator = Game.area.bags[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+                  var b = _step.value;
+
+                  if (b.hitTest(Game.hero.x, Game.hero.y)) {
+                    bag = b;
+                  }
+                }
+              } catch (err) {
+                _didIteratorError = true;
+                _iteratorError = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion && _iterator["return"]) {
+                    _iterator["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError) {
+                    throw _iteratorError;
+                  }
+                }
+              }
+
+              if (!bag) {
+                bag = Game.items.bag.clone();
+                bag.on("complete", function () {
+                  bag.x = Game.hero.x;
+                  bag.y = Game.hero.y;
+                  bag.draw();
+                  bag.inner = {};
+                  Game.area.bags.add(bag);
+                });
+              }
+
+              if (bag.inner.hasOwnProperty(itemId)) {
+                bag.inner[item.id] += itemCount;
+              } else {
+                bag.inner[item.id] = itemCount;
+              }
+
+              delete Game.hero.data.items[itemId];
+
+              Game.hero.data.bar.forEach(function (element, index, array) {
+                if (element && element.id == itemId) {
+                  array[index] = null;
+                }
+              });
+
+              Game.windows["interface"].refresh();
+              return win.open(lastFilter);
               break;
             case "shortcut":
               Game.choice({
@@ -220,18 +317,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     id: item.id,
                     type: "item"
                   };
-                  Game.windows["interface"].execute("refresh");
+                  Game.windows["interface"].refresh();
                 }
               });
               break;
           }
         });
-      });
-      line.appendChild(manage);
+      })();
+    }
+  });
 
-      tableBody.appendChild(line);
-    });
+  win.whenUp(["esc"], function () {
+    setTimeout(function () {
+      win.hide();
+    }, 20);
+  });
 
-    Game.windows.inventory.show();
+  win.whenUp(["left", "right"], function (key) {
+    if (key == "right") {
+      var filter = lastFilter;
+      if (filter == null) {
+        filter = "sword|spear|bow";
+      } else if (filter.match(/sword/)) {
+        filter = "head|body|feet";
+      } else if (filter.match(/head/)) {
+        filter = "potion";
+      } else if (filter.match(/potion/)) {
+        filter = "material";
+      } else if (filter.match(/material/)) {
+        filter = "book|scroll|letter";
+      } else if (filter.match(/book/)) {
+        filter = "misc";
+      } else if (filter.match(/misc/)) {
+        filter = null;
+      }
+      win.open(filter, -1);
+    } else if (key == "left") {
+      var filter = lastFilter;
+      if (filter == null) {
+        filter = "misc";
+      } else if (filter.match(/sword/)) {
+        filter = null;
+      } else if (filter.match(/head/)) {
+        filter = "sword|spear|bow";
+      } else if (filter.match(/potion/)) {
+        filter = "head|body|feet";
+      } else if (filter.match(/material/)) {
+        filter = "potion";
+      } else if (filter.match(/book/)) {
+        filter = "material";
+      } else if (filter.match(/misc/)) {
+        filter = "book|scroll|letter";
+      }
+      win.open(filter, -1);
+    }
   });
 })();
+//# sourceMappingURL=GameWindowInventory.js.map

@@ -47,6 +47,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <td style="width: 40px;"></td>
             <td style="width: 120px;"></td>
             <td style="width: 30px;"></td>
+            <td style="width: 30px;"></td>
             <td></td>
             <td style="width: 60px;"></td>
           </tr>
@@ -92,77 +93,85 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     #inventoryWindowGold {
       position: absolute;
-      right: 30px;
-      bottom: 5px;
+      right: 100px;
+      bottom: 30px;
       font-size: 20px;
-      color: gold;
+      color: black;
     }
   `;
 
-  var inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
-  var inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");
+  let inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
+  let inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");
 
-  var inventoryWindowAll = document.querySelector("button#inventoryWindowAll");
-  var inventoryWindowWeapon = document.querySelector("button#inventoryWindowWeapon");
-  var inventoryWindowArmor = document.querySelector("button#inventoryWindowArmor");
-  var inventoryWindowPotion = document.querySelector("button#inventoryWindowPotion");
-  var inventoryWindowMaterial = document.querySelector("button#inventoryWindowMaterial");
-  var inventoryWindowBook = document.querySelector("button#inventoryWindowBook");
-  var inventoryWindowMisc = document.querySelector("button#inventoryWindowMisc");
+  let inventoryWindowAll = document.querySelector("button#inventoryWindowAll");
+  let inventoryWindowWeapon = document.querySelector("button#inventoryWindowWeapon");
+  let inventoryWindowArmor = document.querySelector("button#inventoryWindowArmor");
+  let inventoryWindowPotion = document.querySelector("button#inventoryWindowPotion");
+  let inventoryWindowMaterial = document.querySelector("button#inventoryWindowMaterial");
+  let inventoryWindowBook = document.querySelector("button#inventoryWindowBook");
+  let inventoryWindowMisc = document.querySelector("button#inventoryWindowMisc");
 
-  var inventoryWindowGold = document.querySelector("span#inventoryWindowGold");
+  let inventoryWindowGold = document.querySelector("span#inventoryWindowGold");
+  let inventoryWindowTable = document.querySelector("#inventoryWindowTable");
 
   inventoryWindowClose.addEventListener("click", function (event) {
-    Game.windows.inventory.hide();
-  });
-
-  Sprite.Input.whenUp(["esc"], function (key) {
-    if (Game.windows.inventory.showing) {
-      inventoryWindowClose.click();
-    }
+    win.hide();
   });
 
   inventoryWindowStatus.addEventListener("click", function (event) {
-    Game.windows.inventory.hide();
-    Game.windows.status.execute("open");
+    win.hide();
+    Game.windows.status.open();
+  });
+
+  win.whenUp(["tab"], function () {
+    setTimeout(function () {
+      win.hide();
+      Game.windows.status.open();
+    }, 20);
   });
 
   inventoryWindowAll.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", null);
+    win.open();
   });
 
   inventoryWindowWeapon.addEventListener("click", function (event) {
-      Game.windows.inventory.execute("open", "sword|spear|bow");
+    win.open("sword|spear|bow");
   });
 
   inventoryWindowArmor.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "head|body|feet");
+    win.open("head|body|feet");
   });
 
   inventoryWindowPotion.addEventListener("click", function (event) {
-      Game.windows.inventory.execute("open", "potion");
+    win.open("potion");
   });
 
   inventoryWindowMaterial.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "material");
+    win.open("material");
   });
 
   inventoryWindowBook.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "book|scroll|letter");
+    win.open("book|scroll|letter");
   });
 
   inventoryWindowMisc.addEventListener("click", function (event) {
-    Game.windows.inventory.execute("open", "misc");
+    win.open("misc");
   });
 
-  win.register("open", function (filter) {
-    var tableBody = document.querySelector("tbody#inventoryWindowTable");
-    while (tableBody.hasChildNodes()) {
-      tableBody.removeChild(tableBody.lastChild);
+  let lastFilter = null;
+  let lastSelect = -1;
+
+  win.register("open", function (filter, select) {
+
+    if (typeof select == "undefined") {
+      select = -1;
     }
 
-    var defaultColor = "white";
-    var activeColor = "yellow";
+    lastFilter = filter;
+    lastSelect = select;
+
+    let defaultColor = "white";
+    let activeColor = "yellow";
 
     inventoryWindowAll.style.color = defaultColor;
     inventoryWindowWeapon.style.color = defaultColor;
@@ -190,12 +199,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     inventoryWindowGold.textContent = Game.hero.data.gold + "G";
 
-    var ids = Object.keys(Game.hero.data.items);
+    let table = "";
+    let index = 0;
+    let ids = Object.keys(Game.hero.data.items);
     ids.sort();
     ids.forEach(function (itemId) {
-      var itemCount = Game.hero.data.items[itemId];
-      var item = Game.items[itemId];
-      var equipment = null;
+      let itemCount = Game.hero.data.items[itemId];
+      let item = Game.items[itemId];
+      let equipment = null;
 
       Sprite.each(Game.hero.data.equipment, function (element, key) {
         if (element == item.id)
@@ -205,114 +216,220 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (filter && filter.indexOf(item.data.type) == -1)
         return;
 
-      var line = document.createElement("tr");
+      let line = "";
 
-      var icon = document.createElement("td");
-      icon.appendChild(item.icon);
-      line.appendChild(icon);
+      if (select == index) {
+        line += `<tr style="background-color: green;">\n`;
+      } else {
+        line += `<tr>\n`;
+      }
 
-      var name = document.createElement("td");
-      name.textContent = item.data.name;
-      if (equipment)
-        name.style.color = "red";
-      line.appendChild(name);
-
-      var count = document.createElement("td");
-      count.textContent = itemCount;
-      count.style.textAlign = "center";
-      line.appendChild(count);
-
-      var description = document.createElement("td");
-      description.textContent = item.data.description;
-      line.appendChild(description);
-
-      var manage = document.createElement("td");
-      var manageButton = document.createElement("button");
-      manageButton.textContent = "操作";
-      manage.appendChild(manageButton);
-
-      manageButton.classList.add("brownButton");
-
-      manageButton.addEventListener("click", function () {
-        var options = {};
-        if (item.data.type.match(/potion/)) {
-          options["使用"] = "use";
-          options["快捷键"] = "shortcut";
-        } else if (item.data.type.match(/sword|spear|bow|head|body|feet|neck|ring/)) {
-          if (equipment)
-            options["卸下"] = "takeoff";
-          else
-            options["装备"] = "puton";
-        } else if (item.data.type.match(/book/)) {
-          options["阅读"] = "read";
-        }
-
-        options["丢弃"] = "drop";
-
-        Game.choice(options, function (choice) {
-          // console.log(choice);
-          switch (choice) {
-            case "puton":
-              var type = item.data.type;
-              if (type.match(/sword|spear|bow/)) {
-                type = "weapon";
-              }
-              Game.hero.data.equipment[type] = item.id;
-              return Game.windows.inventory.execute("open", filter);
-              break;
-            case "takeoff":
-              if (item.data.type.match(/sword|spear|bow/))
-                Game.hero.data.equipment.weapon = null;
-              else
-                Game.hero.data.equipment[item.data.type] = null;
-              return Game.windows.inventory.execute("open", filter);
-              break;
-            case "use":
-              break;
-            case "read":
-              break;
-            case "drop":
-              if (equipment)
-                Game.hero.data.equipment[equipment] = null;
-              var dead = Game.items.bag.clone();
-              dead.x = Game.hero.x;
-              dead.y = Game.hero.y;
-              dead.draw(Game.layers.itemLayer);
-              dead.inner = {};
-              dead.inner[item.id] = itemCount;
-              Game.area.bags[Sprite.uuid()] = dead;
-              delete Game.hero.data.items[item.id];
-              return Game.windows.inventory.execute("open", filter);
-              break;
-            case "shortcut":
-              Game.choice({
-                1:0,
-                2:1,
-                3:2,
-                4:3,
-                5:4,
-                6:5,
-                7:6,
-                8:7
-              }, function (choice) {
-                if (typeof choice == "number" && choice >= 0) {
-                  Game.hero.data.bar[choice] = {
-                    id: item.id,
-                    type: "item"
-                  };
-                  Game.windows.interface.execute("refresh");
-                }
-              });
-              break;
-          }
-        });
-      });
-      line.appendChild(manage);
-
-      tableBody.appendChild(line);
+      line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+      line += `  <td>${equipment?"*":""}${item.data.name}</td>\n`;
+      line += `  <td style="text-align: center;">${item.data.value}G</td>\n`;
+      line += `  <td style="text-align: center;">${itemCount}</td>\n`;
+      line += `  <td>${item.data.description}</td>\n`;
+      line += `  <td><button data-id="${itemId}" class="brownButton">操作</button></td>\n`;
+      line += "</tr>\n";
+      table += line;
+      index++;
     });
 
-    Game.windows.inventory.show();
+    inventoryWindowTable.innerHTML = table;
+    win.show();
   });
 
-}());
+  win.whenUp(["enter"], function () {
+    let buttons = inventoryWindowTable.querySelectorAll("button");
+    if (lastSelect >= 0 && lastSelect < buttons.length) {
+      buttons[lastSelect].click();
+    }
+  });
+
+  win.whenUp(["up", "down"], function (key) {
+    let count = inventoryWindowTable.querySelectorAll("button").length;
+
+    if (lastSelect == -1) {
+      if (key == "down") {
+        win.open(lastFilter, 0);
+      } else if (key == "up") {
+        win.open(lastFilter, count - 1);
+      }
+    } else {
+      if (key == "down") {
+        let select = lastSelect + 1;
+        if (select >= count) {
+          select = 0;
+        }
+        win.open(lastFilter, select);
+      } else if (key == "up") {
+        let select = lastSelect - 1;
+        if (select < 0) {
+          select = count - 1;
+        }
+        win.open(lastFilter, select);
+      }
+    }
+  });
+
+  inventoryWindowTable.addEventListener("click", function (event) {
+    let itemId = event.target.getAttribute("data-id");
+    if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
+      let item = Game.items[itemId];
+      let itemCount = Game.hero.data.items[itemId];
+      let equipment = null;
+
+      Sprite.each(Game.hero.data.equipment, function (element, key) {
+        if (element == item.id)
+          equipment = key;
+      });
+
+      let options = {};
+      if (item.data.type.match(/potion/)) {
+        options["使用"] = "use";
+        options["快捷键"] = "shortcut";
+      } else if (item.data.type.match(/sword|spear|bow|head|body|feet|neck|ring/)) {
+        if (equipment)
+          options["卸下"] = "takeoff";
+        else
+          options["装备"] = "puton";
+      } else if (item.data.type.match(/book/)) {
+        options["阅读"] = "read";
+      }
+
+      options["丢弃"] = "drop";
+
+      Game.choice(options, function (choice) {
+        // console.log(choice);
+        switch (choice) {
+          case "puton":
+            let type = item.data.type;
+            if (type.match(/sword|spear|bow/)) {
+              type = "weapon";
+            }
+            Game.hero.data.equipment[type] = item.id;
+            return win.open(lastFilter);
+            break;
+          case "takeoff":
+            if (item.data.type.match(/sword|spear|bow/))
+              Game.hero.data.equipment.weapon = null;
+            else
+              Game.hero.data.equipment[item.data.type] = null;
+            return win.open(lastFilter);
+            break;
+          case "use":
+            break;
+          case "read":
+            break;
+          case "drop":
+            if (equipment)
+              Game.hero.data.equipment[equipment] = null;
+
+            let bag = null;
+            for (let b of Game.area.bags) {
+              if (b.hitTest(Game.hero.x, Game.hero.y)) {
+                bag = b;
+              }
+            }
+            if (!bag) {
+              bag = Game.items.bag.clone();
+              bag.on("complete", () => {
+                bag.x = Game.hero.x;
+                bag.y = Game.hero.y;
+                bag.draw();
+                bag.inner = {};
+                Game.area.bags.add(bag);
+              });
+            }
+
+            if (bag.inner.hasOwnProperty(itemId)) {
+              bag.inner[item.id] += itemCount;
+            } else {
+              bag.inner[item.id] = itemCount;
+            }
+
+            delete Game.hero.data.items[itemId];
+
+            Game.hero.data.bar.forEach(function (element, index, array) {
+              if (element && element.id == itemId) {
+                array[index] = null;
+              }
+            });
+
+            Game.windows.interface.refresh();
+            return win.open(lastFilter);
+            break;
+          case "shortcut":
+            Game.choice({
+              1:0,
+              2:1,
+              3:2,
+              4:3,
+              5:4,
+              6:5,
+              7:6,
+              8:7
+            }, function (choice) {
+              if (typeof choice == "number" && choice >= 0) {
+                Game.hero.data.bar[choice] = {
+                  id: item.id,
+                  type: "item"
+                };
+                Game.windows.interface.refresh();
+              }
+            });
+            break;
+        }
+      });
+
+    }
+  });
+
+  win.whenUp(["esc"], function () {
+    setTimeout(function () {
+      win.hide();
+    }, 20);
+  });
+
+  win.whenUp(["left", "right"], function (key) {
+    if (key == "right") {
+      let filter = lastFilter;
+      if (filter == null) {
+        filter = "sword|spear|bow";
+      } else if (filter.match(/sword/)) {
+        filter = "head|body|feet";
+      } else if (filter.match(/head/)) {
+        filter = "potion";
+      } else if (filter.match(/potion/)) {
+        filter = "material";
+      } else if (filter.match(/material/)) {
+        filter = "book|scroll|letter";
+      } else if (filter.match(/book/)) {
+        filter = "misc";
+      } else if (filter.match(/misc/)) {
+        filter = null;
+      }
+      win.open(filter, -1);
+    } else if (key == "left") {
+      let filter = lastFilter;
+      if (filter == null) {
+        filter = "misc";
+      } else if (filter.match(/sword/)) {
+        filter = null;
+      } else if (filter.match(/head/)) {
+        filter = "sword|spear|bow";
+      } else if (filter.match(/potion/)) {
+        filter = "head|body|feet";
+      } else if (filter.match(/material/)) {
+        filter = "potion";
+      } else if (filter.match(/book/)) {
+        filter = "material";
+      } else if (filter.match(/misc/)) {
+        filter = "book|scroll|letter";
+      }
+      win.open(filter, -1);
+    }
+  });
+
+
+})();
