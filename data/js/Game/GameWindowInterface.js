@@ -23,13 +23,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("interface");
+  var win = Game.windows["interface"] = Game.Window.create("interfaceWindow");
 
   win.html = "\n    <div id=\"interfaceWindowBar\"></div>\n\n    <div style=\"position: absolute; bottom: 10px; left: 20px; width: 100px; height: 60px;\">\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowHP\" style=\"width: 100%; height: 100%; background-color: green;\"></div>\n      </div>\n      <div style=\"width: 100px; height: 20px; margin: 5px 0; border: 1px solid gray; background-color: white;\">\n        <div id=\"interfaceWindowSP\" style=\"width: 100%; height: 100%; background-color: blue;\"></div>\n      </div>\n    </div>\n\n    <span id=\"interfaceWindowMap\"></span>\n    <span id=\"interfaceWindowDatetime\"></span>\n\n    <button id=\"interfaceWindowUse\" class=\"interfaceWindowButton\"></button>\n    <button id=\"interfaceWindowMenu\" class=\"interfaceWindowButton\"></button>\n  ";
 
-  win.css = "\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    #interfaceWindow {\n      /** 让interface窗口的主要窗口，不接受事件 */\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      /** 让interface窗口的按钮，接受事件 */\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    button.interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n  ";
+  win.css = "\n\n    #interfaceWindowBar {\n      text-align: center;\n      position: absolute;\n      bottom: 10px;\n      width: 100%;\n      height: 60px;\n    }\n\n    .interfaceWindow {\n      /** 让interface窗口的主要窗口，不接受事件 */\n      pointer-events: none;\n    }\n\n    button.interfaceWindowButton {\n      margin-left: 3px;\n      margin-right: 3px;\n      width: 60px;\n      height: 60px;\n      border: 4px solid gray;\n      border-radius: 10px;\n      background-color: rgba(100, 100, 100, 0.5);\n      display: inline-block;\n      /** 让interface窗口的按钮，接受事件 */\n      pointer-events: auto;\n      background-repeat: no-repeat;\n      background-size: cover;\n    }\n\n    button.interfaceWindowButton:hover {\n      opacity: 0.5;\n    }\n\n    button.interfaceWindowButton > img {\n      width: 100%;\n      height: 100%;\n    }\n\n    span#interfaceWindowMap {\n      position: absolute:\n      top: 0px;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    span#interfaceWindowDatetime {\n      position: absolute:\n      top: 200px;\n      left: 0;\n      background-color: rgba(100, 100, 100, 0.7);\n      display: inline-block;\n    }\n\n    button#interfaceWindowUse {\n      position: absolute;\n      top: 5px;\n      right: 85px;\n      visibility: hidden;\n      background-image: url(\"image/hint.png\");\n    }\n\n    button#interfaceWindowMenu {\n      position: absolute;\n      top: 5px;\n      right: 5px;\n      background-image: url(\"image/setting.png\");\n    }\n\n    interfaceWindowButton:disabled {\n      cursor: default;\n      pointer-events: none;\n      background-color: gray;\n      opacity: 0.5;\n    }\n\n    .interfaceWindowButtonText {\n      position: absolute;\n      background-color: white;\n      margin-left: -26px;\n      margin-top: 12px;\n    }\n  ";
 
-  var interfaceWindowUse = document.querySelector("button#interfaceWindowUse");
+  // 使用按钮
+  var interfaceWindowUse = win.querySelector("button#interfaceWindowUse");
+  // 技能栏按钮组
+  var interfaceWindowBar = win.querySelector("div#interfaceWindowBar");
+  // 地图信息
+  var interfaceWindowMap = win.querySelector("span#interfaceWindowMap");
+  // 选项菜单
+  var interfaceWindowMenu = win.querySelector("button#interfaceWindowMenu");
+  // 玩家的hp
+  var interfaceWindowHP = win.querySelector("#interfaceWindowHP");
+  // 玩家的sp
+  var interfaceWindowSP = win.querySelector("#interfaceWindowSP");
 
   win.assign("hideUse", function () {
     interfaceWindowUse.style.visibility = "hidden";
@@ -47,11 +58,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.pause();
   });
 
-  var interfaceWindowBar = document.querySelector("div#interfaceWindowBar");
-
-  var interfaceWindowMap = document.querySelector("span#interfaceWindowMap");
-  var interfaceWindowMenu = document.querySelector("button#interfaceWindowMenu");
-
   win.whenUp(["esc"], function (key) {
     if (Game.windows["interface"].atop) {
       setTimeout(function () {
@@ -60,63 +66,57 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  // 设置技能栏
-  for (var i = 0; i < 8; i++) {
-    (function (index) {
-      var button = document.createElement("button");
-      button.id = "interfaceWindowButton-" + index;
-      button.classList.add("interfaceWindowButton");
-      interfaceWindowBar.appendChild(button);
-
-      var text = document.createElement("label");
-      text.id = "interfaceWindowButtonText-" + index;
-      text.style.position = "absolute";
-      text.style.backgroundColor = "white";
-      text.style.marginLeft = "-26px";
-      text.style.marginTop = "12px";
-      button.appendChild(text);
-
-      button.addEventListener("click", function (event) {
-        var element = Game.hero.data.bar[index];
-        if (element) {
-          if (element.type == "skill") Game.hero.fire(element.id);else if (element.type == "item") {
-            var itemId = element.id;
-            var item = Game.items[itemId];
-            item.use(Game.hero);
-            Game.hero.data.items[itemId]--;
-            if (Game.hero.data.items[itemId] <= 0) {
-              delete Game.hero.data.items[itemId];
-              Game.hero.data.bar[index] = null;
-            }
-            Game.windows["interface"].refresh();
-          }
-        }
-      });
-    })(i);
-  }
-
-  function SkillFire(num) {
-    var element = Game.hero.data.bar[num];
-    if (element) {
-      if (element.type == "skill") {
-        (function () {
-          var cooldown = Game.hero.fire(element.id);
-          var button = document.querySelector("#interfaceWindowButton-" + num);
-          button.disabled = true;
-          setTimeout(function () {
-            button.disabled = false;
-          }, cooldown);
-          //button.style.disabled = "true";
-        })();
-      } else if (element.type == "item") {}
+  function InitInterfaceBar() {
+    var buttonCount = 8;
+    var buttonHTML = "";
+    for (var i = 0; i < buttonCount; i++) {
+      var line = "";
+      line += "<button data-index=\"" + i + "\" class=\"interfaceWindowButton\">";
+      line += "<label data-index=\"" + i + "\" class=\"interfaceWindowButtonText\"></label>";
+      line += "</button>\n";
+      buttonHTML += line;
     }
+    interfaceWindowBar.innerHTML = buttonHTML;
   }
+
+  setInterval(function () {
+    if (Game.hero) {
+      Game.hero.data.time++;
+      Game.windows["interface"].datetime();
+    }
+  }, 1000);
+
+  InitInterfaceBar();
+  var buttons = win.querySelectorAll(".interfaceWindowButton");
+  var buttonTexts = win.querySelectorAll(".interfaceWindowButtonText");
+
+  interfaceWindowBar.addEventListener("click", function (event) {
+    var index = event.target.getAttribute("data-index");
+    if (index) {
+      var element = Game.hero.data.bar[index];
+      if (element) {
+        if (element.type == "skill") {
+          var cooldown = Game.hero.fire(element.id);
+          if (cooldown) {
+            event.target.disabled = true;
+            setTimeout(function () {
+              event.target.disabled = false;
+            }, cooldown);
+          }
+        } else if (element.type == "item") {
+          var itemId = element.id;
+          var item = Game.items[itemId];
+          item.heroUse();
+          Game.windows["interface"].refresh();
+        }
+      }
+    }
+  });
 
   win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
     var num = parseInt(key);
-    // 只有在interface窗口是only存在的时候才使用快捷键
-    if (Number.isInteger(num) && Game.windows["interface"].atop) {
-      SkillFire(num - 1);
+    if (Number.isInteger(num) && num >= 0 && num < buttons.length) {
+      buttons[num - 1].click();
     }
   });
 
@@ -133,9 +133,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.hintObject.heroUse();
     }
   });
-
-  var interfaceWindowHP = document.querySelector("#interfaceWindowHP");
-  var interfaceWindowSP = document.querySelector("#interfaceWindowSP");
 
   win.assign("status", function () {
     if (Game.hero) {
@@ -159,7 +156,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var MONTHMIN = 60 * 24 * 30;
       var DAYMIN = 60 * 24;
       var HOURMIN = 60;
-      var datetime = document.querySelector("span#interfaceWindowDatetime");
+      var datetime = win.querySelector("span#interfaceWindowDatetime");
       var time = Game.hero.data.time;
       var year = Math.floor(time / YEARMIN);
       time = time % YEARMIN;
@@ -202,18 +199,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  setInterval(function () {
-    if (Game.hero) {
-      Game.hero.data.time++;
-      Game.windows["interface"].datetime();
-    }
-  }, 1000);
-
   win.assign("refresh", function () {
     for (var i = 0; i < 8; i++) {
       var element = Game.hero.data.bar[i];
-      var button = document.querySelector("#interfaceWindowButton-" + i);
-      var text = document.querySelector("#interfaceWindowButtonText-" + i);
+      var button = buttons[i];
+      var text = buttonTexts[i];
 
       if (element) {
         var id = element.id;
@@ -237,11 +227,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     interfaceWindowMap.textContent = Game.area.map.data.name;
   });
 
-  win.on("beforeShow", function () {
-    Game.windows["interface"].refresh();
-  });
-
   interfaceWindowMenu.addEventListener("click", function (event) {
     Game.windows.sysmenu.show();
   });
 })();
+//# sourceMappingURL=GameWindowInterface.js.map

@@ -28,11 +28,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.assign("ActorHero", class GameHero extends Game.Actor {
+  Game.assign("ActorHero", class GameActorHero extends Game.Actor {
     constructor (actorData) {
       super(actorData);
       let privates = internal(this);
       privates.ai = null;
+
+      this.on("kill", (event) => {
+        let actor = event.data;
+        if (actor.data.exp) {
+          this.data.exp += actor.data.exp;
+        } else {
+          this.data.exp += 1;
+        }
+        this.data.quest.current.forEach((quest) => {
+          if (quest.target.type == "kill") {
+            if (quest.target.kill.hasOwnProperty(actor.id)) {
+              let t = quest.target.kill[actor.id];
+              if (t.current < t.need) {
+                t.current++;
+              }
+            }
+          }
+        });
+      });
+    }
+
+    hasQuest (id) {
+      for (let quest of this.data.quest.current) {
+        if (id == quest.id) {
+          return true;
+        }
+      }
+      for (let quest of this.data.quest.past) {
+        if (id == quest.id) {
+          return true;
+        }
+      }
+      return false;
     }
 
     damage (attacker, skill) {
@@ -103,6 +136,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
           if (barChanged) {
             this.refreshBar();
+            if (Game.windows.status.atop) {
+              Game.windows.status.update();
+            }
           }
         }
 

@@ -110,16 +110,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             Game.windows.loading.begin();
             var heroData = data.hero;
 
+            console.time("drawHero");
+
             Game.drawHero(heroData.custom, function (heroImage) {
               heroData.image = heroImage;
               Game.hero = new Game.ActorHero(heroData);
 
+              console.timeEnd("drawHero");
+              console.time("hero complete");
+
               Game.hero.on("complete", function () {
+
+                console.timeEnd("hero complete");
+                console.time("area");
 
                 Game.loadArea(heroData.area, function (area) {
 
+                  console.timeEnd("area");
+                  console.time("map");
+
                   Game.area = area;
-                  area.map.draw(Game.layers.mapLayer);
+
+                  area.map.draw();
+
+                  console.timeEnd("map");
+                  console.time("other");
 
                   if (!Number.isInteger(Game.hero.data.x) || !Number.isInteger(Game.hero.data.y)) {
                     if (area.map.data.entry && Number.isInteger(area.map.data.entry.x) && Number.isInteger(area.map.data.entry.y)) {
@@ -135,11 +150,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                   Game.hero.draw();
                   Game.hero.focus();
                   Game.windows.main.hide();
+                  Game.windows.loading.end();
+                  Game.windows["interface"].refresh();
                   Game.windows["interface"].show();
                   Game.AI.attach(Game.hero);
                   Game.start();
 
-                  Game.windows.loading.end();
+                  console.timeEnd("other");
                 });
               });
             });
@@ -154,3 +171,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameArchive;
   })());
 })();
+//# sourceMappingURL=GameArchive.js.map

@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.assign("Skill", class GameSkill extends Sprite.Event {
     static load (id, callback) {
       Sprite.Loader.create()
-        .add(`/skill/${id}.json`)
+        .add(`skill/${id}.json`)
         .start()
         .on("complete", (event) => {
         let skillData = event.data[0];
@@ -45,9 +45,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.id = this.data.id;
 
       Sprite.Loader.create()
-        .add(`/skill/${this.data.image}`)
-        .add(`/skill/${this.data.icon}`)
-        .add(`/skill/${this.data.sound}`)
+        .add(`skill/${this.data.image}`)
+        .add(`skill/${this.data.icon}`)
+        .add(`skill/${this.data.sound}`)
         .start()
         .on("complete", (event) => {
         let image = event.data[0];

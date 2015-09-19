@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("register");
+  let win = Game.windows.register = Game.Window.create("registerWindow");
 
   win.html = `
         <div style="position: fixed; height: 250px; width: 64px; left: 50px; top: 70px;">
@@ -271,7 +271,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.css = `
 
-    #registerWindow table, #registerWindow tbody, #registerWindow tr {
+    .registerWindow table, .registerWindow tbody, .registerWindow tr {
       width: 100%;
       height: 100%;
       margin: 0;
@@ -283,12 +283,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 60px;
     }
 
-    #registerWindow {
+    .registerWindow {
       text-align: center;
       background-image: url("image/main.jpeg");
     }
 
-    #registerWindow input {
+    .registerWindow input {
       width: 240px;
       height: 40px;
       -webkit-border-radius: 5px;
@@ -300,12 +300,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       margin: 10px;
     }
 
-    #registerWindow label {
+    .registerWindow label {
       font-size: 20px;
       color: white;
     }
 
-    #registerWindow select {
+    .registerWindow select {
       width: 200px;
       height: 40px;
       -webkit-border-radius: 5px;
@@ -318,8 +318,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let registerWindowSubmit = document.querySelector("#registerWindowSubmit");
-  let registerWindowBack = document.querySelector("#registerWindowBack");
+  let registerWindowSubmit = win.querySelector("#registerWindowSubmit");
+  let registerWindowBack = win.querySelector("#registerWindowBack");
 
   registerWindowSubmit.addEventListener("click", function () {
     Game.register.submit();

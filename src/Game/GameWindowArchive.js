@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
 
-  let win = Game.Window.create("archive");
+  let win = Game.windows.archive = Game.Window.create("archiveWindow");
 
   win.html = `
     <div class="window-box">
@@ -41,13 +41,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 320px;
     }
 
-    .archiveItem {
+    .archiveWindowItem {
       border: 1px solid gray;
       border-radius: 10px;
       margin: 10px 10px;
     }
 
-    .archiveItem > button {
+    .archiveWindowItem > button {
       width: 100px;
       height: 40px;
       border-radius: 5px;
@@ -66,9 +66,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let archiveWindowSave = document.querySelector("button#archiveWindowSave");
-  let archiveWindowClose = document.querySelector("button#archiveWindowClose");
-  let archiveWindowTable = document.querySelector("#archiveWindowTable");
+  let archiveWindowSave = win.querySelector("button#archiveWindowSave");
+  let archiveWindowClose = win.querySelector("button#archiveWindowClose");
+  let archiveWindowTable = win.querySelector("#archiveWindowTable");
 
   archiveWindowSave.addEventListener("click", function () {
     let canvas = document.createElement("canvas");
@@ -106,7 +106,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     let table = "";
     let list = Game.Archive.list();
     list.forEach(function (element) {
-      let line = `<div class="archiveItem">\n`;
+      let line = `<div class="archiveWindowItem">\n`;
       let archive = Game.Archive.get(`SAVE_${element}`);
       line += `  <button data-type="remove" data-id="SAVE_${element}" class="brownButton" style="float: right;">删除</button>\n`;
       line += `  <button data-type="load" data-id="SAVE_${element}" class="brownButton" style="float: right;">读取</button>\n`;

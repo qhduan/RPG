@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("setting");
+  var win = Game.windows.setting = Game.Window.create("settingWindow");
 
-  win.html = "\n    <div class=\"window-box\">\n      <button id=\"settingWindowClose\">关闭</button>\n\n      <div id=\"settingWindowRendererType\"></div>\n\n      <div id=\"settingWindowBox\">\n        <button id=\"settingWindowFullscreen\">全屏</button>\n        <button id=\"settingWindowScale\">缩放</button>\n      </div>\n    </div>\n  ";
+  win.html = "\n    <div class=\"window-box\">\n      <button id=\"settingWindowClose\" class=\"brownButton\">关闭</button>\n\n      <div id=\"settingWindowRendererType\"></div>\n\n      <div id=\"settingWindowBox\">\n        <button id=\"settingWindowFullscreen\" class=\"brownButton\">全屏</button>\n        <button id=\"settingWindowScale\" class=\"brownButton\">缩放</button>\n      </div>\n    </div>\n  ";
 
   win.css = "\n    #settingWindowBox {\n      width: 100%;\n      height: 360px;\n    }\n\n    #settingWindowBox button {\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n      display: block;\n    }\n\n    #settingWindowClose {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      float: right;\n    }\n  ";
 
-  var settingWindowClose = document.querySelector("button#settingWindowClose");
-  var settingWindowScale = document.querySelector("button#settingWindowScale");
+  var settingWindowClose = win.querySelector("button#settingWindowClose");
+  var settingWindowScale = win.querySelector("button#settingWindowScale");
 
-  var settingWindowFullscreen = document.querySelector("button#settingWindowFullscreen");
-  var settingWindowRendererType = document.querySelector("#settingWindowRendererType");
+  var settingWindowFullscreen = win.querySelector("button#settingWindowFullscreen");
+  var settingWindowRendererType = win.querySelector("#settingWindowRendererType");
 
   win.on("beforeShow", function () {
     settingWindowRendererType.textContent = Game.stage.rendererType;
@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   settingWindowScale.addEventListener("click", function (event) {
     Game.config.scale = !Game.config.scale;
-    Game.Window.resize();
+    win.show();
   });
 
   win.whenUp(["esc"], function (key) {

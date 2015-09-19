@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("sell");
+  let win = Game.windows.sell = Game.Window.create("sellWindow");
 
   win.html = `
   <div class="window-box">
@@ -76,16 +76,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       float: right;
     }
 
-    #sellWindow table {
+    .sellWindow table {
       width: 100%;
     }
 
-    #sellWindow table img {
+    .sellWindow table img {
       width: 100%;
       height: 100%;
     }
 
-    #sellWindow table button {
+    .sellWindow table button {
       width: 60px;
       height: 40px;
       font-size: 16px;
@@ -100,19 +100,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let sellWindowClose = document.querySelector("button#sellWindowClose");
-  let sellWindowBuy = document.querySelector("button#sellWindowBuy");
+  let sellWindowClose = win.querySelector("button#sellWindowClose");
+  let sellWindowBuy = win.querySelector("button#sellWindowBuy");
 
-  let sellWindowAll = document.querySelector("button#sellWindowAll");
-  let sellWindowWeapon = document.querySelector("button#sellWindowWeapon");
-  let sellWindowArmor = document.querySelector("button#sellWindowArmor");
-  let sellWindowPotion = document.querySelector("button#sellWindowPotion");
-  let sellWindowMaterial = document.querySelector("button#sellWindowMaterial");
-  let sellWindowBook = document.querySelector("button#sellWindowBook");
-  let sellWindowMisc = document.querySelector("button#sellWindowMisc");
+  let sellWindowAll = win.querySelector("button#sellWindowAll");
+  let sellWindowWeapon = win.querySelector("button#sellWindowWeapon");
+  let sellWindowArmor = win.querySelector("button#sellWindowArmor");
+  let sellWindowPotion = win.querySelector("button#sellWindowPotion");
+  let sellWindowMaterial = win.querySelector("button#sellWindowMaterial");
+  let sellWindowBook = win.querySelector("button#sellWindowBook");
+  let sellWindowMisc = win.querySelector("button#sellWindowMisc");
 
-  let sellWindowGold = document.querySelector("span#sellWindowGold");
-  let sellWindowTable = document.querySelector("#sellWindowTable");
+  let sellWindowGold = win.querySelector("span#sellWindowGold");
+  let sellWindowTable = win.querySelector("#sellWindowTable");
 
   let lastItems = null;
   let lastFilter = null;

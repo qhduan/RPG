@@ -16,5 +16,45 @@
 
   <h1>测试一些乱七八糟的东西</h1>
 
+  <script>
+    "use strict";
+
+    let h = 100;
+    let w = 100;
+    let inn = 10;
+    let s;
+
+    console.time("b");
+    s = 0;
+    for (let k = 0; k < inn; k++) {
+      for (let j = 0; j < h; j++) {
+        for (let i = 0; i < w; i++) {
+            s ++;
+        }
+      }
+    }
+    console.timeEnd("b");
+
+    console.time("a");
+    s = 0;
+    for (let j = 0; j < h; j++) {
+      for (let i = 0; i < w; i++) {
+        for (let k = 0; k < inn; k++) {
+          s ++;
+        }
+      }
+    }
+    console.timeEnd("a");
+
+
+
+
+
+
+
+
+
+  </script>
+
 </body>
 </html>

@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     static load (id, callback) {
       Sprite.Loader.create()
-        .add(`/item/${id}.json`)
+        .add(`item/${id}.json`)
         .start()
         .on("complete", (event) => {
         let itemData = event.data[0];
@@ -54,7 +54,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       Sprite.Loader.create()
-        .add(`/item/${this.data.image}`)
+        .add(`item/${this.data.image}`)
         .start()
         .on("complete", (event) => {
         let image = event.data[0];

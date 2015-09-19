@@ -62,11 +62,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
      */
 
     _createClass(SpriteFrame, [{
-      key: "clone",
+      key: "print",
+      value: function print() {
+        console.log(internal(this));
+      }
 
       /**
        * @return {Object} Clone this Sprite.Frame
        */
+    }, {
+      key: "clone",
       value: function clone() {
         var frame = new Sprite.Frame(this.image, this.sx, this.sy, this.width, this.height);
         frame.x = this.x;

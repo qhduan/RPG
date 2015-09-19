@@ -298,7 +298,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } catch (e) {
         console.error(
           image, sx, sy, swidth, sheight,
-          dx, dy, swidth, sheight
+          d.x, d.y, swidth, sheight
         );
         throw e;
       }

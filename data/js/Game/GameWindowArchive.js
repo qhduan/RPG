@@ -23,15 +23,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("archive");
+  var win = Game.windows.archive = Game.Window.create("archiveWindow");
 
   win.html = "\n    <div class=\"window-box\">\n      <div id=\"archiveWindowItemBar\">\n        <button id=\"archiveWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"archiveWindowSave\" class=\"brownButton\">保存</button>\n      </div>\n      <div id=\"archiveWindowTable\"></div>\n    </div>\n  ";
 
-  win.css = "\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 320px;\n    }\n\n    .archiveItem {\n      border: 1px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ";
+  win.css = "\n    #archiveWindowTable {\n      width: 100%;\n      overflow-y: auto;\n      height: 320px;\n    }\n\n    .archiveWindowItem {\n      border: 1px solid gray;\n      border-radius: 10px;\n      margin: 10px 10px;\n    }\n\n    .archiveWindowItem > button {\n      width: 100px;\n      height: 40px;\n      border-radius: 5px;\n    }\n\n    #archiveWindowItemBar button {\n      width: 100px;\n      height: 30px;\n      font-size: 16px;\n      display: block;\n      margin-bottom: 5px;\n    }\n\n    #archiveWindowClose {\n      float: right;\n    }\n  ";
 
-  var archiveWindowSave = document.querySelector("button#archiveWindowSave");
-  var archiveWindowClose = document.querySelector("button#archiveWindowClose");
-  var archiveWindowTable = document.querySelector("#archiveWindowTable");
+  var archiveWindowSave = win.querySelector("button#archiveWindowSave");
+  var archiveWindowClose = win.querySelector("button#archiveWindowClose");
+  var archiveWindowTable = win.querySelector("#archiveWindowTable");
 
   archiveWindowSave.addEventListener("click", function () {
     var canvas = document.createElement("canvas");
@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     var table = "";
     var list = Game.Archive.list();
     list.forEach(function (element) {
-      var line = "<div class=\"archiveItem\">\n";
+      var line = "<div class=\"archiveWindowItem\">\n";
       var archive = Game.Archive.get("SAVE_" + element);
       line += "  <button data-type=\"remove\" data-id=\"SAVE_" + element + "\" class=\"brownButton\" style=\"float: right;\">删除</button>\n";
       line += "  <button data-type=\"load\" data-id=\"SAVE_" + element + "\" class=\"brownButton\" style=\"float: right;\">读取</button>\n";

@@ -23,28 +23,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("status");
+  var win = Game.windows.status = Game.Window.create("statusWindow");
 
   win.html = "\n    <div class=\"window-box\">\n      <div id=\"statusWindowItemBar\">\n        <button id=\"statusWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"statusWindowInventory\" class=\"brownButton\">物品</button>\n        <label id=\"heroName\"></label>\n      </div>\n      <table border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n        <tr>\n          <td id=\"statusWindowTable\">\n            <label id=\"heroHP\"></label>\n            <label id=\"heroSP\"></label>\n            <label id=\"heroLevel\"></label>\n            <label id=\"heroEXP\"></label>\n            <label id=\"heroSTR\"></label>\n            <label id=\"heroDEX\"></label>\n            <label id=\"heroCON\"></label>\n            <label id=\"heroINT\"></label>\n            <label id=\"heroCHA\"></label>\n            <label id=\"heroATK\"></label>\n            <label id=\"heroDEF\"></label>\n            <label id=\"heroMATK\"></label>\n            <label id=\"heroMDEF\"></label>\n          </td>\n          <td style=\"width: 50%;\">\n            <table id=\"statusWindowEquipmentTable\" border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n              <tbody>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">头部</td>\n                  <td id=\"equipment-head\"></td>\n                  <td style=\"width: 60px;\"><button id=\"equipmentButton-head\" class=\"brownButton\">卸下</button></td>\n                </tr>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">身体</td>\n                  <td id=\"equipment-body\"></td>\n                  <td><button id=\"equipmentButton-body\" class=\"brownButton\">卸下</button></td>\n                </tr>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">足部</td>\n                  <td id=\"equipment-feet\"></td>\n                  <td><button id=\"equipmentButton-feet\" class=\"brownButton\">卸下</button></td>\n                </tr>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">武器</td>\n                  <td id=\"equipment-weapon\"></td>\n                  <td><button id=\"equipmentButton-weapon\" class=\"brownButton\">卸下</button></td>\n                </tr>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">项链</td>\n                  <td id=\"equipment-neck\"></td>\n                  <td><button id=\"equipmentButton-neck\" class=\"brownButton\">卸下</button></td>\n                </tr>\n                <tr>\n                  <td class=\"statusWindowEquipmentText\">戒指</td>\n                  <td id=\"equipment-ring\"></td>\n                  <td><button id=\"equipmentButton-ring\" class=\"brownButton\">卸下</button></td>\n                </tr>\n              </tbody>\n            </table>\n          </td>\n        </tr>\n      </table>\n    </div>\n  ";
 
-  win.css = "\n    #heroName {\n      font-size: 24px;\n      margin-left: 240px;\n    }\n\n    #statusWindowTable {\n      width: 50%;\n    }\n\n    #statusWindowTable label {\n      font-size: 18px;\n      margin-left: 80px;\n    }\n\n    #statusWindowEquipmentTable button {\n      width: 60px;\n      height: 40px;\n    }\n\n    .statusWindowEquipmentText {\n      width: 60px;\n      font-size: 20px;\n      text-align: center;\n    }\n\n    #statusWindow label {\n      display: block;\n    }\n\n    #statusWindowItemBar button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n      text-align: center;\n    }\n\n    #statusWindowClose {\n      float: right;\n    }\n\n    #statusWindowInventory {\n      float: right;\n    }\n\n    #statusWindow table {\n      width: 100%;\n      height: 320px;\n    }\n  ";
+  win.css = "\n    #heroName {\n      font-size: 24px;\n      margin-left: 240px;\n    }\n\n    #statusWindowTable {\n      width: 50%;\n    }\n\n    #statusWindowTable label {\n      font-size: 18px;\n      margin-left: 80px;\n    }\n\n    #statusWindowEquipmentTable button {\n      width: 60px;\n      height: 40px;\n    }\n\n    .statusWindowEquipmentText {\n      width: 60px;\n      font-size: 20px;\n      text-align: center;\n    }\n\n    .statusWindow label {\n      display: block;\n    }\n\n    #statusWindowItemBar button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n      text-align: center;\n    }\n\n    #statusWindowClose {\n      float: right;\n    }\n\n    #statusWindowInventory {\n      float: right;\n    }\n\n    .statusWindow table {\n      width: 100%;\n      height: 320px;\n    }\n  ";
 
   var statusWindowEquipment = {
-    head: document.querySelector("#equipment-head"),
-    body: document.querySelector("#equipment-body"),
-    feet: document.querySelector("#equipment-feet"),
-    weapon: document.querySelector("#equipment-weapon"),
-    neck: document.querySelector("#equipment-neck"),
-    ring: document.querySelector("#equipment-ring")
+    head: win.querySelector("#equipment-head"),
+    body: win.querySelector("#equipment-body"),
+    feet: win.querySelector("#equipment-feet"),
+    weapon: win.querySelector("#equipment-weapon"),
+    neck: win.querySelector("#equipment-neck"),
+    ring: win.querySelector("#equipment-ring")
   };
 
   var statusWindowEquipmentButton = {
-    head: document.querySelector("#equipmentButton-head"),
-    body: document.querySelector("#equipmentButton-body"),
-    feet: document.querySelector("#equipmentButton-feet"),
-    weapon: document.querySelector("#equipmentButton-weapon"),
-    neck: document.querySelector("#equipmentButton-neck"),
-    ring: document.querySelector("#equipmentButton-ring")
+    head: win.querySelector("#equipmentButton-head"),
+    body: win.querySelector("#equipmentButton-body"),
+    feet: win.querySelector("#equipmentButton-feet"),
+    weapon: win.querySelector("#equipmentButton-weapon"),
+    neck: win.querySelector("#equipmentButton-neck"),
+    ring: win.querySelector("#equipmentButton-ring")
   };
 
   var lastSelect = -1;
@@ -64,24 +64,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 
-  var heroName = document.querySelector("#heroName");
-  var heroHP = document.querySelector("#heroHP");
-  var heroSP = document.querySelector("#heroSP");
-  var heroLevel = document.querySelector("#heroLevel");
-  var heroEXP = document.querySelector("#heroEXP");
-  var heroSTR = document.querySelector("#heroSTR");
-  var heroDEX = document.querySelector("#heroDEX");
-  var heroCON = document.querySelector("#heroCON");
-  var heroINT = document.querySelector("#heroINT");
-  var heroCHA = document.querySelector("#heroCHA");
-  var heroATK = document.querySelector("#heroATK");
-  var heroDEF = document.querySelector("#heroDEF");
-  var heroMATK = document.querySelector("#heroMATK");
-  var heroMDEF = document.querySelector("#heroMDEF");
+  var heroName = win.querySelector("#heroName");
+  var heroHP = win.querySelector("#heroHP");
+  var heroSP = win.querySelector("#heroSP");
+  var heroLevel = win.querySelector("#heroLevel");
+  var heroEXP = win.querySelector("#heroEXP");
+  var heroSTR = win.querySelector("#heroSTR");
+  var heroDEX = win.querySelector("#heroDEX");
+  var heroCON = win.querySelector("#heroCON");
+  var heroINT = win.querySelector("#heroINT");
+  var heroCHA = win.querySelector("#heroCHA");
+  var heroATK = win.querySelector("#heroATK");
+  var heroDEF = win.querySelector("#heroDEF");
+  var heroMATK = win.querySelector("#heroMATK");
+  var heroMDEF = win.querySelector("#heroMDEF");
 
-  var statusWindowClose = document.querySelector("button#statusWindowClose");
-  var statusWindowInventory = document.querySelector("button#statusWindowInventory");
-  var statusWindowEquipmentTable = document.querySelector("#statusWindowEquipmentTable");
+  var statusWindowClose = win.querySelector("button#statusWindowClose");
+  var statusWindowInventory = win.querySelector("button#statusWindowInventory");
+  var statusWindowEquipmentTable = win.querySelector("#statusWindowEquipmentTable");
 
   statusWindowClose.addEventListener("click", function (event) {
     win.hide();

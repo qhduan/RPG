@@ -23,21 +23,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("choice");
+  var choiceHTML = "\n    <div class=\"window-box\">\n      <button id=\"choiceWindowNo\" class=\"brownButton\">取消</button>\n      <div style=\"width: 100%; height: 100%;\">\n        <div style=\"height: 370px; overflow-y: auto; text-align: center;\">\n          <table id=\"choiceWindowTable\" style=\"width: 100%; height: 370px;\">\n            <tbody>\n              <tr>\n                <td id=\"choiceWindowButtonContainer\">\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  ";
 
-  win.html = "\n    <div class=\"window-box\">\n      <button id=\"choiceWindowNo\" class=\"brownButton\">取消</button>\n      <div style=\"width: 100%; height: 100%;\">\n        <div style=\"height: 370px; overflow-y: auto; text-align: center;\">\n          <table id=\"choiceWindowTable\" style=\"width: 100%; height: 370px;\">\n            <tbody>\n              <tr>\n                <td id=\"choiceWindowButtonContainer\">\n                </td>\n              </tr>\n            </tbody>\n          </table>\n        </div>\n      </div>\n    </div>\n  ";
-
-  win.css = "\n    #choiceWindow {\n      text-align: center;\n    }\n\n    #choiceWindow div {\n      text-align: center;\n    }\n\n    button#choiceWindowNo {\n      position: absolute;\n      right: 100px;\n      top: 50px;\n      width: 100px;\n      height: 60px;\n      font-size: 30px;\n    }\n\n    #choiceWindowTable button {\n      margin: 5px auto;\n      min-width: 300px;\n      min-height: 60px;\n      font-size: 30px;\n      display: block;\n    }\n  ";
-
-  var choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
-  var choiceWindowNo = document.querySelector("button#choiceWindowNo");
-  var buttonArray = [];
+  var choiceCSS = "\n    .choiceWindow {\n      text-align: center;\n    }\n\n    .choiceWindow div {\n      text-align: center;\n    }\n\n    button#choiceWindowNo {\n      position: absolute;\n      right: 100px;\n      top: 50px;\n      width: 100px;\n      height: 60px;\n      font-size: 30px;\n    }\n\n    #choiceWindowTable button {\n      margin: 5px auto;\n      min-width: 300px;\n      min-height: 60px;\n      font-size: 30px;\n      display: block;\n    }\n  ";
 
   Game.choice = function (options, callback) {
-    choiceWindowButtonContainer.innerHTML = "";
-    buttonArray = [];
 
+    var win = Game.Window.create("choiceWindow");
+    win.html = choiceHTML;
+    win.css = choiceCSS;
     win.show();
+
+    var choiceWindowButtonContainer = win.querySelector("#choiceWindowButtonContainer");
+    var choiceWindowNo = win.querySelector("#choiceWindowNo");
+    var buttonArray = [];
+
     Sprite.each(options, function (value, key) {
       var button = document.createElement("button");
       button.textContent = buttonArray.length + 1 + ". " + key;
@@ -47,33 +47,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       buttonArray.push(button);
 
       button.addEventListener("click", function () {
-        if (win.atop) {
-          win.hide();
-          if (typeof callback == "function") callback(value);
+        win.hide();
+        win.destroy();
+        if (typeof callback == "function") {
+          callback(value);
         }
       });
     });
-  };
 
-  choiceWindowNo.addEventListener("click", function () {
-    win.hide();
-    if (typeof choiceHandle == "function") choiceHandle(null);
-  });
-
-  win.whenUp(["esc"], function () {
-    setTimeout(function () {
+    choiceWindowNo.addEventListener("click", function () {
       win.hide();
-      if (typeof choiceHandle == "function") choiceHandle(null);
-    }, 20);
-  });
+      win.destroy();
+      if (typeof callback == "function") {
+        callback(null);
+      }
+    });
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
-    // match 1 to 9
-    var num = parseInt(key) - 1; // get 0 to 8
-    var element = buttonArray[num];
-    if (element) {
-      element.click();
-    }
-  });
+    win.whenUp(["esc"], function () {
+      setTimeout(function () {
+        choiceWindowNo.click();
+      }, 20);
+    });
+
+    win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+      // match 1 to 9
+      var num = parseInt(key) - 1; // get 0 to 8
+      var element = buttonArray[num];
+      if (element) {
+        element.click();
+      }
+    });
+  };
 })();
 //# sourceMappingURL=GameWindowChoice.js.map

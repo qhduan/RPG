@@ -21,17 +21,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("setting");
+  let win = Game.windows.setting = Game.Window.create("settingWindow");
 
   win.html = `
     <div class="window-box">
-      <button id="settingWindowClose">关闭</button>
+      <button id="settingWindowClose" class="brownButton">关闭</button>
 
       <div id="settingWindowRendererType"></div>
 
       <div id="settingWindowBox">
-        <button id="settingWindowFullscreen">全屏</button>
-        <button id="settingWindowScale">缩放</button>
+        <button id="settingWindowFullscreen" class="brownButton">全屏</button>
+        <button id="settingWindowScale" class="brownButton">缩放</button>
       </div>
     </div>
   `;
@@ -57,11 +57,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let settingWindowClose = document.querySelector("button#settingWindowClose");
-  let settingWindowScale = document.querySelector("button#settingWindowScale");
+  let settingWindowClose = win.querySelector("button#settingWindowClose");
+  let settingWindowScale = win.querySelector("button#settingWindowScale");
 
-  let settingWindowFullscreen = document.querySelector("button#settingWindowFullscreen");
-  let settingWindowRendererType = document.querySelector("#settingWindowRendererType");
+  let settingWindowFullscreen = win.querySelector("button#settingWindowFullscreen");
+  let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
 
   win.on("beforeShow", function () {
     settingWindowRendererType.textContent = Game.stage.rendererType;
@@ -73,7 +73,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   settingWindowScale.addEventListener("click", function (event) {
     Game.config.scale = !Game.config.scale;
-    Game.Window.resize();
+    win.show();
   });
 
 

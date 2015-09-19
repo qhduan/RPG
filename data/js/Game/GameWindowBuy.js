@@ -23,25 +23,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("buy");
+  var win = Game.windows.buy = Game.Window.create("buyWindow");
 
   win.html = "\n  <div class=\"window-box\">\n    <div id=\"buyWindowItemBar\">\n\n      <button id=\"buyWindowClose\" class=\"brownButton\">关闭</button>\n      <button id=\"buyWindowSell\" class=\"brownButton\">卖出</button>\n\n      <button id=\"buyWindowAll\" class=\"brownButton\">全部</button>\n      <button id=\"buyWindowWeapon\" class=\"brownButton\">武器</button>\n      <button id=\"buyWindowArmor\" class=\"brownButton\">护甲</button>\n      <button id=\"buyWindowPotion\" class=\"brownButton\">药水</button>\n      <button id=\"buyWindowMaterial\" class=\"brownButton\">材料</button>\n      <button id=\"buyWindowBook\" class=\"brownButton\">书籍</button>\n      <button id=\"buyWindowMisc\" class=\"brownButton\">其他</button>\n    </div>\n\n    <span id=\"buyWindowGold\"></span>\n\n    <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n      <thead>\n        <tr>\n          <td style=\"width: 40px;\"></td>\n          <td style=\"width: 120px;\"></td>\n          <td style=\"width: 30px;\"></td>\n          <td style=\"width: 30px;\"></td>\n          <td></td>\n          <td style=\"width: 60px;\"></td>\n        </tr>\n      </thead>\n      <tbody id=\"buyWindowTable\"></tbody>\n    </table>\n  </div>\n  ";
 
-  win.css = "\n    #buyWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #buyWindowClose {\n      float: right;\n    }\n\n    #buyWindowStatus {\n      float: right;\n    }\n\n    #buyWindow table {\n      width: 100%;\n    }\n\n    #buyWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #buyWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #buyWindowGold {\n      position: absolute;\n      right: 100px;\n      bottom: 30px;\n      font-size: 20px;\n      color: black;\n    }\n  ";
+  win.css = "\n    #buyWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #buyWindowClose {\n      float: right;\n    }\n\n    #buyWindowStatus {\n      float: right;\n    }\n\n    .buyWindow table {\n      width: 100%;\n    }\n\n    .buyWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    .buyWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #buyWindowGold {\n      position: absolute;\n      right: 100px;\n      bottom: 30px;\n      font-size: 20px;\n      color: black;\n    }\n  ";
 
-  var buyWindowClose = document.querySelector("button#buyWindowClose");
-  var buyWindowSell = document.querySelector("button#buyWindowSell");
+  var buyWindowClose = win.querySelector("button#buyWindowClose");
+  var buyWindowSell = win.querySelector("button#buyWindowSell");
 
-  var buyWindowAll = document.querySelector("button#buyWindowAll");
-  var buyWindowWeapon = document.querySelector("button#buyWindowWeapon");
-  var buyWindowArmor = document.querySelector("button#buyWindowArmor");
-  var buyWindowPotion = document.querySelector("button#buyWindowPotion");
-  var buyWindowMaterial = document.querySelector("button#buyWindowMaterial");
-  var buyWindowBook = document.querySelector("button#buyWindowBook");
-  var buyWindowMisc = document.querySelector("button#buyWindowMisc");
+  var buyWindowAll = win.querySelector("button#buyWindowAll");
+  var buyWindowWeapon = win.querySelector("button#buyWindowWeapon");
+  var buyWindowArmor = win.querySelector("button#buyWindowArmor");
+  var buyWindowPotion = win.querySelector("button#buyWindowPotion");
+  var buyWindowMaterial = win.querySelector("button#buyWindowMaterial");
+  var buyWindowBook = win.querySelector("button#buyWindowBook");
+  var buyWindowMisc = win.querySelector("button#buyWindowMisc");
 
-  var buyWindowGold = document.querySelector("span#buyWindowGold");
-  var buyWindowTable = document.querySelector("#buyWindowTable");
+  var buyWindowGold = win.querySelector("span#buyWindowGold");
+  var buyWindowTable = win.querySelector("#buyWindowTable");
 
   var lastItems = null;
   var lastFilter = null;

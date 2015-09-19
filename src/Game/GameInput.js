@@ -29,13 +29,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     if (Sprite.Input.isPressed("left")) {
-      Game.hero.go(state, "left");
+      Game.hero.go(state, "left", CheckHeroAction);
     } else if (Sprite.Input.isPressed("up")) {
-      Game.hero.go(state, "up");
+      Game.hero.go(state, "up", CheckHeroAction);
     } else if (Sprite.Input.isPressed("right")) {
-      Game.hero.go(state, "right");
+      Game.hero.go(state, "right", CheckHeroAction);
     } else if (Sprite.Input.isPressed("down")) {
-      Game.hero.go(state, "down");
+      Game.hero.go(state, "down", CheckHeroAction);
     }
   }
 

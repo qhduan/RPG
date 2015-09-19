@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.assign("ActorPet", class GameHero extends Game.Actor {
+  Game.assign("ActorPet", class GameActorPet extends Game.Actor {
     constructor (actorData) {
       super(actorData);
     }

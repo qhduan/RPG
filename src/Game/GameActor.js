@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else if (typeof this.data.image == "string") {
         Sprite.Loader
           .create()
-          .add("/actor/" + this.data.image)
+          .add("actor/" + this.data.image)
           .start()
           .on("complete", (event) => {
             this.init(event.data);
@@ -99,6 +99,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           this.emit("complete", true);
         }
       };
+
+      if (this.data.quests) {
+        privates.quests = [];
+        privates.quests.length = this.data.quests.length;
+        this.data.quests.forEach((questId, index) => {
+          completeCount--;
+          Sprite.Loader.create()
+            .add(`quest/${questId}.json`)
+            .start()
+            .on("complete", function (event) {
+              privates.quests[index] = event.data[0];
+              privates.quests[index].id = questId;
+              Complete();
+            });
+        });
+      }
 
       if (this.data.skills) {
         this.data.skills.forEach((skillId) => {
@@ -167,6 +183,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set sprite (value) {
       throw new Error("Game.Actor.sprite readonly");
+    }
+
+    get quests () {
+      let privates = internal(this);
+      if (privates.quests) {
+        return privates.quests;
+      } else {
+        return null;
+      }
+    }
+
+    set quests (value) {
+      throw new Error("Game.Actor.quests readonly");
     }
 
     makeInfoBox () {
@@ -431,7 +460,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     decreaseHP (power) {
       this.data.hp -= power;
       this.refreshBar();
-      this.dead();
     }
 
     decreaseSP (sp) {
@@ -439,7 +467,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.refreshBar();
     }
 
-    dead () {
+    dead (attacker) {
       if (this.data.hp <= 0) {
         if (this.data.type == "hero") {
 
@@ -478,6 +506,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               bag.inner[key] = this.data.items[key];
             }
           }
+
+          attacker.emit("kill", false, this);
 
         }
       }
@@ -558,6 +588,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           Game.layers.actorLayer.removeChild(text);
         }
       });
+
+      // 测试是否死亡
+      this.dead(attacker);
 
     }
 
@@ -803,6 +836,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if (direction) {
               let currentDirection = this.direction;
               if (direction != currentDirection) {
+                this.stop();
                 this.face(direction);
               }
               let goResult = this.go(state, direction, () => Walk());
@@ -900,73 +934,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return false;
       }
 
-      let newX = this.x;
-      let newY = this.y;
+      let newPosition = this.facePosition;
 
-      let oldPositionKey = `${newX},${newY}`;
-
-      switch (direction) {
-        case "up":
-          newY -= 1;
-          break;
-        case "down":
-          newY += 1;
-          break;
-        case "left":
-          newX -= 1;
-          break;
-        case "right":
-          newX += 1;
-          break;
-      }
-
-      let newPositionKey = `${newX},${newY}`;
-
-      if (this.checkCollision(newX, newY) == false) {
+      if (this.checkCollision(newPosition.x, newPosition.y) == false) {
         // 没碰撞，开始行走
         this.walking = true;
 
         // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
         // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
-        this.data.x = newX;
-        this.data.y = newY;
+        this.data.x = newPosition.x;
+        this.data.y = newPosition.y;
 
-        let speed = 2;
+        // walk
+        // 这些数组和必须是32，为了保证一次go行走32个像素
+        let speed = [3,3,2,3,3,2,3,3,2,3,3,2]; // 和是32
         if (state == "run") {
-          speed = 4;
+          // speed = [6,7,6,7,6]; // 和是32
+          speed = [4,4,4,4,4,4,4,4]; // 和是32
         }
-        let times = 32 / speed;
-        let count = 0;
+        // 比预计多一个，这样是为了流畅
+        // 因为下一次go可能紧挨着这次
+        let times = speed.length + 1;
         let id = null;
 
         Sprite.Ticker.whiles(times, (last) => {
-          switch (direction) {
-            case "up":
-              this.sprite.y -= speed;
-              break;
-            case "down":
-              this.sprite.y += speed;
-              break;
-            case "left":
-              this.sprite.x -= speed;
-              break;
-            case "right":
-              this.sprite.x += speed;
-              break;
-          }
-
           if (last) {
-            this.x = newX;
-            this.y = newY;
+            this.x = newPosition.x;
+            this.y = newPosition.y;
             this.walking = false;
             this.emit("change");
 
             if (typeof callback == "function") {
-              Sprite.Ticker.after(2,function () {
+              //Sprite.Ticker.after(2, function () {
                 callback();
-              });
+              //});
             }
-
+          } else {
+            switch (direction) {
+              case "up":
+                this.sprite.y -= speed.pop();
+                break;
+              case "down":
+                this.sprite.y += speed.pop();
+                break;
+              case "left":
+                this.sprite.x -= speed.pop();
+                break;
+              case "right":
+                this.sprite.x += speed.pop();
+                break;
+            }
           }
         });
 
@@ -975,8 +992,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return true;
       }
 
-      this.play("face" + direction, 0);
-
       return false;
     }
 
@@ -984,7 +999,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     erase () {
       let privates = internal(this);
       Game.layers.actorLayer.removeChild(this.sprite);
-      Game.layers.actorLayer.removeChild(privates.infoBox);
+      Game.layers.infoLayer.removeChild(privates.infoBox);
     }
 
     /** 在Game.actorLayer上显示人物 */
@@ -998,7 +1013,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
         Game.layers.actorLayer.appendChild(this.sprite);
-        Game.layers.actorLayer.appendChild(privates.infoBox);
+        Game.layers.infoLayer.appendChild(privates.infoBox);
       } else {
         console.error(this.data.x, this.data.y, this.data);
         throw new Error("Game.Actor.draw invalid data.x/data.y");

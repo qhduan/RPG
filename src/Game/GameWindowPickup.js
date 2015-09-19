@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("pickup");
+  let win = Game.windows.pickup = Game.Window.create("pickupWindow");
 
   win.html = `
     <div class="window-box">
@@ -44,16 +44,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #pickupWindow table {
+    .pickupWindow table {
       width: 100%;
     }
 
-    #pickupWindow table img {
+    .pickupWindow table img {
       width: 100%;
       height: 100%;
     }
 
-    #pickupWindow button {
+    .pickupWindow button {
       width: 60px;
       height: 40px;
       font-size: 16;
@@ -68,9 +68,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let pickupWindowClose = document.querySelector("button#pickupWindowClose");
-  let pickupWindowAll = document.querySelector("button#pickupWindowAll");
-  let pickupWindowTable = document.querySelector("#pickupWindowTable");
+  let pickupWindowClose = win.querySelector("button#pickupWindowClose");
+  let pickupWindowAll = win.querySelector("button#pickupWindowAll");
+  let pickupWindowTable = win.querySelector("#pickupWindowTable");
 
   let currentItemObj = null;
   let lastSelect = -1;

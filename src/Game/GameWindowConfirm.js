@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("confirm");
+  let internal = Sprite.Namespace();
 
-  win.html = `
+  let confirmHTML = `
   <div class="window-box">
     <div style="width: 100%; height: 100%;">
       <table>
@@ -37,21 +37,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   </div>
   `;
 
-  win.css = `
-    #confirmWindow {
+  let confirmCSS = `
+    .confirmWindow {
       text-align: center;
     }
 
-    #confirmWindow table {
+    .confirmWindow table {
       width: 100%;
       height: 100%;
     }
 
-    #confirmWindow span {
+    .confirmWindow span {
       font-size: 16px;
     }
 
-    #confirmWindow button {
+    .confirmWindow button {
       width: 100px;
       height: 60px;
       font-size: 16px;
@@ -64,38 +64,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let confirmWindowMessage = document.querySelector("#confirmWindowMessage");
-  let confirmWindowYes = document.querySelector("button#confirmWindowYes");
-  let confirmWindowNo = document.querySelector("button#confirmWindowNo");
+  Game.assign("confirm", function (message, yes, no) {
 
-  let confirmHandle = null;
-
-  Game.confirm = function (message, callback) {
-    if (typeof callback != "function") {
-      console.error(callback, message);
-      throw new Error("Game.onfirm got invalid callback");
-    }
-    confirmWindowMessage.textContent = message;
-    confirmHandle = callback;
+    let win = Game.Window.create("confirmWindow");
+    win.html = confirmHTML;
+    win.css = confirmCSS;
     win.show();
-  };
 
-  win.whenUp(["y", "Y"], function () {
-    confirmWindowYes.click();
-  });
+    let confirmWindowMessage = win.querySelector("#confirmWindowMessage");
+    let confirmWindowYes = win.querySelector("#confirmWindowYes");
+    let confirmWindowNo = win.querySelector("#confirmWindowNo");
 
-  win.whenUp(["n", "N"], function () {
-    confirmWindowNo.click();
-  });
+    if (typeof message == "string") {
+      confirmWindowMessage.textContent = message;
+    } else if (message.message) {
+      confirmWindowMessage.textContent = message.message;
+      if (message.yes) {
+        confirmWindowYes.textContent = message.yes;
+      }
+      if (message.no) {
+        confirmWindowNo.textContent = message.no;
+      }
+    } else {
+      console.error(message, yes, no);
+      throw new Error("Game.confirm got invalid arguments");
+    }
 
-  confirmWindowYes.addEventListener("click", function () {
-    win.hide();
-    confirmHandle(true);
-  });
 
-  confirmWindowNo.addEventListener("click", function () {
-    win.hide();
-    confirmHandle(false);
+    win.whenUp(["esc"], function () {
+      setTimeout(function () {
+        confirmWindowNo.click();
+      }, 20);
+    });
+
+    win.whenUp(["y", "Y"], function () {
+      confirmWindowYes.click();
+    });
+
+    win.whenUp(["n", "N"], function () {
+      confirmWindowNo.click();
+    });
+
+    confirmWindowYes.addEventListener("click", function () {
+      if (typeof yes == "function") {
+        yes();
+      }
+      win.destroy();
+    });
+
+    confirmWindowNo.addEventListener("click", function () {
+      if (typeof no == "function") {
+        no();
+      }
+      win.destroy();
+    });
   });
 
 

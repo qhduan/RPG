@@ -90,12 +90,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     cache (x, y, width, height) {
       let privates = internal(this);
+      if (privates.cacheCanvas) {
+        privates.cacheCanvas = null;
+      }
+      for (let child of this.children) {
+        child.parent = null;
+      }
       let canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       let context = canvas.getContext("2d");
       this.draw(context);
       privates.cacheCanvas = canvas;
+      for (let child of this.children) {
+        child.parent = this;
+      }
     }
 
     /**
@@ -136,7 +145,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } else {
         if (this.children.length > 0) {
           for (let child of this.children) {
-            child.draw(renderer)
+            if (child.visible == true && child.alpha >= 0.01) {
+              child.draw(renderer);
+            }
           }
         }
       }
@@ -214,10 +225,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * remove all children of container
      */
     clear () {
+      let privates = internal(this);
       for (let child of this.children) {
         child.parent = null;
       }
       internal(this).children = [];
+      if (privates.cacheCanvas) {
+        privates.cacheCanvas = null;
+      }
       this.emit("removedChildren");
     }
 

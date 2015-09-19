@@ -39,7 +39,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(GameItem, null, [{
       key: "load",
       value: function load(id, callback) {
-        Sprite.Loader.create().add("/item/" + id + ".json").start().on("complete", function (event) {
+        Sprite.Loader.create().add("item/" + id + ".json").start().on("complete", function (event) {
           var itemData = event.data[0];
           itemData.id = id;
           var itemObj = new Game.Item(itemData);
@@ -68,7 +68,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.data.y = 0;
       }
 
-      Sprite.Loader.create().add("/item/" + this.data.image).start().on("complete", function (event) {
+      Sprite.Loader.create().add("item/" + this.data.image).start().on("complete", function (event) {
         var image = event.data[0];
 
         internal(_this).icon = image;

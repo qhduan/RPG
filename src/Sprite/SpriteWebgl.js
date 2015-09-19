@@ -136,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Renderer using webgl
    * @class
    */
-  Sprite.assign("Webgl", class Webgl {
+  Sprite.assign("Webgl", class SpriteWebgl {
 
     /**
      * @static
@@ -176,6 +176,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         throw new Error("Sprite.Webgl webgl is not supported");
       }
 
+      window.addEventListener("beforeunload", function (event) {
+        console.log("release webgl resources");
+        for (let texture of privates.textureCache.values()) {
+          gl.deleteTexture(texture);
+        }
+      });
+
       gl.viewport(0, 0, canvas.width, canvas.height);
 
       let vertShaderObj = gl.createShader(gl.VERTEX_SHADER);
@@ -194,10 +201,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.enable(gl.BLEND);
-
-      console.log("webgl inited");
-
-      console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
       privates.positionLocation = gl.getAttribLocation(program, "position");
       privates.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
@@ -223,20 +226,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       privates.canvas = canvas;
       privates.gl = gl;
+      privates.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+
+      console.log("webgl inited. max texture size: %d", gl.getParameter(gl.MAX_TEXTURE_SIZE));
     }
 
     get alpha () {
-      return internal(this).alpha;
+      let privates = internal(this);
+      return privates.alpha;
     }
 
     set alpha (value) {
+      let privates = internal(this);
       if (typeof value == "number" &&
         !isNaN(value) &&
         value >= 0 &&
         value <= 1
       ) {
-        if (value != internal(this).alpha) {
-          internal(this).alpha = value;
+        if (value != privates.alpha) {
+          privates.alpha = value;
         }
       } else {
         console.error(value, this);
@@ -248,7 +256,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {string} The color, eg "#00ff00"
      */
     get color () {
-      let color = internal(this).color;
+      let privates = internal(this);
+      let color = privates.color;
       let r = color[0].toString(16);
       let g = color[1].toString(16);
       let b = color[2].toString(16);
@@ -261,14 +270,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {string} value The new color, eg "#00ff00"
      */
     set color (value) {
+      let privates = internal(this);
       let m = value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/);
       if (m) {
         let r = m[1];
         let g = m[2];
         let b = m[3];
-        internal(this).color[0] = parseInt(r, 16);
-        internal(this).color[1] = parseInt(g, 16);
-        internal(this).color[2] = parseInt(b, 16);
+        privates.color[0] = parseInt(r, 16);
+        privates.color[1] = parseInt(g, 16);
+        privates.color[2] = parseInt(b, 16);
       } else {
         console.error(value, this);
         throw new Error("Sprite.Webgl.color invalid color format");
@@ -280,16 +290,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {number} value Number or undefined, if undefined ,return current value
      */
     filter (name, value) {
+      let privates = internal(this);
       if (typeof value == "number") {
-        internal(this).filter.set(name, value);
+        privates.filter.set(name, value);
       } else {
-        return internal(this).get(name);
+        return privates.get(name);
       }
     }
 
     createTexture (gl, image) {
-      if (internal(this).textureCache.has(image)) {
-        return internal(this).textureCache.get(image);
+      let privates = internal(this);
+      if (privates.textureCache.has(image)) {
+        return privates.textureCache.get(image);
       } else {
         let texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -306,7 +318,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
         }
 
-        internal(this).textureCache.set(image, texture);
+        privates.textureCache.set(image, texture);
         gl.bindTexture(gl.TEXTURE_2D, null);
         return texture;
       }
@@ -316,8 +328,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       let gl = privates.gl;
 
-      if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
-        console.error(image, this);
+      if (dx > this.width || dy > this.height) {
+        return;
+      }
+
+      if ((dx + dw) < 0 || (dy + dh) < 0) {
+        return;
+      }
+
+      if (
+        !Number.isInteger(image.width) ||
+        !Number.isInteger(image.height) ||
+        image.width <= 0 ||
+        image.height <= 0 ||
+        image.width > privates.maxTextureSize ||
+        image.height > privates.maxTextureSize
+      ) {
+        console.error(image, privates, this);
         throw new Error("Sprite.Webgl.drawImage invalid image");
       }
 
@@ -369,6 +396,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // draw
       gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+      gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     clear () {

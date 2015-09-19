@@ -28,7 +28,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.assign("ActorMonster", class GameHero extends Game.Actor {
+  Game.assign("ActorMonster", class GameActorMonster extends Game.Actor {
     constructor (actorData) {
       super(actorData);
       let privates = internal(this);
@@ -50,6 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       super.draw();
 
       privates.ai = Sprite.Ticker.on("tick", (event) => {
+
+        if (Game.paused) return;
 
         let tickCount = event.data;
 

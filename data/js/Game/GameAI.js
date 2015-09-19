@@ -52,11 +52,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "autoHide",
       value: function autoHide() {
         var heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
+
         Game.area.map.layers.forEach(function (layer, index) {
-          layer.visible = true;
           var layerData = Game.area.map.data.layers[index];
           if (heroHide && layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide") && layerData.properties.autohide == heroHide) {
             layer.visible = false;
+          } else {
+            layer.visible = true;
           }
         });
 
@@ -97,6 +99,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         var _iteratorNormalCompletion2 = true;
+
+        //if (mapVisible != lastMapVisible) {
+        //  Game.area.map.cache();
+        //  lastMapVisible = mapVisible;
+        //}
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
@@ -260,3 +267,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameAI;
   })());
 })();
+//# sourceMappingURL=GameAI.js.map

@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       let imageUrls = [];
       this.data.tilesets.forEach((element) => {
-        imageUrls.push(`/map/${element.image}`);
+        imageUrls.push(`map/${element.image}`);
       });
 
       Sprite.Loader.create()
@@ -193,10 +193,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.layers.forEach((element, index) => {
         let layerData = this.data.layers[index];
 
-        //console.time("cache " + layerData.name);
-        element.cache(0, 0, this.width, this.height);
-        //console.timeEnd("cache " + layerData.name);
-
         if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
           element.visible = false;
         }
@@ -204,12 +200,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           element.alpha = layerData.opacity;
         }
 
-        Game.layers.mapLayer.appendChild(element);
+        if (layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide")) {
+          Game.layers.mapHideLayer.appendChild(element);
+        } else {
+          Game.layers.mapLayer.appendChild(element);
+        }
+
       });
 
-      //Game.layers.mapLayer.cache(0, 0, this.width, this.height);
-      //this.minimap = Game.layers.mapLayer.cacheCanvas;
-      //Game.layers.mapLayer.clearCache();
+      Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+      this.minimap = new Image();
+      this.minimap.src = Game.layers.mapLayer.cacheCanvas.toDataURL();
 
       if (this.data.bgm) {
         // set loop = -1, 无限循环

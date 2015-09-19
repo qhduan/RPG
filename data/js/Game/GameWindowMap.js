@@ -23,13 +23,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("map");
+  var win = Game.windows.map = Game.Window.create("mapWindow");
 
   win.html = "\n    <div class=\"window-box\">\n      <button id=\"mapWindowClose\" class=\"brownButton\">关闭</button>\n      <table><tbody><tr><td>\n        <div id=\"mapWindowMap\"></div>\n      </td></tr></tbody></table>\n    </div>\n  ";
 
-  win.css = "\n    #mapWindow table, #mapWindow tbody, #mapWindow tr, #mapWindow td {\n      width: 100%;\n      height: 100%;\n      magrin: 0;\n      padding: 0;\n    }\n\n    #mapWindow {\n      text-align: center;\n    }\n\n    #mapWindowClose {\n      position: absolute;\n      right: 50px;\n      top: 50px;\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n    }\n\n    #mapWindowMap img, #mapWindowMap canvas {\n      max-width: 700px;\n      max-height: 320px;\n    }\n  ";
+  win.css = "\n    .mapWindow table, .mapWindow tbody, .mapWindow tr, .mapWindow td {\n      width: 100%;\n      height: 100%;\n      magrin: 0;\n      padding: 0;\n    }\n\n    .mapWindow {\n      text-align: center;\n    }\n\n    #mapWindowClose {\n      position: absolute;\n      right: 50px;\n      top: 50px;\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n    }\n\n    #mapWindowMap img, #mapWindowMap canvas {\n      max-width: 700px;\n      max-height: 320px;\n    }\n  ";
 
-  var mapWindowClose = document.querySelector("button#mapWindowClose");
+  var mapWindowClose = win.querySelector("button#mapWindowClose");
 
   mapWindowClose.addEventListener("click", function (event) {
     Game.windows.map.hide();
@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.on("beforeShow", function (event) {
     if (Game.area && Game.area.map.minimap) {
-      var div = document.querySelector("div#mapWindowMap");
+      var div = win.querySelector("div#mapWindowMap");
       while (div.hasChildNodes()) {
         div.removeChild(div.lastChild);
       }

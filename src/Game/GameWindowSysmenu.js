@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("sysmenu");
+  let win = Game.windows.sysmenu = Game.Window.create("sysmenuWindow");
 
   win.html = `
     <div class="window-box">
@@ -45,18 +45,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #sysmenuWindow {
+    .sysmenuWindow {
       text-align: center;
     }
 
-    #sysmenuWindow table, #sysmenuWindow tbody, #sysmenuWindow tr, #sysmenuWindow td {
+    .sysmenuWindow table, .sysmenuWindow tbody, .sysmenuWindow tr, .sysmenuWindow td {
       width: 100%;
       height: 100%;
       margin: 0;
       padding: 0;
     }
 
-    #sysmenuWindow button {
+    .sysmenuWindow button {
       width: 200px;
       height: 60px;
       margin: 2px;
@@ -73,19 +73,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let sysmenuWindowInventory = document.querySelector("button#sysmenuWindowInventory");
-  let sysmenuWindowStatus = document.querySelector("button#sysmenuWindowStatus");
+  let sysmenuWindowInventory = win.querySelector("button#sysmenuWindowInventory");
+  let sysmenuWindowStatus = win.querySelector("button#sysmenuWindowStatus");
 
-  let sysmenuWindowSkill = document.querySelector("button#sysmenuWindowSkill");
-  let sysmenuWindowQuest = document.querySelector("button#sysmenuWindowQuest");
+  let sysmenuWindowSkill = win.querySelector("button#sysmenuWindowSkill");
+  let sysmenuWindowQuest = win.querySelector("button#sysmenuWindowQuest");
 
-  let sysmenuWindowMap = document.querySelector("button#sysmenuWindowMap");
-  let sysmenuWindowSetting = document.querySelector("button#sysmenuWindowSetting");
+  let sysmenuWindowMap = win.querySelector("button#sysmenuWindowMap");
+  let sysmenuWindowSetting = win.querySelector("button#sysmenuWindowSetting");
 
-  let sysmenuWindowArchive = document.querySelector("button#sysmenuWindowArchive");
-  let sysmenuWindowExit = document.querySelector("button#sysmenuWindowExit");
+  let sysmenuWindowArchive = win.querySelector("button#sysmenuWindowArchive");
+  let sysmenuWindowExit = win.querySelector("button#sysmenuWindowExit");
 
-  let sysmenuWindowClose = document.querySelector("button#sysmenuWindowClose");
+  let sysmenuWindowClose = win.querySelector("button#sysmenuWindowClose");
 
   win.whenUp(["esc"], function (key) {
     sysmenuWindowClose.click();
@@ -137,7 +137,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   sysmenuWindowQuest.addEventListener("click", function (event) {
     win.hide();
-    Game.windows.quest.show();
+    Game.windows.quest.current();
   });
 
   sysmenuWindowMap.addEventListener("click", function (event) {

@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("status");
+  let win = Game.windows.status = Game.Window.create("statusWindow");
 
   win.html = `
     <div class="window-box">
@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       text-align: center;
     }
 
-    #statusWindow label {
+    .statusWindow label {
       display: block;
     }
 
@@ -137,28 +137,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       float: right;
     }
 
-    #statusWindow table {
+    .statusWindow table {
       width: 100%;
       height: 320px;
     }
   `;
 
   let statusWindowEquipment = {
-    head: document.querySelector("#equipment-head"),
-    body: document.querySelector("#equipment-body"),
-    feet: document.querySelector("#equipment-feet"),
-    weapon: document.querySelector("#equipment-weapon"),
-    neck: document.querySelector("#equipment-neck"),
-    ring: document.querySelector("#equipment-ring")
+    head: win.querySelector("#equipment-head"),
+    body: win.querySelector("#equipment-body"),
+    feet: win.querySelector("#equipment-feet"),
+    weapon: win.querySelector("#equipment-weapon"),
+    neck: win.querySelector("#equipment-neck"),
+    ring: win.querySelector("#equipment-ring")
   };
 
   let statusWindowEquipmentButton = {
-    head: document.querySelector("#equipmentButton-head"),
-    body: document.querySelector("#equipmentButton-body"),
-    feet: document.querySelector("#equipmentButton-feet"),
-    weapon: document.querySelector("#equipmentButton-weapon"),
-    neck: document.querySelector("#equipmentButton-neck"),
-    ring: document.querySelector("#equipmentButton-ring")
+    head: win.querySelector("#equipmentButton-head"),
+    body: win.querySelector("#equipmentButton-body"),
+    feet: win.querySelector("#equipmentButton-feet"),
+    weapon: win.querySelector("#equipmentButton-weapon"),
+    neck: win.querySelector("#equipmentButton-neck"),
+    ring: win.querySelector("#equipmentButton-ring")
   };
 
   let lastSelect = -1;
@@ -178,24 +178,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 
-  let heroName = document.querySelector("#heroName");
-  let heroHP = document.querySelector("#heroHP")
-  let heroSP = document.querySelector("#heroSP");
-  let heroLevel = document.querySelector("#heroLevel");
-  let heroEXP = document.querySelector("#heroEXP");
-  let heroSTR = document.querySelector("#heroSTR");
-  let heroDEX = document.querySelector("#heroDEX");
-  let heroCON = document.querySelector("#heroCON");
-  let heroINT = document.querySelector("#heroINT");
-  let heroCHA = document.querySelector("#heroCHA");
-  let heroATK = document.querySelector("#heroATK");
-  let heroDEF = document.querySelector("#heroDEF");
-  let heroMATK = document.querySelector("#heroMATK");
-  let heroMDEF = document.querySelector("#heroMDEF");
+  let heroName = win.querySelector("#heroName");
+  let heroHP = win.querySelector("#heroHP")
+  let heroSP = win.querySelector("#heroSP");
+  let heroLevel = win.querySelector("#heroLevel");
+  let heroEXP = win.querySelector("#heroEXP");
+  let heroSTR = win.querySelector("#heroSTR");
+  let heroDEX = win.querySelector("#heroDEX");
+  let heroCON = win.querySelector("#heroCON");
+  let heroINT = win.querySelector("#heroINT");
+  let heroCHA = win.querySelector("#heroCHA");
+  let heroATK = win.querySelector("#heroATK");
+  let heroDEF = win.querySelector("#heroDEF");
+  let heroMATK = win.querySelector("#heroMATK");
+  let heroMDEF = win.querySelector("#heroMDEF");
 
-  let statusWindowClose = document.querySelector("button#statusWindowClose");
-  let statusWindowInventory = document.querySelector("button#statusWindowInventory");
-  let statusWindowEquipmentTable = document.querySelector("#statusWindowEquipmentTable");
+  let statusWindowClose = win.querySelector("button#statusWindowClose");
+  let statusWindowInventory = win.querySelector("button#statusWindowInventory");
+  let statusWindowEquipmentTable = win.querySelector("#statusWindowEquipmentTable");
 
   statusWindowClose.addEventListener("click", function (event) {
     win.hide();

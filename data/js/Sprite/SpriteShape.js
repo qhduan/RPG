@@ -278,7 +278,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _this = this;
 
         var privates = internal(this);
-        var svg = "<?xml version=\"1.0\"?>\n<svg width=\"" + this._width + "\" height=\"" + this._height + "\" " + ("style=\"width: " + this._width + "px; height: " + this._height + "px;\" ") + "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
+        var svg = "<?xml version=\"1.0\"?>\n<svg width=\"" + this.width + "\" height=\"" + this.height + "\" " + ("style=\"width: " + this.width + "px; height: " + this.height + "px;\" ") + "xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\">\n";
 
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -316,7 +316,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           privates.image = image;
           privates.width = image.width;
           privates.height = image.height;
-          // window.URL.revokeObjectURL(url);
+          // release
+          window.URL.revokeObjectURL(url);
           _this.emit("change");
         };
 

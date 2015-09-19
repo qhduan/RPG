@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("dialogue");
+  let win = Game.windows.dialogue = Game.Window.create("dialogueWindow");
 
   win.html = `
     <div class="window-box">
@@ -37,7 +37,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #dialogueWindow table, dialogueWindow.tbody, dialogueWindow tr, dialogueWindow td {
+    .dialogueWindow table, dialogueWindow.tbody, dialogueWindow tr, dialogueWindow td {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -53,7 +53,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       font-weight: bold;
     }
 
-    #dialogueWindow button {
+    .dialogueWindow button {
       width: 120px;
       height: 60px;
       font-size: 16px;
@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let dialogueWindowSpeaker = document.querySelector("#dialogueWindowSpeaker");
+  let dialogueWindowSpeaker = win.querySelector("#dialogueWindowSpeaker");
 
   let dialogueContent = [];
   let dialogueIndex = 0;

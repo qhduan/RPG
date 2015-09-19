@@ -193,7 +193,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         try {
           renderer.drawImage(image, sx, sy, swidth, sheight, d.x, d.y, swidth, sheight);
         } catch (e) {
-          console.error(image, sx, sy, swidth, sheight, dx, dy, swidth, sheight);
+          console.error(image, sx, sy, swidth, sheight, d.x, d.y, swidth, sheight);
           throw e;
         }
       }

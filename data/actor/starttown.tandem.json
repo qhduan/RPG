@@ -11,6 +11,7 @@
       ]
     }
   },
+  "quests": ["starttown.clearBat"],
   "image": "resource\/starttown.tandem.png",
   "centerX": 16,
   "centerY": 42,

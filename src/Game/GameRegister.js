@@ -177,12 +177,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "nerf": [], // 有害状态
 
     "quest": {
-      "current": {
+      "current": [
         // 当前任务
-      },
-      "past": {
+      ],
+      "past": [
         // 完成了的任务
-      }
+      ]
     },
 
     "area": "starttown", // 当前所在地图， 初始地图为starttown

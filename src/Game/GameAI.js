@@ -41,8 +41,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     static autoHide () {
       let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
+
       Game.area.map.layers.forEach((layer, index) => {
-        layer.visible = true;
         let layerData = Game.area.map.data.layers[index];
         if (
           heroHide &&
@@ -51,6 +51,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           layerData.properties.autohide == heroHide
         ) {
           layer.visible = false;
+        } else {
+          layer.visible = true;
         }
       });
 
@@ -81,6 +83,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
       }
+
+      //if (mapVisible != lastMapVisible) {
+      //  Game.area.map.cache();
+      //  lastMapVisible = mapVisible;
+      //}
     }
 
     static heroOnto () {

@@ -36,10 +36,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       this.items = {};
       this.skills = {};
       this.layers = {};
+      this.windows = {};
       this.config = { // 保存所有设置（默认设置）
         width: 800, // 渲染窗口的原始大小
         height: 450,
-        scale: false, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
+        scale: true, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
         fps: 35 };
       // 锁定fps到指定数值，如果设置为<=0，则不限制
       this.paused = true;
@@ -140,11 +141,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // 舞台
         this.stage = new Sprite.Stage(this.config.width, this.config.height);
         // 建立一个可以自动伸缩的窗口，并将舞台加入其中
-        Game.Window.create("stage").appendChild(this.stage.canvas).show();
+        this.windows.stage = Game.Window.create("stage").appendChild(this.stage.canvas).show();
 
         // 地图层
         this.layers.mapLayer = new Sprite.Container();
         this.layers.mapLayer.name = "mapLayer";
+        // 地图层 - 2
+        this.layers.mapHideLayer = new Sprite.Container();
+        this.layers.mapHideLayer.name = "mapHideLayer";
         // 物品层
         this.layers.itemLayer = new Sprite.Container();
         this.layers.itemLayer.name = "itemLayer";
@@ -161,7 +165,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         this.layers.dialogueLayer = new Sprite.Container();
         this.layers.dialogueLayer.name = "dialogueLayer";
 
-        this.stage.appendChild(Game.layers.mapLayer, Game.layers.itemLayer, Game.layers.actorLayer, Game.layers.infoLayer, Game.layers.skillLayer, Game.layers.dialogueLayer);
+        this.stage.appendChild(Game.layers.mapLayer, Game.layers.mapHideLayer, Game.layers.itemLayer, Game.layers.actorLayer, Game.layers.infoLayer, Game.layers.skillLayer, Game.layers.dialogueLayer);
 
         // 调整人物层顺序，也就是上方的人物会被下方的人物遮盖，例如
         /**
@@ -198,6 +202,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         });
 
+        /*
+        let updateNext = false;
+        Game.stage.on("change", function () {
+          updateNext = true;
+        });
+        Sprite.Ticker.on("tick", function () {
+         if (Game.paused == false && updateNext) {
+           Game.stage.update();
+           updateNext = false;
+         }
+        });
+        */
+
         var fpsElement = document.createElement("div");
         fpsElement.style.position = "absolute";
         fpsElement.style.left = "0";
@@ -219,8 +236,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           fpsElement.textContent = f.toFixed(1);
         }, 1000);
 
-        Game.Window.resize();
-
         console.log("RPG Game Flying!");
       }
     }]);
@@ -232,9 +247,24 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
   var Game = window.Game = new GameCore();
 
-  document.body.onload = function () {
-    Game.init();
-    Game.initInput();
-    Game.windows.main.show();
-  };
+  // under node-webkit
+  if (window.require) {
+    Game.config.scale = true;
+  }
+
+  function GameBootstrap() {
+    if (document.readyState == "complete") {
+      Game.init();
+      Game.initInput();
+      Game.windows.main.show();
+      return true;
+    }
+    return false;
+  }
+
+  if (GameBootstrap() == false) {
+    document.addEventListener("readystatechange", function () {
+      GameBootstrap();
+    });
+  }
 })();

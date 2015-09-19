@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("loading");
+  let win = Game.windows.loading = Game.Window.create("loadingWindow");
 
   win.html = `
     <table><tbody><tr><td>
@@ -30,19 +30,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #loadingWindow {
+    .loadingWindow {
       text-align: center;
       background-color: gray;
     }
 
-    #loadingWindow table, #loadingWindow tbody, #loadingWindow tr, #loadingWindow td {
+    .loadingWindow table, .loadingWindow tbody, .loadingWindow tr, .loadingWindow td {
       width: 100%;
       height: 100%;
       margin: 0;
       padding: 0;
     }
 
-    #loadingWindow label {
+    .loadingWindow label {
       font-size: 60px;
     }
   `;

@@ -72,7 +72,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       var imageUrls = [];
       this.data.tilesets.forEach(function (element) {
-        imageUrls.push("/map/" + element.image);
+        imageUrls.push("map/" + element.image);
       });
 
       Sprite.Loader.create().add(imageUrls).start().on("complete", function (event) {
@@ -215,10 +215,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.layers.forEach(function (element, index) {
           var layerData = _this2.data.layers[index];
 
-          //console.time("cache " + layerData.name);
-          element.cache(0, 0, _this2.width, _this2.height);
-          //console.timeEnd("cache " + layerData.name);
-
           if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
             element.visible = false;
           }
@@ -226,12 +222,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             element.alpha = layerData.opacity;
           }
 
-          Game.layers.mapLayer.appendChild(element);
+          if (layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide")) {
+            Game.layers.mapHideLayer.appendChild(element);
+          } else {
+            Game.layers.mapLayer.appendChild(element);
+          }
         });
 
-        //Game.layers.mapLayer.cache(0, 0, this.width, this.height);
-        //this.minimap = Game.layers.mapLayer.cacheCanvas;
-        //Game.layers.mapLayer.clearCache();
+        Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+        this.minimap = new Image();
+        this.minimap.src = Game.layers.mapLayer.cacheCanvas.toDataURL();
 
         if (this.data.bgm) {
           // set loop = -1, 无限循环

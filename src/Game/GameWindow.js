@@ -22,104 +22,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   "use strict";
 
   let internal = Sprite.Namespace();
-
-  let windows = {};
-  Game.windows = windows;
-
+  /** 全部窗口 */
+  let windows = new Set();
+  /**窗口z-index，不断递增 */
   let zIndex = 227;
 
-  Game.assign("Window", class GameWindow {
+  Game.assign("Window", class GameWindow extends Sprite.Event {
     static create (id) {
-      let win = new GameWindowObject(id)
-      windows[id] = win;
+      let win = new Game.Window(id)
       return win;
     }
 
-    static clear () {
-      let nodes = document.getElementsByClassName("game-window");
-      for (let i = 0; i < nodes.length; i++) {
-        nodes[i].style.display = "none";
-      }
-    }
-
-    // 当窗口大小改变时改变游戏窗口大小
-    static resize () {
-      let width = window.innerWidth;
-      let height = window.innerHeight;
-      let scale = 1;
-      let leftMargin = 0;
-      let topMargin = 0;
-
-      if (Game.config.scale == false) {
-        // 不拉伸游戏窗口，按原始大小计算窗口居中
-        leftMargin = Math.floor((width - Game.config.width) / 2);
-        topMargin = Math.floor((height - Game.config.height) / 2);
-      } else {
-        // 拉伸游戏窗口，首先计算游戏原始大小比例
-        let ratio = Game.config.width / Game.config.height;
-        // width first
-        let w = width;
-        let h = w / ratio;
-        // then height
-        if (h > height) {
-          h = height;
-          w = h * ratio;
-        }
-
-        w = Math.floor(w);
-        h = Math.floor(h);
-        leftMargin = Math.floor((width - w) / 2);
-        topMargin = Math.floor((height - h) / 2);
-
-        scale = Math.min(
-          w / Game.config.width,
-          h / Game.config.height
-        );
-
-        scale = scale.toFixed(3);
-      }
-
-      // html窗口拉伸（css中控制了原始大小）
-      let elements = document.getElementsByClassName("game-window");
-      for (let i = 0; i < elements.length; i++) {
-        elements[i].style.transformOrigin = "0 0 0";
-        elements[i].style.transform = `scale(${scale}, ${scale})`;
-        elements[i].style.left = `${leftMargin}px`;
-        elements[i].style.top = `${topMargin}px`;
-      }
-
-      if (Game.hero) {
-        Game.hero.focus();
-      }
-
-    }
-  });
-
-  Game.Window.resize();
-  window.addEventListener("resize", function () {
-    Game.Window.resize();
-  });
-
-  class GameWindowObject extends Sprite.Event {
     /**
      * @constructor
      */
     constructor (id) {
       super();
 
-      let pp = internal(this);
-      pp.id = id;
-      pp.css = document.createElement("style");
-      pp.html = document.createElement("div");
-      pp.index = -1;
+      let privates = internal(this);
+      privates.id = id;
+      privates.css = document.createElement("style");
+      privates.html = document.createElement("div");
+      privates.index = -1;
 
-      pp.html.id = id + "Window";
-      pp.html.classList.add("game-window");
-      pp.html.style.display = "none";
-      document.body.appendChild(pp.html);
-      document.body.appendChild(pp.css)
+      // 随机一个字符串作为dom的id
+      privates.html.id = "GW" + Math.random().toString(16).substr(2);
+      privates.html.classList.add(id);
+      privates.html.classList.add("game-window");
+      privates.html.style.display = "none";
+      document.body.appendChild(privates.html);
+      document.head.appendChild(privates.css)
 
-      pp.html.addEventListener("mousedown", (event) => {
+      privates.html.addEventListener("mousedown", (event) => {
         let x = event.clientX;
         let y = event.clientY;
 
@@ -127,22 +61,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let top = null;
         let scale = null;
 
-        if (pp.html.style.left) {
-          let t = pp.html.style.left.match(/(\d+)px/);
+        if (privates.html.style.left) {
+          let t = privates.html.style.left.match(/(\d+)px/);
           if (t) {
             left = parseInt(t[1]);
           }
         }
 
-        if (pp.html.style.top) {
-          let t = pp.html.style.top.match(/(\d+)px/);
+        if (privates.html.style.top) {
+          let t = privates.html.style.top.match(/(\d+)px/);
           if (t) {
             top = parseInt(t[1]);
           }
         }
 
-        if (pp.html.style.transform) {
-          let t = pp.html.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
+        if (privates.html.style.transform) {
+          let t = privates.html.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
           if (t) {
             scale = parseFloat(t[1]);
           }
@@ -159,6 +93,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           });
         }
       });
+
+      windows.add(this);
+    }
+
+    destroy () {
+      let privates = internal(this);
+      if (this.showing) {
+        this.hide();
+      }
+      if (privates.html) {
+        document.body.removeChild(privates.html);
+        privates.html = null;
+      }
+      if (privates.css) {
+        document.head.removeChild(privates.css);
+        privates.css = null;
+      }
+      if (windows.has(this)) {
+        windows.delete(this);
+      }
     }
 
     whenPress (keys, callback) {
@@ -200,18 +154,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     show () {
-      if (this.showing == false && internal(this).html) {
+      let privates = internal(this);
+      GameWindowResize();
+      if (this.showing == false && privates.html) {
         this.emit("beforeShow");
 
-        for (let key in windows) {
-          if (windows[key].atop) {
-            windows[key].emit("deactive");
+        for (let win of windows) {
+          if (win.atop) {
+            win.emit("deactive");
           }
         }
 
-        internal(this).index = zIndex;
-        internal(this).html.style.zIndex = internal(this).index;
-        internal(this).html.style.display = "block";
+        privates.index = zIndex;
+        privates.html.style.zIndex = privates.index;
+        privates.html.style.display = "block";
         zIndex++;
         this.emit("afterShow");
         this.emit("active");
@@ -220,25 +176,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     hide () {
-      if (internal(this).html) {
+      let privates = internal(this);
+      if (privates.html) {
         this.emit("beforeHide");
-        internal(this).index = -1;
-        internal(this).html.style.zIndex = this._index;
-        internal(this).html.style.display = "none";
+        privates.index = -1;
+        privates.html.style.zIndex = privates.index;
+        privates.html.style.display = "none";
         this.emit("afterHide");
         this.emit("deactive");
 
-        for (let key in windows) {
-          if (windows[key].atop) {
-            windows[key].emit("active");
+        for (let win of windows) {
+          if (win.atop) {
+            win.emit("active");
           }
         }
       }
       return this;
     }
 
+    querySelector (selector) {
+      let privates = internal(this);
+      return document.querySelector(`#${privates.html.id} ${selector}`);
+    }
+
+    querySelectorAll (selector) {
+      let privates = internal(this);
+      return document.querySelectorAll(`#${privates.html.id} ${selector}`);
+    }
+
     get index () {
-      return internal(this).index;
+      let privates = internal(this);
+      return privates.index;
     }
 
     set index (value) {
@@ -247,7 +215,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get showing () {
-      if (internal(this).html && internal(this).html.style.display != "none") {
+      let privates = internal(this);
+      if (privates.html && privates.html.style.display != "none") {
         return true;
       }
       return false;
@@ -258,8 +227,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get atop () {
-      for (let key in windows) {
-        if (windows[key].showing && windows[key].index > this.index) {
+      for (let win of windows) {
+        if (win.showing && win.index > this.index) {
           return false;
         }
       }
@@ -286,11 +255,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       internal(this).css.innerHTML = value;
     }
 
-    clear () {
-      internal(this).html.innerHTML = "";
-      return this;
-    }
-
     appendChild (domElement) {
       internal(this).html.appendChild(domElement);
       return this;
@@ -300,7 +264,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       internal(this).html.removeChild(domElement);
       return this;
     }
+  });
 
-  };
+  // 当窗口大小改变时改变游戏窗口大小
+  function GameWindowResize () {
+    let width = window.innerWidth;
+    let height = window.innerHeight;
+    let scale = 1;
+    let leftMargin = 0;
+    let topMargin = 0;
+
+    if (Game.config.scale == false) {
+      // 不拉伸游戏窗口，按原始大小计算窗口居中
+      leftMargin = Math.floor((width - Game.config.width) / 2);
+      topMargin = Math.floor((height - Game.config.height) / 2);
+    } else {
+      // 拉伸游戏窗口，首先计算游戏原始大小比例
+      let ratio = Game.config.width / Game.config.height;
+      // width first
+      let w = width;
+      let h = w / ratio;
+      // then height
+      if (h > height) {
+        h = height;
+        w = h * ratio;
+      }
+
+      w = Math.floor(w);
+      h = Math.floor(h);
+      leftMargin = Math.floor((width - w) / 2);
+      topMargin = Math.floor((height - h) / 2);
+
+      scale = Math.min(
+        w / Game.config.width,
+        h / Game.config.height
+      );
+
+      scale = scale.toFixed(3);
+    }
+
+    // html窗口拉伸（css中控制了原始大小）
+    for (let win of windows) {
+      internal(win).html.style.transformOrigin = "0 0 0";
+      internal(win).html.style.transform = `scale(${scale}, ${scale})`;
+      internal(win).html.style.left = `${leftMargin}px`;
+      internal(win).html.style.top = `${topMargin}px`;
+    }
+
+    if (Game.hero) {
+      Game.hero.focus();
+    }
+
+  }
+
+  GameWindowResize();
+  window.addEventListener("resize", function () {
+    GameWindowResize();
+  });
 
 })();

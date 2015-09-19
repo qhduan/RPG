@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("skill");
+  let win = Game.windows.skill = Game.Window.create("skillWindow");
 
   win.html = `
     <div class="window-box">
@@ -43,16 +43,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #skillWindow table {
+    .skillWindow table {
       width: 100%;
     }
 
-    #skillWindow table img {
+    .skillWindow table img {
       width: 100%;
       height: 100%;
     }
 
-    #skillWindow button {
+    .skillWindow button {
       width: 60px;
       height: 40px;
       font-size: 16px;
@@ -73,8 +73,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let skillWindowClose = document.querySelector("button#skillWindowClose");
-  let skillWindowTable = document.querySelector("#skillWindowTable");
+  let skillWindowClose = win.querySelector("button#skillWindowClose");
+  let skillWindowTable = win.querySelector("#skillWindowTable");
 
   let lastSelect = -1;
 
@@ -194,17 +194,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             break;
           case "remove":
-            Game.confirm(`真的要遗忘 ${skill.data.name} 技能吗？`, function (yes) {
-              if (yes) {
-                Game.hero.data.bar.forEach(function (element, index, array) {
-                  if (element && element.id == skillId) {
-                    array[index] = null;
-                  }
-                });
-                Game.hero.data.skills.splice(index, 1);
-                Game.windows.interface.refresh();
-                win.open();
-              }
+            Game.confirm(`真的要遗忘 ${skill.data.name} 技能吗？`, function () {
+              Game.hero.data.bar.forEach(function (element, index, array) {
+                if (element && element.id == skillId) {
+                  array[index] = null;
+                }
+              });
+              Game.hero.data.skills.splice(index, 1);
+              Game.windows.interface.refresh();
+              win.open();
             });
             break;
         }

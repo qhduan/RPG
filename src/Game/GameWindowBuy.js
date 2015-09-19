@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("buy");
+  let win = Game.windows.buy = Game.Window.create("buyWindow");
 
   win.html = `
   <div class="window-box">
@@ -76,16 +76,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       float: right;
     }
 
-    #buyWindow table {
+    .buyWindow table {
       width: 100%;
     }
 
-    #buyWindow table img {
+    .buyWindow table img {
       width: 100%;
       height: 100%;
     }
 
-    #buyWindow table button {
+    .buyWindow table button {
       width: 60px;
       height: 40px;
       font-size: 16px;
@@ -100,19 +100,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let buyWindowClose = document.querySelector("button#buyWindowClose");
-  let buyWindowSell = document.querySelector("button#buyWindowSell");
+  let buyWindowClose = win.querySelector("button#buyWindowClose");
+  let buyWindowSell = win.querySelector("button#buyWindowSell");
 
-  let buyWindowAll = document.querySelector("button#buyWindowAll");
-  let buyWindowWeapon = document.querySelector("button#buyWindowWeapon");
-  let buyWindowArmor = document.querySelector("button#buyWindowArmor");
-  let buyWindowPotion = document.querySelector("button#buyWindowPotion");
-  let buyWindowMaterial = document.querySelector("button#buyWindowMaterial");
-  let buyWindowBook = document.querySelector("button#buyWindowBook");
-  let buyWindowMisc = document.querySelector("button#buyWindowMisc");
+  let buyWindowAll = win.querySelector("button#buyWindowAll");
+  let buyWindowWeapon = win.querySelector("button#buyWindowWeapon");
+  let buyWindowArmor = win.querySelector("button#buyWindowArmor");
+  let buyWindowPotion = win.querySelector("button#buyWindowPotion");
+  let buyWindowMaterial = win.querySelector("button#buyWindowMaterial");
+  let buyWindowBook = win.querySelector("button#buyWindowBook");
+  let buyWindowMisc = win.querySelector("button#buyWindowMisc");
 
-  let buyWindowGold = document.querySelector("span#buyWindowGold");
-  let buyWindowTable = document.querySelector("#buyWindowTable");
+  let buyWindowGold = win.querySelector("span#buyWindowGold");
+  let buyWindowTable = win.querySelector("#buyWindowTable");
 
   let lastItems = null;
   let lastFilter = null;

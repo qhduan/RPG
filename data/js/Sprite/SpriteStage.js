@@ -59,18 +59,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(SpriteStage.prototype), "constructor", this).call(this);
       var privates = internal(this);
 
-      if (Sprite.Webgl.support()) {
+      if (!privates.renderer && Sprite.Webgl.support()) {
         privates.renderer = new Sprite.Webgl(width, height);
         privates.rendererType = "webgl";
-      } else if (Sprite.Canvas.support()) {
+      }
+
+      if (!privates.renderer && Sprite.Canvas.support()) {
         privates.renderer = new Sprite.Canvas(width, height);
         privates.rendererType = "canvas";
-      } else {
+      }
+
+      if (!privates.renderer) {
         throw new Error("Sprite.Stage all renderer not support");
       }
 
       privates.color = "#000000";
-
       privates.screenshot = null;
     }
 
@@ -224,4 +227,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteStage;
   })(Sprite.Container));
 })();
-//# sourceMappingURL=SpriteStage.js.map

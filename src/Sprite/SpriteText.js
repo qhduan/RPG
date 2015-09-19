@@ -191,6 +191,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         context.fillText(element, canvas.width/2, index*lineHeight)
       });
 
+      privates.image = null;
       privates.image = canvas;
     }
 

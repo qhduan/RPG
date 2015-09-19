@@ -106,20 +106,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        @private
        */
       privates.animationTimer = null;
-      /**
-       * Contain frames cache
-       @type {Array}
-       @private
-       */
-      privates.frames = [];
-
-      var _iteratorNormalCompletion = true;
 
       /**
        * The number of frames we have
        @type {number}
        @private
        */
+      privates.frameCount = 0;
+
+      var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
 
@@ -130,15 +125,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (image && image.width && image.height) {
             var col = Math.floor(image.width / privates.tilewidth);
             var row = Math.floor(image.height / privates.tileheight);
-            for (var j = 0; j < row; j++) {
-              for (var i = 0; i < col; i++) {
-                privates.frames.push({
-                  image: image,
-                  x: i * privates.tilewidth,
-                  y: j * privates.tileheight
-                });
-              }
-            }
+            privates.frameCount += col * row;
           } else {
             console.error(image, privates.images, this);
             throw new Error("Sprite.Sheet got an invalid image");
@@ -157,13 +144,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             throw _iteratorError;
           }
         }
-      }
-
-      privates.frameCount = privates.frames.length;
-
-      if (privates.frameCount <= 0) {
-        console.error(privates.frames, this);
-        throw new Error("Sprite.Sheet got invalid frameCount, something wrong");
       }
     }
 
@@ -307,14 +287,57 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (!Number.isInteger(index)) {
           index = privates.currentFrame;
         }
+
         if (index < 0 || index >= privates.frameCount) {
-          console.error(index, this);
-          throw new Error("Sprite.Sheet.getFrame invalid index");
+          console.error(index, privates, this);
+          throw new Error("Sprite.Sheet.getFrame index out of range");
         }
-        var frame = privates.frames[index];
-        var frameObj = new Sprite.Frame(frame.image, frame.x, frame.y, privates.tilewidth, privates.tileheight);
-        frameObj.parent = this;
-        return frameObj;
+
+        var frame = null;
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = privates.images[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var image = _step2.value;
+
+            var col = Math.floor(image.width / privates.tilewidth);
+            var row = Math.floor(image.height / privates.tileheight);
+            if (index < col * row) {
+              // which row
+              var j = Math.floor(index / col);
+              // which column
+              var i = index - col * j;
+              frame = new Sprite.Frame(image, i * privates.tilewidth, // x
+              j * privates.tileheight, // y
+              privates.tilewidth, privates.tileheight);
+              frame.parent = this;
+              break;
+            }
+            index -= col * row;
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
+
+        if (!frame) {
+          console.error(index, privates, this);
+          throw new Error("Sprite.Sheet.getFrame unknown error");
+        }
+
+        return frame;
       }
 
       /**
@@ -324,6 +347,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw(renderer) {
+        if (this.visible == false || this.alpha <= 0.01) {
+          return;
+        }
+
         var privates = internal(this);
         var frame = this.getFrame(this.currentFrame);
 

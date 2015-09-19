@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("main");
+  let win = Game.windows.main = Game.Window.create("mainWindow");
 
   win.html = `
     <div>
@@ -36,25 +36,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #mainWindow {
+    .mainWindow {
       text-align: center;
       background-image: url("image/main.jpeg");
     }
 
-    #mainWindow h1 {
+    .mainWindow h1 {
       font-size: 60px;
     }
 
-    #mainWindow button {
+    .mainWindow button {
       width: 120px;
       height: 60px;
       margin-top: 10px;
     }
   `;
 
-  let mainWindowContinue = document.querySelector("button#mainWindowContinue");
-  let mainWindowNew = document.querySelector("button#mainWindowNew");
-  let mainWindowLoad = document.querySelector("button#mainWindowLoad");
+  let mainWindowContinue = win.querySelector("button#mainWindowContinue");
+  let mainWindowNew = win.querySelector("button#mainWindowNew");
+  let mainWindowLoad = win.querySelector("button#mainWindowLoad");
 
   win.on("beforeShow", function () {
     if (!Game.Archive.last()) {

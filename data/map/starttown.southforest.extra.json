@@ -34,8 +34,8 @@
       "y": 0,
       "dest": "starttown",
       "description": "通往斯塔特镇",
-      "destx": 48,
-      "desty": 98
+      "destx": 20,
+      "desty": 62
     }
   ]
 }

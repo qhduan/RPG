@@ -95,42 +95,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        @private
        */
       privates.animationTimer = null;
-      /**
-       * Contain frames cache
-       @type {Array}
-       @private
-       */
-      privates.frames = [];
-
-      for (let image of privates.images) {
-        if (image && image.width && image.height) {
-          let col = Math.floor(image.width / privates.tilewidth);
-          let row = Math.floor(image.height / privates.tileheight);
-          for (let j = 0; j < row; j++) {
-            for (let i = 0; i < col; i++) {
-              privates.frames.push({
-                image: image,
-                x: i * privates.tilewidth,
-                y: j * privates.tileheight
-              });
-            }
-          }
-        } else {
-          console.error(image, privates.images, this);
-          throw new Error("Sprite.Sheet got an invalid image");
-        }
-      }
 
       /**
        * The number of frames we have
        @type {number}
        @private
        */
-      privates.frameCount = privates.frames.length;
+      privates.frameCount = 0;
 
-      if (privates.frameCount <= 0) {
-        console.error(privates.frames, this);
-        throw new Error("Sprite.Sheet got invalid frameCount, something wrong");
+      for (let image of privates.images) {
+        if (image && image.width && image.height) {
+          let col = Math.floor(image.width / privates.tilewidth);
+          let row = Math.floor(image.height / privates.tileheight);
+          privates.frameCount += col * row;
+        } else {
+          console.error(image, privates.images, this);
+          throw new Error("Sprite.Sheet got an invalid image");
+        }
       }
     }
     /**
@@ -295,20 +276,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (!Number.isInteger(index)) {
         index = privates.currentFrame;
       }
+
       if (index < 0 || index >= privates.frameCount) {
-        console.error(index, this);
-        throw new Error("Sprite.Sheet.getFrame invalid index")
+        console.error(index, privates, this);
+        throw new Error("Sprite.Sheet.getFrame index out of range");
       }
-      let frame = privates.frames[index];
-      let frameObj = new Sprite.Frame(
-        frame.image,
-        frame.x,
-        frame.y,
-        privates.tilewidth,
-        privates.tileheight
-      );
-      frameObj.parent = this;
-      return frameObj;
+
+      let frame = null;
+      for (let image of privates.images) {
+        let col = Math.floor(image.width / privates.tilewidth);
+        let row = Math.floor(image.height / privates.tileheight);
+        if (index < col * row) {
+          // which row
+          let j = Math.floor(index / col);
+          // which column
+          let i = index - col * j;
+          frame = new Sprite.Frame (
+            image,
+            i * privates.tilewidth, // x
+            j * privates.tileheight, // y
+            privates.tilewidth,
+            privates.tileheight
+          );
+          frame.parent = this;
+          break;
+        }
+        index -= (col * row);
+      }
+
+      if (!frame) {
+        console.error(index, privates, this);
+        throw new Error("Sprite.Sheet.getFrame unknown error");
+      }
+
+      return frame;
     }
 
     /**
@@ -316,6 +317,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} renderer A renderer engine, eg. Sprite.Webgl
      */
     draw (renderer) {
+      if (this.visible == false || this.alpha <= 0.01) {
+        return;
+      }
+
       let privates = internal(this);
       let frame = this.getFrame(this.currentFrame);
 

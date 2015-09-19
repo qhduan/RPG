@@ -45,18 +45,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       super();
       let privates = internal(this);
 
-      if (Sprite.Webgl.support()) {
+      if (!privates.renderer && Sprite.Webgl.support()) {
         privates.renderer = new Sprite.Webgl(width, height);
         privates.rendererType = "webgl";
-      } else if (Sprite.Canvas.support()) {
+      }
+
+      if (!privates.renderer && Sprite.Canvas.support()) {
         privates.renderer = new Sprite.Canvas(width, height);
         privates.rendererType = "canvas";
-      } else {
+      }
+
+      if (!privates.renderer) {
         throw new Error("Sprite.Stage all renderer not support");
       }
 
       privates.color = "#000000";
-
       privates.screenshot = null;
     }
 

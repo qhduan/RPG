@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("inventory");
+  let win = Game.windows.inventory = Game.Window.create("inventoryWindow");
 
   win.html = `
     <div class="window-box">
@@ -41,19 +41,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       <span id="inventoryWindowGold"></span>
 
-      <table border="1" cellspacing="0" cellpadding="0">
-        <thead>
-          <tr>
-            <td style="width: 40px;"></td>
-            <td style="width: 120px;"></td>
-            <td style="width: 30px;"></td>
-            <td style="width: 30px;"></td>
-            <td></td>
-            <td style="width: 60px;"></td>
-          </tr>
-        </thead>
-        <tbody id="inventoryWindowTable"></tbody>
-      </table>
+      <div style="overflow: auto; height: 300px;">
+        <table border="1" cellspacing="0" cellpadding="0">
+          <thead>
+            <tr>
+              <td style="width: 40px;"></td>
+              <td style="width: 120px;"></td>
+              <td style="width: 30px;"></td>
+              <td style="width: 30px;"></td>
+              <td></td>
+              <td style="width: 60px;"></td>
+            </tr>
+          </thead>
+          <tbody id="inventoryWindowTable"></tbody>
+        </table>
+      </div>
     </div>
   `;
 
@@ -76,16 +78,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       float: right;
     }
 
-    #inventoryWindow table {
+    .inventoryWindow table {
       width: 100%;
     }
 
-    #inventoryWindow table img {
+    .inventoryWindow table img {
       width: 100%;
       height: 100%;
     }
 
-    #inventoryWindow table button {
+    .inventoryWindow table button {
       width: 60px;
       height: 40px;
       font-size: 16px;
@@ -100,19 +102,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
-  let inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");
+  let inventoryWindowClose = win.querySelector("button#inventoryWindowClose");
+  let inventoryWindowStatus = win.querySelector("button#inventoryWindowStatus");
 
-  let inventoryWindowAll = document.querySelector("button#inventoryWindowAll");
-  let inventoryWindowWeapon = document.querySelector("button#inventoryWindowWeapon");
-  let inventoryWindowArmor = document.querySelector("button#inventoryWindowArmor");
-  let inventoryWindowPotion = document.querySelector("button#inventoryWindowPotion");
-  let inventoryWindowMaterial = document.querySelector("button#inventoryWindowMaterial");
-  let inventoryWindowBook = document.querySelector("button#inventoryWindowBook");
-  let inventoryWindowMisc = document.querySelector("button#inventoryWindowMisc");
+  let inventoryWindowAll = win.querySelector("button#inventoryWindowAll");
+  let inventoryWindowWeapon = win.querySelector("button#inventoryWindowWeapon");
+  let inventoryWindowArmor = win.querySelector("button#inventoryWindowArmor");
+  let inventoryWindowPotion = win.querySelector("button#inventoryWindowPotion");
+  let inventoryWindowMaterial = win.querySelector("button#inventoryWindowMaterial");
+  let inventoryWindowBook = win.querySelector("button#inventoryWindowBook");
+  let inventoryWindowMisc = win.querySelector("button#inventoryWindowMisc");
 
-  let inventoryWindowGold = document.querySelector("span#inventoryWindowGold");
-  let inventoryWindowTable = document.querySelector("#inventoryWindowTable");
+  let inventoryWindowGold = win.querySelector("span#inventoryWindowGold");
+  let inventoryWindowTable = win.querySelector("#inventoryWindowTable");
 
   inventoryWindowClose.addEventListener("click", function (event) {
     win.hide();

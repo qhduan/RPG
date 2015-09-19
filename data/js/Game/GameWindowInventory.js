@@ -23,25 +23,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var win = Game.Window.create("inventory");
+  var win = Game.windows.inventory = Game.Window.create("inventoryWindow");
 
-  win.html = "\n    <div class=\"window-box\">\n      <div id=\"inventoryWindowItemBar\">\n\n        <button id=\"inventoryWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"inventoryWindowStatus\" class=\"brownButton\">状态</button>\n\n        <button id=\"inventoryWindowAll\" class=\"brownButton\">全部</button>\n        <button id=\"inventoryWindowWeapon\" class=\"brownButton\">武器</button>\n        <button id=\"inventoryWindowArmor\" class=\"brownButton\">护甲</button>\n        <button id=\"inventoryWindowPotion\" class=\"brownButton\">药水</button>\n        <button id=\"inventoryWindowMaterial\" class=\"brownButton\">材料</button>\n        <button id=\"inventoryWindowBook\" class=\"brownButton\">书籍</button>\n        <button id=\"inventoryWindowMisc\" class=\"brownButton\">其他</button>\n      </div>\n\n      <span id=\"inventoryWindowGold\"></span>\n\n      <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n        <thead>\n          <tr>\n            <td style=\"width: 40px;\"></td>\n            <td style=\"width: 120px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td style=\"width: 30px;\"></td>\n            <td></td>\n            <td style=\"width: 60px;\"></td>\n          </tr>\n        </thead>\n        <tbody id=\"inventoryWindowTable\"></tbody>\n      </table>\n    </div>\n  ";
+  win.html = "\n    <div class=\"window-box\">\n      <div id=\"inventoryWindowItemBar\">\n\n        <button id=\"inventoryWindowClose\" class=\"brownButton\">关闭</button>\n        <button id=\"inventoryWindowStatus\" class=\"brownButton\">状态</button>\n\n        <button id=\"inventoryWindowAll\" class=\"brownButton\">全部</button>\n        <button id=\"inventoryWindowWeapon\" class=\"brownButton\">武器</button>\n        <button id=\"inventoryWindowArmor\" class=\"brownButton\">护甲</button>\n        <button id=\"inventoryWindowPotion\" class=\"brownButton\">药水</button>\n        <button id=\"inventoryWindowMaterial\" class=\"brownButton\">材料</button>\n        <button id=\"inventoryWindowBook\" class=\"brownButton\">书籍</button>\n        <button id=\"inventoryWindowMisc\" class=\"brownButton\">其他</button>\n      </div>\n\n      <span id=\"inventoryWindowGold\"></span>\n\n      <div style=\"overflow: auto; height: 300px;\">\n        <table border=\"1\" cellspacing=\"0\" cellpadding=\"0\">\n          <thead>\n            <tr>\n              <td style=\"width: 40px;\"></td>\n              <td style=\"width: 120px;\"></td>\n              <td style=\"width: 30px;\"></td>\n              <td style=\"width: 30px;\"></td>\n              <td></td>\n              <td style=\"width: 60px;\"></td>\n            </tr>\n          </thead>\n          <tbody id=\"inventoryWindowTable\"></tbody>\n        </table>\n      </div>\n    </div>\n  ";
 
-  win.css = "\n    #inventoryWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #inventoryWindowClose {\n      float: right;\n    }\n\n    #inventoryWindowStatus {\n      float: right;\n    }\n\n    #inventoryWindow table {\n      width: 100%;\n    }\n\n    #inventoryWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    #inventoryWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #inventoryWindowGold {\n      position: absolute;\n      right: 100px;\n      bottom: 30px;\n      font-size: 20px;\n      color: black;\n    }\n  ";
+  win.css = "\n    #inventoryWindowItemBar > button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      margin-left: 5px;\n      margin-right: 5px;\n      margin-top: 0px;\n      margin-bottom: 5px;\n    }\n\n    #inventoryWindowClose {\n      float: right;\n    }\n\n    #inventoryWindowStatus {\n      float: right;\n    }\n\n    .inventoryWindow table {\n      width: 100%;\n    }\n\n    .inventoryWindow table img {\n      width: 100%;\n      height: 100%;\n    }\n\n    .inventoryWindow table button {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n    }\n\n    #inventoryWindowGold {\n      position: absolute;\n      right: 100px;\n      bottom: 30px;\n      font-size: 20px;\n      color: black;\n    }\n  ";
 
-  var inventoryWindowClose = document.querySelector("button#inventoryWindowClose");
-  var inventoryWindowStatus = document.querySelector("button#inventoryWindowStatus");
+  var inventoryWindowClose = win.querySelector("button#inventoryWindowClose");
+  var inventoryWindowStatus = win.querySelector("button#inventoryWindowStatus");
 
-  var inventoryWindowAll = document.querySelector("button#inventoryWindowAll");
-  var inventoryWindowWeapon = document.querySelector("button#inventoryWindowWeapon");
-  var inventoryWindowArmor = document.querySelector("button#inventoryWindowArmor");
-  var inventoryWindowPotion = document.querySelector("button#inventoryWindowPotion");
-  var inventoryWindowMaterial = document.querySelector("button#inventoryWindowMaterial");
-  var inventoryWindowBook = document.querySelector("button#inventoryWindowBook");
-  var inventoryWindowMisc = document.querySelector("button#inventoryWindowMisc");
+  var inventoryWindowAll = win.querySelector("button#inventoryWindowAll");
+  var inventoryWindowWeapon = win.querySelector("button#inventoryWindowWeapon");
+  var inventoryWindowArmor = win.querySelector("button#inventoryWindowArmor");
+  var inventoryWindowPotion = win.querySelector("button#inventoryWindowPotion");
+  var inventoryWindowMaterial = win.querySelector("button#inventoryWindowMaterial");
+  var inventoryWindowBook = win.querySelector("button#inventoryWindowBook");
+  var inventoryWindowMisc = win.querySelector("button#inventoryWindowMisc");
 
-  var inventoryWindowGold = document.querySelector("span#inventoryWindowGold");
-  var inventoryWindowTable = document.querySelector("#inventoryWindowTable");
+  var inventoryWindowGold = win.querySelector("span#inventoryWindowGold");
+  var inventoryWindowTable = win.querySelector("#inventoryWindowTable");
 
   inventoryWindowClose.addEventListener("click", function (event) {
     win.hide();

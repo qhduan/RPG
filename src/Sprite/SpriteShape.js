@@ -274,8 +274,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     generate () {
       let privates = internal(this);
-      let svg = `<?xml version="1.0"?>\n<svg width="${this._width}" height="${this._height}" ` +
-        `style="width: ${this._width}px; height: ${this._height}px;" ` +
+      let svg = `<?xml version="1.0"?>\n<svg width="${this.width}" height="${this.height}" ` +
+        `style="width: ${this.width}px; height: ${this.height}px;" ` +
         `xmlns="http://www.w3.org/2000/svg" version="1.1">\n`;
 
       for (let child of privates.children) {
@@ -293,7 +293,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.image = image;
         privates.width = image.width;
         privates.height = image.height;
-        // window.URL.revokeObjectURL(url);
+        // release
+        window.URL.revokeObjectURL(url);
         this.emit("change");
       };
 

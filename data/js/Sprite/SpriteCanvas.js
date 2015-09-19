@@ -149,6 +149,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       key: "drawImage",
       value: function drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh) {
         var privates = internal(this);
+
+        if (dx > this.width || dy > this.height) {
+          return;
+        }
+
+        if (dx + dw < 0 || dy + dh < 0) {
+          return;
+        }
+
         privates.context.globalAlpha = this.alpha;
         privates.context.drawImage(image, sx, sy, sw, sh, dx, dy, dw, dh);
       }

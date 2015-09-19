@@ -130,6 +130,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           context.fillText(element, canvas.width / 2, index * lineHeight);
         });
 
+        privates.image = null;
         privates.image = canvas;
       }
     }, {

@@ -133,7 +133,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     req.onreadystatechange = function () {
       if (req.readyState == 4) {
-        if (req.status == 200) {
+        if (req.response) {
           if (type == "image") {
             (function () {
               var blob = req.response;
@@ -270,7 +270,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var privates = internal(this);
         var done = 0;
         var ret = [];
-        ret.length = internal(this).list.length;
+        ret.length = privates.list.length;
 
         var Done = function Done() {
           done++;

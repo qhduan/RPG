@@ -102,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     req.onreadystatechange = function () {
       if (req.readyState == 4) {
-        if (req.status == 200) {
+        if (req.response) {
           if (type == "image") {
             let blob = req.response;
             let image = new Image();
@@ -206,7 +206,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       let done = 0;
       let ret = [];
-      ret.length = internal(this).list.length;
+      ret.length = privates.list.length;
 
       let Done = () => {
         done++;

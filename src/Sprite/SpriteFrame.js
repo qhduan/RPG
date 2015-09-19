@@ -105,6 +105,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Frame.height readonly");
     }
 
+    print () {
+      console.log(internal(this));
+    }
+
     /**
      * @return {Object} Clone this Sprite.Frame
      */

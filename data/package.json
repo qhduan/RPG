@@ -1,0 +1,51 @@
+{
+  "name": "Game",
+  "description": "RPG Game",
+  "version": "0.0.2",
+  "homepage": "https://github.com/qhduan/RPG",
+  "author": {
+    "name": "qhduan",
+    "email": "mail@qhduan.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/qhduan/RPG.git"
+  },
+  "bugs": {
+    "url": "https://github.com/qhduan/RPG/issues"
+  },
+  "licenses": [
+    {
+      "type": "GPL",
+      "url": "https://github.com/qhduan/RPG/blob/master/GPLv3.txt"
+    }
+  ],
+  "main": "game.js",
+  "engines": {
+    "node": ">= 0.8.0"
+  },
+  "scripts": {
+    "test": "node game"
+  },
+  "dependencies": {
+    "express": "latest",
+    "grunt": "latest",
+    "grunt-contrib-watch": "latest",
+    "grunt-babel": "latest",
+    "babel-core": "latest"
+  },
+  "keywords": [
+    "RPG",
+    "Game",
+    "canvas"
+  ],
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "resizable": true,
+    "fullscreen": false,
+    "width": 800,
+    "height": 450,
+    "icon": "icon64x64.png"
+  }
+}

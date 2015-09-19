@@ -58,7 +58,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
    * @class
    */
   Sprite.assign("Webgl", (function () {
-    _createClass(Webgl, null, [{
+    _createClass(SpriteWebgl, null, [{
       key: "support",
 
       /**
@@ -80,8 +80,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        */
     }]);
 
-    function Webgl(width, height) {
-      _classCallCheck(this, Webgl);
+    function SpriteWebgl(width, height) {
+      _classCallCheck(this, SpriteWebgl);
 
       var privates = internal(this);
       var canvas = document.createElement("canvas");
@@ -101,6 +101,34 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         throw new Error("Sprite.Webgl webgl is not supported");
       }
 
+      window.addEventListener("beforeunload", function (event) {
+        console.log("release webgl resources");
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = privates.textureCache.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var texture = _step.value;
+
+            gl.deleteTexture(texture);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+      });
+
       gl.viewport(0, 0, canvas.width, canvas.height);
 
       var vertShaderObj = gl.createShader(gl.VERTEX_SHADER);
@@ -119,10 +147,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
       gl.enable(gl.BLEND);
-
-      console.log("webgl inited");
-
-      console.log("webgl, max texture size: ", gl.getParameter(gl.MAX_TEXTURE_SIZE));
 
       privates.positionLocation = gl.getAttribLocation(program, "position");
       privates.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
@@ -148,9 +172,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       privates.canvas = canvas;
       privates.gl = gl;
+      privates.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+
+      console.log("webgl inited. max texture size: %d", gl.getParameter(gl.MAX_TEXTURE_SIZE));
     }
 
-    _createClass(Webgl, [{
+    _createClass(SpriteWebgl, [{
       key: "filter",
 
       /**
@@ -158,17 +185,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        * @param {number} value Number or undefined, if undefined ,return current value
        */
       value: function filter(name, value) {
+        var privates = internal(this);
         if (typeof value == "number") {
-          internal(this).filter.set(name, value);
+          privates.filter.set(name, value);
         } else {
-          return internal(this).get(name);
+          return privates.get(name);
         }
       }
     }, {
       key: "createTexture",
       value: function createTexture(gl, image) {
-        if (internal(this).textureCache.has(image)) {
-          return internal(this).textureCache.get(image);
+        var privates = internal(this);
+        if (privates.textureCache.has(image)) {
+          return privates.textureCache.get(image);
         } else {
           var texture = gl.createTexture();
           gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -185,7 +214,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
           }
 
-          internal(this).textureCache.set(image, texture);
+          privates.textureCache.set(image, texture);
           gl.bindTexture(gl.TEXTURE_2D, null);
           return texture;
         }
@@ -196,8 +225,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var privates = internal(this);
         var gl = privates.gl;
 
-        if (!image.width || !image.height || image.width <= 0 || image.height <= 0) {
-          console.error(image, this);
+        if (dx > this.width || dy > this.height) {
+          return;
+        }
+
+        if (dx + dw < 0 || dy + dh < 0) {
+          return;
+        }
+
+        if (!Number.isInteger(image.width) || !Number.isInteger(image.height) || image.width <= 0 || image.height <= 0 || image.width > privates.maxTextureSize || image.height > privates.maxTextureSize) {
+          console.error(image, privates, this);
           throw new Error("Sprite.Webgl.drawImage invalid image");
         }
 
@@ -248,6 +285,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         // draw
         gl.drawArrays(gl.TRIANGLES, 0, 6);
+
+        gl.bindTexture(gl.TEXTURE_2D, null);
       }
     }, {
       key: "clear",
@@ -261,12 +300,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "alpha",
       get: function get() {
-        return internal(this).alpha;
+        var privates = internal(this);
+        return privates.alpha;
       },
       set: function set(value) {
+        var privates = internal(this);
         if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
-          if (value != internal(this).alpha) {
-            internal(this).alpha = value;
+          if (value != privates.alpha) {
+            privates.alpha = value;
           }
         } else {
           console.error(value, this);
@@ -280,7 +321,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "color",
       get: function get() {
-        var color = internal(this).color;
+        var privates = internal(this);
+        var color = privates.color;
         var r = color[0].toString(16);
         var g = color[1].toString(16);
         var b = color[2].toString(16);
@@ -294,14 +336,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        * @param {string} value The new color, eg "#00ff00"
        */
       set: function set(value) {
+        var privates = internal(this);
         var m = value.match(/^#([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])([\da-fA-F][\da-fA-F])$/);
         if (m) {
           var r = m[1];
           var g = m[2];
           var b = m[3];
-          internal(this).color[0] = parseInt(r, 16);
-          internal(this).color[1] = parseInt(g, 16);
-          internal(this).color[2] = parseInt(b, 16);
+          privates.color[0] = parseInt(r, 16);
+          privates.color[1] = parseInt(g, 16);
+          privates.color[2] = parseInt(b, 16);
         } else {
           console.error(value, this);
           throw new Error("Sprite.Webgl.color invalid color format");
@@ -357,7 +400,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       }
     }]);
 
-    return Webgl;
+    return SpriteWebgl;
   })());
 })();
 //# sourceMappingURL=SpriteWebgl.js.map

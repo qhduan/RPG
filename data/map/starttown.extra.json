@@ -9,34 +9,34 @@
   [
     {
       "id": "starttown.tandem",
-      "x": 54,
-      "y": 49
+      "x": 26,
+      "y": 31
     },
     {
       "id": "starttown.ranc",
-      "x": 46,
-      "y": 38
+      "x": 18,
+      "y": 20
     }
   ],
   "touch": [
     {
       "comment": "提示信息",
-      "x": 60,
-      "y": 51,
+      "x": 32,
+      "y": 33,
       "type": "message",
       "content": "镇长家"
     },
     {
       "comment": "提示信息",
-      "x": 66,
-      "y": 55,
+      "x": 45,
+      "y": 25,
       "type": "message",
       "content": "旅馆"
     },
     {
       "comment": "提示信息",
-      "x": 51,
-      "y": 40,
+      "x": 23,
+      "y": 22,
       "type": "message",
       "content": "武器店"
     }
@@ -44,8 +44,8 @@
   "onto": [
     {
       "comment": "通往斯塔特南部森林",
-      "x": 48,
-      "y": 99,
+      "x": 20,
+      "y": 63,
       "dest": "starttown.southforest",
       "destx": 14,
       "desty": 2

@@ -21,9 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("choice");
-
-  win.html = `
+  let choiceHTML = `
     <div class="window-box">
       <button id="choiceWindowNo" class="brownButton">取消</button>
       <div style="width: 100%; height: 100%;">
@@ -41,12 +39,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
   `;
 
-  win.css = `
-    #choiceWindow {
+  let choiceCSS = `
+    .choiceWindow {
       text-align: center;
     }
 
-    #choiceWindow div {
+    .choiceWindow div {
       text-align: center;
     }
 
@@ -68,15 +66,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let choiceWindowButtonContainer = document.querySelector("#choiceWindowButtonContainer");
-  let choiceWindowNo = document.querySelector("button#choiceWindowNo");
-  let buttonArray = [];
-
   Game.choice = function (options, callback) {
-    choiceWindowButtonContainer.innerHTML = "";
-    buttonArray = [];
 
+    let win = Game.Window.create("choiceWindow");
+    win.html = choiceHTML;
+    win.css = choiceCSS;
     win.show();
+
+    let choiceWindowButtonContainer = win.querySelector("#choiceWindowButtonContainer");
+    let choiceWindowNo = win.querySelector("#choiceWindowNo");
+    let buttonArray = [];
+
     Sprite.each(options, function (value, key) {
       let button = document.createElement("button");
       button.textContent = `${buttonArray.length+1}. ${key}`;
@@ -86,37 +86,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       buttonArray.push(button);
 
       button.addEventListener("click", function () {
-        if (win.atop) {
-          win.hide();
-          if (typeof callback == "function")
-            callback(value);
+        win.hide();
+        win.destroy();
+        if (typeof callback == "function") {
+          callback(value);
         }
       });
     });
-  };
 
-  choiceWindowNo.addEventListener("click", function () {
-    win.hide();
-    if (typeof choiceHandle == "function")
-      choiceHandle(null);
-  });
-
-  win.whenUp(["esc"], function () {
-    setTimeout(function () {
+    choiceWindowNo.addEventListener("click", function () {
       win.hide();
-      if (typeof choiceHandle == "function")
-        choiceHandle(null);
-    }, 20);
-  });
+      win.destroy();
+      if (typeof callback == "function") {
+        callback(null);
+      }
+    });
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
-    // match 1 to 9
-    let num = parseInt(key) - 1; // get 0 to 8
-    let element = buttonArray[num];
-    if (element) {
-      element.click();
-    }
-  });
+    win.whenUp(["esc"], function () {
+      setTimeout(function () {
+        choiceWindowNo.click();
+      }, 20);
+    });
 
+    win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+      // match 1 to 9
+      let num = parseInt(key) - 1; // get 0 to 8
+      let element = buttonArray[num];
+      if (element) {
+        element.click();
+      }
+    });
+
+  };
 
 })();

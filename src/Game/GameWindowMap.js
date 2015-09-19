@@ -21,7 +21,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  let win = Game.Window.create("map");
+  let win = Game.windows.map = Game.Window.create("mapWindow");
 
   win.html = `
     <div class="window-box">
@@ -33,14 +33,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    #mapWindow table, #mapWindow tbody, #mapWindow tr, #mapWindow td {
+    .mapWindow table, .mapWindow tbody, .mapWindow tr, .mapWindow td {
       width: 100%;
       height: 100%;
       magrin: 0;
       padding: 0;
     }
 
-    #mapWindow {
+    .mapWindow {
       text-align: center;
     }
 
@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let mapWindowClose = document.querySelector("button#mapWindowClose");
+  let mapWindowClose = win.querySelector("button#mapWindowClose");
 
   mapWindowClose.addEventListener("click", function (event) {
     Game.windows.map.hide();
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.on("beforeShow", function (event) {
     if (Game.area && Game.area.map.minimap) {
-      let div = document.querySelector("div#mapWindowMap");
+      let div = win.querySelector("div#mapWindowMap");
       while(div.hasChildNodes()) {
         div.removeChild(div.lastChild);
       }

@@ -63,7 +63,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
-    let BASE = "/hero";
+    let BASE = "hero";
     let imageUrls = [];
 
     if (Check(heroCustom.sex) && Check(heroCustom.body)) {

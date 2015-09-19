@@ -28,11 +28,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     属性：
       this.sprite 精灵
   */
-  Game.assign("ActorNPC", class GameHero extends Game.Actor {
+  Game.assign("ActorNPC", class GameActorNPC extends Game.Actor {
     constructor (actorData) {
       super(actorData);
     }
-    
+
     heroUse () {
       if (this.data.contact) {
 
@@ -56,6 +56,40 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           });
         }
 
+        let quests = null;
+
+        if (this.quests) {
+          quests = this.quests.filter(function (quest) {
+            if (Game.hero.hasQuest(quest.id)) {
+              return false;
+            }
+            return true;
+          });
+          if (quests.length) {
+            options["任务"] = "quest";
+          }
+        }
+
+        let completeQuests = [];
+        Game.hero.data.quest.current.forEach((quest) => {
+          let complete = true;
+          if (quest.target.type == "kill") {
+            for (let key in quest.target.kill) {
+              let t = quest.target.kill[key];
+              if (t.current < t.need) {
+                complete = false;
+              }
+            }
+          }
+
+          if (complete) {
+            completeQuests.push(quest);
+          }
+        });
+        if (completeQuests.length > 0) {
+          options["完成任务"] = "completeQuest";
+        }
+
         if (this.data.trade) {
           options["买入"] = "buy";
           options["卖出"] = "sell";
@@ -64,13 +98,66 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.choice(options, (choice) => {
           switch (choice) {
             case "buy":
+              this.heroUse();
               Game.windows.buy.open(this.data.trade);
               break;
             case "sell":
+              this.heroUse();
               Game.windows.sell.open(this.data.trade);
+              break;
+            case "quest":
+              let questOptions = {};
+              quests.forEach((quest, index) => {
+                questOptions[quest.name] = index;
+              });
+              Game.choice(questOptions, (choice) => {
+                if (Number.isInteger(choice)) {
+                  let quest = quests[choice];
+                  Game.confirm({
+                    message: quest.before,
+                    yes: "接受任务",
+                    no: "拒绝"
+                  }, () => {
+                    Game.hero.data.quest.current.push(quest);
+                    this.heroUse();
+                  }, () => {
+                    this.heroUse();
+                  });
+                } else {
+                  this.heroUse();
+                }
+              });
+              break;
+            case "completeQuest":
+              let completeQuestOptions = {};
+              completeQuests.forEach((quest, index) => {
+                completeQuestOptions[quest.name] = index;
+              });
+              Game.choice(completeQuestOptions, (choice) => {
+                if (Number.isInteger(choice)) {
+                  let quest = completeQuests[choice];
+
+                  Game.hero.data.quest.current.splice(
+                    Game.hero.data.quest.current.indexOf(quest), 1
+                  );
+                  Game.hero.data.quest.past.push(quest);
+
+                  this.heroUse();
+                  Game.dialogue([quest.finish], this.data.name);
+                  if (quest.reward) {
+                    if (quest.reward.gold) {
+                      Game.hero.data.gold += quest.reward.gold;
+                    }
+                    if (quest.reward.exp) {
+                      Game.hero.data.exp += quest.reward.exp;
+                    }
+                  }
+                };
+              });
               break;
             default:
               if (this.data.contact[choice]) {
+                this.heroUse();
                 Game.dialogue(this.data.contact[choice].content, this.data.name);
               }
           }

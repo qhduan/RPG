@@ -56,7 +56,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       if (this.data.image instanceof Array) {
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        Sprite.Loader.create().add("/actor/" + this.data.image).start().on("complete", function (event) {
+        Sprite.Loader.create().add("actor/" + this.data.image).start().on("complete", function (event) {
           _this.init(event.data);
         });
       } else {
@@ -111,6 +111,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             _this2.emit("complete", true);
           }
         };
+
+        if (this.data.quests) {
+          privates.quests = [];
+          privates.quests.length = this.data.quests.length;
+          this.data.quests.forEach(function (questId, index) {
+            completeCount--;
+            Sprite.Loader.create().add("quest/" + questId + ".json").start().on("complete", function (event) {
+              privates.quests[index] = event.data[0];
+              privates.quests[index].id = questId;
+              Complete();
+            });
+          });
+        }
 
         if (this.data.skills) {
           this.data.skills.forEach(function (skillId) {
@@ -327,7 +340,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function decreaseHP(power) {
         this.data.hp -= power;
         this.refreshBar();
-        this.dead();
       }
     }, {
       key: "decreaseSP",
@@ -337,7 +349,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     }, {
       key: "dead",
-      value: function dead() {
+      value: function dead(attacker) {
         var _this3 = this;
 
         if (this.data.hp <= 0) {
@@ -407,6 +419,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                   bag.inner[key] = _this3.data.items[key];
                 }
               }
+
+              attacker.emit("kill", false, _this3);
             })();
           }
         }
@@ -497,6 +511,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             Game.layers.actorLayer.removeChild(text);
           }
         });
+
+        // 测试是否死亡
+        this.dead(attacker);
       }
 
       /** 播放一个动画 */
@@ -778,6 +795,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 if (direction) {
                   var currentDirection = _this6.direction;
                   if (direction != currentDirection) {
+                    _this6.stop();
                     _this6.face(direction);
                   }
                   var goResult = _this6.go(state, direction, function () {
@@ -927,74 +945,58 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return false;
         }
 
-        var newX = this.x;
-        var newY = this.y;
+        var newPosition = this.facePosition;
 
-        var oldPositionKey = newX + "," + newY;
-
-        switch (direction) {
-          case "up":
-            newY -= 1;
-            break;
-          case "down":
-            newY += 1;
-            break;
-          case "left":
-            newX -= 1;
-            break;
-          case "right":
-            newX += 1;
-            break;
-        }
-
-        var newPositionKey = newX + "," + newY;
-
-        if (this.checkCollision(newX, newY) == false) {
+        if (this.checkCollision(newPosition.x, newPosition.y) == false) {
           var _ret3 = (function () {
             // 没碰撞，开始行走
             _this7.walking = true;
 
             // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
             // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
-            _this7.data.x = newX;
-            _this7.data.y = newY;
+            _this7.data.x = newPosition.x;
+            _this7.data.y = newPosition.y;
 
-            var speed = 2;
+            // walk
+            // 这些数组和必须是32，为了保证一次go行走32个像素
+            var speed = [3, 3, 2, 3, 3, 2, 3, 3, 2, 3, 3, 2]; // 和是32
             if (state == "run") {
-              speed = 4;
+              // speed = [6,7,6,7,6]; // 和是32
+              speed = [4, 4, 4, 4, 4, 4, 4, 4]; // 和是32
             }
-            var times = 32 / speed;
-            var count = 0;
+            // 比预计多一个，这样是为了流畅
+            // 因为下一次go可能紧挨着这次
+            var times = speed.length + 1;
             var id = null;
 
             Sprite.Ticker.whiles(times, function (last) {
-              switch (direction) {
-                case "up":
-                  _this7.sprite.y -= speed;
-                  break;
-                case "down":
-                  _this7.sprite.y += speed;
-                  break;
-                case "left":
-                  _this7.sprite.x -= speed;
-                  break;
-                case "right":
-                  _this7.sprite.x += speed;
-                  break;
-              }
-
               if (last) {
-                _this7.x = newX;
-                _this7.y = newY;
+                _this7.x = newPosition.x;
+                _this7.y = newPosition.y;
                 _this7.walking = false;
                 _this7.emit("change");
 
                 if (typeof callback == "function") {
-                  Sprite.Ticker.after(2, function () {
-                    callback();
-                  });
+                  //Sprite.Ticker.after(2, function () {
+                  callback();
+                  //});
                 }
-              }
+              } else {
+                  switch (direction) {
+                    case "up":
+                      _this7.sprite.y -= speed.pop();
+                      break;
+                    case "down":
+                      _this7.sprite.y += speed.pop();
+                      break;
+                    case "left":
+                      _this7.sprite.x -= speed.pop();
+                      break;
+                    case "right":
+                      _this7.sprite.x += speed.pop();
+                      break;
+                  }
+                }
             });
 
             // 播放行走动画
@@ -1007,8 +1009,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (typeof _ret3 === "object") return _ret3.v;
         }
 
-        this.play("face" + direction, 0);
-
         return false;
       }
 
@@ -1018,7 +1018,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function erase() {
         var privates = internal(this);
         Game.layers.actorLayer.removeChild(this.sprite);
-        Game.layers.actorLayer.removeChild(privates.infoBox);
+        Game.layers.infoLayer.removeChild(privates.infoBox);
       }
 
       /** 在Game.actorLayer上显示人物 */
@@ -1034,7 +1034,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           internal(this).infoBox.y = this.sprite.y - this.sprite.centerY - 20;
 
           Game.layers.actorLayer.appendChild(this.sprite);
-          Game.layers.actorLayer.appendChild(privates.infoBox);
+          Game.layers.infoLayer.appendChild(privates.infoBox);
         } else {
           console.error(this.data.x, this.data.y, this.data);
           throw new Error("Game.Actor.draw invalid data.x/data.y");
@@ -1078,6 +1078,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       },
       set: function set(value) {
         throw new Error("Game.Actor.sprite readonly");
+      }
+    }, {
+      key: "quests",
+      get: function get() {
+        var privates = internal(this);
+        if (privates.quests) {
+          return privates.quests;
+        } else {
+          return null;
+        }
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.quests readonly");
       }
     }, {
       key: "x",
@@ -1167,3 +1180,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
+//# sourceMappingURL=GameActor.js.map
