@@ -6,7 +6,27 @@ Created by http://qhduan.com
 
 游戏引擎使用作者自己开发的Sprite引擎，使用webgl或canvas作为游戏后端
 
-游戏将支持多平台，已经测试的平台包括：windows(node-webkit)，linux(node-webkit)，android(cordova, chrome)
+游戏将支持多平台，已经测试的平台包括：
+- windows(node-webkit，firefox，chrome)
+- linux(node-webkit，firefox，chrome)
+- android(cordova, chrome)
+
+在线测试网址：
+http://qhduan.github.io/RPG/
+注意，因为游戏尚在开发阶段，所以很多图片资源尚未优化合并，js代码也尚未合并uglify，所以打开速度可能非常慢，但是不影响运行速度
+
+本地打开方式：
+
+方法1：下载项目，只需要项目中的data目录，然后下载node-webkit(http://nwjs.io/)，使用
+windows: nw.exe 游戏目录/data
+linux: nw 游戏目录/data
+
+方法2：下载项目，用firefox直接打开项目data目录下的index.html文件
+注：这种方法可能只支持firefox，因为chrome的权限控制比较严格，会出错，IE未测试，应该不行。还有游戏存档功能可能也会有影响
+
+方法3： 随便使用一种网页服务，例如python
+安装python，在游戏目录的data目录下，运行“python -m SimpleHTTPServer”命令，然后打开浏览器，并进入地址 http://localhost:8000/
+
 
 ## 游戏特性
 
@@ -27,8 +47,9 @@ Created by http://qhduan.com
 
 ### 开发环境
 
-node.js 系统运行
-babel.js 为了写es6代码
+node.js 系统运行和测试，非必要，游戏可以完全的以静态HTML的方式运行，只是开发与测试需要，实际运行不需要
+
+babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit等更好的支持es6之后就可以放弃，至少node-webkit支持es6应该还是很快的吧
 
 地图使用tiled，网址在 http://www.mapeditor.org/
 
