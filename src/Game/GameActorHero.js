@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let touchActor = [];
       for (let actor of Game.area.actors) {
         // 找到所有邻接英雄的怪物
-        if (actor != this && actor.data.type == "monster" && actor.distance(this) < 1.01) {
+        if (actor != this && actor.data.type == "monster" && actor.distance(this) == 1) {
           touchActor.push(actor);
         }
       }

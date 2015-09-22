@@ -20,10 +20,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
 (function () {
   "use strict";
 
@@ -87,35 +83,5 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       timer: timer
     });
   });
-
-  Game.assign("ui", (function () {
-    function GameUI() {
-      _classCallCheck(this, GameUI);
-    }
-
-    _createClass(GameUI, null, [{
-      key: "shortcut",
-      value: function shortcut() {
-        Game.choice({
-          1: 0,
-          2: 1,
-          3: 2,
-          4: 3,
-          5: 4,
-          6: 5,
-          7: 6,
-          8: 7
-        }, function (choice) {
-          if (typeof choice == "number" && choice >= 0) {
-            Game.hero.data.bar[choice] = null;
-            Game.ui.bar();
-            Game.Window.show("uiWindow");
-          }
-        });
-      }
-    }]);
-
-    return GameUI;
-  })());
 })();
 //# sourceMappingURL=GameUI.js.map

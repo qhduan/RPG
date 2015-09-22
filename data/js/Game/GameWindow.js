@@ -99,10 +99,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           var t = privates.html.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
           if (t) {
             scale = parseFloat(t[1]);
+          } else {
+            scale = 1.0;
           }
+        } else {
+          scale = 1.0;
         }
 
-        if (typeof left == "number" && typeof top == "number" && typeof scale == "number") {
+        if (Number.isFinite(left) && Number.isFinite(top) && Number.isFinite(scale)) {
           x -= left;
           y -= top;
           x /= scale;
@@ -374,10 +378,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   // 当窗口大小改变时改变游戏窗口大小
   function GameWindowResize() {
     var width = window.innerWidth;
-    var height = window.innerHeight;
+    var height = window.innerHeight - 10;
     var scale = 1;
     var leftMargin = 0;
     var topMargin = 0;
+    var mobile = false;
+
+    if (navigator.userAgent.match(/iPad|iPhone|iPod|Android|BlackBerry|webOS|IEMobile|Opera Mini/i)) {
+      if (width < height) {
+        var t = width;
+        width = height;
+        height = t;
+        mobile = true;
+      }
+    }
 
     if (Game.config.scale == false) {
       // 不拉伸游戏窗口，按原始大小计算窗口居中
@@ -402,7 +416,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       scale = Math.min(w / Game.config.width, h / Game.config.height);
 
-      scale = scale.toFixed(3);
+      // scale = scale.toFixed(3);
     }
 
     // html窗口拉伸（css中控制了原始大小）
@@ -415,9 +429,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var win = _step4.value;
 
         internal(win).html.style.transformOrigin = "0 0 0";
-        internal(win).html.style.transform = "scale(" + scale + ", " + scale + ")";
         internal(win).html.style.left = leftMargin + "px";
         internal(win).html.style.top = topMargin + "px";
+
+        if (scale > 1.01 || scale < 0.99) {
+          internal(win).html.style.transform = "scale(" + scale + ", " + scale + ") translateZ(0)";
+          //internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
+        } else {
+            internal(win).html.style.transform = "";
+            //internal(win).html.style.webkitTransform = "";
+          }
       }
     } catch (err) {
       _didIteratorError4 = true;
@@ -444,4 +465,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     GameWindowResize();
   });
 })();
-//# sourceMappingURL=GameWindow.js.map

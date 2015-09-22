@@ -35,7 +35,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
         itemObj.on("complete", () => {
-          if (typeof callback == "function") {
+          if (callback) {
             callback();
           }
         });
@@ -44,9 +44,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     constructor (itemData) {
       super();
+      let privates = internal(this);
 
-      internal(this).data = itemData;
-      internal(this).inner = null;
+      privates.data = itemData;
+      privates.inner = null;
 
       if (!this.data.x || !this.data.y) {
         this.data.x = 0;
@@ -59,15 +60,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         .on("complete", (event) => {
         let image = event.data[0];
 
-        internal(this).icon = image;
+        privates.icon = image;
 
-        internal(this).bitmap = new Sprite.Bitmap(image);
-        internal(this).bitmap.x = this.data.x * 32 + 16;
-        internal(this).bitmap.y = this.data.y * 32 + 16;
+        privates.bitmap = new Sprite.Bitmap(image);
+        privates.bitmap.x = this.data.x * 32 + 16;
+        privates.bitmap.y = this.data.y * 32 + 16;
 
         if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
-          internal(this).bitmap.centerX = this.data.centerX;
-          internal(this).bitmap.centerY = this.data.centerY;
+          privates.bitmap.centerX = this.data.centerX;
+          privates.bitmap.centerY = this.data.centerY;
         } else {
           console.log(this.data);
           throw new Error("Game.Item invalid centerX/centerY");
@@ -118,8 +119,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set x (value) {
-      internal(this).data.x = value;
-      internal(this).bitmap.x = value * 32 + 16;
+      let privates = internal(this);
+      privates.data.x = value;
+      privates.bitmap.x = value * 32 + 16;
     }
 
     get y () {
@@ -127,8 +129,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set y (value) {
-      internal(this).data.y = value;
-      internal(this).bitmap.y = value * 32 + 16;
+      let privates = internal(this);
+      privates.data.y = value;
+      privates.bitmap.y = value * 32 + 16;
     }
 
     get visible () {
@@ -144,7 +147,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set alpha (value) {
-      if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
+      if (Number.isFinite(value) && value >= 0 && value <= 1) {
         internal(this).bitmap.alpha = value;
       } else {
         console.error(value, this);
@@ -187,11 +190,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         for (let attribute in this.data.potion) {
           let effect = this.data.potion[attribute];
           if (attribute == "hp") {
-            actor.data.hp += effect;
-            if (actor.data.hp > actor.data.$hp) {
-              actor.data.hp = actor.data.$hp;
-            }
+            Game.hero.data.hp = Math.min(
+              Game.hero.data.hp + effect,
+              Game.hero.data.$hp
+            );
+            let text = new Sprite.Text({
+              text: `hp+${effect}`,
+              color: "black",
+              fontSize: 20
+            });
+            text.centerX = Math.floor(text.width / 2);
+            text.centerY = Math.floor(text.height);
+            text.x = Game.hero.sprite.x;
+            text.y = Game.hero.sprite.y;
+            Game.layers.actorLayer.appendChild(text);
+            Sprite.Ticker.whiles(100, (last) => {
+              text.y -= 3;
+              if (last) {
+                Game.layers.actorLayer.removeChild(text);
+              }
+            });
           }
+        }
+        console.log(Game.hero.data.items[this.id])
+        Game.hero.data.items[this.id]--;
+        console.log(Game.hero.data.items[this.id])
+        if (Game.hero.data.items[this.id] <= 0) {
+          delete Game.hero.data.items[this.id];
         }
       } // potion
 

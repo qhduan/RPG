@@ -80,17 +80,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return x position
      */
     get x () {
-      let privates = internal(this);
-      return privates.x;
+      return internal(this).x;
     }
     /**
      * @param {number} value new x position
      */
     set x (value) {
       let privates = internal(this);
-      if (typeof value == "number" && !isNaN(value)) {
+      if (Number.isFinite(value)) {
         if (value != privates.x) {
-          privates.x = value;
+          privates.x = Math.floor(value);
           this.emit("change");
         }
       } else {
@@ -102,17 +101,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return y position
      */
     get y () {
-      let privates = internal(this);
-      return privates.y;
+      return internal(this).y;
     }
     /**
      * @param {number} value new y position
      */
     set y (value) {
       let privates = internal(this);
-      if (typeof value == "number" && !isNaN(value)) {
+      if (Number.isFinite(value)) {
         if (value != privates.y) {
-          privates.y = value;
+          privates.y = Math.floor(value);
           this.emit("change");
         }
       } else {
@@ -124,17 +122,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return center x
      */
     get centerX () {
-      let privates = internal(this);
-      return privates.centerX;
+      return internal(this).centerX;
     }
     /**
      * @param {number} value new center x
      */
     set centerX (value) {
       let privates = internal(this);
-      if (typeof value == "number" && !isNaN(value)) {
+      if (Number.isFinite(value)) {
         if (value != privates.centerX) {
-          privates.centerX = value;
+          privates.centerX = Math.floor(value);
           this.emit("change");
         }
       } else {
@@ -146,17 +143,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} return center y
      */
     get centerY () {
-      let privates = internal(this);
-      return privates.centerY;
+      return internal(this).centerY;
     }
     /**
      * @param {number} value new center y
      */
     set centerY (value) {
       let privates = internal(this);
-      if (typeof value == "number" && !isNaN(value)) {
+      if (Number.isFinite(value)) {
         if (value != privates.centerY) {
-          privates.centerY = value;
+          privates.centerY = Math.floor(value);
           this.emit("change");
         }
       } else {
@@ -176,7 +172,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     set alpha (value) {
       let privates = internal(this);
-      if (typeof value == "number" && !isNaN(value) && (value >= 0 || value <= 1)) {
+      if (Number.isFinite(value) && (value >= 0 || value <= 1)) {
         if (value != privates.alpha) {
           privates.alpha = value;
           this.emit("change");

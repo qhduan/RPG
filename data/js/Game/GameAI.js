@@ -53,34 +53,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       value: function autoHide() {
         var heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
 
-        Game.area.map.layers.forEach(function (layer, index) {
-          var layerData = Game.area.map.data.layers[index];
-          if (heroHide && layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide") && layerData.properties.autohide == heroHide) {
-            layer.visible = false;
-          } else {
-            layer.visible = true;
-          }
-        });
-
         var _iteratorNormalCompletion = true;
+
+        // 检查需要隐藏的角色，例如建筑物里的npc
         var _didIteratorError = false;
         var _iteratorError = undefined;
 
         try {
-          for (var _iterator = Game.area.actors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var actor = _step.value;
+          for (var _iterator = Game.layers.mapHideLayer.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var layer = _step.value;
 
-            if (actor != Game.hero) {
-              var actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
-              if (actorHide && actorHide == heroHide) {
-                actor.visible = true;
-              } else {
-                if (actorHide) {
-                  actor.visible = false;
-                } else {
-                  actor.visible = true;
-                }
-              }
+            if (layer.name == heroHide) {
+              layer.visible = false;
+            } else {
+              layer.visible = true;
             }
           }
         } catch (err) {
@@ -100,25 +86,48 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var _iteratorNormalCompletion2 = true;
 
-        //if (mapVisible != lastMapVisible) {
-        //  Game.area.map.cache();
-        //  lastMapVisible = mapVisible;
-        //}
+        // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator2 = Game.area.bags[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var bag = _step2.value;
+          for (var _iterator2 = Game.area.actors[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var actor = _step2.value;
 
-            var bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
-            if (bagHide && bagHide == heroHide) {
-              bag.visible = true;
-            } else {
-              if (bagHide) {
-                bag.visible = false;
+            if (actor != Game.hero) {
+              var actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
+              if (actorHide && actorHide == heroHide) {
+                actor.visible = true;
               } else {
-                bag.visible = true;
+                if (actorHide) {
+                  actor.visible = false;
+                } else {
+                  actor.visible = true;
+                }
+              }
+
+              // 当npc紧挨着玩家所在格子的时候，自动面向玩家
+              if (actor.distance(Game.hero) == 1) {
+                var actorFace = actor.facePosition;
+                if (actorFace.x != Game.hero.x || actorFace.y != Game.hero.y) {
+                  if (actor.y == Game.hero.y) {
+                    // 同一水平
+                    if (actor.x < Game.hero.x) {
+                      // npc 在玩家左边
+                      actor.face("right");
+                    } else if (actor.x > Game.hero.x) {
+                      // npc在玩家右边
+                      actor.face("left");
+                    }
+                  } else if (actor.x == Game.hero.x) {
+                    // 同一垂直
+                    if (actor.y < Game.hero.y) {
+                      actor.face("down");
+                    } else if (actor.y > Game.hero.y) {
+                      actor.face("up");
+                    }
+                  }
+                }
               }
             }
           }
@@ -133,6 +142,40 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           } finally {
             if (_didIteratorError2) {
               throw _iteratorError2;
+            }
+          }
+        }
+
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = Game.area.bags[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var bag = _step3.value;
+
+            var bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
+            if (bagHide && bagHide == heroHide) {
+              bag.visible = true;
+            } else {
+              if (bagHide) {
+                bag.visible = false;
+              } else {
+                bag.visible = true;
+              }
+            }
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+              _iterator3["return"]();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -160,26 +203,21 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         Sprite.each(Game.area.onto, FindUnderHero);
         if (onto) {
           if (onto.dest) {
+            Game.pause();
             Game.windows.loading.begin();
             setTimeout(function () {
               Game.clearStage();
-              Game.pause();
               Game.loadArea(onto.dest, function (area) {
-
                 Game.area = area;
                 area.map.draw(Game.layers.mapLayer);
-
                 Game.hero.data.area = onto.dest;
                 Game.hero.draw(Game.layers.actorLayer);
                 area.actors.add(Game.hero);
                 Game.hero.x = onto.destx;
                 Game.hero.y = onto.desty;
-                Game.windows["interface"].show();
-                Game.start();
-
                 Game.windows.loading.end();
               });
-            }, 100);
+            }, 20);
           } // dest, aka. door
         } // touch
       }
@@ -235,7 +273,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         // 最近的提示物（例如牌子）
         Game.area.touch.forEach(FindFaceHero);
         // 水源
-        if (!touch && Game.area.map.waterTest(heroFace.x, heroFace.y)) {
+        if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
           touch = {
             type: "water",
             heroUse: function heroUse() {

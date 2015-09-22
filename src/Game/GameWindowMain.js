@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <div>
-      <h1>维加世界</h1>
+      <h1>维加大陆</h1>
       <button id="mainWindowContinue" class="brownButton">继续旅程</button>
       <br>
       <button id="mainWindowNew" class="brownButton">新的旅程</button>

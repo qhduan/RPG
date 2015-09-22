@@ -45,7 +45,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           var itemObj = new Game.Item(itemData);
           Game.items[id] = itemObj;
           itemObj.on("complete", function () {
-            if (typeof callback == "function") {
+            if (callback) {
               callback();
             }
           });
@@ -59,9 +59,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, GameItem);
 
       _get(Object.getPrototypeOf(GameItem.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
-      internal(this).data = itemData;
-      internal(this).inner = null;
+      privates.data = itemData;
+      privates.inner = null;
 
       if (!this.data.x || !this.data.y) {
         this.data.x = 0;
@@ -71,15 +72,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       Sprite.Loader.create().add("item/" + this.data.image).start().on("complete", function (event) {
         var image = event.data[0];
 
-        internal(_this).icon = image;
+        privates.icon = image;
 
-        internal(_this).bitmap = new Sprite.Bitmap(image);
-        internal(_this).bitmap.x = _this.data.x * 32 + 16;
-        internal(_this).bitmap.y = _this.data.y * 32 + 16;
+        privates.bitmap = new Sprite.Bitmap(image);
+        privates.bitmap.x = _this.data.x * 32 + 16;
+        privates.bitmap.y = _this.data.y * 32 + 16;
 
         if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
-          internal(_this).bitmap.centerX = _this.data.centerX;
-          internal(_this).bitmap.centerY = _this.data.centerY;
+          privates.bitmap.centerX = _this.data.centerX;
+          privates.bitmap.centerY = _this.data.centerY;
         } else {
           console.log(_this.data);
           throw new Error("Game.Item invalid centerX/centerY");
@@ -140,11 +141,32 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           for (var attribute in this.data.potion) {
             var effect = this.data.potion[attribute];
             if (attribute == "hp") {
-              actor.data.hp += effect;
-              if (actor.data.hp > actor.data.$hp) {
-                actor.data.hp = actor.data.$hp;
-              }
+              (function () {
+                Game.hero.data.hp = Math.min(Game.hero.data.hp + effect, Game.hero.data.$hp);
+                var text = new Sprite.Text({
+                  text: "hp+" + effect,
+                  color: "black",
+                  fontSize: 20
+                });
+                text.centerX = Math.floor(text.width / 2);
+                text.centerY = Math.floor(text.height);
+                text.x = Game.hero.sprite.x;
+                text.y = Game.hero.sprite.y;
+                Game.layers.actorLayer.appendChild(text);
+                Sprite.Ticker.whiles(100, function (last) {
+                  text.y -= 3;
+                  if (last) {
+                    Game.layers.actorLayer.removeChild(text);
+                  }
+                });
+              })();
             }
+          }
+          console.log(Game.hero.data.items[this.id]);
+          Game.hero.data.items[this.id]--;
+          console.log(Game.hero.data.items[this.id]);
+          if (Game.hero.data.items[this.id] <= 0) {
+            delete Game.hero.data.items[this.id];
           }
         } // potion
 
@@ -214,8 +236,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         return internal(this).data.x;
       },
       set: function set(value) {
-        internal(this).data.x = value;
-        internal(this).bitmap.x = value * 32 + 16;
+        var privates = internal(this);
+        privates.data.x = value;
+        privates.bitmap.x = value * 32 + 16;
       }
     }, {
       key: "y",
@@ -223,8 +246,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         return internal(this).data.y;
       },
       set: function set(value) {
-        internal(this).data.y = value;
-        internal(this).bitmap.y = value * 32 + 16;
+        var privates = internal(this);
+        privates.data.y = value;
+        privates.bitmap.y = value * 32 + 16;
       }
     }, {
       key: "visible",
@@ -240,7 +264,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         return internal(this).bitmap.alpha;
       },
       set: function set(value) {
-        if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
+        if (Number.isFinite(value) && value >= 0 && value <= 1) {
           internal(this).bitmap.alpha = value;
         } else {
           console.error(value, this);

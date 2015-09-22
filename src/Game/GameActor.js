@@ -56,16 +56,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     init (images) {
       let privates = internal(this);
 
-      images.forEach(function (image) {
-        if (
-          !Number.isInteger(image.width) || !Number.isInteger(image.height) ||
-          image.width <= 0 || image.width >= 4096 ||
-          image.height <= 0 || image.height >= 4096
-        ) {
-          console.error(image, images);
-          throw new Error("Game.Actor.init got invalid image");
+      for (let image of images) {
+        if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
+          console.error(image, images, this);
+          throw new Error("Game.Actor got invalid image, not Image or Canvas");
         }
-      });
+
+        if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
+          console.error(image, images);
+          throw new Error("Game.Actor got invalid image, invalid width or height");
+        }
+      };
 
       let sprite = new Sprite.Sheet({
         images: images, // images is Array
@@ -317,8 +318,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set x (value) {
-      this.data.x = value;
-      this.sprite.x = value * 32 + 16;
+      if (Number.isFinite(value) && Number.isInteger(value)) {
+        this.data.x = value;
+        this.sprite.x = value * 32 + 16;
+      } else {
+        console.error(value, internal(this), this);
+        throw new Error("Game.Actor got invalid x, x has to be a number and integer");
+      }
     }
 
     get y () {
@@ -326,8 +332,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set y (value) {
-      this.data.y = value;
-      this.sprite.y = value * 32 + 16;
+      if (Number.isFinite(value) && Number.isInteger(value)) {
+        this.data.y = value;
+        this.sprite.y = value * 32 + 16;
+      } else {
+        console.error(value, internal(this), this);
+        throw new Error("Game.Actor got invalid y, y has to be a number and integer");
+      }
     }
 
     get visible () {
@@ -344,7 +355,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     set alpha (value) {
-      if (typeof value == "number" && !isNaN(value) && value >= 0 && value <= 1) {
+      if (Number.isFinite(value) && value >= 0 && value <= 1) {
         this.sprite.alpha = value;
         this.infoBox.alpha = value;
       } else {
@@ -402,7 +413,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       actor.visible = this.visible;
       actor.alpha = this.alpha;
       actorObj.on("complete", function () {
-        if (typeof callback == "function") {
+        if (callback) {
           callback(actor);
         }
       });
@@ -440,10 +451,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     distance () {
       let x = null, y = null;
-      if (arguments.length == 2 && typeof arguments[0] == "number" && typeof arguments[1] == "number") {
+      if (arguments.length == 2 && Number.isFinite(arguments[0]) && Number.isFinite(arguments[1])) {
         x = arguments[0];
         y = arguments[1];
-      } else if (arguments.length == 1 && typeof arguments[0].x == "number" && typeof arguments[0].y == "number") {
+      } else if (arguments.length == 1 && Number.isFinite(arguments[0].x) && Number.isFinite(arguments[0].y)) {
         x = arguments[0].x;
         y = arguments[0].y;
       } else {
@@ -597,7 +608,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /** 播放一个动画 */
     play (animation, priority) {
       // 新动画默认优先级为0
-      if (typeof priority != "number") {
+      if (!Number.isFinite(priority)) {
         priority = 0;
       }
 
@@ -651,10 +662,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 只有当这个skill的cooldown结
       let now = new Date().getTime();
-      if ( typeof this.lastAttack == "number"
-        && typeof this.lastAttackCooldown == "number"
-        && (now - this.lastAttack) < this.lastAttackCooldown)
+      if (
+        Number.isFinite(this.lastAttack) &&
+        Number.isFinite(this.lastAttackCooldown) &&
+        (now - this.lastAttack) < this.lastAttackCooldown
+      ) {
         return 0;
+      }
 
       if (skill.data.cost > this.data.sp) {
         return 0;
@@ -691,7 +705,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     goto (x, y, state, callback) {
 
       state = state || "run";
-      callback = typeof callback == "function" ? callback : function () {};
+      callback = callback ? callback : function () {};
 
       if (this.going) {
         this.goingNext = () => {
@@ -726,25 +740,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      let map = [];
-      let height = Game.area.map.blockedMap.length;
-      let width = Game.area.map.blockedMap[0].length;
-
-      map.length = height;
-      for (let i = 0; i < height; i++) {
-        map[i] = [];
-        map[i].length = width;
-      }
-
-      for (let i = 0; i < height; i++) {
-        for (let j = 0; j < width; j++) {
-          if (this.checkCollision(j, i)) {
-            map[i][j] = 0;
-          } else {
-            map[i][j] = 1;
-          }
-        }
-      }
+      let width = Game.area.map.data.width;
+      let height = Game.area.map.data.height;
 
       let destPosition = {
         x: x,
@@ -754,7 +751,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let path = null;
 
       if (destBlocked == false) {
-        path = Game.Astar.path(map,
+        path = Game.Astar.path((x, y) => {
+            return this.checkCollision(x, y);
+          },
           width,
           height,
           {x: this.x, y: this.y}, // 角色现在位置
@@ -791,13 +790,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
 
           for (let element of otherChoice) {
-            path = Game.Astar.path(
-              map, width, height,
+            path = Game.Astar.path((x, y) => {
+                return this.checkCollision(x, y);
+              }, width, height,
               {x: this.x, y: this.y},
               {x: element.x, y: element.y}
             );
             if (path) {
               // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
+              destPosition = element;
               after = element.after;
               break;
             }
@@ -810,6 +811,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.going = true;
         let index = 1;
         let Walk = () => {
+          if (Game.paused) {
+            this.stop();
+            this.going = false;
+            Game.Input.clearDestIcon();
+            return;
+          }
           if (this.goingNext) {
             let c = this.goingNext;
             this.goingNext = null;
@@ -855,9 +862,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
         Walk();
+
+        return destPosition;
       } else {
         // 实在没找到路
         // console.log("noway");
+        return null;
       }
     }
 
@@ -926,6 +936,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       if (this.direction != direction) {
         this.walking = true;
+        this.stop();
         this.face(direction);
         // wait 4 ticks
         Sprite.Ticker.after(4, () => {
@@ -964,7 +975,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             this.walking = false;
             this.emit("change");
 
-            if (typeof callback == "function") {
+            if (callback) {
               //Sprite.Ticker.after(2, function () {
                 callback();
               //});

@@ -32,6 +32,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <div id="settingWindowBox">
         <button id="settingWindowFullscreen" class="brownButton">全屏</button>
         <button id="settingWindowScale" class="brownButton">缩放</button>
+        <button id="settingWindowShortcut" class="brownButton">清除快捷栏</button>
+        <button id="settingWindowShortcutAll" class="brownButton">清除全部快捷栏</button>
       </div>
     </div>
   `;
@@ -57,11 +59,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let settingWindowClose = win.querySelector("button#settingWindowClose");
-  let settingWindowScale = win.querySelector("button#settingWindowScale");
+  let settingWindowShortcut = win.querySelector("#settingWindowShortcut");
+  let settingWindowShortcutAll = win.querySelector("#settingWindowShortcutAll");
 
-  let settingWindowFullscreen = win.querySelector("button#settingWindowFullscreen");
+  let settingWindowClose = win.querySelector("#settingWindowClose");
+  let settingWindowScale = win.querySelector("#settingWindowScale");
+
+  let settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
   let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
+
+  settingWindowShortcut.addEventListener("click", function (event) {
+    Game.choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}, function (choice) {
+      if (Number.isFinite(choice)) {
+        Game.hero.data.bar[choice] = null;
+        Game.windows.interface.refresh();
+      }
+    });
+  });
+
+
+  settingWindowShortcutAll.addEventListener("click", function (event) {
+    Game.confirm("确定要删除所有快捷栏图表吗？", function () {
+      for (let i = 0; i < 8; i++) {
+        Game.hero.data.bar[i] = null;
+      }
+      Game.windows.interface.refresh();
+    });
+  });
 
   win.on("beforeShow", function () {
     settingWindowRendererType.textContent = Game.stage.rendererType;

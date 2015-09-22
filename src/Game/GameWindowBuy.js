@@ -41,19 +41,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     <span id="buyWindowGold"></span>
 
-    <table border="1" cellspacing="0" cellpadding="0">
-      <thead>
-        <tr>
-          <td style="width: 40px;"></td>
-          <td style="width: 120px;"></td>
-          <td style="width: 30px;"></td>
-          <td style="width: 30px;"></td>
-          <td></td>
-          <td style="width: 60px;"></td>
-        </tr>
-      </thead>
-      <tbody id="buyWindowTable"></tbody>
-    </table>
+    <div style="overflow: auto; height: 300px;">
+      <table border="1" cellspacing="0" cellpadding="0">
+        <thead>
+          <tr>
+            <td style="width: 40px;"></td>
+            <td style="width: 120px;"></td>
+            <td style="width: 30px;"></td>
+            <td style="width: 30px;"></td>
+            <td></td>
+            <td style="width: 60px;"></td>
+          </tr>
+        </thead>
+        <tbody id="buyWindowTable"></tbody>
+      </table>
+    </div>
   </div>
   `;
 

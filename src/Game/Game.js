@@ -21,22 +21,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  let internal = Sprite.Namespace();
+
     // root级别api入口
   class GameCore {
 
     constructor () {
-      this.items = {};
-      this.skills = {};
-      this.layers = {};
-      this.windows = {};
-      this.config = { // 保存所有设置（默认设置）
+      let privates = internal(this);
+      privates.items = {};
+      privates.skills = {};
+      privates.layers = {};
+      privates.windows = {};
+      privates.config = { // 保存所有设置（默认设置）
         width: 800, // 渲染窗口的原始大小
         height: 450,
         scale: true, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
         fps: 35, // 锁定fps到指定数值，如果设置为<=0，则不限制
       };
-      this.paused = true;
-      this.stage = null;
+      privates.paused = true;
+      privates.stage = null;
     }
 
     assign (name, object) {
@@ -46,18 +49,73 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         writable: false,
         value: object
       });
-
       return this;
     }
 
     /** 设置游戏暂停标志为false，启动游戏主循环，接受输入 */
     start () {
-      this.paused = false;
+      internal(this).paused = false;
     }
 
     /** 暂停游戏 */
     pause () {
-      this.paused = true;
+      internal(this).paused = true;
+    }
+
+    get paused () {
+      return internal(this).paused;
+    }
+
+    set paused (value) {
+      throw new Error("Game.paused readonly, use Game.pause() instead");
+    }
+
+    get windows () {
+      return internal(this).windows;
+    }
+
+    set windows (value) {
+      throw new Error("Game.windows readonly");
+    }
+
+    get config () {
+      return internal(this).config;
+    }
+
+    set config (value) {
+      throw new Error("Game.config readonly");
+    }
+
+    get items () {
+      return internal(this).items;
+    }
+
+    set items (value) {
+      throw new Error("Game.items readonly");
+    }
+
+    get skills () {
+      return internal(this).skills;
+    }
+
+    set skills (value) {
+      throw new Error("Game.skills readonly");
+    }
+
+    get layers () {
+      return internal(this).layers;
+    }
+
+    set layers (value) {
+      throw new Error("Game.layers readonly");
+    }
+
+    get stage () {
+      return internal(this).stage;
+    }
+
+    set stage (value) {
+      throw new Error("Game.stage readonly");
     }
 
     /** 清理舞台，即删除舞台上所有元素 */
@@ -68,49 +126,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       for (let bag of Game.area.bags) {
         bag.erase();
       }
-      for (let i = 0; i < Game.stage.children.length; i++) {
-        this.stage.children[i].clear();
+      for (let layer of internal(this).stage.children) {
+        layer.clear();
       }
     }
 
     /** 游戏初始化 */
     init () {
-
+      let privates = internal(this);
       // 舞台
-      this.stage = new Sprite.Stage(this.config.width, this.config.height);
+      privates.stage = new Sprite.Stage(privates.config.width, privates.config.height);
       // 建立一个可以自动伸缩的窗口，并将舞台加入其中
-      this.windows.stage = Game.Window.create("stage").appendChild(this.stage.canvas).show();
+      privates.windows.stage = Game.Window.create("stage")
+        .appendChild(privates.stage.canvas)
+        .show();
 
       // 地图层
-      this.layers.mapLayer = new Sprite.Container();
-      this.layers.mapLayer.name = "mapLayer";
+      privates.layers.mapLayer = new Sprite.Container();
+      privates.layers.mapLayer.name = "mapLayer";
       // 地图层 - 2
-      this.layers.mapHideLayer = new Sprite.Container();
-      this.layers.mapHideLayer.name = "mapHideLayer";
+      privates.layers.mapHideLayer = new Sprite.Container();
+      privates.layers.mapHideLayer.name = "mapHideLayer";
       // 物品层
-      this.layers.itemLayer = new Sprite.Container();
-      this.layers.itemLayer.name = "itemLayer";
+      privates.layers.itemLayer = new Sprite.Container();
+      privates.layers.itemLayer.name = "itemLayer";
       // 人物层，包括玩家
-      this.layers.actorLayer = new Sprite.Container();
-      this.layers.actorLayer.name = "actorLayer";
+      privates.layers.actorLayer = new Sprite.Container();
+      privates.layers.actorLayer.name = "actorLayer";
       // 信息层
-      this.layers.infoLayer = new Sprite.Container();
-      this.layers.infoLayer.name = "inforLayer";
+      privates.layers.infoLayer = new Sprite.Container();
+      privates.layers.infoLayer.name = "inforLayer";
       // 技能效果层
-      this.layers.skillLayer = new Sprite.Container();
-      this.layers.skillLayer.name = "skillLayer";
+      privates.layers.skillLayer = new Sprite.Container();
+      privates.layers.skillLayer.name = "skillLayer";
       // 对话层
-      this.layers.dialogueLayer = new Sprite.Container();
-      this.layers.dialogueLayer.name = "dialogueLayer";
+      privates.layers.dialogueLayer = new Sprite.Container();
+      privates.layers.dialogueLayer.name = "dialogueLayer";
 
-      this.stage.appendChild(
-        Game.layers.mapLayer,
-        Game.layers.mapHideLayer,
-        Game.layers.itemLayer,
-        Game.layers.actorLayer,
-        Game.layers.infoLayer,
-        Game.layers.skillLayer,
-        Game.layers.dialogueLayer
+      privates.stage.appendChild(
+        privates.layers.mapLayer,
+        privates.layers.mapHideLayer,
+        privates.layers.itemLayer,
+        privates.layers.actorLayer,
+        privates.layers.infoLayer,
+        privates.layers.skillLayer,
+        privates.layers.dialogueLayer
       );
 
       // 调整人物层顺序，也就是上方的人物会被下方的人物遮盖，例如
@@ -127,7 +187,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        * BB
        * 这样就是B的上半身被人物A遮盖，这就很奇怪
        */
-      this.stage.on("beforeDraw", function () {
+      privates.stage.on("beforeDraw", function () {
         if (Game.hero) {
           Game.layers.actorLayer.children.sort(function (a, b) {
             if (a.y < b.y) return -1;
@@ -137,16 +197,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
-      /*
       setInterval(() => {
-        Game.stage.update();
+        if (Game.paused == false) {
+          Game.stage.update();
+        }
       }, 0);
-       */
+                  /*
       Sprite.Ticker.on("tick", function () {
         if (Game.paused == false) {
           Game.stage.update();
         }
       });
+       */
 
       /*
       let updateNext = false;
@@ -171,7 +233,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       let fps = 0;
       let start = new Date().getTime();
-      this.stage.on("afterDraw", function () {
+      privates.stage.on("afterDraw", function () {
         fps++;
       });
       setInterval(function () {
@@ -196,7 +258,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function GameBootstrap () {
     if (document.readyState == "complete") {
       Game.init();
-      Game.initInput();
+      Game.Input.init();
       Game.windows.main.show();
       return true;
     }

@@ -21,6 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  let internal = Sprite.Namespace();
+
   Game.assign("Skill", class GameSkill extends Sprite.Event {
     static load (id, callback) {
       Sprite.Loader.create()
@@ -31,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
         skillObj.on("complete", () => {
-          if (typeof callback == "function") {
+          if (callback) {
             callback();
           }
         });
@@ -40,9 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     constructor (skillData) {
       super ();
+      let privates = internal(this);
 
-      this.data = skillData;
-      this.id = this.data.id;
+      privates.data = skillData;
 
       Sprite.Loader.create()
         .add(`skill/${this.data.image}`)
@@ -51,8 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         .start()
         .on("complete", (event) => {
         let image = event.data[0];
-        this.icon = event.data[1];
-        this.sound = event.data[2];
+        privates.icon = event.data[1];
+        privates.sound = event.data[2];
 
         let sheet = new Sprite.Sheet({
           images: [image],
@@ -68,27 +70,56 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           sheet.alpha = this.data.alpha;
         }
 
-        this.sprite = sheet;
+        privates.sprite = sheet;
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
       });
     }
 
+    get id () {
+      return internal(this).data.id;
+    }
+
+    set id (value) {
+      throw new Error("Game.Skill.id readonly");
+    }
+
+    get icon () {
+      return internal(this).icon;
+    }
+
+    set icon (value) {
+      throw new Error("Game.Skill.icon readonly");
+    }
+
+    get data () {
+      return internal(this).data;
+    }
+
+    set data (value) {
+      console.error(this);
+      throw new Error("Game.Skill.data readonly");
+    }
+
     get power () {
-      if (typeof this.data.power == "number") {
+      if (Number.isFinite(this.data.power)) {
         return this.data.power;
       } else if (typeof this.data.power == "string") {
         let m = this.data.power.match(/(\d+)d(\d+)/);
+        if (!m) {
+          console.error(this.data.power, this.data);
+          throw new Error("Sprite.Skill got invalid power data");
+        }
         let times = parseInt(m[1]);
         let dice = parseInt(m[2]);
         let sum = 0;
         for (let i = 0; i < times; i++) {
-          sum += Sprite.rand(0, dice);
+          sum += Sprite.rand(0, dice) + 1;
         }
         return sum;
       } else {
-        console.error(this, this.data, this.data.power);
+        console.error(this.data.power, this.data);
         throw new Error("Game.Skill.power invalid power");
       }
     }
@@ -129,14 +160,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     fire (attacker, direction, callback) {
+      let privates = internal(this);
 
-      if (this.sound) {
-        this.sound.load();
-        this.sound.play();
+      if (privates.sound) {
+        privates.sound.load();
+        privates.sound.play();
       }
 
       let animation = "attack" + direction;
-      let sprite = this.sprite.clone();
+      let sprite = privates.sprite.clone();
 
       // 矫正武器效果位置
       sprite.x = attacker.sprite.x;
@@ -164,7 +196,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.data.animations[animation].centerY) {
         sprite.centerY = this.data.animations[animation].centerY;
       }
-
 
       // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的举例
       let distance = 0;
@@ -259,7 +290,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
 
-        if (typeof callback == "function") {
+        if (callback) {
           callback(hitted);
         }
       }

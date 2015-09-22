@@ -42,13 +42,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let Finish = (obj) => {
       Cache.set(url, obj);
-      if (typeof callback == "function") {
+      if (callback) {
         callback(obj);
       }
       if (Downloading.has(url)) {
         let callbacks = Downloading.get(url);
         for (let callback of callbacks) {
-          if (typeof callback == "function") {
+          if (callback) {
             callback(obj);
           }
         }

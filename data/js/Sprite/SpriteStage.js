@@ -64,6 +64,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         privates.rendererType = "webgl";
       }
 
+      // canvas 2d first
       if (!privates.renderer && Sprite.Canvas.support()) {
         privates.renderer = new Sprite.Canvas(width, height);
         privates.rendererType = "canvas";
@@ -73,8 +74,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         throw new Error("Sprite.Stage all renderer not support");
       }
 
+      /**
+      * color when stage is empty
+      */
       privates.color = "#000000";
-      privates.screenshot = null;
     }
 
     _createClass(SpriteStage, [{
@@ -98,8 +101,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       /// @function Sprite.Stage.clear
       /// clear the stage
       value: function clear() {
-        var privates = internal(this);
-        privates.renderer.clear();
+        internal(this).renderer.clear();
       }
     }, {
       key: "update",
@@ -107,27 +109,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.draw();
       }
     }, {
-      key: "requestScreenshot",
-      value: function requestScreenshot(callback) {
-        var privates = internal(this);
-        privates.screenshot = function (url) {
-          var img = new Image();
-          img.src = url;
-          if (img.complete) {
-            callback(img);
-          } else {
-            img.onload = function () {
-              callback(img);
-            };
-          }
-        };
-      }
-    }, {
       key: "draw",
       value: function draw() {
         var privates = internal(this);
         this.emit("beforeDraw");
 
+        /** this.children, never privates.children, because children are super's */
         if (this.children.length <= 0) {
           return false;
         }
@@ -157,11 +144,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               throw _iteratorError;
             }
           }
-        }
-
-        if (privates.screenshot) {
-          privates.screenshot(this.canvas.toDataURL());
-          privates.screenshot = null;
         }
 
         this.emit("afterDraw");

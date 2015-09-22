@@ -16,35 +16,35 @@
   "alpha": 0.5,
   "animations": {
     "attackdown": {
-      "frames": [0, 1, 2],
-      "speed": 20,
+      "frames": [0],
+      "speed": 40,
       "next": "",
-      "centerX": 0,
-      "centerY": 65,
+      "centerX": 25,
+      "centerY": 70,
       "actor": "slashdown"
     },
     "attackleft": {
-      "frames": [3, 4, 5],
-      "speed": 20,
+      "frames": [1],
+      "speed": 40,
       "next": "",
-      "centerX": 15,
-      "centerY": 50,
+      "centerX": 20,
+      "centerY": 60,
       "actor": "slashleft"
     },
     "attackright": {
-      "frames": [6, 7, 8],
-      "speed": 20,
+      "frames": [2],
+      "speed": 40,
       "next": "",
       "centerX": 50,
-      "centerY": 50,
+      "centerY": 60,
       "actor": "slashright"
     },
     "attackup": {
-      "frames": [9, 10, 11],
-      "speed": 20,
+      "frames": [3],
+      "speed": 40,
       "next": "",
-      "centerX": 0,
-      "centerY": 30,
+      "centerX": 25,
+      "centerY": 40,
       "actor": "slashup"
     }
   }

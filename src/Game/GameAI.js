@@ -42,20 +42,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     static autoHide () {
       let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
 
-      Game.area.map.layers.forEach((layer, index) => {
-        let layerData = Game.area.map.data.layers[index];
-        if (
-          heroHide &&
-          layerData.hasOwnProperty("properties") &&
-          layerData.properties.hasOwnProperty("autohide") &&
-          layerData.properties.autohide == heroHide
-        ) {
+      for (let layer of Game.layers.mapHideLayer.children) {
+        if (layer.name == heroHide) {
           layer.visible = false;
         } else {
           layer.visible = true;
         }
-      });
+      }
 
+      // 检查需要隐藏的角色，例如建筑物里的npc
       for (let actor of Game.area.actors) {
         if (actor != Game.hero) {
           let actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
@@ -68,9 +63,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               actor.visible = true;
             }
           }
+
+          // 当npc紧挨着玩家所在格子的时候，自动面向玩家
+          if (actor.distance(Game.hero) == 1) {
+            let actorFace = actor.facePosition;
+            if (actorFace.x != Game.hero.x || actorFace.y != Game.hero.y) {
+              if (actor.y == Game.hero.y) { // 同一水平
+                if (actor.x < Game.hero.x) { // npc 在玩家左边
+                  actor.face("right");
+                } else if (actor.x > Game.hero.x) { // npc在玩家右边
+                  actor.face("left");
+                }
+              } else if (actor.x == Game.hero.x) { // 同一垂直
+                if (actor.y < Game.hero.y) {
+                  actor.face("down");
+                } else if (actor.y > Game.hero.y) {
+                  actor.face("up");
+                }
+              }
+            }
+          }
+
+
+
         }
       }
 
+      // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
       for (let bag of Game.area.bags) {
         let bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
         if (bagHide && bagHide == heroHide) {
@@ -84,10 +103,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      //if (mapVisible != lastMapVisible) {
-      //  Game.area.map.cache();
-      //  lastMapVisible = mapVisible;
-      //}
     }
 
     static heroOnto () {
@@ -111,26 +126,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Sprite.each(Game.area.onto, FindUnderHero);
       if (onto) {
         if (onto.dest) {
+          Game.pause();
           Game.windows.loading.begin();
           setTimeout(function () {
             Game.clearStage();
-            Game.pause();
             Game.loadArea(onto.dest, function (area) {
-
               Game.area = area;
               area.map.draw(Game.layers.mapLayer);
-
               Game.hero.data.area = onto.dest;
               Game.hero.draw(Game.layers.actorLayer);
               area.actors.add(Game.hero);
               Game.hero.x = onto.destx;
               Game.hero.y = onto.desty;
-              Game.windows.interface.show();
-              Game.start();
-
               Game.windows.loading.end();
             });
-          }, 100);
+          }, 20);
         } // dest, aka. door
       } // touch
     }
@@ -185,7 +195,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 最近的提示物（例如牌子）
       Game.area.touch.forEach(FindFaceHero);
       // 水源
-      if (!touch && Game.area.map.waterTest(heroFace.x, heroFace.y)) {
+      if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
         touch = {
           type: "water",
           heroUse: function () {

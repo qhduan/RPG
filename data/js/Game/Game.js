@@ -27,24 +27,27 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 (function () {
   "use strict";
 
+  var internal = Sprite.Namespace();
+
   // root级别api入口
 
   var GameCore = (function () {
     function GameCore() {
       _classCallCheck(this, GameCore);
 
-      this.items = {};
-      this.skills = {};
-      this.layers = {};
-      this.windows = {};
-      this.config = { // 保存所有设置（默认设置）
+      var privates = internal(this);
+      privates.items = {};
+      privates.skills = {};
+      privates.layers = {};
+      privates.windows = {};
+      privates.config = { // 保存所有设置（默认设置）
         width: 800, // 渲染窗口的原始大小
         height: 450,
         scale: true, // 如果不拉伸，那么无论浏览器窗口多大，都是原始大小；拉伸则按比例填满窗口
         fps: 35 };
       // 锁定fps到指定数值，如果设置为<=0，则不限制
-      this.paused = true;
-      this.stage = null;
+      privates.paused = true;
+      privates.stage = null;
     }
 
     _createClass(GameCore, [{
@@ -56,7 +59,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           writable: false,
           value: object
         });
-
         return this;
       }
 
@@ -64,19 +66,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "start",
       value: function start() {
-        this.paused = false;
+        internal(this).paused = false;
       }
 
       /** 暂停游戏 */
     }, {
       key: "pause",
       value: function pause() {
-        this.paused = true;
+        internal(this).paused = true;
       }
-
-      /** 清理舞台，即删除舞台上所有元素 */
     }, {
       key: "clearStage",
+
+      /** 清理舞台，即删除舞台上所有元素 */
       value: function clearStage() {
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -128,8 +130,29 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
-        for (var i = 0; i < Game.stage.children.length; i++) {
-          this.stage.children[i].clear();
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
+
+        try {
+          for (var _iterator3 = internal(this).stage.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var layer = _step3.value;
+
+            layer.clear();
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+              _iterator3["return"]();
+            }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
         }
       }
 
@@ -137,35 +160,35 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "init",
       value: function init() {
-
+        var privates = internal(this);
         // 舞台
-        this.stage = new Sprite.Stage(this.config.width, this.config.height);
+        privates.stage = new Sprite.Stage(privates.config.width, privates.config.height);
         // 建立一个可以自动伸缩的窗口，并将舞台加入其中
-        this.windows.stage = Game.Window.create("stage").appendChild(this.stage.canvas).show();
+        privates.windows.stage = Game.Window.create("stage").appendChild(privates.stage.canvas).show();
 
         // 地图层
-        this.layers.mapLayer = new Sprite.Container();
-        this.layers.mapLayer.name = "mapLayer";
+        privates.layers.mapLayer = new Sprite.Container();
+        privates.layers.mapLayer.name = "mapLayer";
         // 地图层 - 2
-        this.layers.mapHideLayer = new Sprite.Container();
-        this.layers.mapHideLayer.name = "mapHideLayer";
+        privates.layers.mapHideLayer = new Sprite.Container();
+        privates.layers.mapHideLayer.name = "mapHideLayer";
         // 物品层
-        this.layers.itemLayer = new Sprite.Container();
-        this.layers.itemLayer.name = "itemLayer";
+        privates.layers.itemLayer = new Sprite.Container();
+        privates.layers.itemLayer.name = "itemLayer";
         // 人物层，包括玩家
-        this.layers.actorLayer = new Sprite.Container();
-        this.layers.actorLayer.name = "actorLayer";
+        privates.layers.actorLayer = new Sprite.Container();
+        privates.layers.actorLayer.name = "actorLayer";
         // 信息层
-        this.layers.infoLayer = new Sprite.Container();
-        this.layers.infoLayer.name = "inforLayer";
+        privates.layers.infoLayer = new Sprite.Container();
+        privates.layers.infoLayer.name = "inforLayer";
         // 技能效果层
-        this.layers.skillLayer = new Sprite.Container();
-        this.layers.skillLayer.name = "skillLayer";
+        privates.layers.skillLayer = new Sprite.Container();
+        privates.layers.skillLayer.name = "skillLayer";
         // 对话层
-        this.layers.dialogueLayer = new Sprite.Container();
-        this.layers.dialogueLayer.name = "dialogueLayer";
+        privates.layers.dialogueLayer = new Sprite.Container();
+        privates.layers.dialogueLayer.name = "dialogueLayer";
 
-        this.stage.appendChild(Game.layers.mapLayer, Game.layers.mapHideLayer, Game.layers.itemLayer, Game.layers.actorLayer, Game.layers.infoLayer, Game.layers.skillLayer, Game.layers.dialogueLayer);
+        privates.stage.appendChild(privates.layers.mapLayer, privates.layers.mapHideLayer, privates.layers.itemLayer, privates.layers.actorLayer, privates.layers.infoLayer, privates.layers.skillLayer, privates.layers.dialogueLayer);
 
         // 调整人物层顺序，也就是上方的人物会被下方的人物遮盖，例如
         /**
@@ -181,7 +204,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
          * BB
          * 这样就是B的上半身被人物A遮盖，这就很奇怪
          */
-        this.stage.on("beforeDraw", function () {
+        privates.stage.on("beforeDraw", function () {
           if (Game.hero) {
             Game.layers.actorLayer.children.sort(function (a, b) {
               if (a.y < b.y) return -1;
@@ -191,16 +214,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         });
 
-        /*
-        setInterval(() => {
-          Game.stage.update();
-        }, 0);
-         */
-        Sprite.Ticker.on("tick", function () {
+        setInterval(function () {
           if (Game.paused == false) {
             Game.stage.update();
           }
+        }, 0);
+        /*
+        Sprite.Ticker.on("tick", function () {
+        if (Game.paused == false) {
+        Game.stage.update();
+        }
         });
+        */
 
         /*
         let updateNext = false;
@@ -225,7 +250,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
         var fps = 0;
         var start = new Date().getTime();
-        this.stage.on("afterDraw", function () {
+        privates.stage.on("afterDraw", function () {
           fps++;
         });
         setInterval(function () {
@@ -237,6 +262,62 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }, 1000);
 
         console.log("RPG Game Flying!");
+      }
+    }, {
+      key: "paused",
+      get: function get() {
+        return internal(this).paused;
+      },
+      set: function set(value) {
+        throw new Error("Game.paused readonly, use Game.pause() instead");
+      }
+    }, {
+      key: "windows",
+      get: function get() {
+        return internal(this).windows;
+      },
+      set: function set(value) {
+        throw new Error("Game.windows readonly");
+      }
+    }, {
+      key: "config",
+      get: function get() {
+        return internal(this).config;
+      },
+      set: function set(value) {
+        throw new Error("Game.config readonly");
+      }
+    }, {
+      key: "items",
+      get: function get() {
+        return internal(this).items;
+      },
+      set: function set(value) {
+        throw new Error("Game.items readonly");
+      }
+    }, {
+      key: "skills",
+      get: function get() {
+        return internal(this).skills;
+      },
+      set: function set(value) {
+        throw new Error("Game.skills readonly");
+      }
+    }, {
+      key: "layers",
+      get: function get() {
+        return internal(this).layers;
+      },
+      set: function set(value) {
+        throw new Error("Game.layers readonly");
+      }
+    }, {
+      key: "stage",
+      get: function get() {
+        return internal(this).stage;
+      },
+      set: function set(value) {
+        throw new Error("Game.stage readonly");
       }
     }]);
 
@@ -255,7 +336,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   function GameBootstrap() {
     if (document.readyState == "complete") {
       Game.init();
-      Game.initInput();
+      Game.Input.init();
       Game.windows.main.show();
       return true;
     }
@@ -268,3 +349,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
   }
 })();
+//# sourceMappingURL=Game.js.map

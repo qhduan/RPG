@@ -179,7 +179,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               7:6,
               8:7
             }, function (choice) {
-              if (typeof choice == "number" && choice >= 0) {
+              if (Number.isFinite(choice) && choice >= 0) {
                 Game.hero.data.bar[choice] = {
                   id: skillId,
                   type: "skill"

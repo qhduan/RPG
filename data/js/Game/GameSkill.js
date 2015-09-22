@@ -31,6 +31,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
+  var internal = Sprite.Namespace();
+
   Game.assign("Skill", (function (_Sprite$Event) {
     _inherits(GameSkill, _Sprite$Event);
 
@@ -42,7 +44,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           var skillObj = new Game.Skill(skillData);
           Game.skills[id] = skillObj;
           skillObj.on("complete", function () {
-            if (typeof callback == "function") {
+            if (callback) {
               callback();
             }
           });
@@ -56,14 +58,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, GameSkill);
 
       _get(Object.getPrototypeOf(GameSkill.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
-      this.data = skillData;
-      this.id = this.data.id;
+      privates.data = skillData;
 
       Sprite.Loader.create().add("skill/" + this.data.image).add("skill/" + this.data.icon).add("skill/" + this.data.sound).start().on("complete", function (event) {
         var image = event.data[0];
-        _this.icon = event.data[1];
-        _this.sound = event.data[2];
+        privates.icon = event.data[1];
+        privates.sound = event.data[2];
 
         var sheet = new Sprite.Sheet({
           images: [image],
@@ -79,7 +81,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           sheet.alpha = _this.data.alpha;
         }
 
-        _this.sprite = sheet;
+        privates.sprite = sheet;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -115,13 +117,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function fire(attacker, direction, callback) {
         var _this2 = this;
 
-        if (this.sound) {
-          this.sound.load();
-          this.sound.play();
+        var privates = internal(this);
+
+        if (privates.sound) {
+          privates.sound.load();
+          privates.sound.play();
         }
 
         var animation = "attack" + direction;
-        var sprite = this.sprite.clone();
+        var sprite = privates.sprite.clone();
 
         // 矫正武器效果位置
         sprite.x = attacker.sprite.x;
@@ -257,7 +261,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
 
-          if (typeof callback == "function") {
+          if (callback) {
             callback(hitted);
           }
         };
@@ -273,21 +277,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
     }, {
+      key: "id",
+      get: function get() {
+        return internal(this).data.id;
+      },
+      set: function set(value) {
+        throw new Error("Game.Skill.id readonly");
+      }
+    }, {
+      key: "icon",
+      get: function get() {
+        return internal(this).icon;
+      },
+      set: function set(value) {
+        throw new Error("Game.Skill.icon readonly");
+      }
+    }, {
+      key: "data",
+      get: function get() {
+        return internal(this).data;
+      },
+      set: function set(value) {
+        console.error(this);
+        throw new Error("Game.Skill.data readonly");
+      }
+    }, {
       key: "power",
       get: function get() {
-        if (typeof this.data.power == "number") {
+        if (Number.isFinite(this.data.power)) {
           return this.data.power;
         } else if (typeof this.data.power == "string") {
           var m = this.data.power.match(/(\d+)d(\d+)/);
+          if (!m) {
+            console.error(this.data.power, this.data);
+            throw new Error("Sprite.Skill got invalid power data");
+          }
           var times = parseInt(m[1]);
           var dice = parseInt(m[2]);
           var sum = 0;
           for (var i = 0; i < times; i++) {
-            sum += Sprite.rand(0, dice);
+            sum += Sprite.rand(0, dice) + 1;
           }
           return sum;
         } else {
-          console.error(this, this.data, this.data.power);
+          console.error(this.data.power, this.data);
           throw new Error("Game.Skill.power invalid power");
         }
       },

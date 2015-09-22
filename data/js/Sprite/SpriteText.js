@@ -101,7 +101,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // find the real-maximum-width of multiline text, base user's maxWidth
         var lines = [];
         var lineText = "";
-        for (var i = 0; i < this.text.length; i++) {
+        for (var i = 0, len = this.text.length; i < len; i++) {
           if (textContext.measureText(lineText + this.text[i]).width > this.maxWidth) {
             lines.push(lineText);
             lineText = this.text[i];
@@ -210,12 +210,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "fontFamily",
       get: function get() {
-        var privates = internal(this);
-        return privates.fontFamily;
+        return internal(this).fontFamily;
       },
       set: function set(value) {
         var privates = internal(this);
-        if (value != this.fontFamily) {
+        if (value != privates.fontFamily) {
           privates.fontFamily = value;
           this.generate();
         }

@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
     var buttons = pickupWindowTable.querySelectorAll("button");
-    for (var i = 0; i < buttons.length; i++) {
+    for (var i = 0, len = buttons.length; i < len; i++) {
       var buttonIndex = buttons[i].getAttribute("data-index");
       if (buttonIndex) {
         if (buttonIndex == key) {

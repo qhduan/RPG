@@ -52,7 +52,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     var Finish = function Finish(obj) {
       Cache.set(url, obj);
-      if (typeof callback == "function") {
+      if (callback) {
         callback(obj);
       }
       if (Downloading.has(url)) {
@@ -65,7 +65,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           for (var _iterator = callbacks[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var _callback = _step.value;
 
-            if (typeof _callback == "function") {
+            if (_callback) {
               _callback(obj);
             }
           }

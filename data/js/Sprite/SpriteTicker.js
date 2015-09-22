@@ -69,7 +69,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           count++;
           if (count >= times) {
             _this2.off("tick", id);
-            if (typeof callback == "function") {
+            if (callback) {
               callback();
             }
           }
@@ -84,12 +84,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var id = this.on("tick", function () {
           count++;
           if (count >= times) {
-            if (typeof callback == "function") {
+            if (callback) {
               callback(true);
             }
             _this3.off("tick", id);
           } else {
-            if (typeof callback == "function") {
+            if (callback) {
               callback(false);
             }
           }

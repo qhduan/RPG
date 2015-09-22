@@ -57,8 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Array} Children array
      */
     get children () {
-      let privates = internal(this);
-      return privates.children;
+      return internal(this).children;
     }
 
     set children (value) {
@@ -69,8 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Object} Cached canvas
      */
     get cacheCanvas () {
-      let privates = internal(this);
-      return privates.cacheCanvas;
+      return internal(this).cacheCanvas;
     }
 
     set cacheCanvas (value) {
@@ -81,8 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * Remove canvas cache
      */
     clearCache () {
-      let privates = internal(this);
-      privates.cacheCanvas = null;
+      internal(this).cacheCanvas = null;
     }
 
     /**
@@ -154,6 +151,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     /**
+    */
+    hasChild (element) {
+      if (this.children.indexOf(element) != -1) {
+        return true;
+      }
+      return false;
+    }
+
+    /**
      * Append one or more children into container
      * eg. c.appendChild(childA) c.appendChild(childA, childB)
      * @param one or more children
@@ -191,7 +197,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       let index = args[0];
-      for (let i = 1; i < args.length; i++) {
+      for (let i = 1, len = args.length; i < len; i++) {
         if (args[i] instanceof Sprite.Display == false) {
           console.error(args[i]);
           throw new Error("Sprite.Container.appendChildAt only can accept Sprite.Display or it's sub-class");
@@ -211,12 +217,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     removeChild (element) {
       let index = this.children.indexOf(element);
-      if (index != -1) { // 删除成功
+      if (index != -1) { // found it
         this.children[index].parent = null;
         this.children.splice(index, 1);
         this.emit("removedChildren");
         return true;
-      } else { // 没有找到需要删除的对象
+      } else { // not found, element not a child
         return false;
       }
     }
@@ -226,13 +232,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     clear () {
       let privates = internal(this);
-      for (let child of this.children) {
+      for (let child of privates.children) {
         child.parent = null;
       }
-      internal(this).children = [];
-      if (privates.cacheCanvas) {
-        privates.cacheCanvas = null;
-      }
+      privates.children = [];
+      this.clearCache();
       this.emit("removedChildren");
     }
 

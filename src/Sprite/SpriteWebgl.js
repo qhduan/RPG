@@ -29,108 +29,68 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let internal = Sprite.Namespace();
 
+  /**
+    Use mediump precision in WebGL when possible
+    Highp in fragment shaders is an optional part of the OpenGL ES 2.0 spec,
+    so not all hardware supports it
+    lowp mediump highp
+    https://developers.google.com/web/updates/2011/12/Use-mediump-precision-in-WebGL-when-possible?hl=en
+
+    brightness and contrast's formular from https://github.com/evanw/glfx.js
+  */
   let vertexShaderSrc = `
-  precision lowp float;
-  attribute vec2 position;
+  precision mediump float;
   attribute vec2 a_texCoord;
-
-  uniform vec2 resolution;
-
   varying vec2 texCoord;
 
+  attribute vec2 aVertex;
+  uniform vec2 resolution;
+
+  uniform vec4 position;
+
   void main(void) {
-     // convert the rectangle from pixels to 0.0 to 1.0
-     vec2 zeroToOne = position / resolution;
+     vec2 a = aVertex * (position.zw / resolution) + (position.xy / resolution);
+     vec2 b = a * 2.0 - 1.0;
 
-     // convert from 0->1 to 0->2
-     vec2 zeroToTwo = zeroToOne * 2.0;
-
-     // convert from 0->2 to -1->+1 (clipspace)
-     vec2 clipSpace = zeroToTwo - 1.0;
-
-     gl_Position = vec4(clipSpace * vec2(1, -1), 0, 1);
-
-     // pass the texCoord to the fragment shader
-     // The GPU will interpolate this value between points.
+     gl_Position = vec4(b * vec2(1.0, -1.0), 0.0, 1.0);
      texCoord = a_texCoord;
   }`;
 
   let fragmentShaderSrc = `
-  // precision mediump float;
-  precision highp float;
+  precision mediump float;
 
-  // texture crop
   uniform vec4 crop;
-
-  // texture brightness
   uniform float brightness;
-
-  // texture alpha
   uniform float alpha;
-
-  // texture contrast
   uniform float contrast;
 
-  // our texture
   uniform sampler2D image;
 
   // the texCoords passed in from the vertex shader.
   varying vec2 texCoord;
 
   void main(void) {
-     // Look up a color from the texture.
-     // gl_FragColor = texture2D(image, texCoord);
 
-     // use crop to cut image
-     vec4 color = texture2D(
-       image,
-       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy
-     ).rgba;
+     vec4 color = texture2D(image,
+       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy).rgba;
 
-     // brightness and contrast's formular from https://github.com/evanw/glfx.js
-
-     // add the brightness to rgb, but not alpha (a of rgba)
-     color.xyz = color.xyz + brightness;
-
-     // apply contrast
-     if (contrast > 0.0) {
-       color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;
-     } else {
-       color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;
+     if (contrast != 0.0) {
+       if (contrast > 0.0) {
+         color.xyz = (color.xyz - 0.5) / (1.0 - contrast) + 0.5;
+       } else {
+         color.xyz = (color.xyz - 0.5) * (1.0 + contrast) + 0.5;
+       }
      }
 
-     // apply alpha
-     color.a = color.a * alpha;
+     if (brightness != 0.0) {
+       color.xyz += brightness;
+     }
+     if (alpha != 1.0) {
+       color.a *=  alpha;
+     }
 
      gl_FragColor = color;
   }`;
-
-  function setRectangle(gl, x, y, width, height) {
-    let x2 = x + width;
-    let y2 = y + height;
-    gl.bufferData(gl.ARRAY_BUFFER,
-      new Float32Array(
-        [
-          x, y,
-          x2, y,
-          x, y2,
-          x, y2,
-          x2, y,
-          x2, y2
-        ]
-      ),
-      gl.STATIC_DRAW
-    );
-  }
-
-  /**
-   * Test a value is power of 2 or not, eg. 2 is true, 2048 is ture, 2000 is false
-   * @param {number} value The number to check
-   * @return {boolean} Whether or not the input number is power of 2
-   */
-  function isPOT (value) {
-    return value > 0 && ((value - 1) & value) === 0;
-  }
 
   /**
    * Renderer using webgl
@@ -144,12 +104,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     static support () {
       let canvas = document.createElement("canvas");
-      let gl = canvas.getContext("webgl")
-        || canvas.getContext("experimental-webgl");
-      if (gl) {
-        return true;
+      let gl = canvas.getContext("webgl");
+      if (!gl) {
+        canvas.getContext("experimental-webgl");
       }
-      return false;
+      if (!gl) {
+        return false;
+      }
+      return true;
     }
 
     /**
@@ -158,30 +120,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor (width, height) {
       let privates = internal(this);
+
       let canvas = document.createElement("canvas");
       canvas.width = width || 640;
       canvas.height = height || 480;
 
-      privates.alpha = 1;
-      privates.color = [0, 0, 0];
-      privates.filter = new Map();
-      privates.filter.set("brightness", 0);
-      privates.filter.set("contrast", 0);
-      privates.textureCache = new Map();
+      let options = {
+        antialias: false,
+        preserveDrawingBuffer: true
+      };
 
-      let gl = canvas.getContext("webgl", {preserveDrawingBuffer: true})
-        || canvas.getContext("experimental-webgl", {preserveDrawingBuffer: true});
+      let gl = canvas.getContext("webgl", options);
+      if (!gl) {
+        gl = canvas.getContext("experimental-webgl", options);
+      }
+      privates.gl = gl;
 
       if (!gl) {
         throw new Error("Sprite.Webgl webgl is not supported");
       }
 
-      window.addEventListener("beforeunload", function (event) {
-        console.log("release webgl resources");
-        for (let texture of privates.textureCache.values()) {
-          gl.deleteTexture(texture);
-        }
-      });
+      privates.color = [0, 0, 0];
+      privates.filter = new Map();
+      privates.textureCache = new Map();
+      privates.canvas = canvas;
+      privates.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
 
       gl.viewport(0, 0, canvas.width, canvas.height);
 
@@ -199,36 +162,155 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       gl.linkProgram(program);
       gl.useProgram(program);
 
-      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.cullFace(gl.BACK);
+      gl.frontFace(gl.CW);
+      gl.enable(gl.CULL_FACE);
       gl.enable(gl.BLEND);
+      gl.disable(gl.DEPTH_TEST);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-      privates.positionLocation = gl.getAttribLocation(program, "position");
-      privates.texCoordLocation = gl.getAttribLocation(program, "a_texCoord");
-      privates.resolutionLocation = gl.getUniformLocation(program, "resolution");
-      privates.cropLocation = gl.getUniformLocation(program, "crop");
-      privates.brightnessLocation = gl.getUniformLocation(program, "brightness");
-      privates.contrastLocation = gl.getUniformLocation(program, "contrast");
-      privates.alphaLocation = gl.getUniformLocation(program, "alpha");
+      privates.cropLoc = gl.getUniformLocation(program, "crop");
+      privates.brightnessLoc = gl.getUniformLocation(program, "brightness");
+      privates.contrastLoc = gl.getUniformLocation(program, "contrast");
+      privates.alphaLoc = gl.getUniformLocation(program, "alpha");
+      privates.resolutionLoc = gl.getUniformLocation(program, "resolution");
+      gl.uniform2f(privates.resolutionLoc, canvas.width, canvas.height);
 
-      gl.uniform2f(privates.resolutionLocation, canvas.width, canvas.height);
+      privates.positionLoc = gl.getUniformLocation(program, "position");
 
-      let texCoordBuffer = gl.createBuffer();
-      gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
-      gl.enableVertexAttribArray(privates.texCoordLocation);
-      gl.vertexAttribPointer(privates.texCoordLocation, 2, gl.FLOAT, false, 0, 0);
 
-      let buffer = gl.createBuffer();
+      privates.tLoc = gl.getAttribLocation(program, "a_texCoord");
+      gl.enableVertexAttribArray(privates.tLoc);
+      privates.texCoordBuffer = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, privates.texCoordBuffer);
+      gl.vertexAttribPointer(privates.tLoc, 2, gl.FLOAT, false, 0, 0);
+      gl.bufferData(gl.ARRAY_BUFFER,
+        new Float32Array(
+          [
+            0, 1,
+            0, 0,
+            1, 0,
+            1, 1
+          ]
+        ),
+        gl.STATIC_DRAW
+      );
 
-      setRectangle(gl, 0, 0, 1, 1);
+      privates.vLoc = gl.getAttribLocation(program, "aVertex");
+      gl.enableVertexAttribArray(privates.vLoc);
+      privates.vertexBuff = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, privates.vertexBuff);
+      gl.bufferData(
+        gl.ARRAY_BUFFER,
+        new Float32Array([
+          0, 1,
+          0, 0,
+          1, 0,
+          1, 1
+        ]),
+        gl.STATIC_DRAW
+      );
+      gl.enableVertexAttribArray(privates.vLoc);
+      gl.vertexAttribPointer(privates.vLoc, 2, gl.FLOAT, false, 0, 0);
 
-      privates.texCoordBuffer = texCoordBuffer;
-      privates.buffer = buffer;
+      privates.currentTexture = null;
 
-      privates.canvas = canvas;
-      privates.gl = gl;
-      privates.maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE);
+      // setting, don't move
+      this.filter("brightness", 0);
+      this.filter("contrast", 0);
+      this.alpha = 1;
 
-      console.log("webgl inited. max texture size: %d", gl.getParameter(gl.MAX_TEXTURE_SIZE));
+      console.log("webgl inited. max texture size: %d",
+        gl.getParameter(gl.MAX_TEXTURE_SIZE));
+    }
+
+    drawImage9 (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+      let privates = internal(this);
+      let gl = privates.gl;
+
+      let texture = this.createTexture(gl, image);
+      if (privates.currentTexture != texture) {
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        privates.currentTexture = texture;
+      }
+
+      gl.uniform4f(privates.cropLoc,
+        sx/image.width, sy/image.height, sw/image.width, sh/image.height);
+      gl.uniform4f(privates.positionLoc, dx, dy, dw, dh);
+
+      gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
+    }
+
+    createTexture (gl, image) {
+      let privates = internal(this);
+      if (privates.textureCache.has(image)) {
+        return privates.textureCache.get(image);
+      } else {
+        gl.activeTexture(gl.TEXTURE0);
+        let texture = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+        gl.texImage2D(gl.TEXTURE_2D, 0,  gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        privates.textureCache.set(image, texture);
+        return texture;
+      }
+    }
+
+    drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
+      if (arguments.length == 9) {
+        // all right
+      } else if (arguments.length == 5) {
+        // drawImage (image, dx, dy, dw, dh);
+        dx = sx;
+        dy = sy;
+        dw = sw;
+        dh = sh;
+        sx = 0;
+        sy = 0;
+        sw = image.width;
+        sh = image.height;
+      } else if (arguments.length == 3) {
+        // drawImage (image, dx, dy);
+        dx = sx;
+        dy = sy;
+        dw = image.width;
+        dh = image.height;
+        sx = 0;
+        sy = 0;
+        sw = image.width;
+        sh = image.height;
+      } else {
+        console.error(arguments, this);
+        throw new Error("Sprite.Webgl.drawImage invalid arguments");
+      }
+
+      /*
+      if (dx > this.width || dy > this.height) {
+        return;
+      }
+
+      if ((dx + dw) < 0 || (dy + dh) < 0) {
+        return;
+      }
+
+      if (
+        !Number.isInteger(image.width) ||
+        !Number.isInteger(image.height) ||
+        image.width <= 0 ||
+        image.height <= 0 ||
+        image.width > privates.maxTextureSize ||
+        image.height > privates.maxTextureSize
+      ) {
+        console.error(image, privates, this);
+        throw new Error("Sprite.Webgl.drawImage invalid image");
+      }
+      */
+
+      this.drawImage9(image, sx, sy, sw, sh, dx, dy, dw, dh);
     }
 
     get alpha () {
@@ -238,13 +320,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set alpha (value) {
       let privates = internal(this);
-      if (typeof value == "number" &&
+      let gl = privates.gl;
+      if (Number.isFinite(value) &&
         !isNaN(value) &&
         value >= 0 &&
         value <= 1
       ) {
         if (value != privates.alpha) {
           privates.alpha = value;
+          gl.uniform1f(privates.alphaLoc, privates.alpha);
         }
       } else {
         console.error(value, this);
@@ -291,113 +375,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     filter (name, value) {
       let privates = internal(this);
-      if (typeof value == "number") {
+      let gl = privates.gl;
+      if (Number.isFinite(value)) {
         privates.filter.set(name, value);
+        gl.uniform1f(privates.brightnessLoc, privates.filter.get("brightness"));
+        gl.uniform1f(privates.contrastLoc, privates.filter.get("contrast"));
       } else {
         return privates.get(name);
       }
-    }
-
-    createTexture (gl, image) {
-      let privates = internal(this);
-      if (privates.textureCache.has(image)) {
-        return privates.textureCache.get(image);
-      } else {
-        let texture = gl.createTexture();
-        gl.bindTexture(gl.TEXTURE_2D, texture);
-        gl.texImage2D(gl.TEXTURE_2D, 0,  gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, image);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-
-        // if image size is power of 2
-        if (isPOT(image.width) && isPOT(image.height)) {
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
-          gl.generateMipmap(gl.TEXTURE_2D);
-        } else {
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        }
-
-        privates.textureCache.set(image, texture);
-        gl.bindTexture(gl.TEXTURE_2D, null);
-        return texture;
-      }
-    }
-
-    drawImage (image, sx, sy, sw, sh, dx, dy, dw, dh) {
-      let privates = internal(this);
-      let gl = privates.gl;
-
-      if (dx > this.width || dy > this.height) {
-        return;
-      }
-
-      if ((dx + dw) < 0 || (dy + dh) < 0) {
-        return;
-      }
-
-      if (
-        !Number.isInteger(image.width) ||
-        !Number.isInteger(image.height) ||
-        image.width <= 0 ||
-        image.height <= 0 ||
-        image.width > privates.maxTextureSize ||
-        image.height > privates.maxTextureSize
-      ) {
-        console.error(image, privates, this);
-        throw new Error("Sprite.Webgl.drawImage invalid image");
-      }
-
-      if (arguments.length == 9) {
-        // all right
-      } else if (arguments.length == 5) {
-        // drawImage (image, dx, dy, dw, dh);
-        dx = sx;
-        dy = sy;
-        dw = sw;
-        dh = sh;
-        sx = 0;
-        sy = 0;
-        sw = image.width;
-        sh = image.height;
-      } else if (arguments.length == 3) {
-        // drawImage (image, dx, dy);
-        dx = sx;
-        dy = sy;
-        dw = image.width;
-        dh = image.height;
-        sx = 0;
-        sy = 0;
-        sw = image.width;
-        sh = image.height;
-      } else {
-        console.error(arguments, this);
-        throw new Error("Sprite.Webgl.drawImage invalid arguments");
-      }
-
-      let texture = this.createTexture(gl, image);
-
-      gl.bindTexture(gl.TEXTURE_2D, texture);
-
-      // Set sx, sy, sw, sh, aka. image's crop
-      gl.uniform4f(privates.cropLocation,
-        sx/image.width, sy/image.height, sw/image.width, sh/image.height);
-
-      gl.uniform1f(privates.brightnessLocation, privates.filter.get("brightness"));
-      gl.uniform1f(privates.contrastLocation, privates.filter.get("contrast"));
-      gl.uniform1f(privates.alphaLocation, privates.alpha);
-
-      gl.bindBuffer(gl.ARRAY_BUFFER, privates.buffer);
-      gl.enableVertexAttribArray(privates.positionLocation);
-      gl.vertexAttribPointer(privates.positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-      // Set dx, dy, dw, dh, aka. image's position, width and height
-      setRectangle(gl, dx, dy, dw, dh);
-
-      // draw
-      gl.drawArrays(gl.TRIANGLES, 0, 6);
-
-      gl.bindTexture(gl.TEXTURE_2D, null);
     }
 
     clear () {
@@ -415,16 +400,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set width (value) {
       let privates = internal(this);
-      if (typeof value == "number" &&
+      if (Number.isFinite(value) &&
         !isNaN(value) &&
         value > 0 &&
-        value < 10000
+        value <= 4096
       ) {
         if (value != privates.canvas.width) {
           privates.canvas.width = value;
           privates.gl.viewport(0, 0, privates.canvas.width, privates.canvas.height);
           privates.gl.uniform2f(
-            privates.resolutionLocation,
+            privates.resolutionLoc,
             privates.canvas.width,
             privates.canvas.height
           );
@@ -442,15 +427,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set height (value) {
       let privates = internal(this);
-      if (typeof value == "number" &&
+      if (Number.isFinite(value) &&
         !isNaN(value) &&
         value > 0 &&
-        value < 10000
+        value <= 4096
       ) {
         if (value != privates.canvas.height) {
           privates.canvas.height = value;
           privates.gl.viewport(0, 0, privates.canvas.width, privates.canvas.height);
-          privates.gl.uniform2f(resolutionLocation, privates.canvas.width, privates.canvas.height);
+          privates.gl.uniform2f(resolutionLoc, privates.canvas.width, privates.canvas.height);
         }
       } else {
         console.error(value, this);
@@ -459,8 +444,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get canvas () {
-      let privates = internal(this);
-      return privates.canvas;
+      return internal(this).canvas;
     }
 
     set canvas (value) {

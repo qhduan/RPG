@@ -78,8 +78,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        * Remove canvas cache
        */
       value: function clearCache() {
-        var privates = internal(this);
-        privates.cacheCanvas = null;
+        internal(this).cacheCanvas = null;
       }
 
       /**
@@ -241,6 +240,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
 
       /**
+      */
+    }, {
+      key: "hasChild",
+      value: function hasChild(element) {
+        if (this.children.indexOf(element) != -1) {
+          return true;
+        }
+        return false;
+      }
+
+      /**
        * Append one or more children into container
        * eg. c.appendChild(childA) c.appendChild(childA, childB)
        * @param one or more children
@@ -303,7 +313,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         var index = args[0];
-        for (var i = 1; i < args.length; i++) {
+        for (var i = 1, len = args.length; i < len; i++) {
           if (args[i] instanceof Sprite.Display == false) {
             console.error(args[i]);
             throw new Error("Sprite.Container.appendChildAt only can accept Sprite.Display or it's sub-class");
@@ -326,13 +336,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function removeChild(element) {
         var index = this.children.indexOf(element);
         if (index != -1) {
-          // 删除成功
+          // found it
           this.children[index].parent = null;
           this.children.splice(index, 1);
           this.emit("removedChildren");
           return true;
         } else {
-          // 没有找到需要删除的对象
+          // not found, element not a child
           return false;
         }
       }
@@ -349,7 +359,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _iteratorError6 = undefined;
 
         try {
-          for (var _iterator6 = this.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+          for (var _iterator6 = privates.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             var child = _step6.value;
 
             child.parent = null;
@@ -369,17 +379,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        internal(this).children = [];
-        if (privates.cacheCanvas) {
-          privates.cacheCanvas = null;
-        }
+        privates.children = [];
+        this.clearCache();
         this.emit("removedChildren");
       }
     }, {
       key: "children",
       get: function get() {
-        var privates = internal(this);
-        return privates.children;
+        return internal(this).children;
       },
       set: function set(value) {
         throw new Error("Sprite.Container.children readonly");
@@ -391,8 +398,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "cacheCanvas",
       get: function get() {
-        var privates = internal(this);
-        return privates.cacheCanvas;
+        return internal(this).cacheCanvas;
       },
       set: function set(value) {
         throw new Error("Sprite.Container.cacheCanvas readonly");
@@ -402,4 +408,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteContainer;
   })(Sprite.Display));
 })();
-//# sourceMappingURL=SpriteContainer.js.map

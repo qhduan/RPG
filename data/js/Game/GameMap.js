@@ -31,21 +31,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 (function () {
   "use strict";
 
+  var internal = Sprite.Namespace();
+
   Game.assign("Map", (function (_Sprite$Event) {
     _inherits(GameMap, _Sprite$Event);
 
     _createClass(GameMap, [{
       key: "hitTest",
       value: function hitTest(x, y) {
-        if (this.blockedMap[y] && this.blockedMap[y][x]) {
+        if (internal(this).blockedMap.has(x * 10000 + y)) {
           return true;
         }
         return false;
       }
     }, {
-      key: "waterTest",
-      value: function waterTest(x, y) {
-        if (this.waterMap[y] && this.waterMap[y][x]) {
+      key: "hitWater",
+      value: function hitWater(x, y) {
+        if (internal(this).waterMap.has(x * 10000 + y)) {
           return true;
         }
         return false;
@@ -53,8 +55,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "hitAutoHide",
       value: function hitAutoHide(x, y) {
-        if (this.autoHideMap[y] && this.autoHideMap[y][x]) {
-          return this.autoHideMap[y][x];
+        if (internal(this).autoHideMap.has(x * 10000 + y)) {
+          return internal(this).autoHideMap.get(x * 10000 + y);
         }
         return null;
       }
@@ -66,49 +68,57 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, GameMap);
 
       _get(Object.getPrototypeOf(GameMap.prototype), "constructor", this).call(this);
+      var privates = internal(this);
 
-      this.data = mapData;
-      this.id = this.data.id;
+      privates.data = mapData;
 
-      var imageUrls = [];
-      this.data.tilesets.forEach(function (element) {
-        imageUrls.push("map/" + element.image);
-      });
+      var mapTilesetLoader = Sprite.Loader.create();
+      var _iteratorNormalCompletion = true;
+      var _didIteratorError = false;
+      var _iteratorError = undefined;
 
-      Sprite.Loader.create().add(imageUrls).start().on("complete", function (event) {
+      try {
+        for (var _iterator = privates.data.tilesets[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+          var element = _step.value;
 
-        _this.sheet = new Sprite.Sheet({
+          mapTilesetLoader.add("map/" + element.image);
+        }
+      } catch (err) {
+        _didIteratorError = true;
+        _iteratorError = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion && _iterator["return"]) {
+            _iterator["return"]();
+          }
+        } finally {
+          if (_didIteratorError) {
+            throw _iteratorError;
+          }
+        }
+      }
+
+      ;
+
+      mapTilesetLoader.start().on("complete", function (event) {
+
+        privates.sheet = new Sprite.Sheet({
           images: event.data,
-          width: _this.data.tilewidth,
-          height: _this.data.tileheight
+          width: privates.data.tilewidth,
+          height: privates.data.tileheight
         });
 
-        _this.waterMap = [];
-        _this.waterMap.length = _this.data.height;
-        for (var i = 0; i < _this.waterMap.length; i++) {
-          _this.waterMap[i] = [];
-          _this.waterMap[i].length = _this.data.width;
-        }
-
+        // 水地图，用来进行hitWater测试
+        privates.waterMap = new Map();
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
-        _this.blockedMap = [];
-        _this.blockedMap.length = _this.data.height;
-        for (var i = 0; i < _this.blockedMap.length; i++) {
-          _this.blockedMap[i] = [];
-          _this.blockedMap[i].length = _this.data.width;
-        }
-
-        _this.autoHideMap = [];
-        _this.autoHideMap.length = _this.data.height;
-        for (var i = 0; i < _this.autoHideMap.length; i++) {
-          _this.autoHideMap[i] = [];
-          _this.autoHideMap[i].length = _this.data.width;
-        }
+        privates.blockedMap = new Map();
+        // 某些层在玩家走到其中后会自动隐藏
+        privates.autoHideMap = new Map();
 
         // 保存这个地图的所有地图块
-        _this.layers = [];
+        privates.layers = [];
 
-        _this.data.layers.forEach(function (element, index, array) {
+        privates.data.layers.forEach(function (element, index, array) {
           var layer = element;
 
           if (layer.name == "block") {
@@ -118,8 +128,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 for (var x = 0; x < layer.width; x++) {
                   var position = x + y * layer.width;
                   var picture = layer.data[position] - 1;
-                  if (picture >= 0 && _this.blockedMap[y][x] != true) {
-                    _this.blockedMap[y][x] = true;
+                  if (picture >= 0) {
+                    privates.blockedMap.set(x * 10000 + y, true);
                   }
                 }
               }
@@ -134,8 +144,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 for (var x = 0; x < layer.width; x++) {
                   var position = x + y * layer.width;
                   var picture = layer.data[position] - 1;
-                  if (picture >= 0 && _this.waterMap[y][x] != true) {
-                    _this.waterMap[y][x] = true;
+                  if (picture >= 0) {
+                    privates.waterMap.set(x * 10000 + y, true);
                   }
                 }
               }
@@ -147,7 +157,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             var layerObj = new Sprite.Container();
             layerObj.name = layer.name;
 
-            _this.layers.push(layerObj);
+            privates.layers.push(layerObj);
 
             if (layer.hasOwnProperty("data")) {
               // 渲染普通层
@@ -156,12 +166,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                   var position = x + y * layer.width;
                   var picture = layer.data[position] - 1;
                   if (picture >= 0) {
-                    var frame = _this.sheet.getFrame(picture);
-                    frame.x = x * _this.data.tilewidth;
-                    frame.y = y * _this.data.tileheight;
+                    var frame = privates.sheet.getFrame(picture);
+                    frame.x = x * privates.data.tilewidth;
+                    frame.y = y * privates.data.tileheight;
 
-                    if (layer.hasOwnProperty("properties") && layer.properties.hasOwnProperty("autohide")) {
-                      _this.autoHideMap[y][x] = layer.properties.autohide;
+                    if (layer.properties && layer.properties.autohide) {
+                      privates.autoHideMap.set(x * 10000 + y, layer.properties.autohide);
                     }
 
                     layerObj.appendChild(frame);
@@ -175,25 +185,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         });
 
-        _this.width = _this.data.width * _this.data.tilewidth;
-        _this.height = _this.data.height * _this.data.tileheight;
-
-        // 发送完成事件，第二个参数代表一次性事件
+        // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         _this.emit("complete", true);
       });
     }
 
-    // 返回某个坐标点所在的地格
-
     _createClass(GameMap, [{
       key: "tile",
+
+      // 返回某个坐标点所在的地格
       value: function tile(x, y) {
-        if (x && typeof y == "undefined" && typeof x.x == "number" && typeof x.y == "number") {
+        if (x && typeof y == "undefined" && Number.isFinite(x.x) && Number.isFinite(x.y)) {
           return {
             x: Math.floor(x.x / this.data.tilewidth),
             y: Math.floor(x.y / this.data.tileheight)
           };
-        } else if (typeof x == "number" && typeof y == "number") {
+        } else if (Number.isFinite(x) && Number.isFinite(y)) {
           return {
             x: Math.floor(x / this.data.tilewidth),
             y: Math.floor(y / this.data.tileheight)
@@ -208,36 +215,139 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw() {
-        var _this2 = this;
-
+        var privates = internal(this);
         Game.layers.mapLayer.clear();
 
-        this.layers.forEach(function (element, index) {
-          var layerData = _this2.data.layers[index];
+        var autohideLayer = {};
 
-          if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
-            element.visible = false;
-          }
-          if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
+        privates.layers.forEach(function (element, index) {
+          var layerData = privates.data.layers[index];
+
+          if (Number.isFinite(layerData.opacity)) {
             element.alpha = layerData.opacity;
           }
 
-          if (layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide")) {
-            Game.layers.mapHideLayer.appendChild(element);
+          if (layerData.properties && layerData.properties.autohide) {
+            var group = layerData.properties.autohide;
+            if (autohideLayer[group]) {
+              autohideLayer[group].push(element);
+            } else {
+              autohideLayer[group] = [element];
+            }
           } else {
             Game.layers.mapLayer.appendChild(element);
           }
         });
 
-        Game.layers.mapLayer.cache(0, 0, this.width, this.height);
-        this.minimap = new Image();
-        this.minimap.src = Game.layers.mapLayer.cacheCanvas.toDataURL();
+        for (var key in autohideLayer) {
+          var container = new Sprite.Container();
+          container.name = key;
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
-        if (this.data.bgm) {
+          try {
+            for (var _iterator2 = autohideLayer[key][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var element = _step2.value;
+
+              container.appendChild(element);
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
+          container.cache(0, 0, this.width, this.height);
+          Game.layers.mapHideLayer.appendChild(container);
+        }
+
+        Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+        Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
+
+        var minimap = document.createElement("canvas");
+        minimap.width = this.col * 8; // 原地图的四倍
+        minimap.height = this.row * 8;
+        var minimapContext = minimap.getContext("2d");
+        minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+        minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+
+        privates.minimap = minimap;
+
+        Game.layers.mapHideLayer.clearCache();
+
+        if (privates.data.bgm) {
           // set loop = -1, 无限循环
           //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
           //bgm.setVolume(0.2);
         }
+      }
+    }, {
+      key: "data",
+      get: function get() {
+        return internal(this).data;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.data readonly");
+      }
+    }, {
+      key: "id",
+      get: function get() {
+        return internal(this).id;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.id readonly");
+      }
+    }, {
+      key: "width",
+      get: function get() {
+        return this.data.width * this.data.tilewidth;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.width readonly");
+      }
+    }, {
+      key: "height",
+      get: function get() {
+        return this.data.height * this.data.tileheight;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.height readonly");
+      }
+    }, {
+      key: "col",
+      get: function get() {
+        // width / tilewidth
+        return this.data.width;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.col readonly");
+      }
+    }, {
+      key: "row",
+      get: function get() {
+        // height / tileheight
+        return this.data.height;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.row readonly");
+      }
+    }, {
+      key: "minimap",
+      get: function get() {
+        return internal(this).minimap;
+      },
+      set: function set(value) {
+        throw new Error("Game.Map.minimap readonly");
       }
     }]);
 

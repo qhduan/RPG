@@ -50,6 +50,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.rendererType = "webgl";
       }
 
+      // canvas 2d first
       if (!privates.renderer && Sprite.Canvas.support()) {
         privates.renderer = new Sprite.Canvas(width, height);
         privates.rendererType = "canvas";
@@ -59,8 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         throw new Error("Sprite.Stage all renderer not support");
       }
 
+      /**
+      * color when stage is empty
+      */
       privates.color = "#000000";
-      privates.screenshot = null;
     }
 
     get renderer () {
@@ -136,33 +139,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /// @function Sprite.Stage.clear
     /// clear the stage
     clear () {
-      let privates = internal(this);
-      privates.renderer.clear();
+      internal(this).renderer.clear();
     }
 
     update () {
       this.draw();
     }
 
-    requestScreenshot (callback) {
-      let privates = internal(this);
-      privates.screenshot = function (url) {
-        let img = new Image();
-        img.src = url;
-        if (img.complete) {
-          callback(img);
-        } else {
-          img.onload = function () {
-            callback(img);
-          };
-        }
-      };
-    }
-
     draw () {
       let privates = internal(this);
       this.emit("beforeDraw");
 
+      /** this.children, never privates.children, because children are super's */
       if (this.children.length <= 0) {
         return false;
       }
@@ -171,11 +159,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       for (let child of this.children) {
         child.draw(this.renderer);
-      }
-
-      if (privates.screenshot) {
-        privates.screenshot(this.canvas.toDataURL());
-        privates.screenshot = null;
       }
 
       this.emit("afterDraw");

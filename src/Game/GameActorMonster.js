@@ -49,14 +49,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       super.draw();
 
+      let dodo = Sprite.rand(30, 60);
+      let attacking = false;
+
       privates.ai = Sprite.Ticker.on("tick", (event) => {
 
         if (Game.paused) return;
 
         let tickCount = event.data;
 
-        // 每秒16个tick
-        if (tickCount % 16 == 0) {
+        if (tickCount % 20 == 0) {
           let barChanged = false;
 
           if (this.data.hp < this.data.$hp) {
@@ -74,32 +76,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
 
-        if (Game.hero && this.facePosition.x == Game.hero.x && this.facePosition.y == Game.hero.y) {
-          if (this.y == Game.hero.y) { // left or right
-            if (this.x < Game.hero.x) { // left
-              this.fire("sword01", "right");
-            } else { // right
-              this.fire("sword01", "left");
+        if (attacking) {
+          if (tickCount % dodo == 0) {
+            if (
+              Game.hero &&
+              this.facePosition.x == Game.hero.x &&
+              this.facePosition.y == Game.hero.y
+            ) {
+              if (this.y == Game.hero.y) { // left or right
+                if (this.x < Game.hero.x) { // left
+                  this.fire("sword01", "right");
+                } else { // right
+                  this.fire("sword01", "left");
+                }
+              } else { // up or down
+                if (this.y < Game.hero.y) { // up
+                  this.fire("sword01", "down");
+                } else { // down
+                  this.fire("sword01", "up");
+                }
+              }
             }
-          } else { // up or down
-            if (this.y < Game.hero.y) { // up
-              this.fire("sword01", "down");
-            } else { // down
-              this.fire("sword01", "up");
+          } else if (Game.hero && Game.hero.distance(this) < 12) {
+            this.goto(Game.hero.x, Game.hero.y, "walk");
+          } else {
+            attacking = false;
+          }
+        } else {
+          if (tickCount % dodo == 0) {
+            if (Game.hero && Game.hero.distance(this) < 8) {
+              this.goto(Game.hero.x, Game.hero.y, "walk");
+              attacking = true;
+            } else if (this.data.mode == "patrol") {
+              if (Math.random() > 0.3) {
+                this.stop();
+                return;
+              }
+              let directions = ["down", "left", "right", "up"];
+              this.go("walk",
+                directions[Math.floor(Math.random() * directions.length)],
+                () => {
+                  this.stop();
+                });
             }
           }
-        } else if (Game.hero && Game.hero.distance(this) < 10) {
-          this.goto(Game.hero.x, Game.hero.y, "walk");
-        } else if (this.data.mode == "patrol") {
-          if (Math.random() < 0.00005) {
-            return;
-          }
-          let x = this.x;
-          let y = this.y;
-          this.goto(x + Sprite.rand(-5, 5), y + Sprite.rand(-5, 5), "walk", () => {
-            this.stop();
-          });
-        }
+        } // not attacking
+
 
       });
 

@@ -28,7 +28,7 @@
       "speed": 20,
       "next": "",
       "centerX": 15,
-      "centerY": 40,
+      "centerY": 55,
       "actor": "shootleft"
     },
     "attackright": {
@@ -36,7 +36,7 @@
       "speed": 20,
       "next": "",
       "centerX": 50,
-      "centerY": 40,
+      "centerY": 55,
       "actor": "shootright"
     },
     "attackup": {

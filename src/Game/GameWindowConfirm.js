@@ -106,14 +106,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     confirmWindowYes.addEventListener("click", function () {
-      if (typeof yes == "function") {
+      if (yes) {
         yes();
       }
       win.destroy();
     });
 
     confirmWindowNo.addEventListener("click", function () {
-      if (typeof no == "function") {
+      if (no) {
         no();
       }
       win.destroy();

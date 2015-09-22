@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let step = {};
 
       for (let key in attributes) {
-        if (typeof attributes[key] == "number") {
+        if (Number.isFinite(attributes[key])) {
           step[key] = attributes[key] - privates.object[key];
           step[key] /= splice;
         }
@@ -78,7 +78,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     call (callback) {
       let privates = internal(this);
-      if (typeof callback == "function") {
+      if (callback) {
         privates.callback = callback;
       }
       return this;

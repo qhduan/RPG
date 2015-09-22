@@ -104,7 +104,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var collision = false;
 
-    for (var i = 3; i < pixel.length; i += 3) {
+    for (var i = 3, len = pixel.length; i < len; i += 3) {
       if (pixel[i] != 0) {
         collision = true;
       }

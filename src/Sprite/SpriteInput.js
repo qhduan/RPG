@@ -127,7 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {boolean} If the key is pressing, return true, otherwise, false
      */
     static isPressed (key) {
-      if (typeof key == "number") {
+      if (Number.isFinite(key)) {
         if (pressed.has(key)) {
           return true;
         }
@@ -149,7 +149,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {function} callback When key in keys is pressed, callback
      */
     static whenPress (keys, callback) {
-      if (typeof callback == "function") {
+      if (callback) {
         window.addEventListener("keypress", function (event) {
           event = event || window.event;
           let keyCode = event.keyCode;
@@ -171,7 +171,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {function} callback When key in keys is pressed, callback
      */
     static whenDown (keys, callback) {
-      if (typeof callback == "function") {
+      if (callback) {
         window.addEventListener("keydown", function (event) {
           event = event || window.event;
           let keyCode = event.keyCode;
@@ -193,7 +193,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {function} callback When key in keys is pressed, callback
      */
     static whenUp (keys, callback) {
-      if (typeof callback == "function") {
+      if (callback) {
         window.addEventListener("keyup", function (event) {
           event = event || window.event;
           let keyCode = event.keyCode;

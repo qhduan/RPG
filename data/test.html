@@ -16,44 +16,46 @@
 
   <h1>测试一些乱七八糟的东西</h1>
 
+  <button onclick="test()">Test</button>
+
+  <script src="js/Sprite/Sprite.js"></script>
+  <script src="js/Sprite/SpriteWebgl.js"></script>
+  <script src="js/Sprite/SpriteCanvas.js"></script>
+
   <script>
     "use strict";
+    var gl = null;
 
-    let h = 100;
-    let w = 100;
-    let inn = 10;
-    let s;
+    try {
+      gl = new Sprite.Webgl(400, 240);
+      document.body.appendChild(gl.canvas);
+      gl.canvas.style.border = "1px solid green";
+    } catch (e) {
 
-    console.time("b");
-    s = 0;
-    for (let k = 0; k < inn; k++) {
-      for (let j = 0; j < h; j++) {
-        for (let i = 0; i < w; i++) {
-            s ++;
+    }
+
+    var canvas = new Sprite.Canvas(400, 240);
+    console.log(canvas.canvas)
+    document.body.appendChild(canvas.canvas);
+    canvas.canvas.style.border = "1px solid green";
+
+    var img = new Image();
+    img.src = "image/main.jpeg";
+
+    function test () {
+      console.time("canvas img");
+      for (var i = 0; i < 100000; i++) {
+        canvas.drawImage(img, 0, 0, 100, 100, 10, 10, 200, 200);
+      }
+      console.timeEnd("canvas img");
+      if (gl) {
+        console.time("gl img");
+        for (var i = 0; i < 100000; i++) {
+          gl.drawImage(img, 0, 0, 100, 100, 10, 10, 200, 200);
         }
+        console.timeEnd("gl img");
       }
     }
-    console.timeEnd("b");
-
-    console.time("a");
-    s = 0;
-    for (let j = 0; j < h; j++) {
-      for (let i = 0; i < w; i++) {
-        for (let k = 0; k < inn; k++) {
-          s ++;
-        }
-      }
-    }
-    console.timeEnd("a");
-
-
-
-
-
-
-
-
-
   </script>
 
 </body>

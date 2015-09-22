@@ -2,10 +2,7 @@
   "name": "紫色蝙蝠",
   "description": "实力很弱的妖兽",
   "type": "monster",
-  "items": {
-    "gold": 1
-  },
-  "exp": 10,
+  "exp": 1,
   "image": "resource\/bat.purple.png",
   "centerX": 16,
   "centerY": 32,
@@ -22,21 +19,21 @@
   "buff": [],
   "nerf": [],
   "animations": {
-    "walkdown": [6, 8, "walkdown", 100],
+    "walkdown": [0, 2, "walkdown", 100],
     "walkleft": [3, 5, "walkleft", 100],
-    "walkright": [9, 11, "walkright", 100],
-    "walkup": [0, 2, "walkup", 100],
-    "rundown": [6, 8, "rundown", 50],
+    "walkright": [6, 8, "walkright", 100],
+    "walkup": [9, 11, "walkup", 100],
+    "rundown": [0, 2, "rundown", 50],
     "runleft": [3, 5, "walkleft", 50],
-    "runright": [9, 11, "runright", 50],
-    "runup": [0, 2, "runup", 50],
-    "attackdown": [6, 8, "", 100],
-    "attackleft": [3, 5, "", 100],
-    "attackright": [9, 11, "", 100],
-    "attackup": [0, 2, "", 100],
-    "facedown": 7,
+    "runright": [6, 8, "runright", 50],
+    "runup": [9, 11, "runup", 50],
+    "facedown": 1,
     "faceleft": 4,
-    "faceright": 10,
-    "faceup": 1
+    "faceright": 7,
+    "faceup": 10,
+    "attackdown": [0, 2, "walkdown", 100],
+    "attackleft": [3, 5, "walkleft", 100],
+    "attackright": [6, 8, "walkright", 100],
+    "attackup": [9, 11, "walkup", 100]
   }
 }

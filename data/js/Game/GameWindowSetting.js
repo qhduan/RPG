@@ -25,15 +25,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows.setting = Game.Window.create("settingWindow");
 
-  win.html = "\n    <div class=\"window-box\">\n      <button id=\"settingWindowClose\" class=\"brownButton\">关闭</button>\n\n      <div id=\"settingWindowRendererType\"></div>\n\n      <div id=\"settingWindowBox\">\n        <button id=\"settingWindowFullscreen\" class=\"brownButton\">全屏</button>\n        <button id=\"settingWindowScale\" class=\"brownButton\">缩放</button>\n      </div>\n    </div>\n  ";
+  win.html = "\n    <div class=\"window-box\">\n      <button id=\"settingWindowClose\" class=\"brownButton\">关闭</button>\n\n      <div id=\"settingWindowRendererType\"></div>\n\n      <div id=\"settingWindowBox\">\n        <button id=\"settingWindowFullscreen\" class=\"brownButton\">全屏</button>\n        <button id=\"settingWindowScale\" class=\"brownButton\">缩放</button>\n        <button id=\"settingWindowShortcut\" class=\"brownButton\">清除快捷栏</button>\n        <button id=\"settingWindowShortcutAll\" class=\"brownButton\">清除全部快捷栏</button>\n      </div>\n    </div>\n  ";
 
   win.css = "\n    #settingWindowBox {\n      width: 100%;\n      height: 360px;\n    }\n\n    #settingWindowBox button {\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n      display: block;\n    }\n\n    #settingWindowClose {\n      width: 60px;\n      height: 40px;\n      font-size: 16px;\n      float: right;\n    }\n  ";
 
-  var settingWindowClose = win.querySelector("button#settingWindowClose");
-  var settingWindowScale = win.querySelector("button#settingWindowScale");
+  var settingWindowShortcut = win.querySelector("#settingWindowShortcut");
+  var settingWindowShortcutAll = win.querySelector("#settingWindowShortcutAll");
 
-  var settingWindowFullscreen = win.querySelector("button#settingWindowFullscreen");
+  var settingWindowClose = win.querySelector("#settingWindowClose");
+  var settingWindowScale = win.querySelector("#settingWindowScale");
+
+  var settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
   var settingWindowRendererType = win.querySelector("#settingWindowRendererType");
+
+  settingWindowShortcut.addEventListener("click", function (event) {
+    Game.choice({ 1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7 }, function (choice) {
+      if (Number.isFinite(choice)) {
+        Game.hero.data.bar[choice] = null;
+        Game.windows["interface"].refresh();
+      }
+    });
+  });
+
+  settingWindowShortcutAll.addEventListener("click", function (event) {
+    Game.confirm("确定要删除所有快捷栏图表吗？", function () {
+      for (var i = 0; i < 8; i++) {
+        Game.hero.data.bar[i] = null;
+      }
+      Game.windows["interface"].refresh();
+    });
+  });
 
   win.on("beforeShow", function () {
     settingWindowRendererType.textContent = Game.stage.rendererType;

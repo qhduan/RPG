@@ -58,7 +58,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(SpriteSheet.prototype), "constructor", this).call(this);
       var privates = internal(this);
 
-      if (!config.images || !config.images.length || !Number.isInteger(config.width) || isNaN(config.width) || config.width <= 0 || !Number.isInteger(config.height) || isNaN(config.height) || config.height <= 0) {
+      if (!config.images || !config.images.length || !Number.isFinite(config.width) || config.width <= 0 || config.width > 4096 || !Number.isFinite(config.height) || config.height <= 0 || config.height > 4096) {
         console.error(config);
         throw new Error("Sprite.Sheet.constructor get invalid arguments");
       }
@@ -122,14 +122,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         for (var _iterator = privates.images[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var image = _step.value;
 
-          if (image && image.width && image.height) {
-            var col = Math.floor(image.width / privates.tilewidth);
-            var row = Math.floor(image.height / privates.tileheight);
-            privates.frameCount += col * row;
-          } else {
-            console.error(image, privates.images, this);
-            throw new Error("Sprite.Sheet got an invalid image");
+          if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
+            console.error(image, privates, this);
+            throw new Error("Sprite.Sheet got invalid image, not Image or Canvas");
           }
+
+          if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
+            console.error(image, privates, this);
+            throw new Error("Sprite.Sheet got invalid image, invalid width or height");
+          }
+
+          var col = Math.floor(image.width / privates.tilewidth);
+          var row = Math.floor(image.height / privates.tileheight);
+          privates.frameCount += col * row;
         }
       } catch (err) {
         _didIteratorError = true;
@@ -207,7 +212,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
 
             // if animation is single frame number
-            if (typeof animation == "number") {
+            if (Number.isFinite(animation)) {
               privates.currentAnimation = choice;
               return {
                 v: _this.play(animation)
@@ -238,7 +243,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
 
             if ( // Data ensure
-            typeof begin != "number" || begin < 0 || begin >= privates.frameCount || typeof end != "number" || end < 0 || end >= privates.frameCount || typeof time != "number" || time <= 0) {
+            !Number.isFinite(begin) || begin < 0 || begin >= privates.frameCount || !Number.isFinite(end) || end < 0 || end >= privates.frameCount || !Number.isFinite(time) || time <= 0) {
               console.error(begin, end, time, _this);
               throw new Error("Sprite.Sheet.play Invalid animation data");
             }

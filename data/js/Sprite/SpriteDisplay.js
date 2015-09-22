@@ -200,8 +200,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "x",
       get: function get() {
-        var privates = internal(this);
-        return privates.x;
+        return internal(this).x;
       },
 
       /**
@@ -209,9 +208,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
       set: function set(value) {
         var privates = internal(this);
-        if (typeof value == "number" && !isNaN(value)) {
+        if (Number.isFinite(value)) {
           if (value != privates.x) {
-            privates.x = value;
+            privates.x = Math.floor(value);
             this.emit("change");
           }
         } else {
@@ -226,8 +225,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "y",
       get: function get() {
-        var privates = internal(this);
-        return privates.y;
+        return internal(this).y;
       },
 
       /**
@@ -235,9 +233,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
       set: function set(value) {
         var privates = internal(this);
-        if (typeof value == "number" && !isNaN(value)) {
+        if (Number.isFinite(value)) {
           if (value != privates.y) {
-            privates.y = value;
+            privates.y = Math.floor(value);
             this.emit("change");
           }
         } else {
@@ -252,8 +250,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "centerX",
       get: function get() {
-        var privates = internal(this);
-        return privates.centerX;
+        return internal(this).centerX;
       },
 
       /**
@@ -261,9 +258,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
       set: function set(value) {
         var privates = internal(this);
-        if (typeof value == "number" && !isNaN(value)) {
+        if (Number.isFinite(value)) {
           if (value != privates.centerX) {
-            privates.centerX = value;
+            privates.centerX = Math.floor(value);
             this.emit("change");
           }
         } else {
@@ -278,8 +275,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "centerY",
       get: function get() {
-        var privates = internal(this);
-        return privates.centerY;
+        return internal(this).centerY;
       },
 
       /**
@@ -287,9 +283,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
       set: function set(value) {
         var privates = internal(this);
-        if (typeof value == "number" && !isNaN(value)) {
+        if (Number.isFinite(value)) {
           if (value != privates.centerY) {
-            privates.centerY = value;
+            privates.centerY = Math.floor(value);
             this.emit("change");
           }
         } else {
@@ -313,7 +309,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        */
       set: function set(value) {
         var privates = internal(this);
-        if (typeof value == "number" && !isNaN(value) && (value >= 0 || value <= 1)) {
+        if (Number.isFinite(value) && (value >= 0 || value <= 1)) {
           if (value != privates.alpha) {
             privates.alpha = value;
             this.emit("change");

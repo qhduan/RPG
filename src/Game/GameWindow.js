@@ -79,10 +79,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           let t = privates.html.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
           if (t) {
             scale = parseFloat(t[1]);
+          } else {
+            scale = 1.0;
           }
+        } else {
+          scale = 1.0;
         }
 
-        if (typeof left == "number" && typeof top == "number" && typeof scale == "number") {
+        if (Number.isFinite(left) && Number.isFinite(top) && Number.isFinite(scale)) {
           x -= left;
           y -= top;
           x /= scale;
@@ -269,10 +273,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 当窗口大小改变时改变游戏窗口大小
   function GameWindowResize () {
     let width = window.innerWidth;
-    let height = window.innerHeight;
+    let height = window.innerHeight - 10;
     let scale = 1;
     let leftMargin = 0;
     let topMargin = 0;
+    let mobile = false;
+
+    if (navigator.userAgent.match(/iPad|iPhone|iPod|Android|BlackBerry|webOS|IEMobile|Opera Mini/i)) {
+      if (width < height) {
+        let t = width;
+        width = height;
+        height = t;
+        mobile = true;
+      }
+    }
 
     if (Game.config.scale == false) {
       // 不拉伸游戏窗口，按原始大小计算窗口居中
@@ -300,15 +314,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         h / Game.config.height
       );
 
-      scale = scale.toFixed(3);
+      // scale = scale.toFixed(3);
     }
 
     // html窗口拉伸（css中控制了原始大小）
     for (let win of windows) {
       internal(win).html.style.transformOrigin = "0 0 0";
-      internal(win).html.style.transform = `scale(${scale}, ${scale})`;
       internal(win).html.style.left = `${leftMargin}px`;
       internal(win).html.style.top = `${topMargin}px`;
+
+      if (scale > 1.01 || scale < 0.99) {
+        internal(win).html.style.transform = `scale(${scale}, ${scale}) translateZ(0)`;
+        //internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
+      } else {
+        internal(win).html.style.transform = "";
+        //internal(win).html.style.webkitTransform = "";
+      }
+
     }
 
     if (Game.hero) {

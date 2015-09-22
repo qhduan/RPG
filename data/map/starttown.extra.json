@@ -5,8 +5,7 @@
     "x": 54,
     "y": 58
   },
-  "actors":
-  [
+  "actors": [
     {
       "id": "starttown.tandem",
       "x": 26,
@@ -16,6 +15,17 @@
       "id": "starttown.ranc",
       "x": 18,
       "y": 20
+    },
+    {
+      "id": "rat.gray",
+      "x": 54,
+      "y": 17,
+      "mode": "stay"
+    }, {
+      "id": "rat.gray",
+      "x": 42,
+      "y": 17,
+      "mode": "stay"
     }
   ],
   "touch": [
@@ -49,6 +59,14 @@
       "dest": "starttown.southforest",
       "destx": 14,
       "desty": 2
+    },
+    {
+      "comment": "通往斯塔特ship",
+      "x": 36,
+      "y": 0,
+      "dest": "starttown.ship",
+      "destx": 8,
+      "desty": 38
     }
   ]
 }

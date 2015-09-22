@@ -67,7 +67,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var step = {};
 
         for (var key in attributes) {
-          if (typeof attributes[key] == "number") {
+          if (Number.isFinite(attributes[key])) {
             step[key] = attributes[key] - privates.object[key];
             step[key] /= splice;
           }
@@ -97,7 +97,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "call",
       value: function call(callback) {
         var privates = internal(this);
-        if (typeof callback == "function") {
+        if (callback) {
           privates.callback = callback;
         }
         return this;

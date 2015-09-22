@@ -50,24 +50,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _classCallCheck(this, SpriteBitmap);
 
       _get(Object.getPrototypeOf(SpriteBitmap.prototype), "constructor", this).call(this);
-      var privates = internal(this);
 
-      if (!image || typeof image.width != "number" || image.width <= 0 || typeof image.width != "number" || image.height <= 0) {
-        console.error(image);
-        throw new Error("Sprite.Bitmap got invalid argument");
+      if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
+        console.error(image, this);
+        throw new Error("Sprite.Bitmap got invalid image, not Image or Canvas");
       }
 
-      /**
-       * The image
-       */
-      privates.image = image;
+      if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
+        console.error(image);
+        throw new Error("Sprite.Bitmap got invalid image, invalid width or height");
+      }
+
+      internal(this).image = image;
     }
 
     _createClass(SpriteBitmap, [{
       key: "clone",
       value: function clone() {
-        var privates = internal(this);
-        var bitmap = new Sprite.Bitmap(privates.image);
+        var bitmap = new Sprite.Bitmap(internal(this).image);
         bitmap.x = this.x;
         bitmap.y = this.y;
         bitmap.centerX = this.centerX;
@@ -90,14 +90,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (this.alpha <= 0.01 || this.visible != true) {
           return;
         }
-        var privates = internal(this);
-        this.drawImage(renderer, privates.image, 0, 0, privates.image.width, privates.image.height);
+        var image = internal(this).image;
+        this.drawImage(renderer, image, 0, 0, image.width, image.height);
       }
     }, {
       key: "image",
       get: function get() {
-        var privates = internal(this);
-        return privates.image;
+        return internal(this).image;
       },
       set: function set(value) {
         console.error(this);
@@ -110,8 +109,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        var privates = internal(this);
-        return privates.image.width;
+        return internal(this).image.width;
       },
       set: function set(value) {
         console.error(this);
@@ -124,8 +122,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "height",
       get: function get() {
-        var privates = internal(this);
-        return privates.image.height;
+        return internal(this).image.height;
       },
       set: function set(value) {
         console.error(this);

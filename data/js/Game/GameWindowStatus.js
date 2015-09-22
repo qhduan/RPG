@@ -129,7 +129,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     heroMDEF.textContent = "魔法防御：" + Game.hero.data.mdef;
 
     var lines = statusWindowEquipmentTable.querySelectorAll("tr");
-    for (var i = 0; i < lines.length; i++) {
+    for (var i = 0, len = lines.length; i < len; i++) {
       if (select == i) {
         lines[i].style.backgroundColor = "green";
       } else {

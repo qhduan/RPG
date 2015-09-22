@@ -35,26 +35,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     constructor (image) {
       super();
-      let privates = internal(this);
 
-      if (
-        !image ||
-        typeof image.width != "number" || image.width <= 0 ||
-        typeof image.width != "number" || image.height <= 0
-      ) {
-        console.error(image);
-        throw new Error("Sprite.Bitmap got invalid argument");
+      if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
+        console.error(image, this);
+        throw new Error("Sprite.Bitmap got invalid image, not Image or Canvas");
       }
 
-      /**
-       * The image
-       */
-      privates.image = image;
+      if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
+        console.error(image);
+        throw new Error("Sprite.Bitmap got invalid image, invalid width or height");
+      }
+
+      internal(this).image = image;
     }
 
     clone () {
-      let privates = internal(this);
-      let bitmap = new Sprite.Bitmap(privates.image);
+      let bitmap = new Sprite.Bitmap(internal(this).image);
       bitmap.x = this.x;
       bitmap.y = this.y;
       bitmap.centerX = this.centerX;
@@ -68,8 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {Image} Return Sprite.Bitmap's image
      */
     get image () {
-      let privates = internal(this);
-      return privates.image;
+      return internal(this).image;
     }
 
     set image (value) {
@@ -81,8 +76,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return Sprite.Bitmap's width
      */
     get width () {
-      let privates = internal(this);
-      return privates.image.width;
+      return internal(this).image.width;
     }
 
     set width (value) {
@@ -94,8 +88,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @return {number} Return Sprite.Bitmap's height
      */
     get height () {
-      let privates = internal(this);
-      return privates.image.height;
+      return internal(this).image.height;
     }
 
     set height (value) {
@@ -110,9 +103,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.alpha <= 0.01 || this.visible != true) {
         return;
       }
-      let privates = internal(this);
-      this.drawImage(renderer, privates.image,
-        0, 0, privates.image.width, privates.image.height);
+      let image = internal(this).image;
+      this.drawImage(renderer, image, 0, 0, image.width, image.height);
     }
 
   });

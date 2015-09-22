@@ -35,8 +35,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       </div>
     </div>
 
-    <span id="interfaceWindowMap"></span>
     <span id="interfaceWindowDatetime"></span>
+    <span id="interfaceWindowMap"></span>
 
     <button id="interfaceWindowUse" class="interfaceWindowButton"></button>
     <button id="interfaceWindowMenu" class="interfaceWindowButton"></button>
@@ -81,19 +81,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       height: 100%;
     }
 
-    span#interfaceWindowMap {
-      position: absolute:
-      top: 0px;
+    #interfaceWindowMap {
+      position: absolute;
+      top: 35px;
+      left: 5px;
       background-color: rgba(100, 100, 100, 0.7);
-      display: inline-block;
+      padding: 2px;
     }
 
-    span#interfaceWindowDatetime {
-      position: absolute:
-      top: 200px;
-      left: 0;
+    #interfaceWindowDatetime {
+      position: absolute;
+      top: 10px;
+      left: 5px;
       background-color: rgba(100, 100, 100, 0.7);
-      display: inline-block;
+      padding: 2px;
     }
 
     button#interfaceWindowUse {
@@ -131,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 技能栏按钮组
   let interfaceWindowBar = win.querySelector("div#interfaceWindowBar");
   // 地图信息
-  let interfaceWindowMap = win.querySelector("span#interfaceWindowMap");
+  let interfaceWindowMap = win.querySelector("#interfaceWindowMap");
   // 选项菜单
   let interfaceWindowMenu = win.querySelector("button#interfaceWindowMenu");
   // 玩家的hp
@@ -253,7 +254,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let MONTHMIN = 60*24*30;
       let DAYMIN = 60*24;
       let HOURMIN = 60;
-      let datetime = win.querySelector("span#interfaceWindowDatetime");
+      let datetime = win.querySelector("#interfaceWindowDatetime");
       let time = Game.hero.data.time;
       let year = Math.floor(time/YEARMIN);
       time = time % YEARMIN;
@@ -301,6 +302,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let element = Game.hero.data.bar[i];
       let button = buttons[i];
       let text = buttonTexts[i];
+      button.disabled = false;
+      text.disabled = false;
 
       if (element) {
         let id = element.id;
@@ -312,7 +315,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } else if (type == "item") {
           let item = Game.items[id];
           button.style.backgroundImage = `url("${item.icon.src}")`;
-          text.textContent = Game.hero.data.items[id];
+          if (Game.hero.data.items[id]) {
+            text.textContent = Game.hero.data.items[id];
+          } else {
+            text.textContent = "0";
+            button.disabled = true;
+            text.disabled = true;
+          }
         }
       } else {
         // empty bar element

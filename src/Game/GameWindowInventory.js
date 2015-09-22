@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <span id="inventoryWindowGold"></span>
 
       <div style="overflow: auto; height: 300px;">
-        <table border="1" cellspacing="0" cellpadding="0">
+        <table border="0" cellspacing="0" cellpadding="0">
           <thead>
             <tr>
               <td style="width: 40px;"></td>
@@ -91,6 +91,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       width: 60px;
       height: 40px;
       font-size: 16px;
+    }
+
+    .inventoryWindow td {
+      border-bottom:1px solid #ccc;
+    }
+
+    .inventoryWindow tr:nth-child(odd) {
+      background-color: #ccc;
     }
 
     #inventoryWindowGold {
@@ -377,7 +385,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               7:6,
               8:7
             }, function (choice) {
-              if (typeof choice == "number" && choice >= 0) {
+              if (Number.isFinite(choice) && choice >= 0) {
                 Game.hero.data.bar[choice] = {
                   id: item.id,
                   type: "item"

@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       button.addEventListener("click", function () {
         win.hide();
         win.destroy();
-        if (typeof callback == "function") {
+        if (callback) {
           callback(value);
         }
       });
@@ -58,7 +58,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     choiceWindowNo.addEventListener("click", function () {
       win.hide();
       win.destroy();
-      if (typeof callback == "function") {
+      if (callback) {
         callback(null);
       }
     });

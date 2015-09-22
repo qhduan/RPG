@@ -81,25 +81,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
 
-  Game.assign("ui", class GameUI {
-    static shortcut () {
-      Game.choice({
-        1:0,
-        2:1,
-        3:2,
-        4:3,
-        5:4,
-        6:5,
-        7:6,
-        8:7
-      }, function (choice) {
-        if (typeof choice == "number" && choice >= 0) {
-          Game.hero.data.bar[choice] = null;
-          Game.ui.bar();
-          Game.Window.show("uiWindow");
-        }
-      });
-    }
-  });
-
 })();

@@ -139,7 +139,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
        * @return {boolean} If the key is pressing, return true, otherwise, false
        */
       value: function isPressed(key) {
-        if (typeof key == "number") {
+        if (Number.isFinite(key)) {
           if (pressed.has(key)) {
             return true;
           }
@@ -163,7 +163,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "whenPress",
       value: function whenPress(keys, callback) {
-        if (typeof callback == "function") {
+        if (callback) {
           window.addEventListener("keypress", function (event) {
             event = event || window.event;
             var keyCode = event.keyCode;
@@ -208,7 +208,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "whenDown",
       value: function whenDown(keys, callback) {
-        if (typeof callback == "function") {
+        if (callback) {
           window.addEventListener("keydown", function (event) {
             event = event || window.event;
             var keyCode = event.keyCode;
@@ -253,7 +253,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }, {
       key: "whenUp",
       value: function whenUp(keys, callback) {
-        if (typeof callback == "function") {
+        if (callback) {
           window.addEventListener("keyup", function (event) {
             event = event || window.event;
             var keyCode = event.keyCode;

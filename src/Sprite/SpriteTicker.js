@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         count++;
         if (count >= times) {
           this.off("tick", id);
-          if (typeof callback == "function") {
+          if (callback) {
             callback();
           }
         }
@@ -60,12 +60,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let id = this.on("tick", () => {
         count++;
         if (count >= times) {
-          if (typeof callback == "function") {
+          if (callback) {
             callback(true);
           }
           this.off("tick", id);
         } else {
-          if (typeof callback == "function") {
+          if (callback) {
             callback(false);
           }
         }

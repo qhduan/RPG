@@ -21,78 +21,62 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+  let internal = Sprite.Namespace();
+
   Game.assign("Map", class GameMap extends Sprite.Event {
 
     hitTest (x, y) {
-      if (this.blockedMap[y] && this.blockedMap[y][x]) {
+      if (internal(this).blockedMap.has(x*10000+y)) {
         return true;
       }
       return false;
     }
 
-    waterTest (x, y) {
-      if (this.waterMap[y] && this.waterMap[y][x]) {
+    hitWater (x, y) {
+      if (internal(this).waterMap.has(x*10000+y)) {
         return true;
       }
       return false;
     }
 
     hitAutoHide (x, y) {
-      if (this.autoHideMap[y] && this.autoHideMap[y][x]) {
-        return this.autoHideMap[y][x];
+      if (internal(this).autoHideMap.has(x*10000+y)) {
+        return internal(this).autoHideMap.get(x*10000+y);
       }
       return null;
     }
 
     constructor (mapData) {
       super();
+      let privates = internal(this);
+
+      privates.data = mapData;
+
+      let mapTilesetLoader = Sprite.Loader.create();
+      for (let element of privates.data.tilesets) {
+        mapTilesetLoader.add(`map/${element.image}`);
+      };
 
 
-      this.data = mapData;
-      this.id = this.data.id;
+      mapTilesetLoader.start().on("complete", (event) => {
 
-      let imageUrls = [];
-      this.data.tilesets.forEach((element) => {
-        imageUrls.push(`map/${element.image}`);
-      });
-
-      Sprite.Loader.create()
-        .add(imageUrls)
-        .start()
-        .on("complete", (event) => {
-
-        this.sheet = new Sprite.Sheet({
+        privates.sheet = new Sprite.Sheet({
           images: event.data,
-          width: this.data.tilewidth,
-          height: this.data.tileheight,
+          width: privates.data.tilewidth,
+          height: privates.data.tileheight,
         });
 
-        this.waterMap = [];
-        this.waterMap.length = this.data.height;
-        for(let i = 0; i < this.waterMap.length; i++) {
-          this.waterMap[i] = [];
-          this.waterMap[i].length = this.data.width;
-        }
-
+        // 水地图，用来进行hitWater测试
+        privates.waterMap = new Map();
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
-        this.blockedMap = [];
-        this.blockedMap.length = this.data.height;
-        for(let i = 0; i < this.blockedMap.length; i++) {
-          this.blockedMap[i] = [];
-          this.blockedMap[i].length = this.data.width;
-        }
-
-        this.autoHideMap = [];
-        this.autoHideMap.length = this.data.height;
-        for(let i = 0; i < this.autoHideMap.length; i++) {
-          this.autoHideMap[i] = [];
-          this.autoHideMap[i].length = this.data.width;
-        }
+        privates.blockedMap = new Map();
+        // 某些层在玩家走到其中后会自动隐藏
+        privates.autoHideMap = new Map();
 
         // 保存这个地图的所有地图块
-        this.layers = [];
+        privates.layers = [];
 
-        this.data.layers.forEach((element, index, array) => {
+        privates.data.layers.forEach((element, index, array) => {
           let layer = element;
 
           if (layer.name == "block") {
@@ -102,8 +86,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (let x = 0; x < layer.width; x++) {
                   let position = x + y * layer.width;
                   let picture = layer.data[position] - 1;
-                  if (picture >= 0 && this.blockedMap[y][x] != true) {
-                    this.blockedMap[y][x] = true;
+                  if (picture >= 0) {
+                    privates.blockedMap.set(x*10000+y, true);
                   }
                 }
               }
@@ -118,8 +102,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 for (let x = 0; x < layer.width; x++) {
                   let position = x + y * layer.width;
                   let picture = layer.data[position] - 1;
-                  if (picture >= 0 && this.waterMap[y][x] != true) {
-                    this.waterMap[y][x] = true;
+                  if (picture >= 0) {
+                    privates.waterMap.set(x*10000+y, true);
                   }
                 }
               }
@@ -131,7 +115,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             let layerObj = new Sprite.Container();
             layerObj.name = layer.name;
 
-            this.layers.push(layerObj);
+            privates.layers.push(layerObj);
 
             if (layer.hasOwnProperty("data")) { // 渲染普通层
               for (let y = 0; y < layer.height; y++) {
@@ -139,12 +123,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   let position = x + y * layer.width;
                   let picture = layer.data[position] - 1;
                   if (picture >= 0) {
-                    let frame = this.sheet.getFrame(picture);
-                    frame.x = x * this.data.tilewidth;
-                    frame.y = y * this.data.tileheight;
+                    let frame = privates.sheet.getFrame(picture);
+                    frame.x = x * privates.data.tilewidth;
+                    frame.y = y * privates.data.tileheight;
 
-                    if (layer.hasOwnProperty("properties") && layer.properties.hasOwnProperty("autohide")) {
-                      this.autoHideMap[y][x] = layer.properties.autohide;
+                    if (layer.properties && layer.properties.autohide) {
+                      privates.autoHideMap.set(x*10000+y, layer.properties.autohide);
                     }
 
                     layerObj.appendChild(frame);
@@ -159,23 +143,76 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         });
 
-        this.width = this.data.width * this.data.tilewidth;
-        this.height = this.data.height * this.data.tileheight;
-
-        // 发送完成事件，第二个参数代表一次性事件
+        // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         this.emit("complete", true);
       });
 
     }
 
+    get data () {
+      return internal(this).data;
+    }
+
+    set data (value) {
+      throw new Error("Game.Map.data readonly");
+    }
+
+    get id () {
+      return internal(this).id;
+    }
+
+    set id (value) {
+      throw new Error("Game.Map.id readonly");
+    }
+
+    get width () {
+      return this.data.width * this.data.tilewidth;
+    }
+
+    set width (value) {
+      throw new Error("Game.Map.width readonly");
+    }
+
+    get height () {
+      return this.data.height * this.data.tileheight;
+    }
+
+    set height (value) {
+      throw new Error("Game.Map.height readonly");
+    }
+
+    get col () { // width / tilewidth
+      return this.data.width;
+    }
+
+    set col (value) {
+      throw new Error("Game.Map.col readonly");
+    }
+
+    get row () { // height / tileheight
+      return this.data.height
+    }
+
+    set row (value) {
+      throw new Error("Game.Map.row readonly");
+    }
+
+    get minimap () {
+      return internal(this).minimap;
+    }
+
+    set minimap (value) {
+      throw new Error("Game.Map.minimap readonly");
+    }
+
     // 返回某个坐标点所在的地格
     tile (x, y) {
-      if (x && typeof y == "undefined" && typeof x.x == "number" && typeof x.y == "number") {
+      if (x && typeof y == "undefined" && Number.isFinite(x.x) && Number.isFinite(x.y)) {
         return {
           x: Math.floor(x.x / this.data.tilewidth),
           y: Math.floor(x.y / this.data.tileheight)
         };
-      } else if (typeof x == "number" && typeof y == "number") {
+      } else if (Number.isFinite(x) && Number.isFinite(y)) {
         return {
           x: Math.floor(x / this.data.tilewidth),
           y: Math.floor(y / this.data.tileheight)
@@ -188,31 +225,58 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 绘制图片，会改变Game.currentArea
     draw () {
+      let privates = internal(this);
       Game.layers.mapLayer.clear();
 
-      this.layers.forEach((element, index) => {
-        let layerData = this.data.layers[index];
+      let autohideLayer = {};
 
-        if (layerData.hasOwnProperty("visible") && layerData.visible == false) {
-          element.visible = false;
-        }
-        if (layerData.hasOwnProperty("opacity") && typeof layerData.opacity == "number") {
+      privates.layers.forEach((element, index) => {
+        let layerData = privates.data.layers[index];
+
+        if (Number.isFinite(layerData.opacity)) {
           element.alpha = layerData.opacity;
         }
 
-        if (layerData.hasOwnProperty("properties") && layerData.properties.hasOwnProperty("autohide")) {
-          Game.layers.mapHideLayer.appendChild(element);
+        if (layerData.properties && layerData.properties.autohide) {
+          let group = layerData.properties.autohide;
+          if (autohideLayer[group]) {
+            autohideLayer[group].push(element);
+          } else {
+            autohideLayer[group] = [element];
+          }
         } else {
           Game.layers.mapLayer.appendChild(element);
         }
 
       });
 
-      Game.layers.mapLayer.cache(0, 0, this.width, this.height);
-      this.minimap = new Image();
-      this.minimap.src = Game.layers.mapLayer.cacheCanvas.toDataURL();
+      for (let key in autohideLayer) {
+        let container = new Sprite.Container();
+        container.name = key;
+        for (let element of autohideLayer[key]) {
+          container.appendChild(element);
+        }
+        container.cache(0, 0, this.width, this.height);
+        Game.layers.mapHideLayer.appendChild(container);
+      }
 
-      if (this.data.bgm) {
+      Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+      Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
+
+      let minimap = document.createElement("canvas");
+      minimap.width = this.col * 8; // 原地图的四倍
+      minimap.height = this.row * 8;
+      let minimapContext = minimap.getContext("2d");
+      minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas,
+        0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+      minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas,
+        0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+
+      privates.minimap = minimap;
+
+      Game.layers.mapHideLayer.clearCache();
+
+      if (privates.data.bgm) {
         // set loop = -1, 无限循环
         //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
         //bgm.setVolume(0.2);

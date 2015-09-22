@@ -1,12 +1,7 @@
 {
   "name": "斯塔特南部森林",
   "bgm": "Dance",
-  "entry": {
-    "x": 14,
-    "y": 2
-  },
-  "actors":
-  [
+  "actors": [
     {
       "id": "bat.purple",
       "x": 11,
@@ -27,8 +22,7 @@
   "touch": [
 
   ],
-  "onto":
-  [
+  "onto": [
     {
       "x": 14,
       "y": 0,

@@ -17,7 +17,7 @@
   "animations": {
     "attackdown": {
       "frames": [0, 1, 2],
-      "speed": 20,
+      "speed": 40,
       "next": "",
       "centerX": 0,
       "centerY": 65,
@@ -25,7 +25,7 @@
     },
     "attackleft": {
       "frames": [3, 4, 5],
-      "speed": 20,
+      "speed": 40,
       "next": "",
       "centerX": 15,
       "centerY": 45,
@@ -33,7 +33,7 @@
     },
     "attackright": {
       "frames": [6, 7, 8],
-      "speed": 20,
+      "speed": 40,
       "next": "",
       "centerX": 50,
       "centerY": 45,
@@ -41,7 +41,7 @@
     },
     "attackup": {
       "frames": [9, 10, 11],
-      "speed": 20,
+      "speed": 40,
       "next": "",
       "centerX": 0,
       "centerY": 30,

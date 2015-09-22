@@ -1,4 +1,8 @@
 
+* {
+  font-family: gamefont;
+}
+
 html, body {
   overflow: hidden;
   margin: 0;
@@ -15,9 +19,27 @@ html, body {
   user-select: none;
 }
 
-/* 去掉按钮选中时的边框（尤其在chrome中） */
-button:focus, img:focus {
+
+
+/**
+ * 尝试对抗css3 transform scale 导致的图片和文字不锐利
+ * https://developer.mozilla.org/en-US/docs/Web/CSS/font-smooth?redirectlocale=en-US&redirectslug=CSS%2Ffont-smooth
+ * http://stackoverflow.com/questions/14677490/blurry-text-after-using-css-transform-scale-in-chrome
+ */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 去掉按钮选中时的边框 */
+button {
   outline: 0;
+}
+button:hover, button:active, button:focus {
+  outline: none;
+}
+button::-moz-focus-inner {
+  border: 0;
 }
 
 .game-window {
