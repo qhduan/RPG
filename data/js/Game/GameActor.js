@@ -679,8 +679,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        var width = Game.area.map.data.width;
-        var height = Game.area.map.data.height;
+        var width = Game.area.map.col;
+        var height = Game.area.map.row;
 
         var destPosition = {
           x: x,
@@ -690,10 +690,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var path = null;
 
         if (destBlocked == false) {
+          console.time("astar");
           path = Game.Astar.path(function (x, y) {
             return _this6.checkCollision(x, y);
           }, width, height, { x: this.x, y: this.y }, // 角色现在位置
           destPosition); // 目的地
+          console.timeEnd("astar");
         }
 
         // 可能因为指定x,y被阻挡，尝试寻路到指定x,y的四个邻接地点
@@ -755,9 +757,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               for (var _iterator4 = otherChoice[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
                 var element = _step4.value;
 
+                console.time("astar");
                 path = Game.Astar.path(function (x, y) {
                   return _this6.checkCollision(x, y);
                 }, width, height, { x: this.x, y: this.y }, { x: element.x, y: element.y });
+                console.timeEnd("astar");
                 if (path) {
                   // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
                   destPosition = element;

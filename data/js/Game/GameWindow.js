@@ -465,3 +465,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     GameWindowResize();
   });
 })();
+//# sourceMappingURL=GameWindow.js.map

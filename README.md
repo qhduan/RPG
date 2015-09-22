@@ -6,27 +6,11 @@ Created by http://qhduan.com
 
 游戏引擎使用作者自己开发的Sprite引擎，使用webgl或canvas作为游戏后端
 
-游戏将支持多平台，已经测试的平台包括：
-- windows(node-webkit，firefox，chrome)
-- linux(node-webkit，firefox，chrome)
-- android(cordova, chrome)
+世界观： https://github.com/qhduan/RPG/wiki/%E4%B8%96%E7%95%8C%E8%A7%82
 
-在线测试网址：
-http://qhduan.github.io/RPG/
-注意，因为游戏尚在开发阶段，所以很多图片资源尚未优化合并，js代码也尚未合并uglify，所以打开速度可能非常慢，但是不影响运行速度
+游戏操作： https://github.com/qhduan/RPG/wiki/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C
 
-本地打开方式：
-
-方法1：下载项目，只需要项目中的data目录，然后下载node-webkit(http://nwjs.io/)，使用
-windows: nw.exe 游戏目录/data
-linux: nw 游戏目录/data
-
-方法2：下载项目，用firefox直接打开项目data目录下的index.html文件
-注：这种方法可能只支持firefox，因为chrome的权限控制比较严格，会出错，IE未测试，应该不行。还有游戏存档功能可能也会有影响
-
-方法3： 随便使用一种网页服务，例如python
-安装python，在游戏目录的data目录下，运行“python -m SimpleHTTPServer”命令，然后打开浏览器，并进入地址 http://localhost:8000/
-
+角色信息：　https://github.com/qhduan/RPG/wiki/%E8%A7%92%E8%89%B2%E4%BF%A1%E6%81%AF
 
 ## 游戏特性
 
@@ -63,3 +47,33 @@ babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit
 
 Most resources are from OpenGameArt.org (http://opengameart.org)
 I will list the detail later, thanks
+
+### 测试游戏
+
+游戏发展还在非常原始的阶段，但是已经可以进行简单测试，需要一定动手能力
+
+游戏将支持多平台，已经测试的平台包括：
+- windows(node-webkit，firefox，chrome)
+- linux(node-webkit，firefox，chrome)
+- android(cordova, chrome)
+
+在线测试网址：
+http://qhduan.github.io/RPG/
+
+注意，因为游戏尚在开发阶段，所以很多图片资源尚未优化合并，js代码也尚未合并uglify，所以打开速度可能非常慢，但是不影响运行速度
+
+本地打开方式：
+
+方法1：下载项目，只需要项目中的data目录，然后下载node-webkit( http://nwjs.io/ )，使用
+
+windows: nw.exe 游戏目录/data
+
+linux: nw 游戏目录/data
+
+方法2：下载项目，用firefox直接打开项目data目录下的index.html文件
+
+注：这种方法可能只支持firefox，因为chrome的权限控制比较严格，会出错，IE未测试，应该不行。还有游戏存档功能可能也会有影响
+
+方法3： 随便使用一种网页服务，例如python
+
+安装python，在游戏目录的data目录下，运行“python -m SimpleHTTPServer”命令，然后打开浏览器，并进入地址 http://localhost:8000/

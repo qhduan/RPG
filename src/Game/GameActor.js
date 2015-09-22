@@ -740,8 +740,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      let width = Game.area.map.data.width;
-      let height = Game.area.map.data.height;
+      let width = Game.area.map.col;
+      let height = Game.area.map.row;
 
       let destPosition = {
         x: x,
@@ -751,6 +751,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let path = null;
 
       if (destBlocked == false) {
+        console.time("astar");
         path = Game.Astar.path((x, y) => {
             return this.checkCollision(x, y);
           },
@@ -758,6 +759,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           height,
           {x: this.x, y: this.y}, // 角色现在位置
           destPosition); // 目的地
+        console.timeEnd("astar");
       }
 
       // 可能因为指定x,y被阻挡，尝试寻路到指定x,y的四个邻接地点
@@ -790,12 +792,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
 
           for (let element of otherChoice) {
+            console.time("astar");
             path = Game.Astar.path((x, y) => {
                 return this.checkCollision(x, y);
               }, width, height,
               {x: this.x, y: this.y},
               {x: element.x, y: element.y}
             );
+            console.timeEnd("astar");
             if (path) {
               // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
               destPosition = element;

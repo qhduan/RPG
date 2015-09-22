@@ -137,3 +137,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       */
   }); // Game.oninit
 })();
+//# sourceMappingURL=GameInput.js.map
