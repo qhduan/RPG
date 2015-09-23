@@ -54,9 +54,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(GameInput, null, [{
-      key: "clearDestIcon",
-      value: function clearDestIcon() {
+      key: "clearDest",
+      value: function clearDest() {
         destIcon.visible = false;
+      }
+    }, {
+      key: "setDest",
+      value: function setDest(x, y) {
+        destIcon.x = x * 32 + 16;
+        destIcon.y = y * 32 + 16;
+        destIcon.visible = true;
       }
     }, {
       key: "init",
@@ -87,17 +94,19 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
 
           if (Game.hero.x != data.x || Game.hero.y != data.y) {
-            var destPosition = Game.hero.goto(data.x, data.y, "run", function () {
+            Game.hero.goto(data.x, data.y, "run", function () {
               destIcon.visible = false;
               if (Game.hintObject && Game.hintObject.heroUse) {
                 Game.hintObject.heroUse();
               }
             });
+            /*
             if (destPosition) {
               destIcon.x = data.x * 32 + 16;
               destIcon.y = data.y * 32 + 16;
               destIcon.visible = true;
             }
+            */
           }
         });
 

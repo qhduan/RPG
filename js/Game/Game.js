@@ -214,18 +214,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         });
 
-        setInterval(function () {
-          if (Game.paused == false) {
-            Game.stage.update();
-          }
-        }, 0);
         /*
-        Sprite.Ticker.on("tick", function () {
+        setInterval(() => {
         if (Game.paused == false) {
         Game.stage.update();
         }
-        });
+        }, 0);
         */
+        Sprite.Ticker.on("tick", function () {
+          if (Game.paused == false) {
+            Game.stage.update();
+          }
+        });
 
         /*
         let updateNext = false;

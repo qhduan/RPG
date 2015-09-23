@@ -408,3 +408,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteContainer;
   })(Sprite.Display));
 })();
+//# sourceMappingURL=SpriteContainer.js.map
