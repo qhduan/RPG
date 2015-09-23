@@ -26,24 +26,32 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.assign("Map", class GameMap extends Sprite.Event {
 
     hitTest (x, y) {
-      if (internal(this).blockedMap.has(x*10000+y)) {
+      if (internal(this).blockedMap[x*10000+y]) {
         return true;
       }
       return false;
     }
 
     hitWater (x, y) {
-      if (internal(this).waterMap.has(x*10000+y)) {
+      if (internal(this).waterMap[x*10000+y]) {
         return true;
       }
       return false;
     }
 
     hitAutoHide (x, y) {
-      if (internal(this).autoHideMap.has(x*10000+y)) {
-        return internal(this).autoHideMap.get(x*10000+y);
+      if (internal(this).autoHideMap[x*10000+y]) {
+        return internal(this).autoHideMap[x*10000+y];
       }
       return null;
+    }
+
+    get blockedMap () {
+      return internal(this).blockedMap;
+    }
+
+    set blockedMap (value) {
+      throw new Error("Game.Map.blockedMap readonly");
     }
 
     constructor (mapData) {
@@ -67,11 +75,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
 
         // 水地图，用来进行hitWater测试
-        privates.waterMap = new Map();
+        privates.waterMap = {};
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
-        privates.blockedMap = new Map();
+        privates.blockedMap = {};
         // 某些层在玩家走到其中后会自动隐藏
-        privates.autoHideMap = new Map();
+        privates.autoHideMap = {};
 
         // 保存这个地图的所有地图块
         privates.layers = [];
@@ -87,7 +95,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   let position = x + y * layer.width;
                   let picture = layer.data[position] - 1;
                   if (picture >= 0) {
-                    privates.blockedMap.set(x*10000+y, true);
+                    privates.blockedMap[x*10000+y] = true;
                   }
                 }
               }
@@ -103,7 +111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   let position = x + y * layer.width;
                   let picture = layer.data[position] - 1;
                   if (picture >= 0) {
-                    privates.waterMap.set(x*10000+y, true);
+                    privates.waterMap[x*10000+y] = true;
                   }
                 }
               }
@@ -128,7 +136,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                     frame.y = y * privates.data.tileheight;
 
                     if (layer.properties && layer.properties.autohide) {
-                      privates.autoHideMap.set(x*10000+y, layer.properties.autohide);
+                      privates.autoHideMap[x*10000+y] = layer.properties.autohide;
                     }
 
                     layerObj.appendChild(frame);

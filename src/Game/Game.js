@@ -197,18 +197,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
+                  /*
       setInterval(() => {
         if (Game.paused == false) {
           Game.stage.update();
         }
       }, 0);
-                  /*
+       */
       Sprite.Ticker.on("tick", function () {
         if (Game.paused == false) {
           Game.stage.update();
         }
       });
-       */
 
       /*
       let updateNext = false;

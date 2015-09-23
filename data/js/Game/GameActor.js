@@ -646,11 +646,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         state = state || "run";
         callback = callback ? callback : function () {};
 
-        if (this.going) {
+        if (this.going || this.gettingPath) {
           this.goingNext = function () {
             _this6.goto(x, y, state, callback);
           };
-          return "wait";
+          return;
         }
 
         var destBlocked = this.checkCollision(x, y);
@@ -679,184 +679,168 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        var width = Game.area.map.col;
-        var height = Game.area.map.row;
-
-        var destPosition = {
-          x: x,
-          y: y
-        };
-        var after = null;
-        var path = null;
-
-        if (destBlocked == false) {
-          console.time("astar");
-          path = Game.Astar.path(function (x, y) {
-            return _this6.checkCollision(x, y);
-          }, width, height, { x: this.x, y: this.y }, // 角色现在位置
-          destPosition); // 目的地
-          console.timeEnd("astar");
+        var positionChoice = [];
+        if (this.checkCollision(x, y - 1) == false) {
+          positionChoice.push({ x: x, y: y - 1, after: "down" });
+        }
+        if (this.checkCollision(x, y + 1) == false) {
+          positionChoice.push({ x: x, y: y + 1, after: "up" });
+        }
+        if (this.checkCollision(x - 1, y) == false) {
+          positionChoice.push({ x: x - 1, y: y, after: "right" });
+        }
+        if (this.checkCollision(x + 1, y) == false) {
+          positionChoice.push({ x: x + 1, y: y, after: "left" });
         }
 
-        // 可能因为指定x,y被阻挡，尝试寻路到指定x,y的四个邻接地点
-        if (!path) {
-          var otherChoice = [];
-          if (this.checkCollision(x, y - 1) == false) {
-            otherChoice.push({ x: x, y: y - 1, after: "down" });
-          }
-          if (this.checkCollision(x, y + 1) == false) {
-            otherChoice.push({ x: x, y: y + 1, after: "up" });
-          }
-          if (this.checkCollision(x - 1, y) == false) {
-            otherChoice.push({ x: x - 1, y: y, after: "right" });
-          }
-          if (this.checkCollision(x + 1, y) == false) {
-            otherChoice.push({ x: x + 1, y: y, after: "left" });
-          }
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
-          if (otherChoice.length > 0) {
-            var _iteratorNormalCompletion3 = true;
-
-            // 找到四个邻接地址中最近的
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
-
-            try {
-              for (var _iterator3 = otherChoice[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var element = _step3.value;
-
-                // 计算地址距离
-                element.distance = this.distance(element.x, element.y);
-              }
-            } catch (err) {
-              _didIteratorError3 = true;
-              _iteratorError3 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-                  _iterator3["return"]();
-                }
-              } finally {
-                if (_didIteratorError3) {
-                  throw _iteratorError3;
-                }
-              }
+        try {
+          for (var _iterator3 = positionChoice[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var element = _step3.value;
+            // 计算地址距离
+            element.distance = this.distance(element.x, element.y);
+          }
+        } catch (err) {
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+              _iterator3["return"]();
             }
+          } finally {
+            if (_didIteratorError3) {
+              throw _iteratorError3;
+            }
+          }
+        }
 
-            if (otherChoice.length > 1) {
-              otherChoice.sort(function (a, b) {
-                return a.distance - b.distance;
+        if (positionChoice.length > 1) {
+          // 找到四个邻接地址中最近的
+          positionChoice.sort(function (a, b) {
+            return a.distance - b.distance;
+          });
+        }
+
+        if (this.checkCollision(x, y) == false) {
+          positionChoice.splice(0, 0, { x: x, y: y });
+        }
+
+        var TestPosition = function TestPosition() {
+          if (positionChoice.length) {
+            (function () {
+              var dest = positionChoice[0]; // 保存第一个选项
+              positionChoice.splice(0, 1); // 去掉第一个
+              // 用WebWorker异步调用寻路算法
+              _this6.gettingPath = true;
+              //console.time("astar async");
+              Game.Astar.getPath({ x: _this6.x, y: _this6.y }, dest, function (result) {
+                _this6.gettingPath = false;
+                if (_this6.goingNext) {
+                  var c = _this6.goingNext;
+                  _this6.goingNext = null;
+                  _this6.going = false;
+                  if (_this6 == Game.hero) {
+                    Game.Input.clearDest();
+                  }
+                  c();
+                  return;
+                }
+                if (_this6.going) {
+                  return;
+                }
+                //console.timeEnd("astar async");
+                if (result) {
+                  if (_this6 == Game.hero) {
+                    Game.Input.setDest(dest.x, dest.y);
+                  }
+                  _this6.gotoPath(result, state, dest.after, callback);
+                } else {
+                  TestPosition();
+                }
               });
-            }
-
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
-
-            try {
-              for (var _iterator4 = otherChoice[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var element = _step4.value;
-
-                console.time("astar");
-                path = Game.Astar.path(function (x, y) {
-                  return _this6.checkCollision(x, y);
-                }, width, height, { x: this.x, y: this.y }, { x: element.x, y: element.y });
-                console.timeEnd("astar");
-                if (path) {
-                  // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
-                  destPosition = element;
-                  after = element.after;
-                  break;
-                }
-              }
-            } catch (err) {
-              _didIteratorError4 = true;
-              _iteratorError4 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-                  _iterator4["return"]();
-                }
-              } finally {
-                if (_didIteratorError4) {
-                  throw _iteratorError4;
-                }
-              }
-            }
+            })();
           }
-        }
+        };
 
-        if (path && path.length && path.length > 1) {
-          var _ret2 = (function () {
-            _this6.going = true;
-            var index = 1;
-            var Walk = function Walk() {
-              if (Game.paused) {
-                _this6.stop();
-                _this6.going = false;
-                Game.Input.clearDestIcon();
-                return;
+        TestPosition();
+      }
+    }, {
+      key: "gotoPath",
+      value: function gotoPath(path, state, after, callback) {
+        var _this7 = this;
+
+        this.going = true;
+        var index = 1;
+        var Walk = function Walk() {
+          if (Game.paused) {
+            _this7.stop();
+            _this7.going = false;
+            if (_this7 == Game.hero) {
+              Game.Input.clearDest();
+            }
+            return;
+          }
+          if (_this7.goingNext) {
+            var c = _this7.goingNext;
+            _this7.goingNext = null;
+            _this7.going = false;
+            if (_this7 == Game.hero) {
+              Game.Input.clearDest();
+            }
+            c();
+            return;
+          }
+
+          if (index < path.length) {
+            var current = { x: _this7.x, y: _this7.y };
+            var dest = path[index];
+            var direction = null;
+            if (dest.x == current.x) {
+              if (dest.y > current.y) {
+                direction = "down";
+              } else if (dest.y < current.y) {
+                direction = "up";
               }
-              if (_this6.goingNext) {
-                var c = _this6.goingNext;
-                _this6.goingNext = null;
-                _this6.going = false;
-                c();
-              } else if (index < path.length) {
-                var current = { x: _this6.x, y: _this6.y };
-                var dest = path[index];
-                var direction = null;
-                if (dest.x == current.x) {
-                  if (dest.y > current.y) {
-                    direction = "down";
-                  } else if (dest.y < current.y) {
-                    direction = "up";
-                  }
-                } else if (dest.y == current.y) {
-                  if (dest.x > current.x) {
-                    direction = "right";
-                  } else if (dest.x < current.x) {
-                    direction = "left";
-                  }
-                }
-
-                if (direction) {
-                  var currentDirection = _this6.direction;
-                  if (direction != currentDirection) {
-                    _this6.stop();
-                    _this6.face(direction);
-                  }
-                  var goResult = _this6.go(state, direction, function () {
-                    return Walk();
-                  });
-                  if (goResult != true) {
-                    _this6.going = false;
-                  }
-                  index++;
-                }
-              } else {
-                // 正常结束
-                if (after) {
-                  _this6.stop();
-                  _this6.face(after);
-                }
-                _this6.going = false;
-                callback();
+            } else if (dest.y == current.y) {
+              if (dest.x > current.x) {
+                direction = "right";
+              } else if (dest.x < current.x) {
+                direction = "left";
               }
-            };
-            Walk();
+            }
 
-            return {
-              v: destPosition
-            };
-          })();
-
-          if (typeof _ret2 === "object") return _ret2.v;
-        } else {
-          // 实在没找到路
-          // console.log("noway");
-          return null;
-        }
+            if (direction) {
+              var currentDirection = _this7.direction;
+              if (direction != currentDirection) {
+                _this7.stop();
+                _this7.face(direction);
+              }
+              var goResult = _this7.go(state, direction, function () {
+                return Walk();
+              });
+              if (goResult != true) {
+                _this7.going = false;
+              }
+              index++;
+            }
+          } else {
+            // 正常结束
+            if (after) {
+              _this7.stop();
+              _this7.face(after);
+            }
+            if (_this7 == Game.hero) {
+              Game.Input.clearDest();
+            }
+            _this7.going = false;
+            callback();
+          }
+        };
+        Walk();
       }
     }, {
       key: "face",
@@ -884,15 +868,48 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 角色碰撞
         if (Game.area.actors) {
+          var _iteratorNormalCompletion4 = true;
+          var _didIteratorError4 = false;
+          var _iteratorError4 = undefined;
+
+          try {
+            for (var _iterator4 = Game.area.actors[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+              var actor = _step4.value;
+
+              if (actor != this && actor.hitTest(x, y)) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError4 = true;
+            _iteratorError4 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                _iterator4["return"]();
+              }
+            } finally {
+              if (_didIteratorError4) {
+                throw _iteratorError4;
+              }
+            }
+          }
+        }
+        return false;
+      }
+    }, {
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
           var _iteratorNormalCompletion5 = true;
           var _didIteratorError5 = false;
           var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator5 = Game.area.actors[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var actor = _step5.value;
+            for (var _iterator5 = this.data.hitArea[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var p = _step5.value;
 
-              if (actor != this && actor.hitTest(x, y)) {
+              if (x == this.x + p[0] && y == this.y + p[1]) {
                 return true;
               }
             }
@@ -910,39 +927,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           }
-        }
-        return false;
-      }
-    }, {
-      key: "hitTest",
-      value: function hitTest(x, y) {
-        if (this.data.hitArea && this.data.hitArea instanceof Array) {
-          var _iteratorNormalCompletion6 = true;
-          var _didIteratorError6 = false;
-          var _iteratorError6 = undefined;
-
-          try {
-            for (var _iterator6 = this.data.hitArea[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-              var p = _step6.value;
-
-              if (x == this.x + p[0] && y == this.y + p[1]) {
-                return true;
-              }
-            }
-          } catch (err) {
-            _didIteratorError6 = true;
-            _iteratorError6 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-                _iterator6["return"]();
-              }
-            } finally {
-              if (_didIteratorError6) {
-                throw _iteratorError6;
-              }
-            }
-          }
 
           return false;
         } else {
@@ -953,7 +937,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "go",
       value: function go(state, direction) {
-        var _this7 = this;
+        var _this8 = this;
 
         var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
@@ -976,7 +960,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.face(direction);
           // wait 4 ticks
           Sprite.Ticker.after(4, function () {
-            _this7.walking = false;
+            _this8.walking = false;
           });
           return false;
         }
@@ -986,12 +970,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (this.checkCollision(newPosition.x, newPosition.y) == false) {
           var _ret3 = (function () {
             // 没碰撞，开始行走
-            _this7.walking = true;
+            _this8.walking = true;
 
             // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
             // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
-            _this7.data.x = newPosition.x;
-            _this7.data.y = newPosition.y;
+            _this8.data.x = newPosition.x;
+            _this8.data.y = newPosition.y;
 
             // walk
             // 这些数组和必须是32，为了保证一次go行走32个像素
@@ -1007,10 +991,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
             Sprite.Ticker.whiles(times, function (last) {
               if (last) {
-                _this7.x = newPosition.x;
-                _this7.y = newPosition.y;
-                _this7.walking = false;
-                _this7.emit("change");
+                _this8.x = newPosition.x;
+                _this8.y = newPosition.y;
+                _this8.walking = false;
+                _this8.emit("change");
 
                 if (callback) {
                   //Sprite.Ticker.after(2, function () {
@@ -1020,23 +1004,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               } else {
                   switch (direction) {
                     case "up":
-                      _this7.sprite.y -= speed.pop();
+                      _this8.sprite.y -= speed.pop();
                       break;
                     case "down":
-                      _this7.sprite.y += speed.pop();
+                      _this8.sprite.y += speed.pop();
                       break;
                     case "left":
-                      _this7.sprite.x -= speed.pop();
+                      _this8.sprite.x -= speed.pop();
                       break;
                     case "right":
-                      _this7.sprite.x += speed.pop();
+                      _this8.sprite.x += speed.pop();
                       break;
                   }
                 }
             });
 
             // 播放行走动画
-            _this7.play(state + direction, 1);
+            _this8.play(state + direction, 1);
             return {
               v: true
             };
@@ -1226,4 +1210,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
-//# sourceMappingURL=GameActor.js.map

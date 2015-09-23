@@ -707,11 +707,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       state = state || "run";
       callback = callback ? callback : function () {};
 
-      if (this.going) {
+      if (this.going || this.gettingPath) {
         this.goingNext = () => {
           this.goto(x, y, state, callback);
         };
-        return "wait";
+        return;
       }
 
       let destBlocked = this.checkCollision(x, y);
@@ -740,139 +740,139 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      let width = Game.area.map.col;
-      let height = Game.area.map.row;
-
-      let destPosition = {
-        x: x,
-        y: y
-      };
-      let after = null;
-      let path = null;
-
-      if (destBlocked == false) {
-        console.time("astar");
-        path = Game.Astar.path((x, y) => {
-            return this.checkCollision(x, y);
-          },
-          width,
-          height,
-          {x: this.x, y: this.y}, // 角色现在位置
-          destPosition); // 目的地
-        console.timeEnd("astar");
+      let positionChoice = [];
+      if (this.checkCollision(x, y-1) == false) {
+        positionChoice.push({x: x, y: y-1, after: "down"});
+      }
+      if (this.checkCollision(x, y+1) == false) {
+        positionChoice.push({x: x, y: y+1, after: "up"});
+      }
+      if (this.checkCollision(x-1, y) == false) {
+        positionChoice.push({x: x-1, y: y, after: "right"});
+      }
+      if (this.checkCollision(x+1, y) == false) {
+        positionChoice.push({x: x+1, y: y, after: "left"});
       }
 
-      // 可能因为指定x,y被阻挡，尝试寻路到指定x,y的四个邻接地点
-      if (!path) {
-        let otherChoice = [];
-        if (this.checkCollision(x, y-1) == false) {
-          otherChoice.push({x: x, y: y-1, after: "down"});
-        }
-        if (this.checkCollision(x, y+1) == false) {
-          otherChoice.push({x: x, y: y+1, after: "up"});
-        }
-        if (this.checkCollision(x-1, y) == false) {
-          otherChoice.push({x: x-1, y: y, after: "right"});
-        }
-        if (this.checkCollision(x+1, y) == false) {
-          otherChoice.push({x: x+1, y: y, after: "left"});
-        }
-
-        if (otherChoice.length > 0) {
-          for (let element of otherChoice) {
-            // 计算地址距离
-            element.distance = this.distance(element.x, element.y);
-          }
-
-          // 找到四个邻接地址中最近的
-          if (otherChoice.length > 1) {
-            otherChoice.sort((a, b) => {
-              return a.distance - b.distance;
-            });
-          }
-
-          for (let element of otherChoice) {
-            console.time("astar");
-            path = Game.Astar.path((x, y) => {
-                return this.checkCollision(x, y);
-              }, width, height,
-              {x: this.x, y: this.y},
-              {x: element.x, y: element.y}
-            );
-            console.timeEnd("astar");
-            if (path) {
-              // 如果找到路径，则不再继续找（这种找法并没找到最优，最优应该是四个path都测试寻找最短）
-              destPosition = element;
-              after = element.after;
-              break;
-            }
-          }
-        }
-
+      for (let element of positionChoice) { // 计算地址距离
+        element.distance = this.distance(element.x, element.y);
       }
 
-      if (path && path.length && path.length > 1) {
-        this.going = true;
-        let index = 1;
-        let Walk = () => {
-          if (Game.paused) {
-            this.stop();
-            this.going = false;
-            Game.Input.clearDestIcon();
-            return;
-          }
-          if (this.goingNext) {
-            let c = this.goingNext;
-            this.goingNext = null;
-            this.going = false;
-            c();
-          } else if (index < path.length) {
-            let current = {x: this.x, y: this.y};
-            let dest = path[index];
-            let direction = null;
-            if (dest.x == current.x) {
-              if (dest.y > current.y) {
-                direction = "down";
-              } else if (dest.y < current.y) {
-                direction = "up";
-              }
-            } else if (dest.y == current.y) {
-              if (dest.x > current.x) {
-                direction = "right"
-              } else if (dest.x < current.x) {
-                direction = "left";
-              }
-            }
+      if (positionChoice.length > 1) { // 找到四个邻接地址中最近的
+        positionChoice.sort((a, b) => {
+          return a.distance - b.distance;
+        });
+      }
 
-            if (direction) {
-              let currentDirection = this.direction;
-              if (direction != currentDirection) {
-                this.stop();
-                this.face(direction);
+      if (this.checkCollision(x, y) == false) {
+        positionChoice.splice(0, 0, {x: x, y: y});
+      }
+
+      let TestPosition = () => {
+        if (positionChoice.length) {
+          let dest = positionChoice[0]; // 保存第一个选项
+          positionChoice.splice(0, 1); // 去掉第一个
+          // 用WebWorker异步调用寻路算法
+          this.gettingPath = true;
+          //console.time("astar async");
+          Game.Astar.getPath({x: this.x, y: this.y}, dest, (result) => {
+            this.gettingPath = false;
+            if (this.goingNext) {
+              let c = this.goingNext;
+              this.goingNext = null;
+              this.going = false;
+              if (this == Game.hero) {
+                Game.Input.clearDest();
               }
-              let goResult = this.go(state, direction, () => Walk());
-              if (goResult != true) {
-                this.going = false;
-              }
-              index++;
+              c();
+              return;
             }
-          } else { // 正常结束
-            if (after) {
+            if (this.going) {
+              return;
+            }
+            //console.timeEnd("astar async");
+            if (result) {
+              if (this == Game.hero) {
+                Game.Input.setDest(dest.x, dest.y);
+              }
+              this.gotoPath(result, state, dest.after, callback);
+            } else {
+              TestPosition();
+            }
+          });
+        }
+      }
+
+      TestPosition();
+
+    }
+
+    gotoPath (path, state, after, callback) {
+      this.going = true;
+      let index = 1;
+      let Walk = () => {
+        if (Game.paused) {
+          this.stop();
+          this.going = false;
+          if (this == Game.hero) {
+            Game.Input.clearDest();
+          }
+          return;
+        }
+        if (this.goingNext) {
+          let c = this.goingNext;
+          this.goingNext = null;
+          this.going = false;
+          if (this == Game.hero) {
+            Game.Input.clearDest();
+          }
+          c();
+          return;
+        }
+
+        if (index < path.length) {
+          let current = {x: this.x, y: this.y};
+          let dest = path[index];
+          let direction = null;
+          if (dest.x == current.x) {
+            if (dest.y > current.y) {
+              direction = "down";
+            } else if (dest.y < current.y) {
+              direction = "up";
+            }
+          } else if (dest.y == current.y) {
+            if (dest.x > current.x) {
+              direction = "right"
+            } else if (dest.x < current.x) {
+              direction = "left";
+            }
+          }
+
+          if (direction) {
+            let currentDirection = this.direction;
+            if (direction != currentDirection) {
               this.stop();
-              this.face(after);
+              this.face(direction);
             }
-            this.going = false;
-            callback();
+            let goResult = this.go(state, direction, () => Walk());
+            if (goResult != true) {
+              this.going = false;
+            }
+            index++;
           }
+        } else { // 正常结束
+          if (after) {
+            this.stop();
+            this.face(after);
+          }
+          if (this == Game.hero) {
+            Game.Input.clearDest();
+          }
+          this.going = false;
+          callback();
         }
-        Walk();
-
-        return destPosition;
-      } else {
-        // 实在没找到路
-        // console.log("noway");
-        return null;
       }
+      Walk();
     }
 
     face (direction) {

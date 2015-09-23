@@ -45,8 +45,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.assign("Input", class GameInput {
 
-    static clearDestIcon () {
+    static clearDest () {
       destIcon.visible = false;
+    }
+
+    static setDest (x, y) {
+      destIcon.x = x * 32 + 16;
+      destIcon.y = y * 32 + 16;
+      destIcon.visible = true;
     }
 
     static init () {
@@ -77,17 +83,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (Game.hero.x != data.x || Game.hero.y != data.y) {
-          let destPosition = Game.hero.goto(data.x, data.y, "run", function () {
+          Game.hero.goto(data.x, data.y, "run", function () {
             destIcon.visible = false;
             if (Game.hintObject && Game.hintObject.heroUse) {
               Game.hintObject.heroUse();
             }
           });
+          /*
           if (destPosition) {
             destIcon.x = data.x * 32 + 16;
             destIcon.y = data.y * 32 + 16;
             destIcon.visible = true;
           }
+          */
         }
       });
 
