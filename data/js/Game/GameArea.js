@@ -26,6 +26,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 加载区域，把括地图，角色，物品
   Game.assign("loadArea", function (id, callback) {
 
+    var preloadSoundEffects = {
+      hurt: "sound/effect/hurt.ogg"
+    };
+
+    for (var key in preloadSoundEffects) {
+      (function (key, url) {
+        Sprite.Loader.create().add(url).start().on("complete", function (event) {
+          Game.sounds[key] = event.data[0];
+        });
+      })(key, preloadSoundEffects[key]);
+    }
+
     var preloadItems = ["bag", "gold"];
     preloadItems = preloadItems.filter(function (element) {
       if (Game.items && Game.items.hasOwnProperty(element)) {

@@ -38,6 +38,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       var privates = internal(this);
       privates.items = {};
       privates.skills = {};
+      privates.sounds = {};
       privates.layers = {};
       privates.windows = {};
       privates.config = { // 保存所有设置（默认设置）
@@ -302,6 +303,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       },
       set: function set(value) {
         throw new Error("Game.skills readonly");
+      }
+    }, {
+      key: "sounds",
+      get: function get() {
+        return internal(this).sounds;
+      },
+      set: function set(value) {
+        throw new Error("Game.sounds readonly");
       }
     }, {
       key: "layers",

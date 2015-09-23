@@ -22,12 +22,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @fileoverview Define the Sprite.Webgl, a renderer, other choice from Sprite.Canvas
  * @author mail@qhduan.com (QH Duan)
  */
-
-
 (function () {
  "use strict";
 
   let internal = Sprite.Namespace();
+
+
+  function isPOT (value) {
+    return value > 0 && ((value - 1) & value) === 0;
+  }
 
   /**
     Use mediump precision in WebGL when possible
@@ -249,11 +252,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         gl.activeTexture(gl.TEXTURE0);
         let texture = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, texture);
+        gl.texImage2D(gl.TEXTURE_2D, 0,  gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, image);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-        gl.texImage2D(gl.TEXTURE_2D, 0,  gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, image);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+        // test width&height is power of 2, eg. 256, 512, 1024
+        // may speed up
+        if (isPOT(image.width) && isPOT(image.height)) {
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+          gl.generateMipmap(gl.TEXTURE_2D);
+        } else {
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        }
+
         gl.bindTexture(gl.TEXTURE_2D, null);
         privates.textureCache.set(image, texture);
         return texture;

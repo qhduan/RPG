@@ -25,14 +25,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <table><tbody><tr><td>
-      <label>请稍等...</label>
+      <label>请稍等...<small id="loadingWindowProgress"></small></label>
     </td></tr></tbody></table>
   `;
 
   win.css = `
     .loadingWindow {
       text-align: center;
-      background-color: gray;
     }
 
     .loadingWindow table, .loadingWindow tbody, .loadingWindow tr, .loadingWindow td {
@@ -43,12 +42,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     .loadingWindow label {
+      padding: 50px;
+      border-radius:25px;
+      background-color: grey;
       font-size: 60px;
     }
   `;
 
+  let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
+
   win.assign("begin", function () {
+    loadingWindowProgress.innerHTML = "";
     Game.windows.loading.show();
+  });
+
+  win.assign("update", function (value) {
+    loadingWindowProgress.innerHTML = value;
   });
 
   win.assign("end", function () {

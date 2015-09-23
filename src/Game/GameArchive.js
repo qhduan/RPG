@@ -96,17 +96,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           heroData.image = heroImage;
           Game.hero = new Game.ActorHero(heroData);
 
+
           console.timeEnd("drawHero");
+          Game.windows.loading.update("20%");
           console.time("hero complete");
 
           Game.hero.on("complete", function () {
 
             console.timeEnd("hero complete");
+            Game.windows.loading.update("40%");
             console.time("area");
 
             Game.loadArea(heroData.area, function (area) {
 
               console.timeEnd("area");
+              Game.windows.loading.update("60%");
               console.time("map");
 
               Game.area = area;
@@ -114,6 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               area.map.draw();
 
               console.timeEnd("map");
+              Game.windows.loading.update("80%");
               console.time("other");
 
               if (!Number.isInteger(Game.hero.data.x) || !Number.isInteger(Game.hero.data.y)) {
@@ -129,6 +134,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   throw new Error("Invalid hero position");
                 }
               }
+
+              Game.windows.loading.update("100%");
 
               area.actors.add(Game.hero);
               Game.hero.draw();

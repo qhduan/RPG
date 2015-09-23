@@ -205,9 +205,12 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (onto.dest) {
             Game.pause();
             Game.windows.loading.begin();
+            Game.windows.loading.update("20%");
             setTimeout(function () {
               Game.clearStage();
+              Game.windows.loading.update("50%");
               Game.loadArea(onto.dest, function (area) {
+                Game.windows.loading.update("80%");
                 Game.area = area;
                 area.map.draw(Game.layers.mapLayer);
                 Game.hero.data.area = onto.dest;
@@ -215,7 +218,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 area.actors.add(Game.hero);
                 Game.hero.x = onto.destx;
                 Game.hero.y = onto.desty;
-                Game.windows.loading.end();
+                Game.windows.loading.update("100%");
+                setTimeout(function () {
+                  Game.windows.loading.end();
+                }, 20);
               });
             }, 20);
           } // dest, aka. door

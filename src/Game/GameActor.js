@@ -556,14 +556,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       let text = null;
+      let state = null;
 
       if (Math.random() < this.data.dodge) { // 闪避了
+        state = "dodge";
         text = new Sprite.Text({
           text: "miss",
           color: color,
           fontSize: 16
         });
       } else if (Math.random() < attacker.data.critical) { // 重击了
+        state = "critical";
         power *= 2;
         text = new Sprite.Text({
           text: "-" + power,
@@ -573,6 +576,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.flash();
         this.decreaseHP(power);
       } else { // 普通击中
+        state = "hit";
         text = new Sprite.Text({
           text: "-" + power,
           color: color,
@@ -580,6 +584,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
         this.flash();
         this.decreaseHP(power);
+      }
+
+      if (state != "dodge" && this != Game.hero) {
+        if (Game.sounds.hurt) {
+          Game.sounds.hurt.load();
+          Game.sounds.hurt.play();
+        }
       }
 
       text.centerX = Math.floor(text.width / 2);
@@ -704,10 +715,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /** 行走到指定地点 */
     goto (x, y, state, callback) {
 
-      state = state || "run";
-      callback = callback ? callback : function () {};
-
-      if (this.going || this.gettingPath) {
+      if (this.going) {
         this.goingNext = () => {
           this.goto(x, y, state, callback);
         };
@@ -721,26 +729,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (this.y - y == -1) {
             this.stop();
             this.face("down");
-            return callback();
+            if (callback) callback();
+            return;
           } else if (this.y - y == 1) {
             this.stop();
             this.face("up");
-            return callback();
+            if (callback) callback();
+            return;
           }
         } else if (this.y == y) {
           if (this.x - x == -1) {
             this.stop();
             this.face("right");
-            return callback();
+            if (callback) callback();
+            return;
           } else if (this.x - x == 1) {
             this.stop();
             this.face("left");
-            return callback();
+            if (callback) callback();
+            return;
           }
         }
       }
 
       let positionChoice = [];
+      // 上下左右
       if (this.checkCollision(x, y-1) == false) {
         positionChoice.push({x: x, y: y-1, after: "down"});
       }
@@ -758,23 +771,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         element.distance = this.distance(element.x, element.y);
       }
 
-      if (positionChoice.length > 1) { // 找到四个邻接地址中最近的
-        positionChoice.sort((a, b) => {
-          return a.distance - b.distance;
-        });
-      }
+      // 按照地址的距离从近到远排序（从小到大）
+      positionChoice.sort((a, b) => {
+        return a.distance - b.distance;
+      });
 
+      // 如果真正的目的地有可能走，插入到第一位，写在这里是因为目的地并不一定是distance最小的
       if (this.checkCollision(x, y) == false) {
         positionChoice.splice(0, 0, {x: x, y: y});
       }
 
+      let index = 0;
+      let otherChoice = false;
+
       let TestPosition = () => {
-        if (positionChoice.length) {
-          let dest = positionChoice[0]; // 保存第一个选项
-          positionChoice.splice(0, 1); // 去掉第一个
-          // 用WebWorker异步调用寻路算法
-          this.gettingPath = true;
-          //console.time("astar async");
+        if (index < positionChoice.length) {
+          let dest = positionChoice[index]; // 保存第一个选项
+          index++;
           Game.Astar.getPath({x: this.x, y: this.y}, dest, (result) => {
             this.gettingPath = false;
             if (this.goingNext) {
@@ -790,7 +803,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if (this.going) {
               return;
             }
-            //console.timeEnd("astar async");
             if (result) {
               if (this == Game.hero) {
                 Game.Input.setDest(dest.x, dest.y);
@@ -800,7 +812,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               TestPosition();
             }
           });
-        }
+        } else {
+          if (otherChoice == false) {
+            otherChoice = true;
+            let otherPositionChoice = [];
+            // 四个角
+            if (this.checkCollision(x-1, y-1) == false) {
+              otherPositionChoice.push({x: x-1, y: y-1, after: "right"});
+            }
+            if (this.checkCollision(x+1, y-1) == false) {
+              otherPositionChoice.push({x: x+1, y: y-1, after: "left"});
+            }
+            if (this.checkCollision(x-1, y+1) == false) {
+              otherPositionChoice.push({x: x-1, y: y+1, after: "right"});
+            }
+            if (this.checkCollision(x+1, y+1) == false) {
+              otherPositionChoice.push({x: x+1, y: y+1, after: "left"});
+            }
+            // 四个远方向
+            if (this.checkCollision(x, y-2) == false) {
+              otherPositionChoice.push({x: x, y: y-2, after: "down"});
+            }
+            if (this.checkCollision(x, y+2) == false) {
+              otherPositionChoice.push({x: x, y: y+2, after: "up"});
+            }
+            if (this.checkCollision(x-2, y) == false) {
+              otherPositionChoice.push({x: x-2, y: y, after: "right"});
+            }
+            if (this.checkCollision(x+2, y) == false) {
+              otherPositionChoice.push({x: x+2, y: y, after: "left"});
+            }
+
+            for (let element of otherPositionChoice) { // 计算地址距离
+              element.distance = this.distance(element.x, element.y);
+            }
+
+            // 按照地址的距离从近到远排序（从小到大）
+            otherPositionChoice.sort((a, b) => {
+              return a.distance - b.distance;
+            });
+
+            if (otherPositionChoice.length) {
+              index = 0;
+              positionChoice = otherPositionChoice;
+              TestPosition();
+            }
+          }
+        } // 再次尝试离地点最近的地点
       }
 
       TestPosition();
@@ -869,7 +927,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.Input.clearDest();
           }
           this.going = false;
-          callback();
+          if (callback) callback();
         }
       }
       Walk();

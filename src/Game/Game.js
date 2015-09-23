@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       privates.items = {};
       privates.skills = {};
+      privates.sounds = {};
       privates.layers = {};
       privates.windows = {};
       privates.config = { // 保存所有设置（默认设置）
@@ -100,6 +101,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set skills (value) {
       throw new Error("Game.skills readonly");
+    }
+
+    get sounds () {
+      return internal(this).sounds;
+    }
+
+    set sounds (value) {
+      throw new Error("Game.sounds readonly");
     }
 
     get layers () {
@@ -204,7 +213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }, 0);
        */
-      Sprite.Ticker.on("tick", function () {
+      Sprite.Ticker.on("tick", () => {
         if (Game.paused == false) {
           Game.stage.update();
         }

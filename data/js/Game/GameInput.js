@@ -74,7 +74,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           cx: 5,
           cy: 5,
           r: 5,
-          stroke: "red"
+          stroke: "red",
+          fill: "green"
         });
         destIcon.visible = false;
         destIcon.centerX = 5;
@@ -146,3 +147,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       */
   }); // Game.oninit
 })();
+//# sourceMappingURL=GameInput.js.map

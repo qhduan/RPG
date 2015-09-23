@@ -62,7 +62,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         cx: 5,
         cy: 5,
         r: 5,
-        stroke: "red"
+        stroke: "red",
+        fill: "green"
       });
       destIcon.visible = false;
       destIcon.centerX = 5;
