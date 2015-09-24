@@ -87,17 +87,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   archiveWindowClose.addEventListener("click", function () {
     win.hide();
+    if (!Game.hero) {
+      Game.windows.main.show();
+    }
   });
 
   win.whenUp(["esc"], function (key) {
     setTimeout(function () {
-      win.hide();
+      archiveWindowClose.click();
     }, 20);
   });
 
   win.assign("open", function () {
 
-    if (Game.hero && Game.windows.main.atop == false) {
+    if (Game.hero) {
       archiveWindowSave.style.visibility = "visible";
     } else {
       archiveWindowSave.style.visibility = "hidden";

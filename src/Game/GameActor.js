@@ -29,6 +29,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.sprite 精灵
   */
   Game.assign("Actor", class Actor extends Sprite.Event {
+
+    static load (id, callback) {
+      Sprite.Loader.create()
+        .add(`actor/${id}.js`)
+        .start()
+        .on("complete", (event) => {
+
+        let actorData = event.data[0]();
+        actorData.id = id;
+
+        let actorObj = null;
+        if (actorData.type == "npc") {
+          actorObj = new Game.ActorNPC(actorData);
+        } else if (actorData.type == "monster") {
+          actorObj = new Game.ActorMonster(actorData);
+        } else if (actorData.type == "ally") {
+          actorObj = new Game.ActorMonster(actorData);
+        } else if (actorData.type == "pet") {
+          actorObj = new Game.ActorMonster(actorData);
+        } else {
+          console.error(actorData.type, actorData);
+          throw new Error("Game.Actor.load invalid actor type");
+        }
+        actorObj.on("complete", () => {
+          if (callback) {
+            callback(actorObj);
+          }
+        });
+      });
+    }
+
+
     constructor (actorData) {
       super();
       let privates = internal(this);
@@ -55,31 +87,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     init (images) {
       let privates = internal(this);
+      let data = privates.data;
 
       for (let image of images) {
         if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
           console.error(image, images, this);
           throw new Error("Game.Actor got invalid image, not Image or Canvas");
         }
-
-        if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
-          console.error(image, images);
-          throw new Error("Game.Actor got invalid image, invalid width or height");
-        }
       };
 
       let sprite = new Sprite.Sheet({
         images: images, // images is Array
-        width: this.data.tilewidth,
-        height: this.data.tileheight,
-        animations: this.data.animations
+        width: data.tilewidth,
+        height: data.tileheight,
+        animations: data.animations
       });
 
-      if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
-        sprite.centerX = this.data.centerX;
-        sprite.centerY = this.data.centerY;
+      if (
+        Number.isInteger(data.centerX) &&
+        Number.isInteger(data.centerY)
+      ) {
+        sprite.centerX = data.centerX;
+        sprite.centerY = data.centerY;
       } else {
-        console.log(this.data);
+        console.log(data);
         throw new Error("Game.Actor invalid centerX/centerY");
       }
 
@@ -101,24 +132,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       };
 
-      if (this.data.quests) {
-        privates.quests = [];
-        privates.quests.length = this.data.quests.length;
-        this.data.quests.forEach((questId, index) => {
+      if (data.quest) {
+        privates.quest = [];
+        privates.quest.length = data.quest.length;
+        data.quest.forEach((questId, index) => {
           completeCount--;
-          Sprite.Loader.create()
-            .add(`quest/${questId}.json`)
-            .start()
-            .on("complete", function (event) {
-              privates.quests[index] = event.data[0];
-              privates.quests[index].id = questId;
-              Complete();
-            });
+
+          Game.Quest.load(questId, (questData) => {
+            privates.quest.push(questData);
+            Complete();
+          });
+
         });
       }
 
-      if (this.data.skills) {
-        this.data.skills.forEach((skillId) => {
+      if (data.skills) {
+        data.skills.forEach((skillId) => {
           completeCount--;
           Game.Skill.load(skillId, () => {
             Complete();
@@ -126,9 +155,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
       }
 
-      if (this.data.equipment) {
-        for (let key in this.data.equipment) {
-          let itemId = this.data.equipment[key];
+      if (data.equipment) {
+        for (let key in data.equipment) {
+          let itemId = data.equipment[key];
           if (itemId) {
             completeCount--;
             Game.Item.load(itemId, () => {
@@ -138,8 +167,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      if (this.data.items) {
-        for (let itemId in this.data.items) {
+      if (data.items) {
+        for (let itemId in data.items) {
           completeCount--;
           Game.Item.load(itemId, () => {
             Complete();
@@ -147,8 +176,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      if (this.data.contact && this.data.trade) {
-        for (let itemId in this.data.trade) {
+      if (data.contact && data.trade) {
+        for (let itemId in data.trade) {
           completeCount--;
           Game.Item.load(itemId, () => {
             Complete();
@@ -169,12 +198,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get id () {
-      let privates = internal(this);
-      return privates.data.id;
+      return internal(this).data.id;
     }
 
     set id (value) {
-      throw new Error("Game.Actor.id readonly")
+      throw new Error("Game.Actor.id readonly");
+    }
+
+    get type () {
+      return internal(this).data.type;
+    }
+
+    set type (value) {
+      throw new Error("Game.Actor.type readonly");
     }
 
     get sprite () {
@@ -186,16 +222,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Game.Actor.sprite readonly");
     }
 
-    get quests () {
+    get quest () {
       let privates = internal(this);
-      if (privates.quests) {
-        return privates.quests;
+      if (privates.quest) {
+        return privates.quest;
       } else {
         return null;
       }
     }
 
-    set quests (value) {
+    set quest (value) {
       throw new Error("Game.Actor.quests readonly");
     }
 
@@ -203,7 +239,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       // 名字
       let text = new Sprite.Text({
-        text: this.data.name,
+        text: privates.data.name,
         maxWidth: 200,
         color: "white",
         fontSize: 12
@@ -216,7 +252,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
       privates.infoBox = new Sprite.Container();
 
-      if (this.data.type != "hero") {
+      if (privates.data.type != "hero") {
         // 血条外面的黑框
         let hpbarBox = new Sprite.Shape();
         hpbarBox.centerX = 15;
@@ -272,41 +308,50 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     calculate () {
-      if (this.data.$str && this.data.$dex && this.data.$con && this.data.$int && this.data.$cha) {
+      let data = internal(this).data;
+      if (
+        data.$str &&
+        data.$dex &&
+        data.$con &&
+        data.$int &&
+        data.$cha
+      ) {
 
-        this.data.str = this.data.$str;
-        this.data.dex = this.data.$dex;
-        this.data.con = this.data.$con;
-        this.data.int = this.data.$int;
-        this.data.cha = this.data.$cha;
+        data.str = data.$str;
+        data.dex = data.$dex;
+        data.con = data.$con;
+        data.int = data.$int;
+        data.cha = data.$cha;
 
-        // 然后可以针对基本属性计算buff
+        // 然后可以针对一级属性计算buff
 
-        this.data.$hp = this.data.con * 10;
-        this.data.$sp = this.data.int * 5;
-        this.data.$atk = this.data.str * 1;
-        this.data.$matk = this.data.int * 0.5;
-        this.data.$def = 0;
-        this.data.$mdef = 0;
 
-        this.data.critical = this.data.dex * 0.005;
-        this.data.dodge = this.data.dex * 0.005;
+        // 计算完一级属性的buff之后，开始计算二级属性
 
-        // 计算完了战斗相关数值
-        this.data.hp = this.data.$hp;
-        this.data.sp = this.data.$sp;
-        this.data.atk = this.data.$atk;
-        this.data.def = this.data.$def;
-        this.data.matk = this.data.$matk;
-        this.data.mdef = this.data.$mdef;
+        data.$hp = data.con * 10;
+        data.$sp = data.int * 5;
 
-        // 最后可以对战斗相关数值计算buff
+        data.atk = data.str * 1;
+        data.matk = data.int * 0.5;
+        data.def = 0;
+        data.mdef = 0;
+        data.critical = data.dex * 0.005;
+        data.dodge = data.dex * 0.005;
 
-        if (this.data.buff && this.data.nerf) {
-          this.data.buff.forEach((element) => {
+        // 然后可以对二级属性计算buff
+
+
+
+        // 对二级属性计算完buff之后，可以计算会变动的值
+        // 例如.$hp是buff之后的生命值上限，.hp是当前生命值
+        data.hp = data.$hp;
+        data.sp = data.$sp;
+
+        if (data.buff && data.nerf) {
+          data.buff.forEach((element) => {
 
           });
-          this.data.nerf.forEach((element) => {
+          data.nerf.forEach((element) => {
 
           });
         }
@@ -980,6 +1025,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     go (state, direction, callback = null) {
 
+      if (Game.paused) {
+        return false;
+      }
+
       // 如果正在战斗动画，则不走
       if (
         this.sprite.paused == false &&
@@ -1015,6 +1064,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
         // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
+        let oldX = this.data.x;
+        let oldY = this.data.y;
         this.data.x = newPosition.x;
         this.data.y = newPosition.y;
 
@@ -1028,9 +1079,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // 比预计多一个，这样是为了流畅
         // 因为下一次go可能紧挨着这次
         let times = speed.length + 1;
-        let id = null;
 
-        Sprite.Ticker.whiles(times, (last) => {
+        let whilesId = Sprite.Ticker.whiles(times, (last) => {
+          if (Game.paused) {
+            this.data.x = oldX;
+            this.data.y = oldY;
+            this.walking = false;
+            this.emit("change");
+            Sprite.Ticker.clearWhiles(whilesId);
+            if (callback) {
+              callback();
+            }
+            return;
+          }
+
           if (last) {
             this.x = newPosition.x;
             this.y = newPosition.y;
@@ -1038,9 +1100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             this.emit("change");
 
             if (callback) {
-              //Sprite.Ticker.after(2, function () {
-                callback();
-              //});
+              callback();
             }
           } else {
             switch (direction) {

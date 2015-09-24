@@ -105,7 +105,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     req.timeout = 15000; // 15 seconds
 
     var type = null;
-    if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+    if (url.match(/js$/)) {
+      req.responseType = "text";
+      type = "js";
+    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
       req.responseType = "blob";
       type = "image";
     } else if (url.match(/wav$|mp3$|ogg$/i)) {
@@ -131,10 +134,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     };
 
+    var done = false;
     req.onreadystatechange = function () {
-      if (req.readyState == 4) {
+      if (req.readyState == 4 && !done) {
+        done = true;
         if (req.response) {
-          if (type == "image") {
+          if (type == "js") {
+            var fun = null;
+            try {
+              fun = new Function(req.response);
+            } catch (e) {
+              console.error(req.response, url);
+              alert(url);
+              throw e;
+            }
+            Finish(fun);
+          } else if (type == "image") {
             (function () {
               var blob = req.response;
               var image = new Image();
@@ -166,7 +181,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             Finish(json);
           }
         } else {
-          console.error(req.readyState, req.status, req.statusText);
+          console.error(req.response, req.readyState, req.status, req.statusText);
           throw new Error("Sprite.Loader.Fetch Error");
         }
       }
@@ -305,4 +320,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteLoader;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=SpriteLoader.js.map

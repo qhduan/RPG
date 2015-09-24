@@ -90,18 +90,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (privates.cacheCanvas) {
         privates.cacheCanvas = null;
       }
-      for (let child of this.children) {
-        child.parent = null;
-      }
+      let p = this.parent;
+      this.parent = null;
       let canvas = document.createElement("canvas");
       canvas.width = width;
       canvas.height = height;
       let context = canvas.getContext("2d");
       this.draw(context);
       privates.cacheCanvas = canvas;
-      for (let child of this.children) {
-        child.parent = this;
-      }
+      this.parent = p;
     }
 
     /**

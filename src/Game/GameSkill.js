@@ -25,16 +25,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.assign("Skill", class GameSkill extends Sprite.Event {
     static load (id, callback) {
+      if (Game.skills && Game.skills[id]) {
+        if (callback) {
+          callback(Game.skills[id]);
+        }
+        return;
+      }
       Sprite.Loader.create()
-        .add(`skill/${id}.json`)
+        .add(`skill/${id}.js`)
         .start()
         .on("complete", (event) => {
-        let skillData = event.data[0];
+        let skillData = event.data[0]();
         let skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
         skillObj.on("complete", () => {
           if (callback) {
-            callback();
+            callback(skillObj);
           }
         });
       });

@@ -178,7 +178,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   setInterval(function () {
-    if (Game.hero) {
+    if (Game.hero && Game.paused == false) {
       Game.hero.data.time++;
       Game.windows.interface.datetime();
     }
@@ -272,7 +272,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       while (hour.length < 2) hour = "0"+hour;
       minute = minute.toString();
       while (minute.length < 2) minute = "0"+minute;
-      datetime.textContent = `帝国历${year}年${month}月${day}日 ${hour}:${minute}`;
+      datetime.textContent = `${month}月${day}日 ${hour}:${minute}`;
 
       if (hour >= 20 || hour < 4) { // 20:00 to 4:00
         Game.stage.filter("brightness", -0.15);

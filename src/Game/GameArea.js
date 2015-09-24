@@ -58,16 +58,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Sprite.Loader
       .create()
-      .add(`map/${id}.json`, `map/${id}.extra.json`)
+      .add(`map/${id}.json`, `map/${id}.js`)
       .start()
       .on("complete", function (event) {
 
-      let mapData = event.data[0];
-      let mapExtra = event.data[1];
+      let mapData = Sprite.copy(event.data[0]);
+      let mapInfo = event.data[1]();
       mapData.id = id;
 
-      for (let key in mapExtra) {
-        mapData[key] = mapExtra[key];
+      for (let key in mapInfo) {
+        if (mapData.hasOwnProperty(key)) {
+          console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
+          throw new Error("Game.loadArea invalid data");
+        }
+        mapData[key] = mapInfo[key];
       }
 
       let mapObj = new Game.Map(mapData);
@@ -89,53 +93,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         };
 
-        if (mapExtra.actors) {
-          mapExtra.actors.forEach(function (element) {
+        if (mapInfo.actors) {
+          mapInfo.actors.forEach(function (element) {
             completeCount--;
-            Sprite.Loader
-              .create()
-              .add(`actor/${element.id}.json`)
-              .start()
-              .on("complete", function (event) {
-              let actorData = Sprite.copy(event.data[0]);
-              actorData.id = id;
+
+            Game.Actor.load(element.id, function (actorObj) {
+
               for (let key in element) {
-                actorData[key] = element[key];
-              }
-              let actorObj = null;
-
-              if (actorData.type == "ally") {
-                actorObj = new Game.ActorAlly(actorData);
-              } else if (actorData.type == "monster") {
-                actorObj = new Game.ActorMonster(actorData);
-              } else if (actorData.type == "npc") {
-                actorObj = new Game.ActorNPC(actorData);
-              } else if (actorData.type == "pet") {
-                actorObj = new Game.ActorPet(actorData);
-              } else {
-                console.error(actorData.type, actorData);
-                throw new Error("Invalid actor type");
+                actorObj.data[key] = element[key];
               }
 
-              actorObj.on("complete", function () {
-                area.actors.add(actorObj);
-                actorObj.draw(Game.layers.actorLayer);
-                Complete();
-              });
+              area.actors.add(actorObj);
+              actorObj.draw(Game.layers.actorLayer);
+              Complete();
             });
+
           });
         }
 
-        if (mapExtra.onto) {
-          mapExtra.onto.forEach(function (element) {
+        if (mapInfo.onto) {
+          mapInfo.onto.forEach(function (element) {
             let onto = Sprite.copy(element);
             onto.type = "onto";
             area.onto.push(onto);
           });
         }
 
-        if (mapExtra.touch) {
-          mapExtra.touch.forEach(function (element) {
+        if (mapInfo.touch) {
+          mapInfo.touch.forEach(function (element) {
             let touch = Sprite.copy(element);
             area.touch.push(touch);
           });

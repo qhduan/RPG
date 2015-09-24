@@ -150,8 +150,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   var HeroDefault = {
     "level": 1, // 等级
     "exp": 0, // 经验值
-    // 337年6月4日 9时25分
-    "time": 336 * (60 * 24 * 30 * 12) + 5 * (60 * 24 * 30) + 3 * (60 * 24) + 9 * 60 + 25,
+    "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
+    // 233年2月27日 09时30分
+    "time": 233 * (60 * 24 * 30 * 12) + 1 * (60 * 24 * 30) + 26 * (60 * 24) + 9 * 60 + 30,
 
     // 最基本的属性，其他属性都由此延伸
     "$str": 10, // strength 力量： 物理攻击力
@@ -190,21 +191,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     "buff": [], // 有益状态
     "nerf": [], // 有害状态
 
-    "quest": {
-      "current": [
-        // 当前任务
-      ],
-      "past": [
-        // 完成了的任务
-      ]
-    },
+    "currentQuest": [/* 当前任务 */],
+    "completeQuest": [/* 完成了的任务 */],
 
-    "area": "starttown", // 当前所在地图， 初始地图为starttown
+    // 初始位置
+    "area": "starttown", // 地图id
+    "x": 54,
+    "y": 58,
 
-    "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
-
-    "x": null,
-    "y": null,
     "centerX": 26,
     "centerY": 55,
     "hitArea": [[0, 0]],

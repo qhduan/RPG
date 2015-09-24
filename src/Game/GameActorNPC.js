@@ -34,135 +34,139 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     heroUse () {
-      if (this.data.contact) {
+      let data = this.data;
 
-        let options = {};
+      let options = {};
 
-        if (this.data.contact) {
-          Sprite.each(this.data.contact, (talk, key) => {
-            let h = Game.hero;
-            let d = Game.hero.data;
-            let result = null;
+      // npc对话，例如“闲谈”
+      let contact = {};
+      if (data.contact) {
+        for (let talk of data.contact) {
+          let result = true;
+          // talk.condition 是对话条件，如果存在，它是一个函数
+          if (typeof talk.condition == "function") {
             try {
-              result = eval(talk.condition)
+              result = talk.condition();
             } catch (e) {
+              console.error(this.id, this.data);
               console.error(talk.condition);
-              console.error(e);
-              throw new Error("talk.condition eval error");
+              console.error(talk.condition.toString());
+              throw e;
             }
-            if (result) {
-              options[key] = key;
-            }
-          });
-        }
-
-        let quests = null;
-
-        if (this.quests) {
-          quests = this.quests.filter(function (quest) {
-            if (Game.hero.hasQuest(quest.id)) {
-              return false;
-            }
-            return true;
-          });
-          if (quests.length) {
-            options["任务"] = "quest";
+          }
+          if (result) {
+            options[talk.name] = talk.name;
+            contact[talk.name] = talk;
           }
         }
+      }
 
-        let completeQuests = [];
-        Game.hero.data.quest.current.forEach((quest) => {
-          let complete = true;
-          if (quest.target.type == "kill") {
-            for (let key in quest.target.kill) {
-              let t = quest.target.kill[key];
-              if (t.current < t.need) {
-                complete = false;
-              }
-            }
+      // 玩家接受任务
+      let quest = null;
+      if (this.quest) {
+        quest = this.quest.filter(function (quest) {
+          if (Game.hero.hasQuest(quest.id)) {
+            return false;
           }
-
-          if (complete) {
-            completeQuests.push(quest);
-          }
+          return true;
         });
-        if (completeQuests.length > 0) {
+        if (quest && quest.length) {
+          options["任务"] = "quest";
+        }
+      }
+
+      // 玩家完成任务
+      let completeQuest = null;
+      if (Game.hero.data.currentQuest.length) {
+        completeQuest = [];
+        for (let quest of Game.hero.data.currentQuest) {
+          if (quest.to == this.id && Game.Quest.isComplete(quest)) {
+            completeQuest.push(quest);
+          }
+        }
+        if (completeQuest.length > 0) {
           options["完成任务"] = "completeQuest";
         }
-
-        if (this.data.trade) {
-          options["买入"] = "buy";
-          options["卖出"] = "sell";
-        }
-
-        Game.choice(options, (choice) => {
-          switch (choice) {
-            case "buy":
-              this.heroUse();
-              Game.windows.buy.open(this.data.trade);
-              break;
-            case "sell":
-              this.heroUse();
-              Game.windows.sell.open(this.data.trade);
-              break;
-            case "quest":
-              let questOptions = {};
-              quests.forEach((quest, index) => {
-                questOptions[quest.name] = index;
-              });
-              Game.choice(questOptions, (choice) => {
-                if (Number.isInteger(choice)) {
-                  let quest = quests[choice];
-                  Game.confirm({
-                    message: quest.before,
-                    yes: "接受任务",
-                    no: "拒绝"
-                  }, () => {
-                    Game.hero.data.quest.current.push(quest);
-                    this.heroUse();
-                  }, () => {
-                    this.heroUse();
-                  });
-                } else {
-                  this.heroUse();
-                }
-              });
-              break;
-            case "completeQuest":
-              let completeQuestOptions = {};
-              completeQuests.forEach((quest, index) => {
-                completeQuestOptions[quest.name] = index;
-              });
-              Game.choice(completeQuestOptions, (choice) => {
-                if (Number.isInteger(choice)) {
-                  let quest = completeQuests[choice];
-
-                  Game.hero.data.quest.current.splice(
-                    Game.hero.data.quest.current.indexOf(quest), 1
-                  );
-                  Game.hero.data.quest.past.push(quest);
-
-                  this.heroUse();
-                  Game.dialogue([quest.finish], this.data.name);
-                  if (quest.reward) {
-                    if (quest.reward.gold) {
-                      Game.hero.data.gold += quest.reward.gold;
-                    }
-                    if (quest.reward.exp) {
-                      Game.hero.data.exp += quest.reward.exp;
-                    }
-                  }
-                };
-              });
-              break;
-            default:
-              if (this.data.contact[choice]) {
-                this.heroUse();
-                Game.dialogue(this.data.contact[choice].content, this.data.name);
-              }
-          }
-        });
       }
+
+      // NPC有的交易
+      if (data.trade) {
+        options["交易"] = "trade";
+      }
+
+      // 没有选项
+      if (Object.keys(options).length <= 0) {
+        return;
+      }
+
+      /*
+        下面的代码中频繁调用了this.heroUse()
+        是为了保证NPC对话框不会关闭，或者说玩家在执行完某个选项之后依然存在
+        但是又不能简单的不关闭对话框，因为选项会有变化，所以要经常重新打开
+      */
+      Game.choice(options, (choice) => {
+        switch (choice) {
+          case "trade": // 玩家交易的选择，默认是买
+            this.heroUse();
+            Game.windows.buy.open(data.trade);
+            break;
+          case "quest": // 玩家接受任务的选择
+            let questOption = {};
+            quest.forEach((quest, index) => {
+              questOption[quest.name] = index;
+            });
+            Game.choice(questOption, (choice) => {
+              if (Number.isInteger(choice)) {
+                let q = quest[choice];
+                Game.confirm({
+                  message: q.before,
+                  yes: "接受任务",
+                  no: "拒绝"
+                }, () => {
+                  Game.hero.data.currentQuest.push(q);
+                  this.heroUse();
+                }, () => {
+                  this.heroUse();
+                });
+              } else {
+                this.heroUse();
+              }
+            });
+            break;
+          case "completeQuest": // 玩家完成了某个任务的选择
+            let completeQuestOption = {};
+            completeQuest.forEach((quest, index) => {
+              completeQuestOption[quest.name] = index;
+            });
+            Game.choice(completeQuestOption, (choice) => {
+              if (Number.isInteger(choice)) {
+                let quest = completeQuest[choice];
+
+                Game.hero.data.currentQuest.splice(
+                  Game.hero.data.currentQuest.indexOf(quest), 1
+                );
+                Game.hero.data.completeQuest.push(quest);
+
+                this.heroUse();
+                Game.dialogue([quest.finish], data.name);
+                if (quest.reward) {
+                  if (quest.reward.gold) {
+                    Game.hero.data.gold += quest.reward.gold;
+                  }
+                  if (quest.reward.exp) {
+                    Game.hero.data.exp += quest.reward.exp;
+                  }
+                }
+              };
+            });
+            break;
+          default: // 其他选择都没选的情况下，就是对话选择，例如“闲谈”
+            if (contact[choice]) {
+              this.heroUse();
+              Game.dialogue(contact[choice].content, data.name);
+            }
+        }
+      });
     }
 
   });

@@ -98,18 +98,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     questWindowPast.disabled = false;
 
     let table = "";
-    let list = Game.hero.data.quest.current;
+    let list = Game.hero.data.currentQuest;
     list.forEach(function (quest) {
 
-      let complete = true;
-      if (quest.target.type == "kill") {
-        for (let key in quest.target.kill) {
-          let t = quest.target.kill[key];
-          if (t.current < t.need) {
-            complete = false;
-          }
-        }
-      }
+      let complete = Game.Quest.isComplete(quest);
 
       let line = `<div class="questWindowItem">\n`;
       line += `  <label style="font-size: 20px; margin: 10px;">${quest.name}${complete?"[已完成]":"[未完成]"}</label>\n`;
@@ -126,10 +118,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += `  </div>`;
       }
 
-      if (quest.target.type == "kill") {
-        for (let key in quest.target.kill) {
-          let t = quest.target.kill[key];
-          line += `<div style="margin: 10px;">${t.name}：${t.current} / ${t.need}</div>`;
+      if (quest.target && quest.target.kill == "kill") {
+        for (let k of quest.target.kill) {
+          line += `<div style="margin: 10px;">${k.name}：${k.current} / ${t.need}</div>`;
         }
       }
 
@@ -153,7 +144,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     questWindowPast.disabled = true;
 
     let table = "";
-    let list = Game.hero.data.quest.past;
+    let list = Game.hero.data.completeQuest;
     list.forEach(function (quest) {
 
       let line = `<div class="questWindowItem">\n`;
@@ -171,10 +162,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += `  </div>`;
       }
 
-      if (quest.target.type == "kill") {
-        for (let key in quest.target.kill) {
-          let t = quest.target.kill[key];
-          line += `<div style="margin: 10px;">${t.name}：${t.current} / ${t.need}</div>`;
+      if (quest.target && quest.target.type == "kill") {
+        for (let k of quest.target.kill) {
+          line += `<div style="margin: 10px;">${k.name}：${k.current} / ${t.need}</div>`;
         }
       }
 

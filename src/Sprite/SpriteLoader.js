@@ -73,7 +73,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.timeout = 15000; // 15 seconds
 
     let type = null;
-    if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+    if (url.match(/js$/)) {
+      req.responseType = "text";
+      type = "js";
+    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
       req.responseType = "blob";
       type = "image";
     } else if (url.match(/wav$|mp3$|ogg$/i)) {
@@ -100,10 +103,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     };
 
+    let done = false;
     req.onreadystatechange = function () {
-      if (req.readyState == 4) {
+      if (req.readyState == 4 && !done) {
+        done = true;
         if (req.response) {
-          if (type == "image") {
+          if (type == "js") {
+            let fun = null;
+            try {
+              fun = new Function(req.response);
+            } catch (e) {
+              console.error(req.response, url);
+              throw e;
+            }
+            Finish(fun);
+          } else if (type == "image") {
             let blob = req.response;
             let image = new Image();
             image.onload = function () {
@@ -131,7 +145,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Finish(json);
           }
         } else {
-          console.error(req.readyState, req.status, req.statusText);
+          console.error(req.response, req.readyState, req.status, req.statusText);
           throw new Error("Sprite.Loader.Fetch Error");
         }
       }

@@ -135,6 +135,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       for (let bag of Game.area.bags) {
         bag.erase();
       }
+      for (let child of this.layers.mapLayer.children) {
+        child.clear();
+      }
+      for (let child of this.layers.mapHideLayer.children) {
+        child.clear();
+      }
       for (let layer of internal(this).stage.children) {
         layer.clear();
       }

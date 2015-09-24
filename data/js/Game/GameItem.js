@@ -39,14 +39,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(GameItem, null, [{
       key: "load",
       value: function load(id, callback) {
-        Sprite.Loader.create().add("item/" + id + ".json").start().on("complete", function (event) {
-          var itemData = event.data[0];
+        if (Game.items && Game.items[id]) {
+          if (callback) {
+            callback(Game.items[id]);
+          }
+          return;
+        }
+        Sprite.Loader.create().add("item/" + id + ".js").start().on("complete", function (event) {
+          var itemData = event.data[0]();
           itemData.id = id;
           var itemObj = new Game.Item(itemData);
           Game.items[id] = itemObj;
           itemObj.on("complete", function () {
             if (callback) {
-              callback();
+              callback(itemObj);
             }
           });
         });
@@ -137,6 +143,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           Game.windows.pickup.open(this);
         }
 
+        if (typeof this.data.use == "function") {
+          this.data.use();
+        }
+
         if (this.data.type == "potion") {
           for (var attribute in this.data.potion) {
             var effect = this.data.potion[attribute];
@@ -162,17 +172,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               })();
             }
           }
-          console.log(Game.hero.data.items[this.id]);
           Game.hero.data.items[this.id]--;
-          console.log(Game.hero.data.items[this.id]);
           if (Game.hero.data.items[this.id] <= 0) {
             delete Game.hero.data.items[this.id];
           }
         } // potion
-
-        if (this.data.type == "book") {
-          Game.dialogue(this.data.read, "《" + this.data.name + "》");
-        } // book
       }
     }, {
       key: "clone",
@@ -288,4 +292,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameItem;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameItem.js.map

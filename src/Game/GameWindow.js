@@ -273,7 +273,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 当窗口大小改变时改变游戏窗口大小
   function GameWindowResize () {
     let width = window.innerWidth;
-    let height = window.innerHeight - 10;
+    let height = window.innerHeight;
     let scale = 1;
     let leftMargin = 0;
     let topMargin = 0;

@@ -39,13 +39,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     _createClass(GameSkill, null, [{
       key: "load",
       value: function load(id, callback) {
-        Sprite.Loader.create().add("skill/" + id + ".json").start().on("complete", function (event) {
-          var skillData = event.data[0];
+        if (Game.skills && Game.skills[id]) {
+          if (callback) {
+            callback(Game.skills[id]);
+          }
+          return;
+        }
+        Sprite.Loader.create().add("skill/" + id + ".js").start().on("complete", function (event) {
+          var skillData = event.data[0]();
           var skillObj = new Game.Skill(skillData);
           Game.skills[id] = skillObj;
           skillObj.on("complete", function () {
             if (callback) {
-              callback();
+              callback(skillObj);
             }
           });
         });
@@ -340,4 +346,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameSkill;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameSkill.js.map

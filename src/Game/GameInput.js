@@ -69,7 +69,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       destIcon.centerX = 5;
       destIcon.centerY = 5;
 
-
       Game.windows.stage.on("mousedown", function (event) {
         let data = event.data;
 

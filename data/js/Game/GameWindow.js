@@ -378,7 +378,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   // 当窗口大小改变时改变游戏窗口大小
   function GameWindowResize() {
     var width = window.innerWidth;
-    var height = window.innerHeight - 10;
+    var height = window.innerHeight;
     var scale = 1;
     var leftMargin = 0;
     var topMargin = 0;
@@ -465,4 +465,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     GameWindowResize();
   });
 })();
-//# sourceMappingURL=GameWindow.js.map

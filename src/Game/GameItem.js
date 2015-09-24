@@ -26,17 +26,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.assign("Item", class GameItem extends Sprite.Event {
 
     static load (id, callback) {
+      if (Game.items && Game.items[id]) {
+        if (callback) {
+          callback(Game.items[id]);
+        }
+        return;
+      }
       Sprite.Loader.create()
-        .add(`item/${id}.json`)
+        .add(`item/${id}.js`)
         .start()
         .on("complete", (event) => {
-        let itemData = event.data[0];
+        let itemData = event.data[0]();
         itemData.id = id;
         let itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
         itemObj.on("complete", () => {
           if (callback) {
-            callback();
+            callback(itemObj);
           }
         });
       });
@@ -186,6 +192,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.windows.pickup.open(this);
       }
 
+      if (typeof this.data.use == "function") {
+        this.data.use();
+      }
+
       if (this.data.type == "potion") {
         for (let attribute in this.data.potion) {
           let effect = this.data.potion[attribute];
@@ -212,17 +222,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             });
           }
         }
-        console.log(Game.hero.data.items[this.id])
         Game.hero.data.items[this.id]--;
-        console.log(Game.hero.data.items[this.id])
         if (Game.hero.data.items[this.id] <= 0) {
           delete Game.hero.data.items[this.id];
         }
       } // potion
 
-      if (this.data.type == "book") {
-        Game.dialogue(this.data.read, `《${this.data.name}》`);
-      } // book
     }
 
     clone (callback) {

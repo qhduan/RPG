@@ -53,6 +53,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
       });
+      return id;
+    }
+
+    clearAfter (id) {
+      this.off("tick", id);
     }
 
     whiles (times, callback) {
@@ -70,6 +75,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
       });
+      return id;
+    }
+
+    clearWhiles (id) {
+      this.off("tick", id);
     }
 
   };

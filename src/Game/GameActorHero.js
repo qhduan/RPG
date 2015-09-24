@@ -41,26 +41,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } else {
           this.data.exp += 1;
         }
-        this.data.quest.current.forEach((quest) => {
-          if (quest.target.type == "kill") {
-            if (quest.target.kill.hasOwnProperty(actor.id)) {
-              let t = quest.target.kill[actor.id];
-              if (t.current < t.need) {
-                t.current++;
+
+        for (let quest of this.data.currentQuest) {
+          if (quest.target && quest.target.kill) {
+            for (let k of quest.target.kill) {
+              if (actor.id == k.id && k.current < k.need) {
+                k.current++;
               }
             }
           }
-        });
+        }
+
       });
+
+      setInterval(() => {
+        if (Game.paused == false) {
+          this.autoHide();
+          this.onto();
+          this.touch();
+        }
+      }, 200);
     }
 
     hasQuest (id) {
-      for (let quest of this.data.quest.current) {
+      for (let quest of this.data.currentQuest) {
         if (id == quest.id) {
           return true;
         }
       }
-      for (let quest of this.data.quest.past) {
+      for (let quest of this.data.completeQuest) {
         if (id == quest.id) {
           return true;
         }
@@ -145,6 +154,201 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
 
+    }
+
+    autoHide () {
+      if (!Game.area) return;
+
+      let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
+
+      for (let layer of Game.layers.mapHideLayer.children) {
+        if (layer.name == heroHide) {
+          layer.visible = false;
+        } else {
+          layer.visible = true;
+        }
+      }
+
+      // 检查需要隐藏的角色，例如建筑物里的npc
+      for (let actor of Game.area.actors) {
+        if (actor != Game.hero) {
+          let actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
+          if (actorHide && actorHide == heroHide) {
+            actor.visible = true;
+          } else {
+            if (actorHide) {
+              actor.visible = false;
+            } else {
+              actor.visible = true;
+            }
+          }
+
+          // 当npc紧挨着玩家所在格子的时候，自动面向玩家
+          if (actor.distance(Game.hero) == 1) {
+            let actorFace = actor.facePosition;
+            if (actorFace.x != Game.hero.x || actorFace.y != Game.hero.y) {
+              if (actor.y == Game.hero.y) { // 同一水平
+                if (actor.x < Game.hero.x) { // npc 在玩家左边
+                  actor.face("right");
+                } else if (actor.x > Game.hero.x) { // npc在玩家右边
+                  actor.face("left");
+                }
+              } else if (actor.x == Game.hero.x) { // 同一垂直
+                if (actor.y < Game.hero.y) {
+                  actor.face("down");
+                } else if (actor.y > Game.hero.y) {
+                  actor.face("up");
+                }
+              }
+            }
+          }
+
+
+
+        }
+      }
+
+      // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
+      for (let bag of Game.area.bags) {
+        let bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
+        if (bagHide && bagHide == heroHide) {
+          bag.visible = true;
+        } else {
+          if (bagHide) {
+            bag.visible = false;
+          } else {
+            bag.visible = true;
+          }
+        }
+      }
+
+    }
+
+    onto () {
+      if (!Game.area) return;
+      if (!Game.area.onto) return;
+
+      let heroPosition = Game.hero.position;
+      let onto = null;
+
+      let FindUnderHero = function (element) {
+        if (onto != null || element == Game.hero) {
+          return;
+        }
+        if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+          onto = element;
+        } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+          onto = element;
+        }
+      }
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.onto, FindUnderHero);
+      if (onto) {
+        if (onto.dest) {
+          Game.pause();
+          Game.windows.loading.begin();
+          Game.windows.loading.update("20%");
+          setTimeout(function () {
+            Game.clearStage();
+            Game.windows.loading.update("50%");
+            Game.loadArea(onto.dest, function (area) {
+              Game.windows.loading.update("80%");
+              Game.area = area;
+              area.map.draw(Game.layers.mapLayer);
+              Game.hero.data.area = onto.dest;
+              Game.hero.draw(Game.layers.actorLayer);
+              area.actors.add(Game.hero);
+              Game.windows.loading.update("100%");
+              setTimeout(function () {
+                Game.hero.x = onto.destx;
+                Game.hero.y = onto.desty;
+                Game.hero.data.time += 60; // 加一小时
+                Game.windows.loading.end();
+                Game.windows.interface.datetime();
+                Game.windows.interface.refresh();
+              }, 100);
+            });
+          }, 20);
+        } // dest, aka. door
+      } // touch
+    }
+
+    touch () {
+      if (!Game.area) return;
+      if (!Game.area.actors) return;
+      if (!Game.area.bags) return;
+      if (!Game.area.touch) return;
+
+      let heroPosition = Game.hero.position;
+      let heroFace = Game.hero.facePosition;
+      let touch = null;
+
+      let FindUnderHero = function (element) {
+        if (touch != null || element == Game.hero) {
+          return;
+        }
+        if (element.heroUse) {
+          if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
+            touch = element;
+          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+            touch = element;
+          }
+        }
+      }
+
+      let FindFaceHero = function (element) {
+        if (touch != null || element == Game.hero) {
+          return;
+        }
+        if (element.heroUse) {
+          if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
+            touch = element;
+          } else if (element.x == heroFace.x && element.y == heroFace.y) {
+            touch = element;
+          }
+        }
+      }
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindUnderHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindUnderHero);
+      // 最近的提示物（例如牌子）
+      Game.area.touch.forEach(FindUnderHero);
+
+      // 找最近可“事件”人物 Game.area.actors
+      Sprite.each(Game.area.actors, FindFaceHero);
+      // 找最近尸体 Game.area.actors
+      Sprite.each(Game.area.bags, FindFaceHero);
+      // 最近的提示物（例如牌子）
+      Game.area.touch.forEach(FindFaceHero);
+      // 水源
+      if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
+        touch = {
+          type: "water",
+          heroUse: function () {
+            Game.popup(Game.hero.sprite, "This is water", 0, -50);
+          }
+        };
+      }
+
+      if (!touch) {
+        Game.hintObject = null;
+        Game.windows.interface.hideUse();
+      } else {
+
+        if (touch.type == "message") {
+          touch.heroUse = function () {
+            Game.popup({
+              x: touch.x * 32 + 16,
+              y: touch.y * 32 + 16
+            }, touch.content, 0, -30);
+          };
+        }
+
+        Game.hintObject = touch;
+        Game.windows.interface.showUse();
+      }
     }
 
 

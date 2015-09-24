@@ -52,141 +52,189 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function heroUse() {
         var _this = this;
 
-        if (this.data.contact) {
-          (function () {
+        var data = this.data;
 
-            var options = {};
+        var options = {};
 
-            if (_this.data.contact) {
-              Sprite.each(_this.data.contact, function (talk, key) {
-                var h = Game.hero;
-                var d = Game.hero.data;
-                var result = null;
+        // npc对话，例如“闲谈”
+        var contact = {};
+        if (data.contact) {
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = data.contact[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var talk = _step.value;
+
+              var result = true;
+              // talk.condition 是对话条件，如果存在，它是一个函数
+              if (typeof talk.condition == "function") {
                 try {
-                  result = eval(talk.condition);
+                  result = talk.condition();
                 } catch (e) {
+                  console.error(this.id, this.data);
                   console.error(talk.condition);
-                  console.error(e);
-                  throw new Error("talk.condition eval error");
-                }
-                if (result) {
-                  options[key] = key;
-                }
-              });
-            }
-
-            var quests = null;
-
-            if (_this.quests) {
-              quests = _this.quests.filter(function (quest) {
-                if (Game.hero.hasQuest(quest.id)) {
-                  return false;
-                }
-                return true;
-              });
-              if (quests.length) {
-                options["任务"] = "quest";
-              }
-            }
-
-            var completeQuests = [];
-            Game.hero.data.quest.current.forEach(function (quest) {
-              var complete = true;
-              if (quest.target.type == "kill") {
-                for (var key in quest.target.kill) {
-                  var t = quest.target.kill[key];
-                  if (t.current < t.need) {
-                    complete = false;
-                  }
+                  console.error(talk.condition.toString());
+                  throw e;
                 }
               }
-
-              if (complete) {
-                completeQuests.push(quest);
+              if (result) {
+                options[talk.name] = talk.name;
+                contact[talk.name] = talk;
               }
-            });
-            if (completeQuests.length > 0) {
-              options["完成任务"] = "completeQuest";
             }
-
-            if (_this.data.trade) {
-              options["买入"] = "buy";
-              options["卖出"] = "sell";
-            }
-
-            Game.choice(options, function (choice) {
-              switch (choice) {
-                case "buy":
-                  _this.heroUse();
-                  Game.windows.buy.open(_this.data.trade);
-                  break;
-                case "sell":
-                  _this.heroUse();
-                  Game.windows.sell.open(_this.data.trade);
-                  break;
-                case "quest":
-                  var questOptions = {};
-                  quests.forEach(function (quest, index) {
-                    questOptions[quest.name] = index;
-                  });
-                  Game.choice(questOptions, function (choice) {
-                    if (Number.isInteger(choice)) {
-                      (function () {
-                        var quest = quests[choice];
-                        Game.confirm({
-                          message: quest.before,
-                          yes: "接受任务",
-                          no: "拒绝"
-                        }, function () {
-                          Game.hero.data.quest.current.push(quest);
-                          _this.heroUse();
-                        }, function () {
-                          _this.heroUse();
-                        });
-                      })();
-                    } else {
-                      _this.heroUse();
-                    }
-                  });
-                  break;
-                case "completeQuest":
-                  var completeQuestOptions = {};
-                  completeQuests.forEach(function (quest, index) {
-                    completeQuestOptions[quest.name] = index;
-                  });
-                  Game.choice(completeQuestOptions, function (choice) {
-                    if (Number.isInteger(choice)) {
-                      var quest = completeQuests[choice];
-
-                      Game.hero.data.quest.current.splice(Game.hero.data.quest.current.indexOf(quest), 1);
-                      Game.hero.data.quest.past.push(quest);
-
-                      _this.heroUse();
-                      Game.dialogue([quest.finish], _this.data.name);
-                      if (quest.reward) {
-                        if (quest.reward.gold) {
-                          Game.hero.data.gold += quest.reward.gold;
-                        }
-                        if (quest.reward.exp) {
-                          Game.hero.data.exp += quest.reward.exp;
-                        }
-                      }
-                    };
-                  });
-                  break;
-                default:
-                  if (_this.data.contact[choice]) {
-                    _this.heroUse();
-                    Game.dialogue(_this.data.contact[choice].content, _this.data.name);
-                  }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
               }
-            });
-          })();
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
         }
+
+        // 玩家接受任务
+        var quest = null;
+        if (this.quest) {
+          quest = this.quest.filter(function (quest) {
+            if (Game.hero.hasQuest(quest.id)) {
+              return false;
+            }
+            return true;
+          });
+          if (quest && quest.length) {
+            options["任务"] = "quest";
+          }
+        }
+
+        // 玩家完成任务
+        var completeQuest = null;
+        if (Game.hero.data.currentQuest.length) {
+          completeQuest = [];
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
+
+          try {
+            for (var _iterator2 = Game.hero.data.currentQuest[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var _quest = _step2.value;
+
+              if (_quest.to == this.id && Game.Quest.isComplete(_quest)) {
+                completeQuest.push(_quest);
+              }
+            }
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                _iterator2["return"]();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
+          }
+
+          if (completeQuest.length > 0) {
+            options["完成任务"] = "completeQuest";
+          }
+        }
+
+        // NPC有的交易
+        if (data.trade) {
+          options["交易"] = "trade";
+        }
+
+        // 没有选项
+        if (Object.keys(options).length <= 0) {
+          return;
+        }
+
+        /*
+          下面的代码中频繁调用了this.heroUse()
+          是为了保证NPC对话框不会关闭，或者说玩家在执行完某个选项之后依然存在
+          但是又不能简单的不关闭对话框，因为选项会有变化，所以要经常重新打开
+        */
+        Game.choice(options, function (choice) {
+          switch (choice) {
+            case "trade":
+              // 玩家交易的选择，默认是买
+              _this.heroUse();
+              Game.windows.buy.open(data.trade);
+              break;
+            case "quest":
+              // 玩家接受任务的选择
+              var questOption = {};
+              quest.forEach(function (quest, index) {
+                questOption[quest.name] = index;
+              });
+              Game.choice(questOption, function (choice) {
+                if (Number.isInteger(choice)) {
+                  (function () {
+                    var q = quest[choice];
+                    Game.confirm({
+                      message: q.before,
+                      yes: "接受任务",
+                      no: "拒绝"
+                    }, function () {
+                      Game.hero.data.currentQuest.push(q);
+                      _this.heroUse();
+                    }, function () {
+                      _this.heroUse();
+                    });
+                  })();
+                } else {
+                  _this.heroUse();
+                }
+              });
+              break;
+            case "completeQuest":
+              // 玩家完成了某个任务的选择
+              var completeQuestOption = {};
+              completeQuest.forEach(function (quest, index) {
+                completeQuestOption[quest.name] = index;
+              });
+              Game.choice(completeQuestOption, function (choice) {
+                if (Number.isInteger(choice)) {
+                  var _quest2 = completeQuest[choice];
+
+                  Game.hero.data.currentQuest.splice(Game.hero.data.currentQuest.indexOf(_quest2), 1);
+                  Game.hero.data.completeQuest.push(_quest2);
+
+                  _this.heroUse();
+                  Game.dialogue([_quest2.finish], data.name);
+                  if (_quest2.reward) {
+                    if (_quest2.reward.gold) {
+                      Game.hero.data.gold += _quest2.reward.gold;
+                    }
+                    if (_quest2.reward.exp) {
+                      Game.hero.data.exp += _quest2.reward.exp;
+                    }
+                  }
+                };
+              });
+              break;
+            default:
+              // 其他选择都没选的情况下，就是对话选择，例如“闲谈”
+              if (contact[choice]) {
+                _this.heroUse();
+                Game.dialogue(contact[choice].content, data.name);
+              }
+          }
+        });
       }
     }]);
 
     return GameActorNPC;
   })(Game.Actor));
 })();
-//# sourceMappingURL=GameActorNPC.js.map

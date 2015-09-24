@@ -136,10 +136,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator3 = internal(this).stage.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var layer = _step3.value;
+          for (var _iterator3 = this.layers.mapLayer.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var child = _step3.value;
 
-            layer.clear();
+            child.clear();
           }
         } catch (err) {
           _didIteratorError3 = true;
@@ -152,6 +152,56 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           } finally {
             if (_didIteratorError3) {
               throw _iteratorError3;
+            }
+          }
+        }
+
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
+
+        try {
+          for (var _iterator4 = this.layers.mapHideLayer.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var child = _step4.value;
+
+            child.clear();
+          }
+        } catch (err) {
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+              _iterator4["return"]();
+            }
+          } finally {
+            if (_didIteratorError4) {
+              throw _iteratorError4;
+            }
+          }
+        }
+
+        var _iteratorNormalCompletion5 = true;
+        var _didIteratorError5 = false;
+        var _iteratorError5 = undefined;
+
+        try {
+          for (var _iterator5 = internal(this).stage.children[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+            var layer = _step5.value;
+
+            layer.clear();
+          }
+        } catch (err) {
+          _didIteratorError5 = true;
+          _iteratorError5 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
+              _iterator5["return"]();
+            }
+          } finally {
+            if (_didIteratorError5) {
+              throw _iteratorError5;
             }
           }
         }
@@ -358,4 +408,3 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
   }
 })();
-//# sourceMappingURL=Game.js.map

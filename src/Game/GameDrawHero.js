@@ -40,18 +40,45 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       );
     }
 
-    let withoutWeapon = new Image();
+    let withoutWeapon = null;
+    let withWeapon = null;
+
+    let done = -2;
+    let Finish = function () {
+      done++;
+      if (done >= 0) {
+        if (callback) {
+          callback([withoutWeapon, withWeapon]);
+        }
+      }
+    };
+
+    withoutWeapon = new Image();
     withoutWeapon.src = canvas.toDataURL("image/png");
+
+    if (withoutWeapon.complete) {
+      Finish();
+    } else {
+      withoutWeapon.onload = function () {
+        Finish();
+      };
+    }
 
     context.drawImage(
       images[length], 0, 0, images[length].width, images[length].height,
       0, 0, width, height
     );
 
-    let withWeapon = new Image();
+    withWeapon = new Image();
     withWeapon.src = canvas.toDataURL("image/png");
 
-    callback([withoutWeapon, withWeapon]);
+    if (withWeapon.complete) {
+      Finish();
+    } else {
+      withWeapon.onload = function () {
+        Finish();
+      };
+    }
   }
 
   // 把多张图片合成一张，并返回

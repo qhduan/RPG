@@ -41,6 +41,36 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.assign("Actor", (function (_Sprite$Event) {
     _inherits(Actor, _Sprite$Event);
 
+    _createClass(Actor, null, [{
+      key: "load",
+      value: function load(id, callback) {
+        Sprite.Loader.create().add("actor/" + id + ".js").start().on("complete", function (event) {
+
+          var actorData = event.data[0]();
+          actorData.id = id;
+
+          var actorObj = null;
+          if (actorData.type == "npc") {
+            actorObj = new Game.ActorNPC(actorData);
+          } else if (actorData.type == "monster") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else if (actorData.type == "ally") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else if (actorData.type == "pet") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else {
+            console.error(actorData.type, actorData);
+            throw new Error("Game.Actor.load invalid actor type");
+          }
+          actorObj.on("complete", function () {
+            if (callback) {
+              callback(actorObj);
+            }
+          });
+        });
+      }
+    }]);
+
     function Actor(actorData) {
       var _this = this;
 
@@ -71,6 +101,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _this2 = this;
 
         var privates = internal(this);
+        var data = privates.data;
 
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -83,11 +114,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
               console.error(image, images, this);
               throw new Error("Game.Actor got invalid image, not Image or Canvas");
-            }
-
-            if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
-              console.error(image, images);
-              throw new Error("Game.Actor got invalid image, invalid width or height");
             }
           }
         } catch (err) {
@@ -109,16 +135,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var sprite = new Sprite.Sheet({
           images: images, // images is Array
-          width: this.data.tilewidth,
-          height: this.data.tileheight,
-          animations: this.data.animations
+          width: data.tilewidth,
+          height: data.tileheight,
+          animations: data.animations
         });
 
-        if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
-          sprite.centerX = this.data.centerX;
-          sprite.centerY = this.data.centerY;
+        if (Number.isInteger(data.centerX) && Number.isInteger(data.centerY)) {
+          sprite.centerX = data.centerX;
+          sprite.centerY = data.centerY;
         } else {
-          console.log(this.data);
+          console.log(data);
           throw new Error("Game.Actor invalid centerX/centerY");
         }
 
@@ -140,21 +166,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         };
 
-        if (this.data.quests) {
-          privates.quests = [];
-          privates.quests.length = this.data.quests.length;
-          this.data.quests.forEach(function (questId, index) {
+        if (data.quest) {
+          privates.quest = [];
+          privates.quest.length = data.quest.length;
+          data.quest.forEach(function (questId, index) {
             completeCount--;
-            Sprite.Loader.create().add("quest/" + questId + ".json").start().on("complete", function (event) {
-              privates.quests[index] = event.data[0];
-              privates.quests[index].id = questId;
+
+            Game.Quest.load(questId, function (questData) {
+              privates.quest.push(questData);
               Complete();
             });
           });
         }
 
-        if (this.data.skills) {
-          this.data.skills.forEach(function (skillId) {
+        if (data.skills) {
+          data.skills.forEach(function (skillId) {
             completeCount--;
             Game.Skill.load(skillId, function () {
               Complete();
@@ -162,9 +188,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           });
         }
 
-        if (this.data.equipment) {
-          for (var key in this.data.equipment) {
-            var itemId = this.data.equipment[key];
+        if (data.equipment) {
+          for (var key in data.equipment) {
+            var itemId = data.equipment[key];
             if (itemId) {
               completeCount--;
               Game.Item.load(itemId, function () {
@@ -174,8 +200,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        if (this.data.items) {
-          for (var itemId in this.data.items) {
+        if (data.items) {
+          for (var itemId in data.items) {
             completeCount--;
             Game.Item.load(itemId, function () {
               Complete();
@@ -183,8 +209,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        if (this.data.contact && this.data.trade) {
-          for (var itemId in this.data.trade) {
+        if (data.contact && data.trade) {
+          for (var itemId in data.trade) {
             completeCount--;
             Game.Item.load(itemId, function () {
               Complete();
@@ -200,7 +226,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var privates = internal(this);
         // 名字
         var text = new Sprite.Text({
-          text: this.data.name,
+          text: privates.data.name,
           maxWidth: 200,
           color: "white",
           fontSize: 12
@@ -213,7 +239,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
         privates.infoBox = new Sprite.Container();
 
-        if (this.data.type != "hero") {
+        if (privates.data.type != "hero") {
           // 血条外面的黑框
           var hpbarBox = new Sprite.Shape();
           hpbarBox.centerX = 15;
@@ -264,39 +290,39 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "calculate",
       value: function calculate() {
-        if (this.data.$str && this.data.$dex && this.data.$con && this.data.$int && this.data.$cha) {
+        var data = internal(this).data;
+        if (data.$str && data.$dex && data.$con && data.$int && data.$cha) {
 
-          this.data.str = this.data.$str;
-          this.data.dex = this.data.$dex;
-          this.data.con = this.data.$con;
-          this.data.int = this.data.$int;
-          this.data.cha = this.data.$cha;
+          data.str = data.$str;
+          data.dex = data.$dex;
+          data.con = data.$con;
+          data.int = data.$int;
+          data.cha = data.$cha;
 
-          // 然后可以针对基本属性计算buff
+          // 然后可以针对一级属性计算buff
 
-          this.data.$hp = this.data.con * 10;
-          this.data.$sp = this.data.int * 5;
-          this.data.$atk = this.data.str * 1;
-          this.data.$matk = this.data.int * 0.5;
-          this.data.$def = 0;
-          this.data.$mdef = 0;
+          // 计算完一级属性的buff之后，开始计算二级属性
 
-          this.data.critical = this.data.dex * 0.005;
-          this.data.dodge = this.data.dex * 0.005;
+          data.$hp = data.con * 10;
+          data.$sp = data.int * 5;
 
-          // 计算完了战斗相关数值
-          this.data.hp = this.data.$hp;
-          this.data.sp = this.data.$sp;
-          this.data.atk = this.data.$atk;
-          this.data.def = this.data.$def;
-          this.data.matk = this.data.$matk;
-          this.data.mdef = this.data.$mdef;
+          data.atk = data.str * 1;
+          data.matk = data.int * 0.5;
+          data.def = 0;
+          data.mdef = 0;
+          data.critical = data.dex * 0.005;
+          data.dodge = data.dex * 0.005;
 
-          // 最后可以对战斗相关数值计算buff
+          // 然后可以对二级属性计算buff
 
-          if (this.data.buff && this.data.nerf) {
-            this.data.buff.forEach(function (element) {});
-            this.data.nerf.forEach(function (element) {});
+          // 对二级属性计算完buff之后，可以计算会变动的值
+          // 例如.$hp是buff之后的生命值上限，.hp是当前生命值
+          data.hp = data.$hp;
+          data.sp = data.$sp;
+
+          if (data.buff && data.nerf) {
+            data.buff.forEach(function (element) {});
+            data.nerf.forEach(function (element) {});
           }
         }
       }
@@ -1021,6 +1047,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
 
+        if (Game.paused) {
+          return false;
+        }
+
         // 如果正在战斗动画，则不走
         if (this.sprite.paused == false && this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)) {
           return false;
@@ -1054,6 +1084,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
             // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
             // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
+            var oldX = _this8.data.x;
+            var oldY = _this8.data.y;
             _this8.data.x = newPosition.x;
             _this8.data.y = newPosition.y;
 
@@ -1067,9 +1099,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             // 比预计多一个，这样是为了流畅
             // 因为下一次go可能紧挨着这次
             var times = speed.length + 1;
-            var id = null;
 
-            Sprite.Ticker.whiles(times, function (last) {
+            var whilesId = Sprite.Ticker.whiles(times, function (last) {
+              if (Game.paused) {
+                _this8.data.x = oldX;
+                _this8.data.y = oldY;
+                _this8.walking = false;
+                _this8.emit("change");
+                Sprite.Ticker.clearWhiles(whilesId);
+                if (callback) {
+                  callback();
+                }
+                return;
+              }
+
               if (last) {
                 _this8.x = newPosition.x;
                 _this8.y = newPosition.y;
@@ -1077,26 +1120,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 _this8.emit("change");
 
                 if (callback) {
-                  //Sprite.Ticker.after(2, function () {
                   callback();
-                  //});
                 }
               } else {
-                  switch (direction) {
-                    case "up":
-                      _this8.sprite.y -= speed.pop();
-                      break;
-                    case "down":
-                      _this8.sprite.y += speed.pop();
-                      break;
-                    case "left":
-                      _this8.sprite.x -= speed.pop();
-                      break;
-                    case "right":
-                      _this8.sprite.x += speed.pop();
-                      break;
-                  }
+                switch (direction) {
+                  case "up":
+                    _this8.sprite.y -= speed.pop();
+                    break;
+                  case "down":
+                    _this8.sprite.y += speed.pop();
+                    break;
+                  case "left":
+                    _this8.sprite.x -= speed.pop();
+                    break;
+                  case "right":
+                    _this8.sprite.x += speed.pop();
+                    break;
                 }
+              }
             });
 
             // 播放行走动画
@@ -1164,11 +1205,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "id",
       get: function get() {
-        var privates = internal(this);
-        return privates.data.id;
+        return internal(this).data.id;
       },
       set: function set(value) {
         throw new Error("Game.Actor.id readonly");
+      }
+    }, {
+      key: "type",
+      get: function get() {
+        return internal(this).data.type;
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.type readonly");
       }
     }, {
       key: "sprite",
@@ -1180,11 +1228,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         throw new Error("Game.Actor.sprite readonly");
       }
     }, {
-      key: "quests",
+      key: "quest",
       get: function get() {
         var privates = internal(this);
-        if (privates.quests) {
-          return privates.quests;
+        if (privates.quest) {
+          return privates.quest;
         } else {
           return null;
         }
@@ -1290,4 +1338,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
-//# sourceMappingURL=GameActor.js.map

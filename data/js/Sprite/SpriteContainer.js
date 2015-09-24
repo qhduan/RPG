@@ -91,61 +91,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         if (privates.cacheCanvas) {
           privates.cacheCanvas = null;
         }
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var child = _step.value;
-
-            child.parent = null;
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"]) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
+        var p = this.parent;
+        this.parent = null;
         var canvas = document.createElement("canvas");
         canvas.width = width;
         canvas.height = height;
         var context = canvas.getContext("2d");
         this.draw(context);
         privates.cacheCanvas = canvas;
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
-
-        try {
-          for (var _iterator2 = this.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var child = _step2.value;
-
-            child.parent = this;
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-              _iterator2["return"]();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
-          }
-        }
+        this.parent = p;
       }
 
       /**
@@ -159,13 +113,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           return _get(Object.getPrototypeOf(SpriteContainer.prototype), "hitTest", this).call(this, x, y);
         } else {
           var hitted = [];
-          var _iteratorNormalCompletion3 = true;
-          var _didIteratorError3 = false;
-          var _iteratorError3 = undefined;
+          var _iteratorNormalCompletion = true;
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
 
           try {
-            for (var _iterator3 = this.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-              var child = _step3.value;
+            for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var child = _step.value;
 
               var ret = child.hitTest(x, y);
               if (ret instanceof Array) {
@@ -175,16 +129,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           } catch (err) {
-            _didIteratorError3 = true;
-            _iteratorError3 = err;
+            _didIteratorError = true;
+            _iteratorError = err;
           } finally {
             try {
-              if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
-                _iterator3["return"]();
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
               }
             } finally {
-              if (_didIteratorError3) {
-                throw _iteratorError3;
+              if (_didIteratorError) {
+                throw _iteratorError;
               }
             }
           }
@@ -209,29 +163,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.drawImage(renderer, this.cacheCanvas, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height, 0, 0, this.cacheCanvas.width, this.cacheCanvas.height);
         } else {
           if (this.children.length > 0) {
-            var _iteratorNormalCompletion4 = true;
-            var _didIteratorError4 = false;
-            var _iteratorError4 = undefined;
+            var _iteratorNormalCompletion2 = true;
+            var _didIteratorError2 = false;
+            var _iteratorError2 = undefined;
 
             try {
-              for (var _iterator4 = this.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-                var child = _step4.value;
+              for (var _iterator2 = this.children[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+                var child = _step2.value;
 
                 if (child.visible == true && child.alpha >= 0.01) {
                   child.draw(renderer);
                 }
               }
             } catch (err) {
-              _didIteratorError4 = true;
-              _iteratorError4 = err;
+              _didIteratorError2 = true;
+              _iteratorError2 = err;
             } finally {
               try {
-                if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-                  _iterator4["return"]();
+                if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+                  _iterator2["return"]();
                 }
               } finally {
-                if (_didIteratorError4) {
-                  throw _iteratorError4;
+                if (_didIteratorError2) {
+                  throw _iteratorError2;
                 }
               }
             }
@@ -264,13 +218,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           throw new Error("Sprite.Container.appendChild got an invalid arguments");
         }
 
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
+        var _iteratorNormalCompletion3 = true;
+        var _didIteratorError3 = false;
+        var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator5 = args[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var element = _step5.value;
+          for (var _iterator3 = args[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var element = _step3.value;
 
             if (element instanceof Sprite.Display == false) {
               console.error(element);
@@ -280,16 +234,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             this.children.push(element);
           }
         } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
+          _didIteratorError3 = true;
+          _iteratorError3 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-              _iterator5["return"]();
+            if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+              _iterator3["return"]();
             }
           } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
+            if (_didIteratorError3) {
+              throw _iteratorError3;
             }
           }
         }
@@ -354,27 +308,27 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "clear",
       value: function clear() {
         var privates = internal(this);
-        var _iteratorNormalCompletion6 = true;
-        var _didIteratorError6 = false;
-        var _iteratorError6 = undefined;
+        var _iteratorNormalCompletion4 = true;
+        var _didIteratorError4 = false;
+        var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator6 = privates.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
-            var child = _step6.value;
+          for (var _iterator4 = privates.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var child = _step4.value;
 
             child.parent = null;
           }
         } catch (err) {
-          _didIteratorError6 = true;
-          _iteratorError6 = err;
+          _didIteratorError4 = true;
+          _iteratorError4 = err;
         } finally {
           try {
-            if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
-              _iterator6["return"]();
+            if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+              _iterator4["return"]();
             }
           } finally {
-            if (_didIteratorError6) {
-              throw _iteratorError6;
+            if (_didIteratorError4) {
+              throw _iteratorError4;
             }
           }
         }
@@ -408,4 +362,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteContainer;
   })(Sprite.Display));
 })();
-//# sourceMappingURL=SpriteContainer.js.map
