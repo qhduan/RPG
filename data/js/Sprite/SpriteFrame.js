@@ -53,8 +53,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       privates.image = image;
       privates.sx = sx;
       privates.sy = sy;
-      privates.width = width;
-      privates.height = height;
+      this.width = width;
+      this.height = height;
     }
 
     /**
@@ -123,37 +123,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       set: function set(value) {
         throw new Error("Sprite.Frame.sy readonly");
       }
-
-      /**
-       * @return {number} return width
-       */
-    }, {
-      key: "width",
-      get: function get() {
-        var privates = internal(this);
-        return privates.width;
-      },
-      set: function set(value) {
-        console.error(value, this);
-        throw new Error("Sprite.Frame.width readonly");
-      }
-
-      /**
-       * @return {number} return height
-       */
-    }, {
-      key: "height",
-      get: function get() {
-        var privates = internal(this);
-        return privates.height;
-      },
-      set: function set(value) {
-        console.error(value, this);
-        throw new Error("Sprite.Frame.height readonly");
-      }
     }]);
 
     return SpriteFrame;
   })(Sprite.Display));
 })();
-//# sourceMappingURL=SpriteFrame.js.map

@@ -111,13 +111,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       });
 
+      this.on("change", function () {
+        _this.autoHide();
+        _this.onto();
+        _this.touch();
+      });
+
       setInterval(function () {
         if (Game.paused == false) {
           _this.autoHide();
           _this.onto();
           _this.touch();
         }
-      }, 200);
+      }, 500);
     }
 
     _createClass(GameActorHero, [{

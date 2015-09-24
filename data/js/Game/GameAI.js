@@ -40,3 +40,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameAI;
   })());
 })();
+//# sourceMappingURL=GameAI.js.map

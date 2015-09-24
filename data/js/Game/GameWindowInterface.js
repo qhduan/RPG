@@ -239,3 +239,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.sysmenu.show();
   });
 })();
+//# sourceMappingURL=GameWindowInterface.js.map

@@ -86,32 +86,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    get width () {
-      let privates = internal(this);
-      return privates.width;
-    }
-
-    set width (value) {
-      let privates = internal(this);
-      if (value != this.width) {
-        privates.width = value;
-        this.generate();
-      }
-    }
-
-    get height () {
-      let privates = internal(this);
-      return privates.height;
-    }
-
-    set height (value) {
-      let privates = internal(this);
-      if (value != this.height) {
-        privates.height = value;
-        this.generate();
-      }
-    }
-
     get color () {
       let privates = internal(this);
       return privates.color;
@@ -155,7 +129,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       textContext.font = this.fontSize + "px " + privates.fontFamily;
       // "龍" is the max-width & max-height Chinese word I think
       let lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-      privates.width = 0;
+      this.width = 0;
 
       // find the real-maximum-width of multiline text, base user's maxWidth
       let lines = [];
@@ -168,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           lineText += this.text[i];
         }
         if (textContext.measureText(lineText).width > this.width)
-          privates.width = Math.ceil(textContext.measureText(lineText).width);
+          this.width = Math.ceil(textContext.measureText(lineText).width);
       }
 
       if (lineText.length) {

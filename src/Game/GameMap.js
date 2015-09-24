@@ -264,11 +264,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         for (let element of autohideLayer[key]) {
           container.appendChild(element);
         }
-        container.cache(0, 0, this.width, this.height);
+        container.cache();
         Game.layers.mapHideLayer.appendChild(container);
       }
 
-      Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+
+      Game.layers.mapLayer.cache();
+      /*
       Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
 
       let minimap = document.createElement("canvas");
@@ -283,6 +285,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.minimap = minimap;
 
       Game.layers.mapHideLayer.clearCache();
+      */
 
       if (privates.data.bgm) {
         // set loop = -1, 无限循环

@@ -40,8 +40,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.image = image;
       privates.sx = sx;
       privates.sy = sy;
-      privates.width = width;
-      privates.height = height;
+      this.width = width;
+      this.height = height;
     }
     /**
      * @return {Image} Return the image this Sprite.Frame hold
@@ -77,32 +77,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set sy (value) {
       throw new Error("Sprite.Frame.sy readonly");
-    }
-
-    /**
-     * @return {number} return width
-     */
-    get width () {
-      let privates = internal(this);
-      return privates.width;
-    }
-
-    set width (value) {
-      console.error(value, this);
-      throw new Error("Sprite.Frame.width readonly");
-    }
-
-    /**
-     * @return {number} return height
-     */
-    get height () {
-      let privates = internal(this);
-      return privates.height;
-    }
-
-    set height (value) {
-      console.error(value, this);
-      throw new Error("Sprite.Frame.height readonly");
     }
 
     print () {

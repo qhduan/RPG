@@ -116,3 +116,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
   Sprite.assign("Ticker", new SpriteTicker());
 })();
+//# sourceMappingURL=SpriteTicker.js.map

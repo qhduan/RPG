@@ -275,23 +275,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
 
-          container.cache(0, 0, this.width, this.height);
+          container.cache();
           Game.layers.mapHideLayer.appendChild(container);
         }
 
-        Game.layers.mapLayer.cache(0, 0, this.width, this.height);
+        Game.layers.mapLayer.cache();
+        /*
         Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
-
-        var minimap = document.createElement("canvas");
+         let minimap = document.createElement("canvas");
         minimap.width = this.col * 8; // 原地图的四倍
         minimap.height = this.row * 8;
-        var minimapContext = minimap.getContext("2d");
-        minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
-        minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
-
-        privates.minimap = minimap;
-
-        Game.layers.mapHideLayer.clearCache();
+        let minimapContext = minimap.getContext("2d");
+        minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas,
+          0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+        minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas,
+          0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+         privates.minimap = minimap;
+         Game.layers.mapHideLayer.clearCache();
+        */
 
         if (privates.data.bgm) {
           // set loop = -1, 无限循环
@@ -362,4 +363,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameMap;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameMap.js.map

@@ -75,7 +75,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        @type {boolean}
        */
       privates.visible = true;
+
+      privates.width = 0;
+      privates.height = 0;
     }
+
+    get width () {
+      return internal(this).width;
+    }
+
+    set width (value) {
+      internal(this).width = value;
+    }
+
+    get height () {
+      return internal(this).height;
+    }
+
+    set height (value) {
+      internal(this).height = value;
+    }
+
     /**
      * @return {number} return x position
      */

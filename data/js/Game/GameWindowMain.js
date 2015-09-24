@@ -55,3 +55,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.archive.open();
   });
 })();
+//# sourceMappingURL=GameWindowMain.js.map

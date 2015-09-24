@@ -57,8 +57,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(SpriteShape.prototype), "constructor", this).call(this);
       var privates = internal(this);
       privates.children = [];
-      privates.width = 0;
-      privates.height = 0;
+      this.width = 0;
+      this.height = 0;
       privates.image = null;
     }
 
@@ -69,8 +69,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var shape = new Sprite.Shape();
         internal(shape).children = privates.children.slice();
         internal(shape).image = privates.image;
-        internal(shape).width = privates.width;
-        internal(shape).height = privates.height;
+        internal(shape).width = this.width;
+        internal(shape).height = this.height;
         shape.x = this.x;
         shape.y = this.y;
         shape.centerX = this.centerX;
@@ -82,8 +82,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function clear() {
         var privates = internal(this);
         privates.children = [];
-        privates.width = 0;
-        privates.height = 0;
+        this.width = 0;
+        this.height = 0;
         this.generate();
         return this;
       }
@@ -120,11 +120,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         privates.children.push("<rect " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.x + config.width > privates.width) {
-          privates.width = config.x + config.width;
+        if (config.x + config.width > this.width) {
+          this.width = config.x + config.width;
         }
-        if (config.y + config.height > privates.height) {
-          privates.height = config.y + config.height;
+        if (config.y + config.height > this.height) {
+          this.height = config.y + config.height;
         }
         this.generate();
       }
@@ -146,11 +146,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         privates.children.push("<circle " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.cx + config.r > privates.width) {
-          privates.width = config.cx + config.r;
+        if (config.cx + config.r > this.width) {
+          this.width = config.cx + config.r;
         }
-        if (config.cy + config.r > privates.height) {
-          privates.height = config.cy + config.r;
+        if (config.cy + config.r > this.height) {
+          this.height = config.cy + config.r;
         }
         this.generate();
       }
@@ -173,11 +173,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         privates.children.push("<ellipse " + this.makeConfig(config, userConfig) + " />");
 
-        if (config.cx + config.rx > privates.width) {
-          privates.width = config.cx + config.rx;
+        if (config.cx + config.rx > this.width) {
+          this.width = config.cx + config.rx;
         }
-        if (config.cy + config.ry > privates.height) {
-          privates.height = config.cy + config.ry;
+        if (config.cy + config.ry > this.height) {
+          this.height = config.cy + config.ry;
         }
         this.generate();
       }
@@ -198,11 +198,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         privates.children.push("<line " + this.makeConfig(config, userConfig) + " />");
 
-        if (Math.max(config.x1, config.x2) > privates.width) {
-          privates.width = Math.max(config.x1, config.x2);
+        if (Math.max(config.x1, config.x2) > this.width) {
+          this.width = Math.max(config.x1, config.x2);
         }
-        if (Math.max(config.y1, config.y2) > privates.height) {
-          privates.height = Math.max(config.y1, config.y2);
+        if (Math.max(config.y1, config.y2) > this.height) {
+          this.height = Math.max(config.y1, config.y2);
         }
         this.generate();
       }
@@ -230,11 +230,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         });
 
-        if (max != -1 && max > privates.width) {
-          privates.width = max;
+        if (max != -1 && max > this.width) {
+          this.width = max;
         }
-        if (max != -1 && max > privates.height) {
-          privates.height = max;
+        if (max != -1 && max > this.height) {
+          this.height = max;
         }
         this.generate();
       }
@@ -268,8 +268,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         });
 
-        if (width > 0 && width > privates.width) privates.width = width;
-        if (height > 0 && height > privates.height) privates.height = height;
+        if (width > 0 && width > this.width) this.width = width;
+        if (height > 0 && height > this.height) this.height = height;
         this.generate();
       }
     }, {
@@ -314,9 +314,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var Done = function Done() {
           privates.image = image;
-          privates.width = image.width;
-          privates.height = image.height;
-          // release
           window.URL.revokeObjectURL(url);
           _this.emit("change");
         };
@@ -336,31 +333,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.drawImage(renderer, image, 0, 0, image.width, image.height, 0, 0, image.width, image.height);
         }
       }
-    }, {
-      key: "width",
-      get: function get() {
-        var privates = internal(this);
-        return privates.width;
-      },
-      set: function set(value) {
-        var privates = internal(this);
-        privates.width = value;
-        this.generate();
-      }
-    }, {
-      key: "height",
-      get: function get() {
-        var privates = internal(this);
-        return privates.height;
-      },
-      set: function set(value) {
-        var privates = internal(this);
-        privates.height = value;
-        this.generate();
-      }
     }]);
 
     return SpriteShape;
   })(Sprite.Display));
 })();
-//# sourceMappingURL=SpriteShape.js.map

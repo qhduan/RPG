@@ -145,7 +145,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               fun = new Function(req.response);
             } catch (e) {
               console.error(req.response, url);
-              alert(url);
               throw e;
             }
             Finish(fun);
@@ -320,3 +319,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteLoader;
   })(Sprite.Event));
 })();
+//# sourceMappingURL=SpriteLoader.js.map

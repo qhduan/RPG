@@ -54,13 +54,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       });
 
+      this.on("change", () => {
+        this.autoHide();
+        this.onto();
+        this.touch();
+      });
+
       setInterval(() => {
         if (Game.paused == false) {
           this.autoHide();
           this.onto();
           this.touch();
         }
-      }, 200);
+      }, 500);
     }
 
     hasQuest (id) {

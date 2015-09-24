@@ -84,3 +84,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameQuest;
   })());
 })();
+//# sourceMappingURL=GameQuest.js.map

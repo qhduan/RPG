@@ -75,12 +75,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        @private
        */
       privates.tilewidth = config.width;
+      this.width = config.width;
       /**
        * Height of each frame
        @type {number}
        @private
        */
       privates.tileheight = config.height;
+      this.height = config.height;
       /**
        * Animations of this sprite sheet, eg. { "walkdown": [0, 2, "", 40], "walkup", [3, 5, "", 40] }
        @type {Object}
@@ -409,4 +411,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteSheet;
   })(Sprite.Display));
 })();
-//# sourceMappingURL=SpriteSheet.js.map
