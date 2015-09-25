@@ -80,7 +80,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (tickCount % 20 == 0) {
             var barChanged = false;
 
-            if (_this.data.hp < _this.data.$hp) {
+            if (_this.data.hp < _this.data.$hp && attacking == false) {
               _this.data.hp++;
               barChanged = true;
             }
@@ -122,12 +122,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               _this.goto(Game.hero.x, Game.hero.y, "walk");
             } else {
               attacking = false;
+              if (Game.hero.beAttacking.has(_this)) {
+                Game.hero.beAttacking["delete"](_this);
+              }
             }
           } else {
             if (tickCount % dodo == 0) {
               if (Game.hero && Game.hero.distance(_this) < 8) {
                 _this.goto(Game.hero.x, Game.hero.y, "walk");
                 attacking = true;
+                Game.hero.beAttacking.add(_this);
               } else if (_this.data.mode == "patrol") {
                 if (Math.random() > 0.3) {
                   _this.stop();

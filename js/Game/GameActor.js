@@ -41,6 +41,35 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
   Game.assign("Actor", (function (_Sprite$Event) {
     _inherits(Actor, _Sprite$Event);
 
+    _createClass(Actor, null, [{
+      key: "load",
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("actor/" + id + ".js").then(function (data) {
+            var actorData = data[0]();
+            actorData.id = id;
+
+            var actorObj = null;
+            if (actorData.type == "npc") {
+              actorObj = new Game.ActorNPC(actorData);
+            } else if (actorData.type == "monster") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else if (actorData.type == "ally") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else if (actorData.type == "pet") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else {
+              console.error(actorData.type, actorData);
+              throw new Error("Game.Actor.load invalid actor type");
+            }
+            actorObj.on("complete", function () {
+              resolve(actorObj);
+            });
+          });
+        });
+      }
+    }]);
+
     function Actor(actorData) {
       var _this = this;
 
@@ -56,8 +85,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       if (this.data.image instanceof Array) {
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        Sprite.Loader.create().add("actor/" + this.data.image).start().on("complete", function (event) {
-          _this.init(event.data);
+        Sprite.load("actor/" + this.data.image).then(function (data) {
+          _this.init(data);
         });
       } else {
         console.error(this.id, this.data, this.data.image, this);
@@ -71,6 +100,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _this2 = this;
 
         var privates = internal(this);
+        var data = privates.data;
 
         var _iteratorNormalCompletion = true;
         var _didIteratorError = false;
@@ -83,11 +113,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
               console.error(image, images, this);
               throw new Error("Game.Actor got invalid image, not Image or Canvas");
-            }
-
-            if (image.width <= 0 || !Number.isFinite(image.width) || image.height <= 0 || !Number.isFinite(image.height)) {
-              console.error(image, images);
-              throw new Error("Game.Actor got invalid image, invalid width or height");
             }
           }
         } catch (err) {
@@ -109,16 +134,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var sprite = new Sprite.Sheet({
           images: images, // images is Array
-          width: this.data.tilewidth,
-          height: this.data.tileheight,
-          animations: this.data.animations
+          width: data.tilewidth,
+          height: data.tileheight,
+          animations: data.animations
         });
 
-        if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
-          sprite.centerX = this.data.centerX;
-          sprite.centerY = this.data.centerY;
+        if (Number.isInteger(data.centerX) && Number.isInteger(data.centerY)) {
+          sprite.centerX = data.centerX;
+          sprite.centerY = data.centerY;
         } else {
-          console.log(this.data);
+          console.log(data);
           throw new Error("Game.Actor invalid centerX/centerY");
         }
 
@@ -140,53 +165,48 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         };
 
-        if (this.data.quests) {
-          privates.quests = [];
-          privates.quests.length = this.data.quests.length;
-          this.data.quests.forEach(function (questId, index) {
+        // 加载NPC可能有的任务
+        if (data.quest) {
+          privates.quest = [];
+          privates.quest.length = data.quest.length;
+          data.quest.forEach(function (questId, index) {
             completeCount--;
-            Sprite.Loader.create().add("quest/" + questId + ".json").start().on("complete", function (event) {
-              privates.quests[index] = event.data[0];
-              privates.quests[index].id = questId;
+
+            Game.Quest.load(questId).then(function (questData) {
+              privates.quest.push(questData);
               Complete();
             });
           });
         }
 
-        if (this.data.skills) {
-          this.data.skills.forEach(function (skillId) {
+        // 加载人物技能
+        if (data.skills) {
+          data.skills.forEach(function (skillId) {
             completeCount--;
-            Game.Skill.load(skillId, function () {
+            Game.Skill.load(skillId).then(function () {
               Complete();
             });
           });
         }
 
-        if (this.data.equipment) {
-          for (var key in this.data.equipment) {
-            var itemId = this.data.equipment[key];
+        // 加载人物装备（暂时只有玩家）
+        if (data.equipment) {
+          for (var key in data.equipment) {
+            var itemId = data.equipment[key];
             if (itemId) {
               completeCount--;
-              Game.Item.load(itemId, function () {
+              Game.Item.load(itemId).then(function () {
                 Complete();
               });
             }
           }
         }
 
-        if (this.data.items) {
-          for (var itemId in this.data.items) {
+        // 加载人物物品
+        if (data.items) {
+          for (var itemId in data.items) {
             completeCount--;
-            Game.Item.load(itemId, function () {
-              Complete();
-            });
-          }
-        }
-
-        if (this.data.contact && this.data.trade) {
-          for (var itemId in this.data.trade) {
-            completeCount--;
-            Game.Item.load(itemId, function () {
+            Game.Item.load(itemId).then(function () {
               Complete();
             });
           }
@@ -200,7 +220,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var privates = internal(this);
         // 名字
         var text = new Sprite.Text({
-          text: this.data.name,
+          text: privates.data.name,
           maxWidth: 200,
           color: "white",
           fontSize: 12
@@ -213,7 +233,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 一个上面四个精神条、血条的聚合，统一管理放入这个Container
         privates.infoBox = new Sprite.Container();
 
-        if (this.data.type != "hero") {
+        if (privates.data.type != "hero") {
           // 血条外面的黑框
           var hpbarBox = new Sprite.Shape();
           hpbarBox.centerX = 15;
@@ -264,55 +284,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "calculate",
       value: function calculate() {
-        if (this.data.$str && this.data.$dex && this.data.$con && this.data.$int && this.data.$cha) {
+        var data = internal(this).data;
+        if (data.$str && data.$dex && data.$con && data.$int && data.$cha) {
 
-          this.data.str = this.data.$str;
-          this.data.dex = this.data.$dex;
-          this.data.con = this.data.$con;
-          this.data.int = this.data.$int;
-          this.data.cha = this.data.$cha;
+          data.str = data.$str;
+          data.dex = data.$dex;
+          data.con = data.$con;
+          data.int = data.$int;
+          data.cha = data.$cha;
 
-          // 然后可以针对基本属性计算buff
+          // 然后可以针对一级属性计算buff
 
-          this.data.$hp = this.data.con * 10;
-          this.data.$sp = this.data.int * 5;
-          this.data.$atk = this.data.str * 1;
-          this.data.$matk = this.data.int * 0.5;
-          this.data.$def = 0;
-          this.data.$mdef = 0;
+          // 计算完一级属性的buff之后，开始计算二级属性
 
-          this.data.critical = this.data.dex * 0.005;
-          this.data.dodge = this.data.dex * 0.005;
+          data.$hp = data.con * 5;
+          data.$sp = data.int * 5;
 
-          // 计算完了战斗相关数值
-          this.data.hp = this.data.$hp;
-          this.data.sp = this.data.$sp;
-          this.data.atk = this.data.$atk;
-          this.data.def = this.data.$def;
-          this.data.matk = this.data.$matk;
-          this.data.mdef = this.data.$mdef;
+          data.atk = data.str * 0.25;
+          data.matk = data.int * 0.25;
+          data.def = 0;
+          data.mdef = 0;
+          data.critical = data.dex * 0.005;
+          data.dodge = data.dex * 0.005;
 
-          // 最后可以对战斗相关数值计算buff
+          // 然后可以对二级属性计算buff
 
-          if (this.data.buff && this.data.nerf) {
-            this.data.buff.forEach(function (element) {});
-            this.data.nerf.forEach(function (element) {});
+          // 对二级属性计算完buff之后，可以计算会变动的值
+          // 例如.$hp是buff之后的生命值上限，.hp是当前生命值
+          data.hp = data.$hp;
+          data.sp = data.$sp;
+
+          if (data.buff && data.nerf) {
+            data.buff.forEach(function (element) {});
+            data.nerf.forEach(function (element) {});
           }
         }
-      }
-    }, {
-      key: "clone",
-      value: function clone(callback) {
-        var actor = new Game.Actor(this.data);
-        actor.x = this.x;
-        actor.y = this.y;
-        actor.visible = this.visible;
-        actor.alpha = this.alpha;
-        actorObj.on("complete", function () {
-          if (callback) {
-            callback(actor);
-          }
-        });
       }
     }, {
       key: "refreshBar",
@@ -395,11 +401,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               _this3.erase();
               Game.area.actors["delete"](_this3);
 
-              if (!_this3.data.items || Object.keys(_this3.data.items).length <= 0) {
-                _this3.data.items = {
-                  gold: 1
-                };
-              }
+              var items = _this3.data.items || {
+                gold: 1
+              };
 
               var bag = null;
               _iteratorNormalCompletion2 = true;
@@ -429,23 +433,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 }
               }
 
-              if (!bag) {
-                bag = Game.items.bag.clone();
-                bag.on("complete", function () {
+              console.log("1", bag);
+              if (bag) {
+                for (var key in items) {
+                  if (bag.inner.hasOwnProperty(key)) {
+                    bag.inner[key] += items[key];
+                  } else {
+                    bag.inner[key] = items[key];
+                  }
+                }
+              } else {
+                Game.Item.load("bag").then(function (bag) {
                   bag.x = _this3.x;
                   bag.y = _this3.y;
                   bag.inner = {};
                   bag.draw();
                   Game.area.bags.add(bag);
-                });
-              }
 
-              for (var key in _this3.data.items) {
-                if (bag.inner.hasOwnProperty(key)) {
-                  bag.inner[key] += _this3.data.items[key];
-                } else {
-                  bag.inner[key] = _this3.data.items[key];
-                }
+                  for (var key in items) {
+                    if (bag.inner.hasOwnProperty(key)) {
+                      bag.inner[key] += items[key];
+                    } else {
+                      bag.inner[key] = items[key];
+                    }
+                  }
+                });
               }
 
               attacker.emit("kill", false, _this3);
@@ -493,9 +505,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         var text = null;
+        var state = null;
 
         if (Math.random() < this.data.dodge) {
           // 闪避了
+          state = "dodge";
           text = new Sprite.Text({
             text: "miss",
             color: color,
@@ -503,6 +517,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           });
         } else if (Math.random() < attacker.data.critical) {
           // 重击了
+          state = "critical";
           power *= 2;
           text = new Sprite.Text({
             text: "-" + power,
@@ -513,6 +528,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.decreaseHP(power);
         } else {
           // 普通击中
+          state = "hit";
           text = new Sprite.Text({
             text: "-" + power,
             color: color,
@@ -520,6 +536,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           });
           this.flash();
           this.decreaseHP(power);
+        }
+
+        if (state != "dodge" && this != Game.hero) {
+          if (Game.sounds.hurt) {
+            Game.sounds.hurt.load();
+            Game.sounds.hurt.play();
+          }
         }
 
         text.centerX = Math.floor(text.width / 2);
@@ -614,27 +637,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           direction = this.direction;
         }
 
-        if (skill.can(this)) {
-
-          this.lastAttack = now;
-          this.lastAttackCooldown = skill.data.cooldown;
-          this.attacking = true;
-
-          this.data.sp -= skill.data.cost;
-          this.refreshBar();
-
-          skill.fire(this, direction, function (hitted) {
-            _this5.attacking = false;
-            if (hitted.length > 0) {
-              hitted[0].damage(_this5, skill);
-            }
-            _this5.emit("change");
-          });
-
-          return skill.data.cooldown;
-        } else {
+        if (this.type == "hero" && skill.data.can && skill.data.can() == false) {
           return 0;
         }
+
+        this.lastAttack = now;
+        this.lastAttackCooldown = skill.data.cooldown;
+        this.attacking = true;
+
+        this.data.sp -= skill.data.cost;
+        this.refreshBar();
+
+        skill.fire(this, direction, function (hitted) {
+          _this5.attacking = false;
+          if (hitted.length > 0) {
+            hitted[0].damage(_this5, skill);
+          }
+          _this5.emit("change");
+        });
+
+        return skill.data.cooldown;
       }
 
       /** 行走到指定地点 */
@@ -643,10 +665,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function goto(x, y, state, callback) {
         var _this6 = this;
 
-        state = state || "run";
-        callback = callback ? callback : function () {};
-
-        if (this.going || this.gettingPath) {
+        if (this.going) {
           this.goingNext = function () {
             _this6.goto(x, y, state, callback);
           };
@@ -660,26 +679,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             if (this.y - y == -1) {
               this.stop();
               this.face("down");
-              return callback();
+              if (callback) callback();
+              return;
             } else if (this.y - y == 1) {
               this.stop();
               this.face("up");
-              return callback();
+              if (callback) callback();
+              return;
             }
           } else if (this.y == y) {
             if (this.x - x == -1) {
               this.stop();
               this.face("right");
-              return callback();
+              if (callback) callback();
+              return;
             } else if (this.x - x == 1) {
               this.stop();
               this.face("left");
-              return callback();
+              if (callback) callback();
+              return;
             }
           }
         }
 
         var positionChoice = [];
+        // 上下左右
         if (this.checkCollision(x, y - 1) == false) {
           positionChoice.push({ x: x, y: y - 1, after: "down" });
         }
@@ -694,6 +718,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         var _iteratorNormalCompletion3 = true;
+
+        // 按照地址的距离从近到远排序（从小到大）
         var _didIteratorError3 = false;
         var _iteratorError3 = undefined;
 
@@ -718,25 +744,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         }
 
-        if (positionChoice.length > 1) {
-          // 找到四个邻接地址中最近的
-          positionChoice.sort(function (a, b) {
-            return a.distance - b.distance;
-          });
-        }
+        positionChoice.sort(function (a, b) {
+          return a.distance - b.distance;
+        });
 
+        // 如果真正的目的地有可能走，插入到第一位，写在这里是因为目的地并不一定是distance最小的
         if (this.checkCollision(x, y) == false) {
           positionChoice.splice(0, 0, { x: x, y: y });
         }
 
+        var index = 0;
+        var otherChoice = false;
+
         var TestPosition = function TestPosition() {
-          if (positionChoice.length) {
+          if (index < positionChoice.length) {
             (function () {
-              var dest = positionChoice[0]; // 保存第一个选项
-              positionChoice.splice(0, 1); // 去掉第一个
-              // 用WebWorker异步调用寻路算法
-              _this6.gettingPath = true;
-              //console.time("astar async");
+              var dest = positionChoice[index]; // 保存第一个选项
+              index++;
               Game.Astar.getPath({ x: _this6.x, y: _this6.y }, dest, function (result) {
                 _this6.gettingPath = false;
                 if (_this6.goingNext) {
@@ -752,7 +776,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 if (_this6.going) {
                   return;
                 }
-                //console.timeEnd("astar async");
                 if (result) {
                   if (_this6 == Game.hero) {
                     Game.Input.setDest(dest.x, dest.y);
@@ -763,7 +786,75 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 }
               });
             })();
-          }
+          } else {
+            if (otherChoice == false) {
+              otherChoice = true;
+              var otherPositionChoice = [];
+              // 四个角
+              if (_this6.checkCollision(x - 1, y - 1) == false) {
+                otherPositionChoice.push({ x: x - 1, y: y - 1, after: "right" });
+              }
+              if (_this6.checkCollision(x + 1, y - 1) == false) {
+                otherPositionChoice.push({ x: x + 1, y: y - 1, after: "left" });
+              }
+              if (_this6.checkCollision(x - 1, y + 1) == false) {
+                otherPositionChoice.push({ x: x - 1, y: y + 1, after: "right" });
+              }
+              if (_this6.checkCollision(x + 1, y + 1) == false) {
+                otherPositionChoice.push({ x: x + 1, y: y + 1, after: "left" });
+              }
+              // 四个远方向
+              if (_this6.checkCollision(x, y - 2) == false) {
+                otherPositionChoice.push({ x: x, y: y - 2, after: "down" });
+              }
+              if (_this6.checkCollision(x, y + 2) == false) {
+                otherPositionChoice.push({ x: x, y: y + 2, after: "up" });
+              }
+              if (_this6.checkCollision(x - 2, y) == false) {
+                otherPositionChoice.push({ x: x - 2, y: y, after: "right" });
+              }
+              if (_this6.checkCollision(x + 2, y) == false) {
+                otherPositionChoice.push({ x: x + 2, y: y, after: "left" });
+              }
+
+              var _iteratorNormalCompletion4 = true;
+
+              // 按照地址的距离从近到远排序（从小到大）
+              var _didIteratorError4 = false;
+              var _iteratorError4 = undefined;
+
+              try {
+                for (var _iterator4 = otherPositionChoice[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+                  var element = _step4.value;
+                  // 计算地址距离
+                  element.distance = _this6.distance(element.x, element.y);
+                }
+              } catch (err) {
+                _didIteratorError4 = true;
+                _iteratorError4 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
+                    _iterator4["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError4) {
+                    throw _iteratorError4;
+                  }
+                }
+              }
+
+              otherPositionChoice.sort(function (a, b) {
+                return a.distance - b.distance;
+              });
+
+              if (otherPositionChoice.length) {
+                index = 0;
+                positionChoice = otherPositionChoice;
+                TestPosition();
+              }
+            }
+          } // 再次尝试离地点最近的地点
         };
 
         TestPosition();
@@ -837,7 +928,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               Game.Input.clearDest();
             }
             _this7.going = false;
-            callback();
+            if (callback) callback();
           }
         };
         Walk();
@@ -868,48 +959,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         // 角色碰撞
         if (Game.area.actors) {
-          var _iteratorNormalCompletion4 = true;
-          var _didIteratorError4 = false;
-          var _iteratorError4 = undefined;
-
-          try {
-            for (var _iterator4 = Game.area.actors[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-              var actor = _step4.value;
-
-              if (actor != this && actor.hitTest(x, y)) {
-                return true;
-              }
-            }
-          } catch (err) {
-            _didIteratorError4 = true;
-            _iteratorError4 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion4 && _iterator4["return"]) {
-                _iterator4["return"]();
-              }
-            } finally {
-              if (_didIteratorError4) {
-                throw _iteratorError4;
-              }
-            }
-          }
-        }
-        return false;
-      }
-    }, {
-      key: "hitTest",
-      value: function hitTest(x, y) {
-        if (this.data.hitArea && this.data.hitArea instanceof Array) {
           var _iteratorNormalCompletion5 = true;
           var _didIteratorError5 = false;
           var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator5 = this.data.hitArea[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var p = _step5.value;
+            for (var _iterator5 = Game.area.actors[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var actor = _step5.value;
 
-              if (x == this.x + p[0] && y == this.y + p[1]) {
+              if (actor != this && actor.hitTest(x, y)) {
                 return true;
               }
             }
@@ -927,6 +985,39 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           }
+        }
+        return false;
+      }
+    }, {
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
+
+          try {
+            for (var _iterator6 = this.data.hitArea[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var p = _step6.value;
+
+              if (x == this.x + p[0] && y == this.y + p[1]) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+                _iterator6["return"]();
+              }
+            } finally {
+              if (_didIteratorError6) {
+                throw _iteratorError6;
+              }
+            }
+          }
 
           return false;
         } else {
@@ -940,6 +1031,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var _this8 = this;
 
         var callback = arguments.length <= 2 || arguments[2] === undefined ? null : arguments[2];
+
+        if (Game.paused) {
+          return false;
+        }
 
         // 如果正在战斗动画，则不走
         if (this.sprite.paused == false && this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)) {
@@ -974,6 +1069,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
             // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
             // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
+            var oldX = _this8.data.x;
+            var oldY = _this8.data.y;
             _this8.data.x = newPosition.x;
             _this8.data.y = newPosition.y;
 
@@ -987,9 +1084,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             // 比预计多一个，这样是为了流畅
             // 因为下一次go可能紧挨着这次
             var times = speed.length + 1;
-            var id = null;
 
-            Sprite.Ticker.whiles(times, function (last) {
+            var whilesId = Sprite.Ticker.whiles(times, function (last) {
+              if (Game.paused) {
+                _this8.data.x = oldX;
+                _this8.data.y = oldY;
+                _this8.walking = false;
+                _this8.emit("change");
+                Sprite.Ticker.clearWhiles(whilesId);
+                if (callback) {
+                  callback();
+                }
+                return;
+              }
+
               if (last) {
                 _this8.x = newPosition.x;
                 _this8.y = newPosition.y;
@@ -997,26 +1105,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 _this8.emit("change");
 
                 if (callback) {
-                  //Sprite.Ticker.after(2, function () {
                   callback();
-                  //});
                 }
               } else {
-                  switch (direction) {
-                    case "up":
-                      _this8.sprite.y -= speed.pop();
-                      break;
-                    case "down":
-                      _this8.sprite.y += speed.pop();
-                      break;
-                    case "left":
-                      _this8.sprite.x -= speed.pop();
-                      break;
-                    case "right":
-                      _this8.sprite.x += speed.pop();
-                      break;
-                  }
+                switch (direction) {
+                  case "up":
+                    _this8.sprite.y -= speed.pop();
+                    break;
+                  case "down":
+                    _this8.sprite.y += speed.pop();
+                    break;
+                  case "left":
+                    _this8.sprite.x -= speed.pop();
+                    break;
+                  case "right":
+                    _this8.sprite.x += speed.pop();
+                    break;
                 }
+              }
             });
 
             // 播放行走动画
@@ -1084,11 +1190,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "id",
       get: function get() {
-        var privates = internal(this);
-        return privates.data.id;
+        return internal(this).data.id;
       },
       set: function set(value) {
         throw new Error("Game.Actor.id readonly");
+      }
+    }, {
+      key: "type",
+      get: function get() {
+        return internal(this).data.type;
+      },
+      set: function set(value) {
+        throw new Error("Game.Actor.type readonly");
       }
     }, {
       key: "sprite",
@@ -1100,11 +1213,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         throw new Error("Game.Actor.sprite readonly");
       }
     }, {
-      key: "quests",
+      key: "quest",
       get: function get() {
         var privates = internal(this);
-        if (privates.quests) {
-          return privates.quests;
+        if (privates.quest) {
+          return privates.quest;
         } else {
           return null;
         }
@@ -1210,3 +1323,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
+//# sourceMappingURL=GameActor.js.map

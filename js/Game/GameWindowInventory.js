@@ -278,21 +278,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 }
               }
 
-              if (!bag) {
-                bag = Game.items.bag.clone();
-                bag.on("complete", function () {
+              if (bag) {
+                if (bag.inner.hasOwnProperty(itemId)) {
+                  bag.inner[item.id] += itemCount;
+                } else {
+                  bag.inner[item.id] = itemCount;
+                }
+              } else {
+                Game.Item.load("bag").then(function (bag) {
                   bag.x = Game.hero.x;
                   bag.y = Game.hero.y;
                   bag.draw();
                   bag.inner = {};
                   Game.area.bags.add(bag);
-                });
-              }
 
-              if (bag.inner.hasOwnProperty(itemId)) {
-                bag.inner[item.id] += itemCount;
-              } else {
-                bag.inner[item.id] = itemCount;
+                  if (bag.inner.hasOwnProperty(itemId)) {
+                    bag.inner[item.id] += itemCount;
+                  } else {
+                    bag.inner[item.id] = itemCount;
+                  }
+                });
               }
 
               delete Game.hero.data.items[itemId];

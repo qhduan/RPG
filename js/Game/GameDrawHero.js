@@ -38,15 +38,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       context.drawImage(img, 0, 0, img.width, img.height, 0, 0, width, height);
     }
 
-    var withoutWeapon = new Image();
+    var withoutWeapon = null;
+    var withWeapon = null;
+
+    var done = -2;
+    var Finish = function Finish() {
+      done++;
+      if (done >= 0) {
+        if (callback) {
+          callback([withoutWeapon, withWeapon]);
+        }
+      }
+    };
+
+    withoutWeapon = new Image();
     withoutWeapon.src = canvas.toDataURL("image/png");
+
+    if (withoutWeapon.complete) {
+      Finish();
+    } else {
+      withoutWeapon.onload = function () {
+        Finish();
+      };
+    }
 
     context.drawImage(images[length], 0, 0, images[length].width, images[length].height, 0, 0, width, height);
 
-    var withWeapon = new Image();
+    withWeapon = new Image();
     withWeapon.src = canvas.toDataURL("image/png");
 
-    callback([withoutWeapon, withWeapon]);
+    if (withWeapon.complete) {
+      Finish();
+    } else {
+      withWeapon.onload = function () {
+        Finish();
+      };
+    }
   }
 
   // 把多张图片合成一张，并返回
@@ -86,8 +113,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       imageUrls.push(BASE + "/weapons/" + heroCustom.sex + "/weapons.png");
     }
 
-    Sprite.Loader.create().add(imageUrls).start().on("complete", function (event) {
-      CombineHeroImage(event.data, heroCustom.width, heroCustom.height, callback);
+    Sprite.load(imageUrls).then(function (data) {
+      CombineHeroImage(data, heroCustom.width, heroCustom.height, callback);
     });
   });
 })();

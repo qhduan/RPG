@@ -25,14 +25,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
-
-var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
-
-function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-
 (function () {
   "use strict";
 
@@ -105,7 +97,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     req.timeout = 15000; // 15 seconds
 
     var type = null;
-    if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+    if (url.match(/js$/)) {
+      req.responseType = "text";
+      type = "js";
+    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
       req.responseType = "blob";
       type = "image";
     } else if (url.match(/wav$|mp3$|ogg$/i)) {
@@ -131,10 +126,21 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       }
     };
 
+    var done = false;
     req.onreadystatechange = function () {
-      if (req.readyState == 4) {
+      if (req.readyState == 4 && !done) {
+        done = true;
         if (req.response) {
-          if (type == "image") {
+          if (type == "js") {
+            var fun = null;
+            try {
+              fun = new Function(req.response);
+            } catch (e) {
+              console.error(req.response, url);
+              throw e;
+            }
+            Finish(fun);
+          } else if (type == "image") {
             (function () {
               var blob = req.response;
               var image = new Image();
@@ -166,7 +172,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             Finish(json);
           }
         } else {
-          console.error(req.readyState, req.status, req.statusText);
+          console.error(req.response, req.readyState, req.status, req.statusText);
           throw new Error("Sprite.Loader.Fetch Error");
         }
       }
@@ -174,135 +180,84 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     req.send();
   }
 
-  /**
-   * Class for fetch resources
-   * @class
-   */
-  Sprite.assign("Loader", (function (_Sprite$Event) {
-    _inherits(SpriteLoader, _Sprite$Event);
+  Sprite.assign("load", function () {
+    var args = Array.prototype.slice.call(arguments);
+    return new Promise(function (resolve, reject) {
+      var urls = [];
 
-    _createClass(SpriteLoader, null, [{
-      key: "create",
+      var _iteratorNormalCompletion2 = true;
+      var _didIteratorError2 = false;
+      var _iteratorError2 = undefined;
 
-      /**
-       * Create a Sprite.Loader object
-       * @static
-       */
-      value: function create() {
-        return new Sprite.Loader();
-      }
+      try {
+        for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+          var element = _step2.value;
 
-      /**
-       * Construct Sprite.Laoder
-       * @constructor
-       */
-    }]);
+          if (typeof element == "string") {
+            urls.push(element);
+          } else if (element instanceof Array) {
+            var _iteratorNormalCompletion3 = true;
+            var _didIteratorError3 = false;
+            var _iteratorError3 = undefined;
 
-    function SpriteLoader() {
-      _classCallCheck(this, SpriteLoader);
+            try {
+              for (var _iterator3 = element[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                var url = _step3.value;
 
-      _get(Object.getPrototypeOf(SpriteLoader.prototype), "constructor", this).call(this);
-      var privates = internal(this);
-
-      privates.list = [];
-      privates.progress = 0;
-    }
-
-    /**
-     * @return {number} Return current download progress
-     */
-
-    _createClass(SpriteLoader, [{
-      key: "add",
-
-      /**
-       * Add one or more urls
-       * eg. add("a.txt") add("a.txt", "b.txt") add(["a.txt", "b.txt"], "c.txt")
-       * @param {Object} urls, one or more urls.
-       */
-      value: function add(urls) {
-        var privates = internal(this);
-        var args = Array.prototype.slice.call(arguments);
-
-        var _iteratorNormalCompletion2 = true;
-        var _didIteratorError2 = false;
-        var _iteratorError2 = undefined;
-
-        try {
-          for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var element = _step2.value;
-
-            if (element instanceof Array) {
-              privates.list = privates.list.concat(element);
-            } else if (typeof element == "string" && element.length > 0) {
-              privates.list.push(element);
-            } else {
-              console.error(element, args, this);
-              throw new Error("Sprite.Loader.add invalid argument");
+                urls.push(url);
+              }
+            } catch (err) {
+              _didIteratorError3 = true;
+              _iteratorError3 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+                  _iterator3["return"]();
+                }
+              } finally {
+                if (_didIteratorError3) {
+                  throw _iteratorError3;
+                }
+              }
             }
-          }
-        } catch (err) {
-          _didIteratorError2 = true;
-          _iteratorError2 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-              _iterator2["return"]();
-            }
-          } finally {
-            if (_didIteratorError2) {
-              throw _iteratorError2;
-            }
+          } else {
+            console.error(element, args);
+            throw new Error("Sprite.load got invalid argument");
           }
         }
-
-        return this;
-      }
-
-      /**
-       * Begin to download
-       */
-    }, {
-      key: "start",
-      value: function start() {
-        var _this = this;
-
-        var privates = internal(this);
-        var done = 0;
-        var ret = [];
-        ret.length = privates.list.length;
-
-        var Done = function Done() {
-          done++;
-
-          privates.progress = done / ret.length;
-          _this.emit("progress");
-
-          if (done >= ret.length) {
-            _this.emit("complete", true, ret);
+      } catch (err) {
+        _didIteratorError2 = true;
+        _iteratorError2 = err;
+      } finally {
+        try {
+          if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+            _iterator2["return"]();
           }
-        };
+        } finally {
+          if (_didIteratorError2) {
+            throw _iteratorError2;
+          }
+        }
+      }
 
-        privates.list.forEach(function (element, index) {
-          Fetch(element, function (result) {
-            ret[index] = result;
-            Done();
-          });
+      var done = 0;
+      var ret = [];
+      ret.length = urls.length;
+
+      var Done = function Done() {
+        done++;
+
+        if (done >= ret.length) {
+          resolve(ret);
+        }
+      };
+
+      urls.forEach(function (element, index) {
+        Fetch(element, function (result) {
+          ret[index] = result;
+          Done();
         });
-        return this;
-      }
-    }, {
-      key: "progress",
-      get: function get() {
-        var privates = internal(this);
-        return privates.progress;
-      },
-      set: function set(value) {
-        throw new Error("Sprite.Loader.progress readonly");
-      }
-    }]);
-
-    return SpriteLoader;
-  })(Sprite.Event));
+      });
+    });
+  });
 })();
-//# sourceMappingURL=SpriteLoader.js.map

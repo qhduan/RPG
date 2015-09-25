@@ -88,11 +88,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
        @type {boolean}
        */
       privates.visible = true;
-    }
 
-    /**
-     * @return {number} return x position
-     */
+      privates.width = 0;
+      privates.height = 0;
+    }
 
     _createClass(SpriteDisplay, [{
       key: "draw",
@@ -197,6 +196,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           throw e;
         }
       }
+    }, {
+      key: "width",
+      get: function get() {
+        return internal(this).width;
+      },
+      set: function set(value) {
+        internal(this).width = value;
+      }
+    }, {
+      key: "height",
+      get: function get() {
+        return internal(this).height;
+      },
+      set: function set(value) {
+        internal(this).height = value;
+      }
+
+      /**
+       * @return {number} return x position
+       */
     }, {
       key: "x",
       get: function get() {

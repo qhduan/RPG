@@ -42,6 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   mainWindowContinue.addEventListener("click", function (event) {
+    win.hide();
     Game.Archive.load();
   });
 
@@ -50,6 +51,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   mainWindowLoad.addEventListener("click", function (event) {
+    win.hide();
     Game.windows.archive.open();
   });
 })();

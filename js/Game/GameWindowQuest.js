@@ -60,18 +60,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     questWindowPast.disabled = false;
 
     var table = "";
-    var list = Game.hero.data.quest.current;
+    var list = Game.hero.data.currentQuest;
     list.forEach(function (quest) {
 
-      var complete = true;
-      if (quest.target.type == "kill") {
-        for (var key in quest.target.kill) {
-          var t = quest.target.kill[key];
-          if (t.current < t.need) {
-            complete = false;
-          }
-        }
-      }
+      var complete = Game.Quest.isComplete(quest);
 
       var line = "<div class=\"questWindowItem\">\n";
       line += "  <label style=\"font-size: 20px; margin: 10px;\">" + quest.name + (complete ? "[已完成]" : "[未完成]") + "</label>\n";
@@ -88,10 +80,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += "  </div>";
       }
 
-      if (quest.target.type == "kill") {
-        for (var key in quest.target.kill) {
-          var t = quest.target.kill[key];
-          line += "<div style=\"margin: 10px;\">" + t.name + "：" + t.current + " / " + t.need + "</div>";
+      if (quest.target && quest.target.kill == "kill") {
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = quest.target.kill[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var k = _step.value;
+
+            line += "<div style=\"margin: 10px;\">" + k.name + "：" + k.current + " / " + t.need + "</div>";
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
         }
       }
 
@@ -115,7 +127,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     questWindowPast.disabled = true;
 
     var table = "";
-    var list = Game.hero.data.quest.past;
+    var list = Game.hero.data.completeQuest;
     list.forEach(function (quest) {
 
       var line = "<div class=\"questWindowItem\">\n";
@@ -133,10 +145,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += "  </div>";
       }
 
-      if (quest.target.type == "kill") {
-        for (var key in quest.target.kill) {
-          var t = quest.target.kill[key];
-          line += "<div style=\"margin: 10px;\">" + t.name + "：" + t.current + " / " + t.need + "</div>";
+      if (quest.target && quest.target.type == "kill") {
+        var _iteratorNormalCompletion2 = true;
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = quest.target.kill[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var k = _step2.value;
+
+            line += "<div style=\"margin: 10px;\">" + k.name + "：" + k.current + " / " + t.need + "</div>";
+          }
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
         }
       }
 

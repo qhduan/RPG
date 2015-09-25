@@ -96,7 +96,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         textContext.font = this.fontSize + "px " + privates.fontFamily;
         // "龍" is the max-width & max-height Chinese word I think
         var lineHeight = Math.ceil(textContext.measureText("龍").width * 1.2);
-        privates.width = 0;
+        this.width = 0;
 
         // find the real-maximum-width of multiline text, base user's maxWidth
         var lines = [];
@@ -108,7 +108,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           } else {
             lineText += this.text[i];
           }
-          if (textContext.measureText(lineText).width > this.width) privates.width = Math.ceil(textContext.measureText(lineText).width);
+          if (textContext.measureText(lineText).width > this.width) this.width = Math.ceil(textContext.measureText(lineText).width);
         }
 
         if (lineText.length) {
@@ -152,32 +152,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var privates = internal(this);
         if (value != this.text) {
           privates.text = value;
-          this.generate();
-        }
-      }
-    }, {
-      key: "width",
-      get: function get() {
-        var privates = internal(this);
-        return privates.width;
-      },
-      set: function set(value) {
-        var privates = internal(this);
-        if (value != this.width) {
-          privates.width = value;
-          this.generate();
-        }
-      }
-    }, {
-      key: "height",
-      get: function get() {
-        var privates = internal(this);
-        return privates.height;
-      },
-      set: function set(value) {
-        var privates = internal(this);
-        if (value != this.height) {
-          privates.height = value;
           this.generate();
         }
       }

@@ -159,3 +159,4 @@ function path(collisionFunction, width, height, start, end) {
 
   return null;
 }
+//# sourceMappingURL=GameWorkerAstar.js.map

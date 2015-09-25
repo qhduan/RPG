@@ -74,6 +74,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
         });
+        return id;
+      }
+    }, {
+      key: "clearAfter",
+      value: function clearAfter(id) {
+        this.off("tick", id);
       }
     }, {
       key: "whiles",
@@ -94,6 +100,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
         });
+        return id;
+      }
+    }, {
+      key: "clearWhiles",
+      value: function clearWhiles(id) {
+        this.off("tick", id);
       }
     }]);
 

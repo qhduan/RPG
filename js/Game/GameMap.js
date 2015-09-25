@@ -68,6 +68,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       set: function set(value) {
         throw new Error("Game.Map.blockedMap readonly");
       }
+    }], [{
+      key: "load",
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
+            var mapData = Sprite.copy(data[0]);
+            var mapInfo = data[1]();
+
+            mapData.id = id;
+            for (var key in mapInfo) {
+              if (mapData.hasOwnProperty(key)) {
+                console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
+                throw new Error("Game.loadArea invalid data");
+              }
+              mapData[key] = mapInfo[key];
+            }
+
+            var mapObj = new Game.Map(mapData);
+            mapObj.on("complete", function () {
+              resolve(mapObj);
+            });
+          });
+        });
+      }
     }]);
 
     function GameMap(mapData) {
@@ -77,10 +101,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       _get(Object.getPrototypeOf(GameMap.prototype), "constructor", this).call(this);
       var privates = internal(this);
-
       privates.data = mapData;
 
-      var mapTilesetLoader = Sprite.Loader.create();
+      var images = [];
       var _iteratorNormalCompletion = true;
       var _didIteratorError = false;
       var _iteratorError = undefined;
@@ -89,7 +112,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         for (var _iterator = privates.data.tilesets[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
           var element = _step.value;
 
-          mapTilesetLoader.add("map/" + element.image);
+          images.push("map/" + element.image);
         }
       } catch (err) {
         _didIteratorError = true;
@@ -108,10 +131,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       ;
 
-      mapTilesetLoader.start().on("complete", function (event) {
+      Sprite.load(images).then(function (data) {
 
         privates.sheet = new Sprite.Sheet({
-          images: event.data,
+          images: data,
           width: privates.data.tilewidth,
           height: privates.data.tileheight
         });
@@ -203,19 +226,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       // 返回某个坐标点所在的地格
       value: function tile(x, y) {
-        if (x && typeof y == "undefined" && Number.isFinite(x.x) && Number.isFinite(x.y)) {
-          return {
-            x: Math.floor(x.x / this.data.tilewidth),
-            y: Math.floor(x.y / this.data.tileheight)
-          };
-        } else if (Number.isFinite(x) && Number.isFinite(y)) {
+        if (Number.isFinite(x) && Number.isFinite(y)) {
           return {
             x: Math.floor(x / this.data.tilewidth),
             y: Math.floor(y / this.data.tileheight)
           };
         } else {
-          console.error(x, y);
-          throw new Error("Game.Map.tile Invalid arguments");
+          console.error(x, y, this.data);
+          throw new Error("Game.Map.tile got invalid arguments");
         }
       }
 
@@ -275,28 +293,50 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
 
-          container.cache(0, 0, this.width, this.height);
+          container.cache();
           Game.layers.mapHideLayer.appendChild(container);
         }
 
-        Game.layers.mapLayer.cache(0, 0, this.width, this.height);
-        Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
+        Game.layers.mapLayer.cache();
 
         var minimap = document.createElement("canvas");
         minimap.width = this.col * 8; // 原地图的四倍
         minimap.height = this.row * 8;
         var minimapContext = minimap.getContext("2d");
         minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
-        minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
 
         privates.minimap = minimap;
-
-        Game.layers.mapHideLayer.clearCache();
 
         if (privates.data.bgm) {
           // set loop = -1, 无限循环
           //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
           //bgm.setVolume(0.2);
+        }
+
+        if (privates.data.spawnMonster && privates.data.spawnMonster.list && privates.data.spawnMonster.position && privates.data.spawnMonster.position.length) {
+          var done = 0;
+          while (done < privates.data.spawnMonster.position.length) {
+            var monsterId = null;
+            var prob = 0;
+            var r = Math.random();
+            for (var key in privates.data.spawnMonster.list) {
+              prob += privates.data.spawnMonster.list[key];
+              if (r < prob) {
+                monsterId = key;
+                break;
+              }
+            }
+            if (monsterId) {
+              done++;
+              Game.Actor.load(monsterId).then(function (actorObj) {
+                var pos = privates.data.spawnMonster.position.pop();
+                actorObj.x = pos[0];
+                actorObj.y = pos[1];
+                Game.area.actors.add(actorObj);
+                actorObj.draw(Game.layers.actorLayer);
+              });
+            }
+          }
         }
       }
     }, {
@@ -362,3 +402,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameMap;
   })(Sprite.Event));
 })();
+//# sourceMappingURL=GameMap.js.map
