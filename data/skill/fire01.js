@@ -17,7 +17,7 @@ return {
   distance: 50,
   cooldown: 800,
   type: "magic",
-  power: "1d8",
+  power: "1d4",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,

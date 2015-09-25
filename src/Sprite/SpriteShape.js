@@ -52,8 +52,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let shape = new Sprite.Shape();
       internal(shape).children = privates.children.slice();
       internal(shape).image = privates.image;
-      internal(shape).width = this.width;
-      internal(shape).height = this.height;
+      shape.width = this.width;
+      shape.height = this.height;
       shape.x = this.x;
       shape.y = this.y;
       shape.centerX = this.centerX;

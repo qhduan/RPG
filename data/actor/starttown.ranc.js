@@ -60,7 +60,8 @@ return {
       ]
     }
   ],
-  trade: {
+  trade: true,
+  items: {
     "sword.iron": 5,
     "spear.iron": 5,
     "bow.wood": 5

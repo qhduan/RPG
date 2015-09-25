@@ -25,6 +25,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.assign("Map", class GameMap extends Sprite.Event {
 
+    static load (id) {
+      return new Promise(function (resolve, reject) {
+        Sprite.load(`map/${id}.json`, `map/${id}.js`).then(function (data) {
+          let mapData = Sprite.copy(data[0]);
+          let mapInfo = data[1]();
+
+          mapData.id = id;
+          for (let key in mapInfo) {
+            if (mapData.hasOwnProperty(key)) {
+              console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
+              throw new Error("Game.loadArea invalid data");
+            }
+            mapData[key] = mapInfo[key];
+          }
+
+          let mapObj = new Game.Map(mapData);
+          mapObj.on("complete", function () {
+            resolve(mapObj);
+          })
+        });
+      });
+    }
+
     hitTest (x, y) {
       if (internal(this).blockedMap[x*10000+y]) {
         return true;
@@ -57,19 +80,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     constructor (mapData) {
       super();
       let privates = internal(this);
-
       privates.data = mapData;
 
-      let mapTilesetLoader = Sprite.Loader.create();
+      let images = [];
       for (let element of privates.data.tilesets) {
-        mapTilesetLoader.add(`map/${element.image}`);
+        images.push(`map/${element.image}`);
       };
 
-
-      mapTilesetLoader.start().on("complete", (event) => {
+      Sprite.load(images).then((data) => {
 
         privates.sheet = new Sprite.Sheet({
-          images: event.data,
+          images: data,
           width: privates.data.tilewidth,
           height: privates.data.tileheight,
         });
@@ -215,19 +236,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 返回某个坐标点所在的地格
     tile (x, y) {
-      if (x && typeof y == "undefined" && Number.isFinite(x.x) && Number.isFinite(x.y)) {
-        return {
-          x: Math.floor(x.x / this.data.tilewidth),
-          y: Math.floor(x.y / this.data.tileheight)
-        };
-      } else if (Number.isFinite(x) && Number.isFinite(y)) {
+      if (Number.isFinite(x) && Number.isFinite(y)) {
         return {
           x: Math.floor(x / this.data.tilewidth),
           y: Math.floor(y / this.data.tileheight)
         };
       } else {
-        console.error(x, y);
-        throw new Error("Game.Map.tile Invalid arguments");
+        console.error(x, y, this.data);
+        throw new Error("Game.Map.tile got invalid arguments");
       }
     }
 
@@ -270,8 +286,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
       Game.layers.mapLayer.cache();
-      /*
-      Game.layers.mapHideLayer.cache(0, 0, this.width, this.height);
 
       let minimap = document.createElement("canvas");
       minimap.width = this.col * 8; // 原地图的四倍
@@ -279,19 +293,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let minimapContext = minimap.getContext("2d");
       minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas,
         0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
-      minimapContext.drawImage(Game.layers.mapHideLayer.cacheCanvas,
-        0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
 
       privates.minimap = minimap;
 
-      Game.layers.mapHideLayer.clearCache();
-      */
 
       if (privates.data.bgm) {
         // set loop = -1, 无限循环
         //let bgm = createjs.Sound.play(this.data.bgm, undefined, undefined, undefined, -1);
         //bgm.setVolume(0.2);
       }
+
+      if (
+        privates.data.spawnMonster &&
+        privates.data.spawnMonster.list &&
+        privates.data.spawnMonster.position &&
+        privates.data.spawnMonster.position.length
+      ) {
+        let done = 0;
+        while (done < privates.data.spawnMonster.position.length) {
+          let monsterId = null;
+          let prob = 0;
+          let r = Math.random();
+          for (let key in privates.data.spawnMonster.list) {
+            prob += privates.data.spawnMonster.list[key];
+            if (r < prob) {
+              monsterId = key;
+              break;
+            }
+          }
+          if (monsterId) {
+            done++;
+            Game.Actor.load(monsterId).then((actorObj) => {
+              let pos = privates.data.spawnMonster.position.pop();
+              actorObj.x = pos[0];
+              actorObj.y = pos[1];
+              Game.area.actors.add(actorObj);
+              actorObj.draw(Game.layers.actorLayer);
+            });
+          }
+        }
+      }
+
+
     }
   });
 

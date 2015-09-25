@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Game.windows.loading.update("40%");
             console.time("area");
 
-            Game.loadArea(heroData.area, function (area) {
+            Game.loadArea(heroData.area).then(function (area) {
 
               console.timeEnd("area");
               Game.windows.loading.update("60%");

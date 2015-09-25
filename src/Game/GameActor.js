@@ -30,32 +30,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   */
   Game.assign("Actor", class Actor extends Sprite.Event {
 
-    static load (id, callback) {
-      Sprite.Loader.create()
-        .add(`actor/${id}.js`)
-        .start()
-        .on("complete", (event) => {
+    static load (id) {
+      return new Promise(function (resolve, reject) {
+        Sprite.load(`actor/${id}.js`).then(function (data) {
+          let actorData = data[0]();
+          actorData.id = id;
 
-        let actorData = event.data[0]();
-        actorData.id = id;
-
-        let actorObj = null;
-        if (actorData.type == "npc") {
-          actorObj = new Game.ActorNPC(actorData);
-        } else if (actorData.type == "monster") {
-          actorObj = new Game.ActorMonster(actorData);
-        } else if (actorData.type == "ally") {
-          actorObj = new Game.ActorMonster(actorData);
-        } else if (actorData.type == "pet") {
-          actorObj = new Game.ActorMonster(actorData);
-        } else {
-          console.error(actorData.type, actorData);
-          throw new Error("Game.Actor.load invalid actor type");
-        }
-        actorObj.on("complete", () => {
-          if (callback) {
-            callback(actorObj);
+          let actorObj = null;
+          if (actorData.type == "npc") {
+            actorObj = new Game.ActorNPC(actorData);
+          } else if (actorData.type == "monster") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else if (actorData.type == "ally") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else if (actorData.type == "pet") {
+            actorObj = new Game.ActorMonster(actorData);
+          } else {
+            console.error(actorData.type, actorData);
+            throw new Error("Game.Actor.load invalid actor type");
           }
+          actorObj.on("complete", () => {
+            resolve(actorObj);
+          });
         });
       });
     }
@@ -72,13 +68,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.data.image instanceof Array) {
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        Sprite.Loader
-          .create()
-          .add("actor/" + this.data.image)
-          .start()
-          .on("complete", (event) => {
-            this.init(event.data);
-          });
+        Sprite.load("actor/" + this.data.image).then((data) => {
+          this.init(data);
+        });
       } else {
         console.error(this.id, this.data, this.data.image, this);
         throw new Error("Invalid Actor Image");
@@ -132,13 +124,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       };
 
+      // 加载NPC可能有的任务
       if (data.quest) {
         privates.quest = [];
         privates.quest.length = data.quest.length;
         data.quest.forEach((questId, index) => {
           completeCount--;
 
-          Game.Quest.load(questId, (questData) => {
+          Game.Quest.load(questId).then((questData) => {
             privates.quest.push(questData);
             Complete();
           });
@@ -146,40 +139,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         });
       }
 
+      // 加载人物技能
       if (data.skills) {
         data.skills.forEach((skillId) => {
           completeCount--;
-          Game.Skill.load(skillId, () => {
+          Game.Skill.load(skillId).then(() => {
             Complete();
           });
         });
       }
 
+      // 加载人物装备（暂时只有玩家）
       if (data.equipment) {
         for (let key in data.equipment) {
           let itemId = data.equipment[key];
           if (itemId) {
             completeCount--;
-            Game.Item.load(itemId, () => {
+            Game.Item.load(itemId).then(() => {
               Complete();
             });
           }
         }
       }
 
+      // 加载人物物品
       if (data.items) {
         for (let itemId in data.items) {
           completeCount--;
-          Game.Item.load(itemId, () => {
-            Complete();
-          });
-        }
-      }
-
-      if (data.contact && data.trade) {
-        for (let itemId in data.trade) {
-          completeCount--;
-          Game.Item.load(itemId, () => {
+          Game.Item.load(itemId).then(() => {
             Complete();
           });
         }
@@ -328,11 +315,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         // 计算完一级属性的buff之后，开始计算二级属性
 
-        data.$hp = data.con * 10;
+        data.$hp = data.con * 5;
         data.$sp = data.int * 5;
 
-        data.atk = data.str * 1;
-        data.matk = data.int * 0.5;
+        data.atk = data.str * 0.25;
+        data.matk = data.int * 0.25;
         data.def = 0;
         data.mdef = 0;
         data.critical = data.dex * 0.005;
@@ -451,19 +438,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Game.Actor.facePosition readonly");
     }
 
-    clone  (callback) {
-      let actor = new Game.Actor(this.data);
-      actor.x = this.x;
-      actor.y = this.y;
-      actor.visible = this.visible;
-      actor.alpha = this.alpha;
-      actorObj.on("complete", function () {
-        if (callback) {
-          callback(actor);
-        }
-      });
-    }
-
     refreshBar () {
       let privates = internal(this);
 
@@ -532,11 +506,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           this.erase();
           Game.area.actors.delete(this);
 
-          if (!this.data.items || Object.keys(this.data.items).length <= 0) {
-            this.data.items = {
-              gold: 1
-            };
-          }
+          let items = this.data.items || {
+            gold: 1
+          };
 
           let bag = null;
           for (let b of Game.area.bags) {
@@ -544,23 +516,31 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               bag = b;
             }
           }
-          if (!bag) {
-            bag = Game.items.bag.clone();
-            bag.on("complete", () => {
+          console.log("1", bag);
+          if (bag) {
+            for (let key in items) {
+              if (bag.inner.hasOwnProperty(key)) {
+                bag.inner[key] += items[key];
+              } else {
+                bag.inner[key] = items[key];
+              }
+            }
+          } else {
+            Game.Item.load("bag").then((bag) => {
               bag.x = this.x;
               bag.y = this.y;
               bag.inner = {};
               bag.draw();
               Game.area.bags.add(bag);
-            });
-          }
 
-          for (let key in this.data.items) {
-            if (bag.inner.hasOwnProperty(key)) {
-              bag.inner[key] += this.data.items[key];
-            } else {
-              bag.inner[key] = this.data.items[key];
-            }
+              for (let key in items) {
+                if (bag.inner.hasOwnProperty(key)) {
+                  bag.inner[key] += items[key];
+                } else {
+                  bag.inner[key] = items[key];
+                }
+              }
+            });
           }
 
           attacker.emit("kill", false, this);
@@ -734,27 +714,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         direction = this.direction;
       }
 
-      if (skill.can(this)) {
-
-        this.lastAttack = now;
-        this.lastAttackCooldown = skill.data.cooldown;
-        this.attacking = true;
-
-        this.data.sp -= skill.data.cost;
-        this.refreshBar();
-
-        skill.fire(this, direction, (hitted) => {
-          this.attacking = false;
-          if (hitted.length > 0) {
-            hitted[0].damage(this, skill);
-          }
-          this.emit("change");
-        });
-
-        return skill.data.cooldown;
-      } else {
+      if (this.type == "hero" && skill.data.can && skill.data.can() == false) {
         return 0;
       }
+
+      this.lastAttack = now;
+      this.lastAttackCooldown = skill.data.cooldown;
+      this.attacking = true;
+
+      this.data.sp -= skill.data.cost;
+      this.refreshBar();
+
+      skill.fire(this, direction, (hitted) => {
+        this.attacking = false;
+        if (hitted.length > 0) {
+          hitted[0].damage(this, skill);
+        }
+        this.emit("change");
+      });
+
+      return skill.data.cooldown;
     }
 
     /** 行走到指定地点 */

@@ -142,7 +142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     cache (x, y, width, height) {
       let privates = internal(this);
       if (privates.cacheCanvas) {
-        privates.cacheCanvas = null;
+        this.clearCache();
       }
       let p = this.parent;
       this.parent = null;

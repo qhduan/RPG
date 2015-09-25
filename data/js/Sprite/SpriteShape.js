@@ -69,8 +69,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var shape = new Sprite.Shape();
         internal(shape).children = privates.children.slice();
         internal(shape).image = privates.image;
-        internal(shape).width = this.width;
-        internal(shape).height = this.height;
+        shape.width = this.width;
+        shape.height = this.height;
         shape.x = this.x;
         shape.y = this.y;
         shape.centerX = this.centerX;

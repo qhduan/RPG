@@ -364,3 +364,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteDisplay;
   })(Sprite.Event));
 })();
+//# sourceMappingURL=SpriteDisplay.js.map

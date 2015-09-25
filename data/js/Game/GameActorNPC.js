@@ -151,7 +151,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         // NPC有的交易
-        if (data.trade) {
+        if (data.trade && data.items) {
           options["交易"] = "trade";
         }
 
@@ -170,7 +170,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             case "trade":
               // 玩家交易的选择，默认是买
               _this.heroUse();
-              Game.windows.buy.open(data.trade);
+              Game.windows.buy.open(data.items);
               break;
             case "quest":
               // 玩家接受任务的选择
@@ -238,4 +238,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameActorNPC;
   })(Game.Actor));
 })();
-//# sourceMappingURL=GameActorNPC.js.map

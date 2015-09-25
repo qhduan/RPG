@@ -126,7 +126,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 Game.windows.loading.update("40%");
                 console.time("area");
 
-                Game.loadArea(heroData.area, function (area) {
+                Game.loadArea(heroData.area).then(function (area) {
 
                   console.timeEnd("area");
                   Game.windows.loading.update("60%");

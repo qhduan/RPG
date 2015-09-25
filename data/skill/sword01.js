@@ -14,11 +14,18 @@ return {
   icon: "resource\/sword_icon.png",
   sound: "resource\/sword.ogg",
   cost: 1,
-  distance: 0,
+  distance: 8,
   cooldown: 450,
   type: "normal",
-  needweapontype: "sword",
-  power: "1d10",
+  can: function () {
+    let weapon = Game.hero.data.equipment.weapon;
+    if (!weapon || Game.items[weapon].data.type != "sword") {
+      Game.popup(Game.hero.sprite, "这个技能需要装备刀剑", 0, -40);
+      return false;
+    }
+    return true;
+  },
+  power: "1d5",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,

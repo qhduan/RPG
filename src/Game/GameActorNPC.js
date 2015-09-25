@@ -90,7 +90,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       // NPC有的交易
-      if (data.trade) {
+      if (data.trade && data.items) {
         options["交易"] = "trade";
       }
 
@@ -108,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         switch (choice) {
           case "trade": // 玩家交易的选择，默认是买
             this.heroUse();
-            Game.windows.buy.open(data.trade);
+            Game.windows.buy.open(data.items);
             break;
           case "quest": // 玩家接受任务的选择
             let questOption = {};

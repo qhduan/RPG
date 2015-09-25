@@ -212,13 +212,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
-                  /*
+      /*
       setInterval(() => {
         if (Game.paused == false) {
           Game.stage.update();
         }
       }, 0);
-       */
+      */
       Sprite.Ticker.on("tick", () => {
         if (Game.paused == false) {
           Game.stage.update();
@@ -230,13 +230,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.stage.on("change", function () {
         updateNext = true;
       });
-     Sprite.Ticker.on("tick", function () {
+      Sprite.Ticker.on("tick", function () {
        if (Game.paused == false && updateNext) {
          Game.stage.update();
          updateNext = false;
        }
-     });
-     */
+      });
+      */
 
       let fpsElement = document.createElement("div");
       fpsElement.style.position = "absolute";

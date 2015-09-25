@@ -169,7 +169,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function cache(x, y, width, height) {
         var privates = internal(this);
         if (privates.cacheCanvas) {
-          privates.cacheCanvas = null;
+          this.clearCache();
         }
         var p = this.parent;
         this.parent = null;
@@ -462,3 +462,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteContainer;
   })(Sprite.Display));
 })();
+//# sourceMappingURL=SpriteContainer.js.map

@@ -43,29 +43,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     _createClass(Actor, null, [{
       key: "load",
-      value: function load(id, callback) {
-        Sprite.Loader.create().add("actor/" + id + ".js").start().on("complete", function (event) {
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("actor/" + id + ".js").then(function (data) {
+            var actorData = data[0]();
+            actorData.id = id;
 
-          var actorData = event.data[0]();
-          actorData.id = id;
-
-          var actorObj = null;
-          if (actorData.type == "npc") {
-            actorObj = new Game.ActorNPC(actorData);
-          } else if (actorData.type == "monster") {
-            actorObj = new Game.ActorMonster(actorData);
-          } else if (actorData.type == "ally") {
-            actorObj = new Game.ActorMonster(actorData);
-          } else if (actorData.type == "pet") {
-            actorObj = new Game.ActorMonster(actorData);
-          } else {
-            console.error(actorData.type, actorData);
-            throw new Error("Game.Actor.load invalid actor type");
-          }
-          actorObj.on("complete", function () {
-            if (callback) {
-              callback(actorObj);
+            var actorObj = null;
+            if (actorData.type == "npc") {
+              actorObj = new Game.ActorNPC(actorData);
+            } else if (actorData.type == "monster") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else if (actorData.type == "ally") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else if (actorData.type == "pet") {
+              actorObj = new Game.ActorMonster(actorData);
+            } else {
+              console.error(actorData.type, actorData);
+              throw new Error("Game.Actor.load invalid actor type");
             }
+            actorObj.on("complete", function () {
+              resolve(actorObj);
+            });
           });
         });
       }
@@ -86,8 +85,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       if (this.data.image instanceof Array) {
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        Sprite.Loader.create().add("actor/" + this.data.image).start().on("complete", function (event) {
-          _this.init(event.data);
+        Sprite.load("actor/" + this.data.image).then(function (data) {
+          _this.init(data);
         });
       } else {
         console.error(this.id, this.data, this.data.image, this);
@@ -166,53 +165,48 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
         };
 
+        // 加载NPC可能有的任务
         if (data.quest) {
           privates.quest = [];
           privates.quest.length = data.quest.length;
           data.quest.forEach(function (questId, index) {
             completeCount--;
 
-            Game.Quest.load(questId, function (questData) {
+            Game.Quest.load(questId).then(function (questData) {
               privates.quest.push(questData);
               Complete();
             });
           });
         }
 
+        // 加载人物技能
         if (data.skills) {
           data.skills.forEach(function (skillId) {
             completeCount--;
-            Game.Skill.load(skillId, function () {
+            Game.Skill.load(skillId).then(function () {
               Complete();
             });
           });
         }
 
+        // 加载人物装备（暂时只有玩家）
         if (data.equipment) {
           for (var key in data.equipment) {
             var itemId = data.equipment[key];
             if (itemId) {
               completeCount--;
-              Game.Item.load(itemId, function () {
+              Game.Item.load(itemId).then(function () {
                 Complete();
               });
             }
           }
         }
 
+        // 加载人物物品
         if (data.items) {
           for (var itemId in data.items) {
             completeCount--;
-            Game.Item.load(itemId, function () {
-              Complete();
-            });
-          }
-        }
-
-        if (data.contact && data.trade) {
-          for (var itemId in data.trade) {
-            completeCount--;
-            Game.Item.load(itemId, function () {
+            Game.Item.load(itemId).then(function () {
               Complete();
             });
           }
@@ -303,11 +297,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           // 计算完一级属性的buff之后，开始计算二级属性
 
-          data.$hp = data.con * 10;
+          data.$hp = data.con * 5;
           data.$sp = data.int * 5;
 
-          data.atk = data.str * 1;
-          data.matk = data.int * 0.5;
+          data.atk = data.str * 0.25;
+          data.matk = data.int * 0.25;
           data.def = 0;
           data.mdef = 0;
           data.critical = data.dex * 0.005;
@@ -325,20 +319,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             data.nerf.forEach(function (element) {});
           }
         }
-      }
-    }, {
-      key: "clone",
-      value: function clone(callback) {
-        var actor = new Game.Actor(this.data);
-        actor.x = this.x;
-        actor.y = this.y;
-        actor.visible = this.visible;
-        actor.alpha = this.alpha;
-        actorObj.on("complete", function () {
-          if (callback) {
-            callback(actor);
-          }
-        });
       }
     }, {
       key: "refreshBar",
@@ -421,11 +401,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               _this3.erase();
               Game.area.actors["delete"](_this3);
 
-              if (!_this3.data.items || Object.keys(_this3.data.items).length <= 0) {
-                _this3.data.items = {
-                  gold: 1
-                };
-              }
+              var items = _this3.data.items || {
+                gold: 1
+              };
 
               var bag = null;
               _iteratorNormalCompletion2 = true;
@@ -455,23 +433,31 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 }
               }
 
-              if (!bag) {
-                bag = Game.items.bag.clone();
-                bag.on("complete", function () {
+              console.log("1", bag);
+              if (bag) {
+                for (var key in items) {
+                  if (bag.inner.hasOwnProperty(key)) {
+                    bag.inner[key] += items[key];
+                  } else {
+                    bag.inner[key] = items[key];
+                  }
+                }
+              } else {
+                Game.Item.load("bag").then(function (bag) {
                   bag.x = _this3.x;
                   bag.y = _this3.y;
                   bag.inner = {};
                   bag.draw();
                   Game.area.bags.add(bag);
-                });
-              }
 
-              for (var key in _this3.data.items) {
-                if (bag.inner.hasOwnProperty(key)) {
-                  bag.inner[key] += _this3.data.items[key];
-                } else {
-                  bag.inner[key] = _this3.data.items[key];
-                }
+                  for (var key in items) {
+                    if (bag.inner.hasOwnProperty(key)) {
+                      bag.inner[key] += items[key];
+                    } else {
+                      bag.inner[key] = items[key];
+                    }
+                  }
+                });
               }
 
               attacker.emit("kill", false, _this3);
@@ -651,27 +637,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           direction = this.direction;
         }
 
-        if (skill.can(this)) {
-
-          this.lastAttack = now;
-          this.lastAttackCooldown = skill.data.cooldown;
-          this.attacking = true;
-
-          this.data.sp -= skill.data.cost;
-          this.refreshBar();
-
-          skill.fire(this, direction, function (hitted) {
-            _this5.attacking = false;
-            if (hitted.length > 0) {
-              hitted[0].damage(_this5, skill);
-            }
-            _this5.emit("change");
-          });
-
-          return skill.data.cooldown;
-        } else {
+        if (this.type == "hero" && skill.data.can && skill.data.can() == false) {
           return 0;
         }
+
+        this.lastAttack = now;
+        this.lastAttackCooldown = skill.data.cooldown;
+        this.attacking = true;
+
+        this.data.sp -= skill.data.cost;
+        this.refreshBar();
+
+        skill.fire(this, direction, function (hitted) {
+          _this5.attacking = false;
+          if (hitted.length > 0) {
+            hitted[0].damage(_this5, skill);
+          }
+          _this5.emit("change");
+        });
+
+        return skill.data.cooldown;
       }
 
       /** 行走到指定地点 */

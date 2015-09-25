@@ -34,13 +34,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
     _createClass(GameQuest, null, [{
       key: "load",
-      value: function load(id, callback) {
-        Sprite.Loader.create().add("quest/" + id + ".js").start().on("complete", function (event) {
-          var questData = event.data[0]();
-          questData.id = id;
-          if (callback) {
-            callback(questData);
-          }
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("quest/" + id + ".js").then(function (data) {
+            var questData = data[0]();
+            questData.id = id;
+            resolve(questData);
+          });
         });
       }
     }, {

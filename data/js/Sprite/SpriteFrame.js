@@ -128,3 +128,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteFrame;
   })(Sprite.Display));
 })();
+//# sourceMappingURL=SpriteFrame.js.map

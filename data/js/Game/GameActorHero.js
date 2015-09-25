@@ -49,6 +49,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(GameActorHero.prototype), "constructor", this).call(this, actorData);
       var privates = internal(this);
       privates.ai = null;
+      privates.beAttacking = new Set();
 
       this.on("kill", function (event) {
         var actor = event.data;
@@ -273,7 +274,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (tickCount % 16 == 0) {
             var barChanged = false;
 
-            if (_this3.data.hp < _this3.data.$hp) {
+            if (_this3.data.hp < _this3.data.$hp && _this3.beAttacking.size <= 0) {
               _this3.data.hp++;
               barChanged = true;
             }
@@ -455,23 +456,28 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             setTimeout(function () {
               Game.clearStage();
               Game.windows.loading.update("50%");
-              Game.loadArea(onto.dest, function (area) {
-                Game.windows.loading.update("80%");
-                Game.area = area;
-                area.map.draw(Game.layers.mapLayer);
-                Game.hero.data.area = onto.dest;
-                Game.hero.draw(Game.layers.actorLayer);
-                area.actors.add(Game.hero);
-                Game.windows.loading.update("100%");
-                setTimeout(function () {
-                  Game.hero.x = onto.destx;
-                  Game.hero.y = onto.desty;
-                  Game.hero.data.time += 60; // 加一小时
-                  Game.windows.loading.end();
-                  Game.windows["interface"].datetime();
-                  Game.windows["interface"].refresh();
-                }, 100);
-              });
+              setTimeout(function () {
+
+                Game.loadArea(onto.dest).then(function (area) {
+                  Game.windows.loading.update("80%");
+                  setTimeout(function () {
+                    Game.area = area;
+                    area.map.draw(Game.layers.mapLayer);
+                    Game.hero.data.area = onto.dest;
+                    Game.hero.draw(Game.layers.actorLayer);
+                    area.actors.add(Game.hero);
+                    Game.windows.loading.update("100%");
+                    setTimeout(function () {
+                      Game.hero.x = onto.destx;
+                      Game.hero.y = onto.desty;
+                      Game.hero.data.time += 60; // 加一小时
+                      Game.windows.loading.end();
+                      Game.windows["interface"].datetime();
+                      Game.windows["interface"].refresh();
+                    }, 20);
+                  }, 20);
+                });
+              }, 20);
             }, 20);
           } // dest, aka. door
         } // touch
@@ -554,6 +560,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           Game.hintObject = touch;
           Game.windows["interface"].showUse();
         }
+      }
+    }, {
+      key: "beAttacking",
+      get: function get() {
+        return internal(this).beAttacking;
+      },
+      set: function set(value) {
+        throw new Error("Game.hero.beAttacking readonly");
       }
     }]);
 

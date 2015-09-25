@@ -14,11 +14,18 @@ return {
   icon: "resource\/spear_icon.png",
   sound: "resource\/spear.ogg",
   cost: 1,
-  distance: 0,
+  distance: 16,
   cooldown: 450,
   type: "normal",
-  needweapontype: "spear",
-  power: "1d8",
+  can: function () {
+    let weapon = Game.hero.data.equipment.weapon;
+    if (!weapon || Game.items[weapon].data.type != "spear") {
+      Game.popup(Game.hero.sprite, "这个技能需要装备枪", 0, -40);
+      return false;
+    }
+    return true;
+  },
+  power: "1d5",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,
@@ -27,7 +34,7 @@ return {
       frames: [0, 1, 2],
       speed: 40,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 65,
       actor: "thrustdown"
     },
@@ -51,7 +58,7 @@ return {
       frames: [9, 10, 11],
       speed: 40,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 30,
       actor: "thrustup"
     }

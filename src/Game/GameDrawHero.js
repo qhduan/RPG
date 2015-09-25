@@ -129,11 +129,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       imageUrls.push(`${BASE}/weapons/${heroCustom.sex}/weapons.png`);
     }
 
-    Sprite.Loader.create()
-      .add(imageUrls)
-      .start()
-      .on("complete", function (event) {
-      CombineHeroImage(event.data, heroCustom.width, heroCustom.height, callback);
+    Sprite.load(imageUrls).then(function (data) {
+      CombineHeroImage(data, heroCustom.width, heroCustom.height, callback);
     });
 
   });

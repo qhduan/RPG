@@ -42,8 +42,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   function Fetch(url, callback, timeout) {
 
+    var type = null;
+    if (url.match(/js$/)) {
+      type = "js";
+    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+      type = "image";
+    } else if (url.match(/wav$|mp3$|ogg$/i)) {
+      type = "audio";
+    } else if (url.match(/json$/i)) {
+      type = "json";
+    } else {
+      console.error(url);
+      throw new Error("Fetch got an invalid url");
+    }
+
+    // finished
     var Finish = function Finish(obj) {
       Cache.set(url, obj);
+
+      if (type == "json") {
+        obj = Sprite.copy(obj);
+      }
+
       if (callback) {
         callback(obj);
       }
@@ -96,23 +116,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.open("GET", url, true);
     req.timeout = 15000; // 15 seconds
 
-    var type = null;
-    if (url.match(/js$/)) {
-      req.responseType = "text";
-      type = "js";
-    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
-      req.responseType = "blob";
-      type = "image";
-    } else if (url.match(/wav$|mp3$|ogg$/i)) {
-      req.responseType = "blob";
-      type = "audio";
-    } else if (url.match(/json$/i)) {
-      // req.responseType = "text"
-      req.responseType = "json";
-      type = "json";
-    } else {
-      console.error(url);
-      throw new Error("Sprite.Loader.Fetch got an invalid url");
+    switch (type) {
+      case "js":
+        req.responseType = "text";
+        break;
+      case "image":
+        req.responseType = "blob";
+        break;
+      case "audio":
+        req.responseType = "blob";
+        break;
+      case "json":
+        req.responseType = "json";
+        break;
+      default:
+        console.error(type, url);
+        throw new Error("Fetch something wrong");
     }
 
     if (typeof callback != "function") callback = function () {};

@@ -38,22 +38,16 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     _createClass(GameItem, null, [{
       key: "load",
-      value: function load(id, callback) {
-        if (Game.items && Game.items[id]) {
-          if (callback) {
-            callback(Game.items[id]);
-          }
-          return;
-        }
-        Sprite.Loader.create().add("item/" + id + ".js").start().on("complete", function (event) {
-          var itemData = event.data[0]();
-          itemData.id = id;
-          var itemObj = new Game.Item(itemData);
-          Game.items[id] = itemObj;
-          itemObj.on("complete", function () {
-            if (callback) {
-              callback(itemObj);
-            }
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("item/" + id + ".js").then(function (data) {
+            var itemData = data[0]();
+            itemData.id = id;
+            var itemObj = new Game.Item(itemData);
+            Game.items[id] = itemObj;
+            itemObj.on("complete", function () {
+              resolve(itemObj);
+            });
           });
         });
       }
@@ -75,14 +69,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.data.y = 0;
       }
 
-      Sprite.Loader.create().add("item/" + this.data.image).start().on("complete", function (event) {
-        var image = event.data[0];
-
+      Sprite.load("item/" + this.data.image).then(function (data) {
+        var image = data[0];
         privates.icon = image;
 
         privates.bitmap = new Sprite.Bitmap(image);
         privates.bitmap.x = _this.data.x * 32 + 16;
         privates.bitmap.y = _this.data.y * 32 + 16;
+        privates.bitmap.name = _this.id;
 
         if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
           privates.bitmap.centerX = _this.data.centerX;
@@ -91,8 +85,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           console.log(_this.data);
           throw new Error("Game.Item invalid centerX/centerY");
         }
-
-        internal(_this).bitmap.name = _this.id;
 
         // 发送完成事件，第二个参数代表一次性事件
         _this.emit("complete", true);
@@ -177,19 +169,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             delete Game.hero.data.items[this.id];
           }
         } // potion
-      }
-    }, {
-      key: "clone",
-      value: function clone(callback) {
-        var itemObj = new Game.Item(Sprite.copy(this.data));
-        itemObj.x = this.x;
-        itemObj.y = this.y;
-        itemObj.centerX = this.centerX;
-        itemObj.centerY = this.centerY;
-        itemObj.alpha = this.alpha;
-        itemObj.visible = this.visible;
-        itemObj.inner = this.inner;
-        return itemObj;
       }
     }, {
       key: "erase",
@@ -292,4 +271,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameItem;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameItem.js.map

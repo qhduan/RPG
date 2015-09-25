@@ -23,18 +23,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.assign("Quest", class GameQuest {
 
-    static load (id, callback) {
-      Sprite.Loader.create()
-        .add(`quest/${id}.js`)
-        .start()
-        .on("complete", function (event) {
-          let questData = event.data[0]();
+    static load (id) {
+      return new Promise(function (resolve, reject) {
+        Sprite.load(`quest/${id}.js`).then(function (data) {
+          let questData = data[0]();
           questData.id = id;
-          if (callback) {
-            callback(questData);
-          }
-        }
-      );
+          resolve(questData);
+        });
+      });
     }
 
     static isComplete (quest) {

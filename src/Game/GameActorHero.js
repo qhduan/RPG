@@ -33,6 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       super(actorData);
       let privates = internal(this);
       privates.ai = null;
+      privates.beAttacking = new Set();
 
       this.on("kill", (event) => {
         let actor = event.data;
@@ -67,6 +68,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           this.touch();
         }
       }, 500);
+    }
+
+    get beAttacking () {
+      return internal(this).beAttacking;
+    }
+
+    set beAttacking (value) {
+      throw new Error("Game.hero.beAttacking readonly");
     }
 
     hasQuest (id) {
@@ -139,7 +148,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (tickCount % 16 == 0) {
           let barChanged = false;
 
-          if (this.data.hp < this.data.$hp) {
+          if (this.data.hp < this.data.$hp && this.beAttacking.size <= 0) {
             this.data.hp++;
             barChanged = true;
           }
@@ -257,23 +266,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           setTimeout(function () {
             Game.clearStage();
             Game.windows.loading.update("50%");
-            Game.loadArea(onto.dest, function (area) {
-              Game.windows.loading.update("80%");
-              Game.area = area;
-              area.map.draw(Game.layers.mapLayer);
-              Game.hero.data.area = onto.dest;
-              Game.hero.draw(Game.layers.actorLayer);
-              area.actors.add(Game.hero);
-              Game.windows.loading.update("100%");
-              setTimeout(function () {
-                Game.hero.x = onto.destx;
-                Game.hero.y = onto.desty;
-                Game.hero.data.time += 60; // 加一小时
-                Game.windows.loading.end();
-                Game.windows.interface.datetime();
-                Game.windows.interface.refresh();
-              }, 100);
-            });
+            setTimeout(function () {
+
+              Game.loadArea(onto.dest).then(function (area) {
+                Game.windows.loading.update("80%");
+                setTimeout(function () {
+                  Game.area = area;
+                  area.map.draw(Game.layers.mapLayer);
+                  Game.hero.data.area = onto.dest;
+                  Game.hero.draw(Game.layers.actorLayer);
+                  area.actors.add(Game.hero);
+                  Game.windows.loading.update("100%");
+                  setTimeout(function () {
+                    Game.hero.x = onto.destx;
+                    Game.hero.y = onto.desty;
+                    Game.hero.data.time += 60; // 加一小时
+                    Game.windows.loading.end();
+                    Game.windows.interface.datetime();
+                    Game.windows.interface.refresh();
+                  }, 20);
+                }, 20);
+              });
+
+            }, 20);
           }, 20);
         } // dest, aka. door
       } // touch

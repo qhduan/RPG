@@ -38,21 +38,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
     _createClass(GameSkill, null, [{
       key: "load",
-      value: function load(id, callback) {
-        if (Game.skills && Game.skills[id]) {
-          if (callback) {
-            callback(Game.skills[id]);
-          }
-          return;
-        }
-        Sprite.Loader.create().add("skill/" + id + ".js").start().on("complete", function (event) {
-          var skillData = event.data[0]();
-          var skillObj = new Game.Skill(skillData);
-          Game.skills[id] = skillObj;
-          skillObj.on("complete", function () {
-            if (callback) {
-              callback(skillObj);
-            }
+      value: function load(id) {
+        return new Promise(function (resolve, reject) {
+          Sprite.load("skill/" + id + ".js").then(function (data) {
+            var skillData = data[0]();
+            var skillObj = new Game.Skill(skillData);
+            Game.skills[id] = skillObj;
+            skillObj.on("complete", function () {
+              resolve(skillObj);
+            });
           });
         });
       }
@@ -65,13 +59,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       _get(Object.getPrototypeOf(GameSkill.prototype), "constructor", this).call(this);
       var privates = internal(this);
-
       privates.data = skillData;
 
-      Sprite.Loader.create().add("skill/" + this.data.image).add("skill/" + this.data.icon).add("skill/" + this.data.sound).start().on("complete", function (event) {
-        var image = event.data[0];
-        privates.icon = event.data[1];
-        privates.sound = event.data[2];
+      Sprite.load("skill/" + this.data.image, "skill/" + this.data.icon, "skill/" + this.data.sound).then(function (data) {
+        var image = data[0];
+        privates.icon = data[1];
+        privates.sound = data[2];
 
         var sheet = new Sprite.Sheet({
           images: [image],
@@ -95,30 +88,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }
 
     _createClass(GameSkill, [{
-      key: "can",
-      value: function can(attacker) {
-        var Type2Text = {
-          sword: "剑",
-          spear: "枪",
-          bow: "弓"
-        };
-
-        if (this.data.needweapontype && attacker == Game.hero) {
-          if (Game.hero.data.equipment.weapon) {
-            var weapon = Game.items[Game.hero.data.equipment.weapon];
-            if (weapon.data.type != this.data.needweapontype) {
-              Game.popup(Game.hero.sprite, "这个技能需要装备 '" + Type2Text[this.data.needweapontype] + "' 类型的武器", 0, -40);
-              return false;
-            }
-          } else {
-            Game.popup(Game.hero.sprite, "这个技能需要装备武器", 0, -40);
-            return false;
-          }
-        }
-
-        return true;
-      }
-    }, {
       key: "fire",
       value: function fire(attacker, direction, callback) {
         var _this2 = this;
@@ -131,45 +100,29 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         var animation = "attack" + direction;
+        var weaponAnimation = this.data.animations[animation];
         var sprite = privates.sprite.clone();
 
         // 矫正武器效果位置
-        sprite.x = attacker.sprite.x;
-        sprite.y = attacker.sprite.y;
-
-        switch (direction) {
-          case "left":
-            sprite.x -= 32;
-            break;
-          case "up":
-            sprite.y -= 32;
-            break;
-          case "right":
-            sprite.x += 32;
-            break;
-          case "down":
-            sprite.y += 32;
-            break;
-        }
+        sprite.x = attacker.facePosition.x * 32 + 16;
+        sprite.y = attacker.facePosition.y * 32 + 16;
 
         // 矫正武器效果中心
-        if (this.data.animations[animation].centerX) {
-          sprite.centerX = this.data.animations[animation].centerX;
-        }
-        if (this.data.animations[animation].centerY) {
-          sprite.centerY = this.data.animations[animation].centerY;
+        if (Number.isFinite(weaponAnimation.centerX) && Number.isFinite(weaponAnimation.centerY)) {
+          sprite.centerX = weaponAnimation.centerX;
+          sprite.centerY = weaponAnimation.centerY;
+        } else {
+          console.error(weaponAnimation, this.data);
+          throw new Error("Game.Skill.fire invalid centerX/centerY");
         }
 
-        // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的举例
+        // 如果是远距离攻击（this.data.distance > 0），那么distance是它已经走过的距离
         var distance = 0;
         // 被命中的actor列表
         var hitted = [];
         var CheckHit = function CheckHit() {
           // 技能所在当前方格
-          var l1 = Game.area.map.tile(sprite);
-          if (_this2.data.distance > 0 && (l1.x < 0 || l1.y < 0 || l1.x >= Game.area.map.data.width || l1.y >= Game.area.map.data.height)) {
-            distance = _this2.data.distance;
-          }
+          var l1 = Game.area.map.tile(sprite.x, sprite.y);
           // 碰撞检测
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -204,6 +157,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         var listener = Sprite.Ticker.on("tick", function () {
 
           if (_this2.data.distance > 0) {
+            // 飞行速度是4
             distance += 4;
           }
 
@@ -224,6 +178,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           CheckHit();
 
+          // 测试碰撞到墙
+          var grid = Game.area.map.tile(sprite.x, sprite.y);
+          if (Game.area.map.hitTest(grid.x, grid.y)) {
+            Finish();
+          }
+
           // 如果击中了一个敌人（单体伤害）
           if (hitted.length > 0) {
             Finish();
@@ -231,11 +191,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           // 如果是远程攻击，并且攻击距离已经到了
           if (_this2.data.distance > 0 && distance >= _this2.data.distance) {
-            Finish();
-          }
-
-          // 如果是近战攻击（this.data.distance <= 0），而且动画已经停止
-          if (_this2.data.distance <= 0 && sprite.paused) {
             Finish();
           }
         });
@@ -346,4 +301,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameSkill;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameSkill.js.map

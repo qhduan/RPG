@@ -23,8 +23,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  // 加载区域，把括地图，角色，物品
-  Game.assign("loadArea", function (id, callback) {
+  // 游戏总是需要预加载的内容
+  function Preload(callback) {
+
+    var done = 0;
+    var Complete = function Complete() {
+      done++;
+      if (done >= 0) {
+        if (callback) {
+          callback();
+        }
+      }
+    };
 
     var preloadSoundEffects = {
       hurt: "sound/effect/hurt.ogg"
@@ -32,43 +42,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     for (var key in preloadSoundEffects) {
       (function (key, url) {
-        Sprite.Loader.create().add(url).start().on("complete", function (event) {
-          Game.sounds[key] = event.data[0];
-        });
+        done--;
+        if (Game.sounds && Game.sounds[key]) {
+          Complete();
+        } else {
+          Sprite.load(url).then(function (data) {
+            Game.sounds[key] = data[0];
+            Complete();
+          });
+        }
       })(key, preloadSoundEffects[key]);
     }
 
     var preloadItems = ["bag", "gold"];
-    preloadItems = preloadItems.filter(function (element) {
-      if (Game.items && Game.items.hasOwnProperty(element)) {
-        return false;
+
+    preloadItems.forEach(function (id) {
+      done--;
+      if (Game.items && Game.items[id]) {
+        Complete();
+      } else {
+        Game.Item.load(id).then(function (itemObj) {
+          Complete();
+        });
       }
-      return true;
     });
+  }
 
-    if (preloadItems.length > 0) {
-      var itemLoader = Sprite.Loader.create();
-      preloadItems.forEach(function (id) {
-        Game.Item.load(id);
-      });
-    }
+  // 加载区域，把括地图，角色，物品
+  Game.assign("loadArea", function (id) {
+    return new Promise(function (resolve, reject) {
 
-    Sprite.Loader.create().add("map/" + id + ".json", "map/" + id + ".js").start().on("complete", function (event) {
-
-      var mapData = Sprite.copy(event.data[0]);
-      var mapInfo = event.data[1]();
-      mapData.id = id;
-
-      for (var key in mapInfo) {
-        if (mapData.hasOwnProperty(key)) {
-          console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
-          throw new Error("Game.loadArea invalid data");
-        }
-        mapData[key] = mapInfo[key];
-      }
-
-      var mapObj = new Game.Map(mapData);
-      mapObj.on("complete", function () {
+      Game.Map.load(id).then(function (mapObj) {
 
         var area = {
           actors: new Set(),
@@ -78,19 +82,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           map: mapObj
         };
 
-        var completeCount = -1;
+        var done = 0;
         var Complete = function Complete() {
-          completeCount++;
-          if (completeCount >= 0) {
-            callback(area);
+          done++;
+          if (done >= 0) {
+            resolve(area);
           }
         };
 
-        if (mapInfo.actors) {
-          mapInfo.actors.forEach(function (element) {
-            completeCount--;
+        done--;
+        Preload(function () {
+          Complete();
+        });
 
-            Game.Actor.load(element.id, function (actorObj) {
+        if (mapObj.data.actors) {
+          mapObj.data.actors.forEach(function (element) {
+            done--;
+
+            Game.Actor.load(element.id).then(function (actorObj) {
 
               for (var key in element) {
                 actorObj.data[key] = element[key];
@@ -103,24 +112,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           });
         }
 
-        if (mapInfo.onto) {
-          mapInfo.onto.forEach(function (element) {
+        if (mapObj.spawnMonster && mapObj.spawnMonster.list && mapObj.spawnMonster.position && mapObj.spawnMonster.position.length) {
+          for (var monsterId in mapObj.spawnMonster.list) {
+            done--;
+            Game.Actor.load(monsterId).then(function () {
+              Complete();
+            });
+          }
+        }
+
+        if (mapObj.data.onto) {
+          mapObj.data.onto.forEach(function (element) {
             var onto = Sprite.copy(element);
             onto.type = "onto";
             area.onto.push(onto);
           });
         }
 
-        if (mapInfo.touch) {
-          mapInfo.touch.forEach(function (element) {
+        if (mapObj.data.touch) {
+          mapObj.data.touch.forEach(function (element) {
             var touch = Sprite.copy(element);
             area.touch.push(touch);
           });
         }
-
-        Complete();
-      });
+      }); //map
     });
   });
 })();
-//# sourceMappingURL=GameArea.js.map

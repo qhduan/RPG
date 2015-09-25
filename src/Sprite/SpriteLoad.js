@@ -40,8 +40,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   function Fetch (url, callback, timeout) {
 
+    let type = null;
+    if (url.match(/js$/)) {
+      type = "js";
+    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+      type = "image";
+    } else if (url.match(/wav$|mp3$|ogg$/i)) {
+      type = "audio";
+    } else if (url.match(/json$/i)) {
+      type = "json";
+    } else {
+      console.error(url);
+      throw new Error("Fetch got an invalid url");
+    }
+
+    // finished
     let Finish = (obj) => {
       Cache.set(url, obj);
+
+      if (type == "json") {
+        obj = Sprite.copy(obj);
+      }
+
       if (callback) {
         callback(obj);
       }
@@ -72,23 +92,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.open("GET", url, true);
     req.timeout = 15000; // 15 seconds
 
-    let type = null;
-    if (url.match(/js$/)) {
-      req.responseType = "text";
-      type = "js";
-    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
-      req.responseType = "blob";
-      type = "image";
-    } else if (url.match(/wav$|mp3$|ogg$/i)) {
-      req.responseType = "blob"
-      type = "audio";
-    } else if (url.match(/json$/i)) {
-      // req.responseType = "text"
-      req.responseType = "json";
-      type = "json";
-    } else {
-      console.error(url);
-      throw new Error("Sprite.Loader.Fetch got an invalid url");
+    switch (type) {
+      case "js":
+        req.responseType = "text";
+        break;
+      case "image":
+        req.responseType = "blob";
+        break;
+      case "audio":
+        req.responseType = "blob";
+        break;
+      case "json":
+        req.responseType = "json";
+        break;
+      default:
+        console.error(type, url);
+        throw new Error("Fetch something wrong");
     }
 
     if (typeof callback != "function")
@@ -153,96 +172,44 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.send();
   }
 
-  /**
-   * Class for fetch resources
-   * @class
-   */
-  Sprite.assign("Loader", class SpriteLoader extends Sprite.Event {
-
-    /**
-     * Create a Sprite.Loader object
-     * @static
-     */
-    static create () {
-      return new Sprite.Loader();
-    }
-
-    /**
-     * Construct Sprite.Laoder
-     * @constructor
-     */
-    constructor () {
-      super();
-      let privates = internal(this);
-
-      privates.list = [];
-      privates.progress = 0;
-    }
-
-    /**
-     * @return {number} Return current download progress
-     */
-    get progress () {
-      let privates = internal(this);
-      return privates.progress;
-    }
-
-    set progress (value) {
-      throw new Error("Sprite.Loader.progress readonly");
-    }
-
-    /**
-     * Add one or more urls
-     * eg. add("a.txt") add("a.txt", "b.txt") add(["a.txt", "b.txt"], "c.txt")
-     * @param {Object} urls, one or more urls.
-     */
-    add (urls) {
-      let privates = internal(this);
-      let args = Array.prototype.slice.call(arguments);
+  Sprite.assign("load", function () {
+    let args = Array.prototype.slice.call(arguments);
+    return new Promise(function (resolve, reject) {
+      let urls = [];
 
       for (let element of args) {
-        if (element instanceof Array) {
-          privates.list = privates.list.concat(element);
-        } else if (typeof element == "string" && element.length > 0) {
-          privates.list.push(element);
+        if (typeof element == "string") {
+          urls.push(element);
+        } else if (element instanceof Array) {
+          for (let url of element) {
+            urls.push(url);
+          }
         } else {
-          console.error(element, args, this);
-          throw new Error("Sprite.Loader.add invalid argument");
+          console.error(element, args);
+          throw new Error("Sprite.load got invalid argument");
         }
       }
-      return this;
-    }
 
-    /**
-     * Begin to download
-     */
-    start () {
-      let privates = internal(this);
       let done = 0;
       let ret = [];
-      ret.length = privates.list.length;
+      ret.length = urls.length;
 
       let Done = () => {
         done++;
 
-        privates.progress = done / ret.length;
-        this.emit("progress");
-
         if (done >= ret.length) {
-          this.emit("complete", true, ret);
+          resolve(ret);
         }
       }
 
-      privates.list.forEach((element, index) => {
+      urls.forEach((element, index) => {
         Fetch(element, (result) => {
           ret[index] = result;
           Done();
         });
       });
-      return this;
-    }
 
+    });
   });
-
 
 })();

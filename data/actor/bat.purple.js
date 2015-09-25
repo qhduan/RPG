@@ -19,7 +19,7 @@ return {
   $str: 5,
   $dex: 5,
   $int: 2,
-  $con: 4,
+  $con: 3,
   $cha: 1,
   tileheight: 32,
   tilewidth: 32,

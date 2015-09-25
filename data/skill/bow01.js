@@ -17,8 +17,15 @@ return {
   distance: 50,
   cooldown: 800,
   type: "normal",
-  needweapontype: "bow",
-  power: "1d6",
+  can: function () {
+    let weapon = Game.hero.data.equipment.weapon;
+    if (!weapon || Game.items[weapon].data.type != "bow") {
+      Game.popup(Game.hero.sprite, "这个技能需要装备弓", 0, -40);
+      return false;
+    }
+    return true;
+  },
+  power: "1d4",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,
@@ -27,7 +34,7 @@ return {
       frames: [0],
       speed: 20,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 65,
       actor: "shootdown"
     },
@@ -51,7 +58,7 @@ return {
       frames: [3],
       speed: 20,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 30,
       actor: "shootup"
     }

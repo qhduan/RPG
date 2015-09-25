@@ -61,7 +61,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (tickCount % 20 == 0) {
           let barChanged = false;
 
-          if (this.data.hp < this.data.$hp) {
+          if (this.data.hp < this.data.$hp && attacking == false) {
             this.data.hp++;
             barChanged = true;
           }
@@ -101,12 +101,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             this.goto(Game.hero.x, Game.hero.y, "walk");
           } else {
             attacking = false;
+            if (Game.hero.beAttacking.has(this)) {
+              Game.hero.beAttacking.delete(this);
+            }
           }
         } else {
           if (tickCount % dodo == 0) {
             if (Game.hero && Game.hero.distance(this) < 8) {
               this.goto(Game.hero.x, Game.hero.y, "walk");
               attacking = true;
+              Game.hero.beAttacking.add(this);
             } else if (this.data.mode == "patrol") {
               if (Math.random() > 0.3) {
                 this.stop();

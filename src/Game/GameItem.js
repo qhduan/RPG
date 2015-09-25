@@ -25,25 +25,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Game.assign("Item", class GameItem extends Sprite.Event {
 
-    static load (id, callback) {
-      if (Game.items && Game.items[id]) {
-        if (callback) {
-          callback(Game.items[id]);
-        }
-        return;
-      }
-      Sprite.Loader.create()
-        .add(`item/${id}.js`)
-        .start()
-        .on("complete", (event) => {
-        let itemData = event.data[0]();
-        itemData.id = id;
-        let itemObj = new Game.Item(itemData);
-        Game.items[id] = itemObj;
-        itemObj.on("complete", () => {
-          if (callback) {
-            callback(itemObj);
-          }
+    static load (id) {
+      return new Promise(function (resolve, reject) {
+        Sprite.load(`item/${id}.js`).then(function (data) {
+          let itemData = data[0]();
+          itemData.id = id;
+          let itemObj = new Game.Item(itemData);
+          Game.items[id] = itemObj;
+          itemObj.on("complete", () => {
+            resolve(itemObj);
+          });
         });
       });
     }
@@ -60,17 +51,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.data.y = 0;
       }
 
-      Sprite.Loader.create()
-        .add(`item/${this.data.image}`)
-        .start()
-        .on("complete", (event) => {
-        let image = event.data[0];
-
+      Sprite.load(`item/${this.data.image}`).then((data) => {
+        let image = data[0];
         privates.icon = image;
 
         privates.bitmap = new Sprite.Bitmap(image);
         privates.bitmap.x = this.data.x * 32 + 16;
         privates.bitmap.y = this.data.y * 32 + 16;
+        privates.bitmap.name = this.id;
 
         if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
           privates.bitmap.centerX = this.data.centerX;
@@ -79,8 +67,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           console.log(this.data);
           throw new Error("Game.Item invalid centerX/centerY");
         }
-
-        internal(this).bitmap.name = this.id;
 
         // 发送完成事件，第二个参数代表一次性事件
         this.emit("complete", true);
@@ -228,18 +214,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       } // potion
 
-    }
-
-    clone (callback) {
-      let itemObj = new Game.Item(Sprite.copy(this.data));
-      itemObj.x = this.x;
-      itemObj.y = this.y;
-      itemObj.centerX = this.centerX;
-      itemObj.centerY = this.centerY;
-      itemObj.alpha = this.alpha;
-      itemObj.visible = this.visible;
-      itemObj.inner = this.inner;
-      return itemObj;
     }
 
     erase (layer) {
