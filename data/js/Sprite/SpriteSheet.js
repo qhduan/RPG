@@ -411,3 +411,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return SpriteSheet;
   })(Sprite.Display));
 })();
+//# sourceMappingURL=SpriteSheet.js.map

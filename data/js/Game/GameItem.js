@@ -271,3 +271,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameItem;
   })(Sprite.Event));
 })();
+//# sourceMappingURL=GameItem.js.map

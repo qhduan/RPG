@@ -383,3 +383,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 })();
+//# sourceMappingURL=GameWindowInventory.js.map

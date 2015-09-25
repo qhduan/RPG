@@ -1323,3 +1323,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
+//# sourceMappingURL=GameActor.js.map

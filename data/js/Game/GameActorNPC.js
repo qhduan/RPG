@@ -238,3 +238,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameActorNPC;
   })(Game.Actor));
 })();
+//# sourceMappingURL=GameActorNPC.js.map
