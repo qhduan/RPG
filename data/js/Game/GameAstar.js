@@ -102,21 +102,138 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameAstar;
   })());
 
+  /*
+  * reference from http://eloquentjavascript.net/1st_edition/appendix2.html
+  */
+
+  var BinaryHeap = (function () {
+    function BinaryHeap(scoreFunction) {
+      _classCallCheck(this, BinaryHeap);
+
+      this.content = [];
+      this.scoreFunction = scoreFunction;
+      this.scores = new Map();
+    }
+
+    _createClass(BinaryHeap, [{
+      key: "push",
+      value: function push(element) {
+        this.scores.set(element, this.scoreFunction(element));
+        this.content.push(element);
+        this.bubbleUp(this.content.length - 1);
+      }
+    }, {
+      key: "pop",
+      value: function pop() {
+        var r = this.content[0];
+        var e = this.content.pop();
+        if (this.content.length > 0) {
+          this.content[0] = e;
+          this.sinkDown(0);
+        }
+        return r;
+      }
+    }, {
+      key: "delete",
+      value: function _delete(node) {
+        for (var i = 0, len = this.content.length; i < len; i++) {
+          if (this.content[i] == node) {
+            this.scores["delete"](this.content[i]);
+            var e = this.content.pop();
+            if (i == len - 1) {
+              break;
+            }
+            this.content[i] = e;
+            this.bubbleUp(i);
+            this.sinkDown(i);
+            break;
+          }
+        }
+      }
+    }, {
+      key: "bubbleUp",
+      value: function bubbleUp(n) {
+        var element = this.content[n];
+        var score = this.scores.get(element);
+        while (n > 0) {
+          var parentN = Math.floor((n + 1) / 2) - 1;
+          var _parent = this.content[parentN];
+          if (score >= this.scores.get(_parent)) break;
+          this.content[parentN] = element;
+          this.content[n] = _parent;
+          n = parentN;
+        }
+      }
+    }, {
+      key: "sinkDown",
+      value: function sinkDown(n) {
+        var len = this.content.length;
+        var element = this.content[n];
+        var score = this.scores.get(element);
+
+        while (true) {
+          var child2N = (n + 1) * 2;
+          var child1N = child2N - 1;
+          var swap = null;
+          var child1score = undefined,
+              child2score = undefined;
+
+          if (child1N < len) {
+            var child1 = this.content[child1N];
+            child1score = this.scores.get(child1);
+            if (child1score < score) {
+              swap = child1N;
+            }
+          }
+
+          if (child2N < len) {
+            var child2 = this.content[child2N];
+            child2score = this.scores.get(child2);
+            if (child2score < (swap == null ? score : child1score)) {
+              swap = child2N;
+            }
+          }
+
+          if (swap == null) {
+            break;
+          }
+
+          this.content[n] = this.content[swap];
+          this.content[swap] = element;
+          n = swap;
+        }
+      }
+    }, {
+      key: "size",
+      get: function get() {
+        return this.content.length;
+      },
+      set: function set(value) {
+        throw new Error("BinaryHeap.size readonly");
+      }
+    }]);
+
+    return BinaryHeap;
+  })();
+
+  ; // BinaryHeap
+
   // 计算点结构a和b之间的曼哈顿距离，即不带斜走的直线距离
   function manhattan(ax, ay, bx, by) {
     return Math.abs(ax - bx) + Math.abs(ay - by);
   }
+
   // 通过坐标x，y，当前最好的节点best和一个附加值（直线10，斜线14），返回一个新节点
   function make(x, y, end, best, addition) {
     var t = {
+      key: x * 10000 + y,
       x: x,
       y: y,
       g: best.g + addition,
-      key: x * 10000 + y,
-      h: manhattan(x, y, end.x, end.y)
+      h: manhattan(x, y, end.x, end.y),
+      front: []
     };
     t.f = t.g + t.h;
-    t.front = [];
     var len = best.front.length;
     t.front.length = len;
     for (var i = 0; i < len; i++) {
@@ -130,55 +247,43 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
   function path(collisionFunction, start, end) {
 
     // 开启列表和关闭列表
-    var open = new Map();
-    var close = new Map();
+    var open = new BinaryHeap(function (element) {
+      return element.f;
+    });
+    var openIndex = new Set();
+    var closeIndex = new Set();
 
     //构建起始节点
-    var startKey = start.x * 10000 + start.y;
-    open.set(startKey, {
+    var startElement = {
+      key: start.x * 10000 + start.y,
       x: start.x,
       y: start.y,
-      key: startKey,
       f: 0,
       g: 0,
       h: manhattan(start.x, start.y, end.x, end.y),
       front: []
-    });
+    };
+    openIndex.add(startElement.key);
+    open.push(startElement);
 
-    while (open.size) {
-      // 找到F值最小的节点
-      var best = null;
-      var _iteratorNormalCompletion2 = true;
-
-      // 从开启列表中删除，加入关闭列表
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
-
-      try {
-        for (var _iterator2 = open.values()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var element = _step2.value;
-
-          if (best == null || element.f < best.f) {
-            best = element;
-          }
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-            _iterator2["return"]();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
+    var push2open = function push2open(x, y, end, best) {
+      if (!collisionFunction(x, y)) {
+        // 验证up
+        var key = x * 10000 + y;
+        if (!openIndex.has(key) && !closeIndex.has(key)) {
+          openIndex.add(key);
+          open.push(make(x, y, end, best, 10));
         }
       }
+    };
 
-      open["delete"](best.key);
-      close.set(best.key, best);
+    while (open.size) {
+      // F值最小的节点，就是堆顶
+      var best = open.pop();
+      // 从开启列表中删除，加入关闭列表
+      open["delete"](best);
+      openIndex["delete"](best.key);
+      closeIndex.add(best.key);
 
       // 如果这个最好的节点就是结尾节点，则返回
       if (best.x == end.x && best.y == end.y) {
@@ -189,7 +294,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
             y: best.front[i + 1]
           });
         }
-        // console.log(best.front);
         result.push({
           x: end.x,
           y: end.y
@@ -197,49 +301,11 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return result;
       }
 
-      var nx = undefined,
-          ny = undefined;
-
       // 记录上下左右四方向的可能值
-      nx = best.x;
-      ny = best.y - 1;
-      if (!collisionFunction(nx, ny)) {
-        // 验证up
-        var key = nx * 10000 + ny;
-        if (!open.has(key) && !close.has(key)) {
-          open.set(key, make(nx, ny, end, best, 10));
-        }
-      }
-
-      nx = best.x;
-      ny = best.y + 1;
-      if (!collisionFunction(nx, ny)) {
-        // 验证down
-        var key = nx * 10000 + ny;
-        if (!open.has(key) && !close.has(key)) {
-          open.set(key, make(nx, ny, end, best, 10));
-        }
-      }
-
-      nx = best.x - 1;
-      ny = best.y;
-      if (!collisionFunction(nx, ny)) {
-        // 验证left
-        var key = nx * 10000 + ny;
-        if (!open.has(key) && !close.has(key)) {
-          open.set(key, make(nx, ny, end, best, 10));
-        }
-      }
-
-      nx = best.x + 1;
-      ny = best.y;
-      if (!collisionFunction(nx, ny)) {
-        // 验证right
-        var key = nx * 10000 + ny;
-        if (!open.has(key) && !close.has(key)) {
-          open.set(key, make(nx, ny, end, best, 10));
-        }
-      }
+      push2open(best.x, best.y - 1, end, best);
+      push2open(best.x, best.y + 1, end, best);
+      push2open(best.x - 1, best.y, end, best);
+      push2open(best.x + 1, best.y, end, best);
     } // while
 
     return null;

@@ -191,16 +191,19 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           privates.cacheWidth = _width;
           privates.cacheHeight = _height;
           privates.cacheCanvas = canvas;
+        } else {
+          console.error(r);
+          throw new Error("Sprite.Container.cache cannot work something wrong");
         }
 
         this.parent = p;
       }
+    }, {
+      key: "hitTest",
 
       /**
        * Hit test
        */
-    }, {
-      key: "hitTest",
       value: function hitTest(x, y) {
         var privates = internal(this);
         if (this.cacheCanvas) {
@@ -456,6 +459,22 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       },
       set: function set(value) {
         throw new Error("Sprite.Container.cacheCanvas readonly");
+      }
+    }, {
+      key: "cacheX",
+      get: function get() {
+        return internal(this).cacheX;
+      },
+      set: function set(value) {
+        throw new Error("Sprite.Container.cacheX readonly");
+      }
+    }, {
+      key: "cacheY",
+      get: function get() {
+        return internal(this).cacheY;
+      },
+      set: function set(value) {
+        throw new Error("Sprite.Container.cacheY readonly");
       }
     }]);
 

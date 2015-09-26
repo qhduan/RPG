@@ -51,26 +51,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.data.y = 0;
       }
 
-      Sprite.load(`item/${this.data.image}`).then((data) => {
-        let image = data[0];
-        privates.icon = image;
+      if (this.data.image) {
+        Sprite.load(`item/${this.data.image}`).then((data) => {
+          let image = data[0];
+          privates.icon = image;
 
-        privates.bitmap = new Sprite.Bitmap(image);
-        privates.bitmap.x = this.data.x * 32 + 16;
-        privates.bitmap.y = this.data.y * 32 + 16;
-        privates.bitmap.name = this.id;
+          privates.bitmap = new Sprite.Bitmap(image);
+          privates.bitmap.x = this.data.x * 32 + 16;
+          privates.bitmap.y = this.data.y * 32 + 16;
+          privates.bitmap.name = this.id;
 
-        if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
-          privates.bitmap.centerX = this.data.centerX;
-          privates.bitmap.centerY = this.data.centerY;
-        } else {
-          console.log(this.data);
-          throw new Error("Game.Item invalid centerX/centerY");
-        }
+          if (Number.isInteger(this.data.centerX) && Number.isInteger(this.data.centerY)) {
+            privates.bitmap.centerX = this.data.centerX;
+            privates.bitmap.centerY = this.data.centerY;
+          } else {
+            console.log(this.data);
+            throw new Error("Game.Item invalid centerX/centerY");
+          }
 
-        // 发送完成事件，第二个参数代表一次性事件
+          // 发送完成事件，第二个参数代表一次性事件
+          this.emit("complete", true);
+        });
+      } else {
         this.emit("complete", true);
-      });
+      }
     }
 
     get id () {
@@ -82,7 +86,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get icon () {
-      return internal(this).bitmap.image;
+      if (internal(this).bitmap) {
+        return internal(this).bitmap.image;
+      }
+      return null;
     }
 
     set icon (value) {
@@ -175,7 +182,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     heroUse () {
       if (this.inner) {
-        Game.windows.pickup.open(this);
+        if (this.data.pickupCondition) {
+          if (this.data.pickupCondition()) {
+            Game.windows.pickup.open(this);
+          } else {
+            // 不符合条件
+          }
+        } else {
+          Game.windows.pickup.open(this);
+        }
       }
 
       if (typeof this.data.use == "function") {

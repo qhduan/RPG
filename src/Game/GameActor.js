@@ -42,9 +42,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else if (actorData.type == "monster") {
             actorObj = new Game.ActorMonster(actorData);
           } else if (actorData.type == "ally") {
-            actorObj = new Game.ActorMonster(actorData);
+            actorObj = new Game.ActorAlly(actorData);
           } else if (actorData.type == "pet") {
-            actorObj = new Game.ActorMonster(actorData);
+            actorObj = new Game.ActorPet(actorData);
           } else {
             console.error(actorData.type, actorData);
             throw new Error("Game.Actor.load invalid actor type");
@@ -318,8 +318,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         data.$hp = data.con * 5;
         data.$sp = data.int * 5;
 
-        data.atk = data.str * 0.25;
-        data.matk = data.int * 0.25;
+        data.atk = Math.floor(data.str * 0.25);
+        data.matk = Math.floor(data.int * 0.25);
         data.def = 0;
         data.mdef = 0;
         data.critical = data.dex * 0.005;
@@ -500,48 +500,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     dead (attacker) {
       if (this.data.hp <= 0) {
         if (this.data.type == "hero") {
-
+          Game.windows.over.open(`你被${attacker.data.name}打死了`);
         } else {
 
           this.erase();
           Game.area.actors.delete(this);
 
-          let items = this.data.items || {
-            gold: 1
-          };
+          let items = this.data.items || { gold: 1 };
 
-          let bag = null;
-          for (let b of Game.area.bags) {
-            if (b.hitTest(this.x, this.y)) {
-              bag = b;
-            }
-          }
-          console.log("1", bag);
-          if (bag) {
-            for (let key in items) {
-              if (bag.inner.hasOwnProperty(key)) {
-                bag.inner[key] += items[key];
+          Game.addBag(this.x ,this.y).then((bag) => {
+            for (let itemId in items) {
+              if (bag.inner.hasOwnProperty(itemId)) {
+                bag.inner[itemId] += items[itemId];
               } else {
-                bag.inner[key] = items[key];
+                bag.inner[itemId] = items[itemId];
               }
             }
-          } else {
-            Game.Item.load("bag").then((bag) => {
-              bag.x = this.x;
-              bag.y = this.y;
-              bag.inner = {};
-              bag.draw();
-              Game.area.bags.add(bag);
-
-              for (let key in items) {
-                if (bag.inner.hasOwnProperty(key)) {
-                  bag.inner[key] += items[key];
-                } else {
-                  bag.inner[key] = items[key];
-                }
-              }
-            });
-          }
+          });
 
           attacker.emit("kill", false, this);
 
@@ -714,7 +689,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         direction = this.direction;
       }
 
-      if (this.type == "hero" && skill.data.can && skill.data.can() == false) {
+      if ( // 玩家使用技能是可能有条件的，例如剑技能需要装备剑
+        this.type == "hero" &&
+        skill.data.condition &&
+        skill.data.condition() == false
+      ) {
         return 0;
       }
 

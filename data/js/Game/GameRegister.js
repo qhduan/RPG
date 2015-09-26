@@ -204,20 +204,18 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     "hitArea": [[0, 0]],
 
     // 能力
-    "skills": ["fist01", "sword01", // 剑攻击Level1
-    "spear01", // 枪攻击Level1
-    "bow01", // 弓攻击Level1
-    "fire01"],
+    "skills": ["fist.l1", "sword.l1", // 剑攻击Level1
+    "spear.l1", // 枪攻击Level1
+    "bow.l1", // 弓攻击Level1
+    "fire.l1"],
 
     // 火球术Level1
-    // 一共能学习多少能力
-    "skillcount": 5,
     // 技能快捷方式列表
     "bar": [{
-      "id": "sword01",
+      "id": "sword.l1",
       "type": "skill"
     }, {
-      "id": "bow01",
+      "id": "bow.l1",
       "type": "skill"
     }, null, null, null, null, null, {
       "id": "potion.healWeak",

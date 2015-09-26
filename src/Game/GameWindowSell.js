@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     </div>
 
     <span id="sellWindowGold"></span>
-    
+
     <div style="overflow: auto; height: 300px;">
       <table border="1" cellspacing="0" cellpadding="0">
         <thead>
@@ -219,7 +219,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += `<tr>\n`;
       }
 
-      line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+
+      if (item.icon) {
+        line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+      } else {
+        line += `  <td> </td>\n`;
+      }
       line += `  <td>${item.data.name}</td>\n`;
       line += `  <td style="text-align: center;">${Math.ceil(item.data.value * 0.8)}G</td>\n`;
       line += `  <td style="text-align: center;">${itemCount}</td>\n`;

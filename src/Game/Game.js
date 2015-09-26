@@ -43,6 +43,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.stage = null;
     }
 
+    addBag (x, y) {
+      return new Promise(function (resolve, reject) {
+        // 寻找已经存在的bag
+        for (let bag of Game.area.bags) {
+          if (bag.hitTest(x, y)) {
+            return resolve(bag);
+          }
+        }
+        // 如果没有已经存在的bag合适，新建一个
+        Game.Item.load("bag").then((bag) => {
+          bag.x = x;
+          bag.y = y;
+          bag.inner = {};
+          bag.draw();
+          Game.area.bags.add(bag);
+          resolve(bag);
+        });
+      });
+    }
+
     assign (name, object) {
       Object.defineProperty(this, name, {
         enumerable: false,
@@ -135,15 +155,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       for (let bag of Game.area.bags) {
         bag.erase();
       }
-      for (let child of this.layers.mapLayer.children) {
-        child.clear();
-      }
-      for (let child of this.layers.mapHideLayer.children) {
-        child.clear();
-      }
-      for (let layer of internal(this).stage.children) {
+      this.layers.mapLayer.clear();
+      this.layers.mapHideLayer.clear();
+      for (let layer of this.stage.children) {
         layer.clear();
       }
+      this.stage.releaseRenderer();
     }
 
     /** 游戏初始化 */

@@ -112,7 +112,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       line += `  <td><img alt="" src="${skill.icon.src}"></td>\n`;
       line += `  <td>${skill.data.name}</td>\n`;
       line += `  <td>${skill.data.description}</td>\n`;
-      line += `  <td><button data-id="${skillId}" class="brownButton">管理</button></td>\n`;
+      line += `  <td><button data-id="${skillId}" class="brownButton skillWindowManage">管理</button></td>\n`;
       line += "</tr>\n";
       table += line;
       index++;
@@ -123,14 +123,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   win.whenUp(["enter"], function () {
-    let buttons = skillWindowTable.querySelectorAll("button");
+    let buttons = win.querySelectorAll(".skillWindowManage");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
   win.whenUp(["up", "down"], function (key) {
-    let count = skillWindowTable.querySelectorAll("button").length;
+    let count = win.querySelectorAll(".skillWindowManage").length;
 
     if (lastSelect == -1) {
       if (key == "down") {
@@ -162,11 +162,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       let skill = Game.skills[skillId];
 
-      Game.choice({
-        "快捷栏": "shortcut",
-        "升级": "levelup",
-        "遗忘": "remove"
-      }, function (choice) {
+      let options = {};
+
+      options["快捷栏"] = "shortcut";
+      options["遗忘"] = "remove";
+      if (skill.data.next) {
+        options["升级"] = "levelup";
+      }
+
+      Game.choice(options, function (choice) {
         switch(choice) {
           case "shortcut":
             Game.choice({
@@ -189,8 +193,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             });
             break;
           case "levelup":
-            if (skill.data.next && skill.data.exp && Game.hero.data.exp > skill.data.exp) {
-              // level up
+            if (skill.data.next) {
+              let cannot = [];
+              if (Game.hero.data.gold < skill.data.next.gold) {
+                cannot.push(`金币不足，需要金币${skill.data.next.gold}，当前您有金币${Game.hero.data.gold}`);
+              }
+              if (Game.hero.data.exp < skill.data.next.exp) {
+                cannot.push(`经验不足，需要经验${skill.data.next.exp}，当前您有经验${Game.hero.data.exp}`);
+              }
+              if (cannot.length) {
+                Game.dialogue(cannot);
+                return;
+              }
+              Game.confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`, function () {                let nextId = skill.data.next.id;
+                Game.hero.data.skills.splice(index, 1);
+                Game.hero.data.skills.push(nextId);
+                Game.hero.data.gold -= skill.data.next.gold;
+                Game.hero.data.exp -= skill.data.next.exp;
+                Game.windows.loading.begin();
+                Game.Skill.load(nextId).then(function (skillObj) {
+                  Game.windows.loading.end();
+                  win.open();
+                });
+              });
             }
             break;
           case "remove":

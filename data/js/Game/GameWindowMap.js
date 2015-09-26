@@ -29,23 +29,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.css = "\n    .mapWindow table, .mapWindow tbody, .mapWindow tr, .mapWindow td {\n      width: 100%;\n      height: 100%;\n      magrin: 0;\n      padding: 0;\n    }\n\n    .mapWindow {\n      text-align: center;\n    }\n\n    #mapWindowClose {\n      position: absolute;\n      right: 50px;\n      top: 50px;\n      width: 120px;\n      height: 60px;\n      font-size: 16px;\n    }\n\n    #mapWindowMap img, #mapWindowMap canvas {\n      max-width: 700px;\n      max-height: 320px;\n    }\n  ";
 
-  var mapWindowClose = win.querySelector("button#mapWindowClose");
+  var mapWindowClose = win.querySelector("#mapWindowClose");
+  var mapWindowMap = win.querySelector("#mapWindowMap");
 
   mapWindowClose.addEventListener("click", function (event) {
     Game.windows.map.hide();
   });
 
   win.whenUp(["esc"], function (key) {
-    mapWindowClose.click();
+    setTimeout(function () {
+      mapWindowClose.click();
+    }, 20);
   });
 
   win.on("beforeShow", function (event) {
-    if (Game.area && Game.area.map.minimap) {
-      var div = win.querySelector("div#mapWindowMap");
-      while (div.hasChildNodes()) {
-        div.removeChild(div.lastChild);
-      }
-      div.appendChild(Game.area.map.minimap);
+    if (Game.stage && Game.area && Game.area.map) {
+      var stage = {
+        x: Game.stage.x,
+        y: Game.stage.y,
+        centerX: Game.stage.centerX,
+        centerY: Game.stage.centerY
+      };
+      Game.stage.x = 0;
+      Game.stage.y = 0;
+      Game.stage.centerX = 0;
+      Game.stage.centerY = 0;
+      var canvas = document.createElement("canvas");
+      canvas.width = Game.area.map.width;
+      canvas.height = Game.area.map.height;
+      var context = canvas.getContext("2d");
+      Game.stage.draw(context);
+      var minimap = document.createElement("canvas");
+      minimap.width = Math.floor(canvas.width / 8);
+      minimap.height = Math.floor(canvas.height / 8);
+      var minimapContext = minimap.getContext("2d");
+      minimapContext.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, minimap.width, minimap.height);
+      context = null;
+      canvas = null;
+      mapWindowMap.innerHTML = "";
+      mapWindowMap.appendChild(minimap);
+      Game.stage.x = stage.x;
+      Game.stage.y = stage.y;
+      Game.stage.centerX = stage.centerX;
+      Game.stage.centerY = stage.centerY;
     }
   });
 })();

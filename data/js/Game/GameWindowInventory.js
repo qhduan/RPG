@@ -151,7 +151,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         line += "<tr>\n";
       }
 
-      line += "  <td><img alt=\"\" src=\"" + item.icon.src + "\"></td>\n";
+      if (item.icon) {
+        line += "  <td><img alt=\"\" src=\"" + item.icon.src + "\"></td>\n";
+      } else {
+        line += "  <td> </td>\n";
+      }
       line += "  <td>" + (equipment ? "*" : "") + item.data.name + "</td>\n";
       line += "  <td style=\"text-align: center;\">" + item.data.value + "G</td>\n";
       line += "  <td style=\"text-align: center;\">" + itemCount + "</td>\n";
@@ -248,57 +252,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               }
               break;
             case "drop":
-              if (equipment) Game.hero.data.equipment[equipment] = null;
-
-              var bag = null;
-              var _iteratorNormalCompletion = true;
-              var _didIteratorError = false;
-              var _iteratorError = undefined;
-
-              try {
-                for (var _iterator = Game.area.bags[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-                  var b = _step.value;
-
-                  if (b.hitTest(Game.hero.x, Game.hero.y)) {
-                    bag = b;
-                  }
-                }
-              } catch (err) {
-                _didIteratorError = true;
-                _iteratorError = err;
-              } finally {
-                try {
-                  if (!_iteratorNormalCompletion && _iterator["return"]) {
-                    _iterator["return"]();
-                  }
-                } finally {
-                  if (_didIteratorError) {
-                    throw _iteratorError;
-                  }
-                }
+              if (equipment) {
+                Game.hero.data.equipment[equipment] = null;
               }
 
-              if (bag) {
+              Game.addBag(Game.hero.x, Game.hero.y).then(function (bag) {
                 if (bag.inner.hasOwnProperty(itemId)) {
-                  bag.inner[item.id] += itemCount;
+                  bag.inner[itemId] += itemCount;
                 } else {
-                  bag.inner[item.id] = itemCount;
+                  bag.inner[itemId] = itemCount;
                 }
-              } else {
-                Game.Item.load("bag").then(function (bag) {
-                  bag.x = Game.hero.x;
-                  bag.y = Game.hero.y;
-                  bag.draw();
-                  bag.inner = {};
-                  Game.area.bags.add(bag);
-
-                  if (bag.inner.hasOwnProperty(itemId)) {
-                    bag.inner[item.id] += itemCount;
-                  } else {
-                    bag.inner[item.id] = itemCount;
-                  }
-                });
-              }
+              });
 
               delete Game.hero.data.items[itemId];
 

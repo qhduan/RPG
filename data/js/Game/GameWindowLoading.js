@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.assign("begin", function () {
     loadingWindowProgress.innerHTML = "";
-    Game.windows.loading.show();
+    win.show();
   });
 
   win.assign("update", function (value) {
@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   win.assign("end", function () {
-    Game.windows.loading.hide();
+    win.hide();
   });
 })();
 //# sourceMappingURL=GameWindowLoading.js.map

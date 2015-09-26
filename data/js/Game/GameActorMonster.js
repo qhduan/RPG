@@ -47,9 +47,20 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       _get(Object.getPrototypeOf(GameActorMonster.prototype), "constructor", this).call(this, actorData);
       var privates = internal(this);
       privates.ai = null;
+      privates.attacking = false;
     }
 
     _createClass(GameActorMonster, [{
+      key: "damage",
+      value: function damage(attacker, skill) {
+        _get(Object.getPrototypeOf(GameActorMonster.prototype), "damage", this).call(this, attacker, skill);
+        var privates = internal(this);
+
+        if (privates.attacking == false) {
+          this.goto(attacker.x, attacker.y, "walk");
+        }
+      }
+    }, {
       key: "erase",
       value: function erase() {
         var privates = internal(this);
@@ -69,7 +80,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         _get(Object.getPrototypeOf(GameActorMonster.prototype), "draw", this).call(this);
 
         var dodo = Sprite.rand(30, 60);
-        var attacking = false;
 
         privates.ai = Sprite.Ticker.on("tick", function (event) {
 
@@ -80,7 +90,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (tickCount % 20 == 0) {
             var barChanged = false;
 
-            if (_this.data.hp < _this.data.$hp && attacking == false) {
+            if (_this.data.hp < _this.data.$hp && privates.attacking == false) {
               _this.data.hp++;
               barChanged = true;
             }
@@ -95,33 +105,33 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
 
-          if (attacking) {
+          if (privates.attacking) {
             if (tickCount % dodo == 0) {
               if (Game.hero && _this.facePosition.x == Game.hero.x && _this.facePosition.y == Game.hero.y) {
                 if (_this.y == Game.hero.y) {
                   // left or right
                   if (_this.x < Game.hero.x) {
                     // left
-                    _this.fire("sword01", "right");
+                    _this.fire(_this.data.skills[0], "right");
                   } else {
                     // right
-                    _this.fire("sword01", "left");
+                    _this.fire(_this.data.skills[0], "left");
                   }
                 } else {
                   // up or down
                   if (_this.y < Game.hero.y) {
                     // up
-                    _this.fire("sword01", "down");
+                    _this.fire(_this.data.skills[0], "down");
                   } else {
                     // down
-                    _this.fire("sword01", "up");
+                    _this.fire(_this.data.skills[0], "up");
                   }
                 }
               }
             } else if (Game.hero && Game.hero.distance(_this) < 12) {
               _this.goto(Game.hero.x, Game.hero.y, "walk");
             } else {
-              attacking = false;
+              privates.attacking = false;
               if (Game.hero.beAttacking.has(_this)) {
                 Game.hero.beAttacking["delete"](_this);
               }
@@ -130,7 +140,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             if (tickCount % dodo == 0) {
               if (Game.hero && Game.hero.distance(_this) < 8) {
                 _this.goto(Game.hero.x, Game.hero.y, "walk");
-                attacking = true;
+                privates.attacking = true;
                 Game.hero.beAttacking.add(_this);
               } else if (_this.data.mode == "patrol") {
                 if (Math.random() > 0.3) {

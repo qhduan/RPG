@@ -66,7 +66,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   mainWindowContinue.addEventListener("click", function (event) {
     win.hide();
-    Game.Archive.load();
+    setTimeout(function () {
+      Game.Archive.load();
+    }, 20);
   });
 
   mainWindowNew.addEventListener("click", function (event) {

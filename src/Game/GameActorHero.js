@@ -37,6 +37,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       this.on("kill", (event) => {
         let actor = event.data;
+
+        if (this.beAttacking.has(actor)) {
+          this.beAttacking.delete(actor);
+        }
+
         if (actor.data.exp) {
           this.data.exp += actor.data.exp;
         } else {
@@ -76,6 +81,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     set beAttacking (value) {
       throw new Error("Game.hero.beAttacking readonly");
+    }
+
+    hasItem (id, count) {
+      if (Number.isFinite(count) == false || count <= 0) {
+        count = 1;
+      }
+      for (let key in this.data.items) {
+        if (key == id) {
+          if (this.data.items[key] >= count) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+      return false;
     }
 
     hasQuest (id) {
@@ -177,6 +198,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
 
       for (let layer of Game.layers.mapHideLayer.children) {
+
+      // console.log(heroHide, layer.name);
         if (layer.name == heroHide) {
           layer.visible = false;
         } else {

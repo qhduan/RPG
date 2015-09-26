@@ -52,6 +52,50 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
 
     _createClass(GameCore, [{
+      key: "addBag",
+      value: function addBag(x, y) {
+        return new Promise(function (resolve, reject) {
+          // 寻找已经存在的bag
+          var _iteratorNormalCompletion = true;
+
+          // 如果没有已经存在的bag合适，新建一个
+          var _didIteratorError = false;
+          var _iteratorError = undefined;
+
+          try {
+            for (var _iterator = Game.area.bags[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+              var bag = _step.value;
+
+              if (bag.hitTest(x, y)) {
+                return resolve(bag);
+              }
+            }
+          } catch (err) {
+            _didIteratorError = true;
+            _iteratorError = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion && _iterator["return"]) {
+                _iterator["return"]();
+              }
+            } finally {
+              if (_didIteratorError) {
+                throw _iteratorError;
+              }
+            }
+          }
+
+          Game.Item.load("bag").then(function (bag) {
+            bag.x = x;
+            bag.y = y;
+            bag.inner = {};
+            bag.draw();
+            Game.area.bags.add(bag);
+            resolve(bag);
+          });
+        });
+      }
+    }, {
       key: "assign",
       value: function assign(name, object) {
         Object.defineProperty(this, name, {
@@ -81,40 +125,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
       /** 清理舞台，即删除舞台上所有元素 */
       value: function clearStage() {
-        var _iteratorNormalCompletion = true;
-        var _didIteratorError = false;
-        var _iteratorError = undefined;
-
-        try {
-          for (var _iterator = Game.area.actors[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-            var actor = _step.value;
-
-            actor.erase();
-          }
-        } catch (err) {
-          _didIteratorError = true;
-          _iteratorError = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion && _iterator["return"]) {
-              _iterator["return"]();
-            }
-          } finally {
-            if (_didIteratorError) {
-              throw _iteratorError;
-            }
-          }
-        }
-
         var _iteratorNormalCompletion2 = true;
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
         try {
-          for (var _iterator2 = Game.area.bags[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-            var bag = _step2.value;
+          for (var _iterator2 = Game.area.actors[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var actor = _step2.value;
 
-            bag.erase();
+            actor.erase();
           }
         } catch (err) {
           _didIteratorError2 = true;
@@ -136,10 +155,10 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         var _iteratorError3 = undefined;
 
         try {
-          for (var _iterator3 = this.layers.mapLayer.children[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-            var child = _step3.value;
+          for (var _iterator3 = Game.area.bags[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+            var bag = _step3.value;
 
-            child.clear();
+            bag.erase();
           }
         } catch (err) {
           _didIteratorError3 = true;
@@ -156,15 +175,17 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
+        this.layers.mapLayer.clear();
+        this.layers.mapHideLayer.clear();
         var _iteratorNormalCompletion4 = true;
         var _didIteratorError4 = false;
         var _iteratorError4 = undefined;
 
         try {
-          for (var _iterator4 = this.layers.mapHideLayer.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
-            var child = _step4.value;
+          for (var _iterator4 = this.stage.children[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
+            var layer = _step4.value;
 
-            child.clear();
+            layer.clear();
           }
         } catch (err) {
           _didIteratorError4 = true;
@@ -181,30 +202,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           }
         }
 
-        var _iteratorNormalCompletion5 = true;
-        var _didIteratorError5 = false;
-        var _iteratorError5 = undefined;
-
-        try {
-          for (var _iterator5 = internal(this).stage.children[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-            var layer = _step5.value;
-
-            layer.clear();
-          }
-        } catch (err) {
-          _didIteratorError5 = true;
-          _iteratorError5 = err;
-        } finally {
-          try {
-            if (!_iteratorNormalCompletion5 && _iterator5["return"]) {
-              _iterator5["return"]();
-            }
-          } finally {
-            if (_didIteratorError5) {
-              throw _iteratorError5;
-            }
-          }
-        }
+        this.stage.releaseRenderer();
       }
 
       /** 游戏初始化 */

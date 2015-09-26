@@ -33,6 +33,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       super(actorData);
       let privates = internal(this);
       privates.ai = null;
+      privates.attacking = false;
+    }
+
+    damage (attacker, skill) {
+      super.damage(attacker, skill);
+      let privates = internal(this);
+
+      if (privates.attacking == false) {
+        this.goto(attacker.x, attacker.y, "walk");
+      }
     }
 
     erase () {
@@ -50,7 +60,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       super.draw();
 
       let dodo = Sprite.rand(30, 60);
-      let attacking = false;
 
       privates.ai = Sprite.Ticker.on("tick", (event) => {
 
@@ -61,7 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (tickCount % 20 == 0) {
           let barChanged = false;
 
-          if (this.data.hp < this.data.$hp && attacking == false) {
+          if (this.data.hp < this.data.$hp && privates.attacking == false) {
             this.data.hp++;
             barChanged = true;
           }
@@ -76,7 +85,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
 
-        if (attacking) {
+        if (privates.attacking) {
           if (tickCount % dodo == 0) {
             if (
               Game.hero &&
@@ -85,22 +94,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             ) {
               if (this.y == Game.hero.y) { // left or right
                 if (this.x < Game.hero.x) { // left
-                  this.fire("sword01", "right");
+                  this.fire(this.data.skills[0], "right");
                 } else { // right
-                  this.fire("sword01", "left");
+                  this.fire(this.data.skills[0], "left");
                 }
               } else { // up or down
                 if (this.y < Game.hero.y) { // up
-                  this.fire("sword01", "down");
+                  this.fire(this.data.skills[0], "down");
                 } else { // down
-                  this.fire("sword01", "up");
+                  this.fire(this.data.skills[0], "up");
                 }
               }
             }
           } else if (Game.hero && Game.hero.distance(this) < 12) {
             this.goto(Game.hero.x, Game.hero.y, "walk");
           } else {
-            attacking = false;
+            privates.attacking = false;
             if (Game.hero.beAttacking.has(this)) {
               Game.hero.beAttacking.delete(this);
             }
@@ -109,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (tickCount % dodo == 0) {
             if (Game.hero && Game.hero.distance(this) < 8) {
               this.goto(Game.hero.x, Game.hero.y, "walk");
-              attacking = true;
+              privates.attacking = true;
               Game.hero.beAttacking.add(this);
             } else if (this.data.mode == "patrol") {
               if (Math.random() > 0.3) {

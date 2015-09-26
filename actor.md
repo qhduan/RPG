@@ -72,17 +72,35 @@
 
 ### 公式
 
-属性公式：
+##### 属性公式
 
-生命值 = 耐力 × 5
-精神值 = 智力 × 5
-攻击力 = 力量 × 0.25
-魔攻击 = 智力 × 0.25
+- 生命值 = 耐力 × 5
+- 精神值 = 智力 × 5
+- 攻击力 = floor(力量 × 0.25)
+- 魔攻击 = floor(智力 × 0.25)
 
-暴击率 = 敏捷 × 0.005
-闪避率 = 敏捷 × 0.005
+- 暴击率 = 敏捷 × 0.005
+- 闪避率 = 敏捷 × 0.005
 
-伤害公式：
+floor是指向下取整，例如floor(3.99) = 3
+
+###### 玩家初始属性
+
+- str = 10
+- dex = 10
+- con = 10
+- int = 10
+- cha = 10
+
+- hp = con * 5 = 50
+- sp = int * 5 = 50
+- atk = floor(str * 0.25) = 2
+- matk = floor(int * 0.25) = 2
+- critical = dex * 0.005 = 0.05 = 5%
+- dodge = dex * 0.005 = 0.05 = 5%
+
+
+##### 伤害公式
 
 普通伤害 = attacker.atk + attacker.skill.power - enemy.def
 魔法伤害 = attacker.matk + attacker.skill.power - enemy.mdef

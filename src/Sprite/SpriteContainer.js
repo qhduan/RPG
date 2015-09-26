@@ -170,9 +170,28 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.cacheWidth = width;
         privates.cacheHeight = height;
         privates.cacheCanvas = canvas;
+      } else {
+        console.error(r);
+        throw new Error("Sprite.Container.cache cannot work something wrong");
       }
 
       this.parent = p;
+    }
+
+    get cacheX () {
+      return internal(this).cacheX;
+    }
+
+    set cacheX (value) {
+      throw new Error("Sprite.Container.cacheX readonly");
+    }
+
+    get cacheY () {
+      return internal(this).cacheY;
+    }
+
+    set cacheY (value) {
+      throw new Error("Sprite.Container.cacheY readonly");
     }
 
     /**

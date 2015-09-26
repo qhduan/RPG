@@ -7,25 +7,29 @@
 */
 "use strict";
 return {
-  id: "bow01",
-  name: "弓箭攻击Level1",
-  description: "弓箭攻击Level1",
+  name: "弓箭攻击Level2",
+  description: "弓箭攻击Level2",
   image: "resource\/bow.png",
   icon: "resource\/bow_icon.png",
   sound: "resource\/bow.ogg",
   cost: 1,
+  next: {
+    gold: 100,
+    exp: 100,
+    id: "bow.l3"
+  },
   distance: 50,
   cooldown: 800,
   type: "normal",
-  can: function () {
-    let weapon = Game.hero.data.equipment.weapon;
+  condition: function () {
+    var weapon = Game.hero.data.equipment.weapon;
     if (!weapon || Game.items[weapon].data.type != "bow") {
-      Game.popup(Game.hero.sprite, "这个技能需要装备弓", 0, -40);
+      Game.popup(Game.hero.sprite, "需要装备弓", 0, -40);
       return false;
     }
     return true;
   },
-  power: "1d4",
+  power: "2d4",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,

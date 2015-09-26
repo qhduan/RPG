@@ -64,7 +64,9 @@ return {
   items: {
     "sword.iron": 5,
     "spear.iron": 5,
-    "bow.wood": 5
+    "bow.wood": 5,
+    "shovel": 5,
+    "pickaxe": 5
   },
   quest: ["starttown.deliverWeapon"],
   image: "resource\/starttown.ranc.png",

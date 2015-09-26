@@ -7,25 +7,29 @@
 */
 "use strict";
 return {
-  id: "spear01",
-  name: "枪攻击Level1",
-  description: "枪攻击Level1",
+  name: "枪攻击Level2",
+  description: "枪攻击Level2",
   image: "resource\/spear.png",
   icon: "resource\/spear_icon.png",
   sound: "resource\/spear.ogg",
   cost: 1,
+  next: {
+    gold: 100,
+    exp: 100,
+    id: "spear.l3"
+  },
   distance: 16,
   cooldown: 450,
   type: "normal",
-  can: function () {
-    let weapon = Game.hero.data.equipment.weapon;
+  condition: function () {
+    var weapon = Game.hero.data.equipment.weapon;
     if (!weapon || Game.items[weapon].data.type != "spear") {
-      Game.popup(Game.hero.sprite, "这个技能需要装备枪", 0, -40);
+      Game.popup(Game.hero.sprite, "需要装备枪", 0, -40);
       return false;
     }
     return true;
   },
-  power: "1d5",
+  power: "2d5",
   tileheight: 64,
   tilewidth: 64,
   alpha: 0.5,

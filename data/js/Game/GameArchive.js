@@ -105,9 +105,14 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         }
 
         if (data) {
-          (function () {
 
-            Game.windows.loading.begin();
+          if (Game.windows["interface"].showing) {
+            Game.windows["interface"].hide();
+          }
+
+          Game.windows.loading.begin();
+
+          setTimeout(function () {
             var heroData = data.hero;
 
             console.time("drawHero");
@@ -166,7 +171,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 });
               });
             });
-          })();
+          }, 20);
         } else {
           console.error("id:", id);
           throw new Error("Invalid id, Game.Archive.load");

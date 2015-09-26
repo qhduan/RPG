@@ -59,23 +59,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let mapWindowClose = win.querySelector("button#mapWindowClose");
+  let mapWindowClose = win.querySelector("#mapWindowClose");
+  let mapWindowMap = win.querySelector("#mapWindowMap");
 
   mapWindowClose.addEventListener("click", function (event) {
     Game.windows.map.hide();
   });
 
   win.whenUp(["esc"], function (key) {
-    mapWindowClose.click();
+    setTimeout(function () {
+      mapWindowClose.click();
+    }, 20);
   });
 
   win.on("beforeShow", function (event) {
-    if (Game.area && Game.area.map.minimap) {
-      let div = win.querySelector("div#mapWindowMap");
-      while(div.hasChildNodes()) {
-        div.removeChild(div.lastChild);
-      }
-      div.appendChild(Game.area.map.minimap);
+    if (Game.stage && Game.area && Game.area.map) {
+      let stage = {
+        x: Game.stage.x,
+        y: Game.stage.y,
+        centerX: Game.stage.centerX,
+        centerY: Game.stage.centerY
+      };
+      Game.stage.x = 0;
+      Game.stage.y = 0;
+      Game.stage.centerX = 0;
+      Game.stage.centerY = 0;
+      let canvas = document.createElement("canvas");
+      canvas.width = Game.area.map.width;
+      canvas.height = Game.area.map.height;
+      let context = canvas.getContext("2d");
+      Game.stage.draw(context);
+      let minimap = document.createElement("canvas");
+      minimap.width = Math.floor(canvas.width / 8);
+      minimap.height = Math.floor(canvas.height / 8);
+      let minimapContext = minimap.getContext("2d");
+      minimapContext.drawImage(canvas,
+        0, 0, canvas.width, canvas.height,
+        0, 0, minimap.width, minimap.height);
+      context = null;
+      canvas = null;
+      mapWindowMap.innerHTML = "";
+      mapWindowMap.appendChild(minimap);
+      Game.stage.x = stage.x;
+      Game.stage.y = stage.y;
+      Game.stage.centerX = stage.centerX;
+      Game.stage.centerY = stage.centerY;
     }
   });
 

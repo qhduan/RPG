@@ -144,10 +144,15 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         privates.context.globalAlpha = this.alpha;
         privates.context.drawImage.apply(privates.context, arguments);
       }
+    }, {
+      key: "release",
+      value: function release() {}
+      // nothing
 
       /**
        * Remove everything on canvas but a single color
        */
+
     }, {
       key: "clear",
       value: function clear() {

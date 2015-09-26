@@ -434,11 +434,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         if (scale > 1.01 || scale < 0.99) {
           internal(win).html.style.transform = "scale(" + scale + ", " + scale + ") translateZ(0)";
-          //internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
+          internal(win).html.style.webkitTransform = "scale(" + scale + ", " + scale + ") translateZ(0)";
+          internal(win).html.style.filter = "none";
+          internal(win).html.style.webkitFilter = "blur(0px)";
+          internal(win).html.style.mozFilter = "blur(0px)";
+          internal(win).html.style.msFilter = "blur(0px)";
         } else {
-            internal(win).html.style.transform = "";
-            //internal(win).html.style.webkitTransform = "";
-          }
+          internal(win).html.style.transform = "";
+          //internal(win).html.style.webkitTransform = "";
+        }
       }
     } catch (err) {
       _didIteratorError4 = true;

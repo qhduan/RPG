@@ -81,15 +81,18 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }
 
     _createClass(SpriteStage, [{
+      key: "releaseRenderer",
+      value: function releaseRenderer() {
+        internal(this).renderer.release();
+      }
+    }, {
       key: "filter",
       value: function filter(name, value) {
-        var privates = internal(this);
-        return privates.renderer.filter(name, value);
+        return internal(this).renderer.filter(name, value);
       }
     }, {
       key: "findHit",
       value: function findHit(event) {
-        var privates = internal(this);
         var hitted = this.hitTest(this.mouseX, this.mouseY);
         hitted.reverse();
         if (hitted.length) return hitted;
@@ -106,14 +109,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "update",
       value: function update() {
-        this.draw();
+        this.emit("beforeDraw");
+        this.draw(this.renderer);
+        this.emit("afterDraw");
       }
     }, {
       key: "draw",
-      value: function draw() {
-        var privates = internal(this);
-        this.emit("beforeDraw");
-
+      value: function draw(renderer) {
         /** this.children, never privates.children, because children are super's */
         if (this.children.length <= 0) {
           return false;
@@ -129,7 +131,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           for (var _iterator = this.children[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
             var child = _step.value;
 
-            child.draw(this.renderer);
+            child.draw(renderer);
           }
         } catch (err) {
           _didIteratorError = true;
@@ -145,14 +147,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
         }
-
-        this.emit("afterDraw");
       }
     }, {
       key: "renderer",
       get: function get() {
-        var privates = internal(this);
-        return privates.renderer;
+        return internal(this).renderer;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage renderer readonly");
@@ -160,8 +159,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "rendererType",
       get: function get() {
-        var privates = internal(this);
-        return privates.rendererType;
+        return internal(this).rendererType;
       },
       set: function set(value) {
         throw new Error("Sprite.Stage.rendererType readonly");
@@ -169,32 +167,26 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "width",
       get: function get() {
-        var privates = internal(this);
-        return privates.renderer.width;
+        return internal(this).renderer.width;
       },
       set: function set(value) {
-        var privates = internal(this);
-        privates.renderer.width = value;
+        internal(this).renderer.width = value;
       }
     }, {
       key: "height",
       get: function get() {
-        var privates = internal(this);
-        return privates.renderer.height;
+        return internal(this).renderer.height;
       },
       set: function set(value) {
-        var privates = internal(this);
-        privates.renderer.height = value;
+        internal(this).renderer.height = value;
       }
     }, {
       key: "color",
       get: function get() {
-        var privates = internal(this);
-        return privates.renderer.color;
+        return internal(this).renderer.color;
       },
       set: function set(value) {
-        var privates = internal(this);
-        privates.renderer.color = value;
+        internal(this).renderer.color = value;
       }
     }, {
       key: "canvas",

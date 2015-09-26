@@ -69,26 +69,30 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.data.y = 0;
       }
 
-      Sprite.load("item/" + this.data.image).then(function (data) {
-        var image = data[0];
-        privates.icon = image;
+      if (this.data.image) {
+        Sprite.load("item/" + this.data.image).then(function (data) {
+          var image = data[0];
+          privates.icon = image;
 
-        privates.bitmap = new Sprite.Bitmap(image);
-        privates.bitmap.x = _this.data.x * 32 + 16;
-        privates.bitmap.y = _this.data.y * 32 + 16;
-        privates.bitmap.name = _this.id;
+          privates.bitmap = new Sprite.Bitmap(image);
+          privates.bitmap.x = _this.data.x * 32 + 16;
+          privates.bitmap.y = _this.data.y * 32 + 16;
+          privates.bitmap.name = _this.id;
 
-        if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
-          privates.bitmap.centerX = _this.data.centerX;
-          privates.bitmap.centerY = _this.data.centerY;
-        } else {
-          console.log(_this.data);
-          throw new Error("Game.Item invalid centerX/centerY");
-        }
+          if (Number.isInteger(_this.data.centerX) && Number.isInteger(_this.data.centerY)) {
+            privates.bitmap.centerX = _this.data.centerX;
+            privates.bitmap.centerY = _this.data.centerY;
+          } else {
+            console.log(_this.data);
+            throw new Error("Game.Item invalid centerX/centerY");
+          }
 
-        // 发送完成事件，第二个参数代表一次性事件
-        _this.emit("complete", true);
-      });
+          // 发送完成事件，第二个参数代表一次性事件
+          _this.emit("complete", true);
+        });
+      } else {
+        this.emit("complete", true);
+      }
     }
 
     _createClass(GameItem, [{
@@ -132,7 +136,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "heroUse",
       value: function heroUse() {
         if (this.inner) {
-          Game.windows.pickup.open(this);
+          if (this.data.pickupCondition) {
+            if (this.data.pickupCondition()) {
+              Game.windows.pickup.open(this);
+            } else {
+              // 不符合条件
+            }
+          } else {
+              Game.windows.pickup.open(this);
+            }
         }
 
         if (typeof this.data.use == "function") {
@@ -191,7 +203,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "icon",
       get: function get() {
-        return internal(this).bitmap.image;
+        if (internal(this).bitmap) {
+          return internal(this).bitmap.image;
+        }
+        return null;
       },
       set: function set(value) {
         throw new Error("Game.Item.icon readonly");

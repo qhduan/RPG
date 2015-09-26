@@ -184,6 +184,37 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
       }
     }, {
+      key: "release",
+      value: function release() {
+        var privates = internal(this);
+        var _iteratorNormalCompletion = true;
+        var _didIteratorError = false;
+        var _iteratorError = undefined;
+
+        try {
+          for (var _iterator = privates.textureCache.values()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+            var texture = _step.value;
+
+            privates.gl.deleteTexture(texture);
+          }
+        } catch (err) {
+          _didIteratorError = true;
+          _iteratorError = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion && _iterator["return"]) {
+              _iterator["return"]();
+            }
+          } finally {
+            if (_didIteratorError) {
+              throw _iteratorError;
+            }
+          }
+        }
+
+        privates.textureCache = new Map();
+      }
+    }, {
       key: "createTexture",
       value: function createTexture(gl, image) {
         var privates = internal(this);

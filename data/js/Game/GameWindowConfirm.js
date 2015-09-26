@@ -70,17 +70,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
 
     confirmWindowYes.addEventListener("click", function () {
+      win.destroy();
       if (yes) {
         yes();
       }
-      win.destroy();
     });
 
     confirmWindowNo.addEventListener("click", function () {
+      win.destroy();
       if (no) {
         no();
       }
-      win.destroy();
     });
   });
 })();

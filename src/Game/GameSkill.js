@@ -100,8 +100,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     get power () {
       if (Number.isFinite(this.data.power)) {
+        // 固定伤害
         return this.data.power;
       } else if (typeof this.data.power == "string") {
+        // 骰子伤害，例如1d5就是投一个五面骰子，数值在1到5之间
         let m = this.data.power.match(/(\d+)d(\d+)/);
         if (!m) {
           console.error(this.data.power, this.data);

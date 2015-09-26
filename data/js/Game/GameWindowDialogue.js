@@ -52,7 +52,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.dialogue = function (content, name) {
     dialogueWindowNext.style.display = "block";
     dialogueWindowClose.style.display = "none";
-    dialogueWindowSpeaker.textContent = name + "：";
+    if (name && name.length) {
+      dialogueWindowSpeaker.textContent = name + "：";
+    } else {
+      dialogueWindowSpeaker.textContent = "";
+    }
     dialogueContent = content;
     dialogueIndex = 0;
     DialogueNext();

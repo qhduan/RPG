@@ -7,20 +7,24 @@
 */
 "use strict";
 return {
-  id: "sword01",
   name: "剑攻击Level1",
   description: "剑攻击Level1",
   image: "resource\/sword.png",
   icon: "resource\/sword_icon.png",
   sound: "resource\/sword.ogg",
   cost: 1,
+  next: {
+    gold: 10,
+    exp: 10,
+    id: "sword.l2"
+  },
   distance: 8,
   cooldown: 450,
   type: "normal",
-  can: function () {
-    let weapon = Game.hero.data.equipment.weapon;
+  condition: function () {
+    var weapon = Game.hero.data.equipment.weapon;
     if (!weapon || Game.items[weapon].data.type != "sword") {
-      Game.popup(Game.hero.sprite, "这个技能需要装备刀剑", 0, -40);
+      Game.popup(Game.hero.sprite, "需要装备刀剑", 0, -40);
       return false;
     }
     return true;

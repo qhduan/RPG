@@ -73,10 +73,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function load(id) {
         return new Promise(function (resolve, reject) {
           Sprite.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
-            var mapData = Sprite.copy(data[0]);
-            var mapInfo = data[1]();
-
+            var mapData = data[0];
+            var mapInfo = data[1](); // map/id.js文件会返回一个函数
             mapData.id = id;
+
             for (var key in mapInfo) {
               if (mapData.hasOwnProperty(key)) {
                 console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
@@ -133,6 +133,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       Sprite.load(images).then(function (data) {
 
+        // 释放空间
+        privates.data.tilesets = null;
+
         privates.sheet = new Sprite.Sheet({
           images: data,
           width: privates.data.tilewidth,
@@ -147,76 +150,69 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         privates.autoHideMap = {};
 
         // 保存这个地图的所有地图块
+        // 这个空间在draw后会释放
         privates.layers = [];
 
-        privates.data.layers.forEach(function (element, index, array) {
-          var layer = element;
+        var _iteratorNormalCompletion2 = true;
 
-          if (layer.name == "block") {
-            // 阻挡层，有东西则表示阻挡
-            if (layer.hasOwnProperty("data")) {
-              for (var y = 0; y < layer.height; y++) {
-                for (var x = 0; x < layer.width; x++) {
-                  var position = x + y * layer.width;
-                  var picture = layer.data[position] - 1;
-                  if (picture >= 0) {
-                    privates.blockedMap[x * 10000 + y] = true;
-                  }
-                }
-              }
-            } else {
-              console.error(layer, _this.data);
-              throw new Error("Game.Map got invalid block layer");
+        // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
+        var _didIteratorError2 = false;
+        var _iteratorError2 = undefined;
+
+        try {
+          for (var _iterator2 = privates.data.layers[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+            var layerData = _step2.value;
+
+            var layerObj = null;
+            if (layerData.name != "block" && layerData.name != "water") {
+              layerObj = new Sprite.Container();
+              layerObj.name = layerData.name;
+              privates.layers.push(layerObj);
             }
-          } else if (layer.name == "water") {
-            // 水层，用来钓鱼
-            if (layer.hasOwnProperty("data")) {
-              for (var y = 0; y < layer.height; y++) {
-                for (var x = 0; x < layer.width; x++) {
-                  var position = x + y * layer.width;
-                  var picture = layer.data[position] - 1;
-                  if (picture >= 0) {
-                    privates.waterMap[x * 10000 + y] = true;
-                  }
-                }
-              }
-            } else {
-              console.error(layer, _this.data);
-              throw new Error("Game.Map got invalid water layer");
-            }
-          } else {
-            var layerObj = new Sprite.Container();
-            layerObj.name = layer.name;
 
-            privates.layers.push(layerObj);
+            var width = _this.col;
+            var height = _this.row;
+            for (var y = 0; y < height; y++) {
+              for (var x = 0; x < width; x++) {
+                var position = x + y * width;
+                var key = x * 10000 + y;
+                var picture = layerData.data[position] - 1;
 
-            if (layer.hasOwnProperty("data")) {
-              // 渲染普通层
-              for (var y = 0; y < layer.height; y++) {
-                for (var x = 0; x < layer.width; x++) {
-                  var position = x + y * layer.width;
-                  var picture = layer.data[position] - 1;
-                  if (picture >= 0) {
+                if (picture >= 0) {
+                  if (layerData.name == "block") {
+                    privates.blockedMap[key] = true;
+                  } else if (layerData.name == "water") {
+                    privates.waterMap[key] = true;
+                  } else {
                     var frame = privates.sheet.getFrame(picture);
                     frame.x = x * privates.data.tilewidth;
                     frame.y = y * privates.data.tileheight;
 
-                    if (layer.properties && layer.properties.autohide) {
-                      privates.autoHideMap[x * 10000 + y] = layer.properties.autohide;
+                    if (layerData.properties && layerData.properties.autohide) {
+                      privates.autoHideMap[key] = layerData.properties.autohide;
                     }
 
                     layerObj.appendChild(frame);
                   }
                 }
               }
-            } else {
-              console.error(layer, _this.data);
-              throw new Error("Game.Map got invalid layer");
             }
           }
-        });
+        } catch (err) {
+          _didIteratorError2 = true;
+          _iteratorError2 = err;
+        } finally {
+          try {
+            if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
+              _iterator2["return"]();
+            }
+          } finally {
+            if (_didIteratorError2) {
+              throw _iteratorError2;
+            }
+          }
+        }
 
-        // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         _this.emit("complete", true);
       });
     }
@@ -241,8 +237,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "draw",
       value: function draw() {
+        var _this2 = this;
+
         var privates = internal(this);
         Game.layers.mapLayer.clear();
+        Game.layers.mapHideLayer.clear();
 
         var autohideLayer = {};
 
@@ -255,55 +254,41 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
           if (layerData.properties && layerData.properties.autohide) {
             var group = layerData.properties.autohide;
-            if (autohideLayer[group]) {
-              autohideLayer[group].push(element);
-            } else {
-              autohideLayer[group] = [element];
+            if (!autohideLayer[group]) {
+              autohideLayer[group] = new Sprite.Container();
             }
+            autohideLayer[group].appendChild(element);
           } else {
             Game.layers.mapLayer.appendChild(element);
           }
         });
 
-        for (var key in autohideLayer) {
-          var container = new Sprite.Container();
-          container.name = key;
-          var _iteratorNormalCompletion2 = true;
-          var _didIteratorError2 = false;
-          var _iteratorError2 = undefined;
+        // 释放冗余空间
+        privates.layers = null;
+        privates.data.layers = null;
 
-          try {
-            for (var _iterator2 = autohideLayer[key][Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-              var element = _step2.value;
-
-              container.appendChild(element);
-            }
-          } catch (err) {
-            _didIteratorError2 = true;
-            _iteratorError2 = err;
-          } finally {
-            try {
-              if (!_iteratorNormalCompletion2 && _iterator2["return"]) {
-                _iterator2["return"]();
-              }
-            } finally {
-              if (_didIteratorError2) {
-                throw _iteratorError2;
-              }
-            }
-          }
-
-          container.cache();
-          Game.layers.mapHideLayer.appendChild(container);
+        // 给所有自动隐藏的地图缓冲层
+        for (var group in autohideLayer) {
+          autohideLayer[group].cache();
+          var autohideMap = new Sprite.Bitmap(autohideLayer[group].cacheCanvas);
+          autohideMap.x = autohideLayer[group].cacheX;
+          autohideMap.y = autohideLayer[group].cacheY;
+          autohideMap.name = group;
+          Game.layers.mapHideLayer.appendChild(autohideMap);
         }
+        autohideLayer = null;
 
+        // 给其他地图缓冲层
         Game.layers.mapLayer.cache();
+        var map = new Sprite.Bitmap(Game.layers.mapLayer.cacheCanvas);
+        Game.layers.mapLayer.clear();
+        Game.layers.mapLayer.appendChild(map);
 
         var minimap = document.createElement("canvas");
         minimap.width = this.col * 8; // 原地图的四倍
         minimap.height = this.row * 8;
         var minimapContext = minimap.getContext("2d");
-        minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas, 0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+        minimapContext.drawImage(map.image, 0, 0, map.width, map.height, 0, 0, minimap.width, minimap.height);
 
         privates.minimap = minimap;
 
@@ -313,9 +298,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           //bgm.setVolume(0.2);
         }
 
-        if (privates.data.spawnMonster && privates.data.spawnMonster.list && privates.data.spawnMonster.position && privates.data.spawnMonster.position.length) {
+        var block = {};
+
+        // 生成怪物
+        if (privates.data.spawnMonster && privates.data.spawnMonster.list && privates.data.spawnMonster.count) {
           var done = 0;
-          while (done < privates.data.spawnMonster.position.length) {
+          while (done < privates.data.spawnMonster.count) {
             var monsterId = null;
             var prob = 0;
             var r = Math.random();
@@ -329,13 +317,64 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             if (monsterId) {
               done++;
               Game.Actor.load(monsterId).then(function (actorObj) {
-                var pos = privates.data.spawnMonster.position.pop();
-                actorObj.x = pos[0];
-                actorObj.y = pos[1];
+                var x = undefined,
+                    y = undefined;
+                while (true) {
+                  x = Sprite.rand(0, _this2.col);
+                  y = Sprite.rand(0, _this2.row);
+                  if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
+                    break;
+                  }
+                }
+                block[x * 10000 + y] = true;
+                actorObj.x = x;
+                actorObj.y = y;
                 Game.area.actors.add(actorObj);
-                actorObj.draw(Game.layers.actorLayer);
+                actorObj.draw();
               });
             }
+          }
+        }
+
+        if (privates.data.spawnItem && privates.data.spawnItem.list && privates.data.spawnItem.count) {
+          var done = 0;
+
+          var _loop = function () {
+            var oreId = null;
+            var prob = 0;
+            var r = Math.random();
+            for (var key in privates.data.spawnItem.list) {
+              prob += privates.data.spawnItem.list[key];
+              if (r < prob) {
+                oreId = key;
+                break;
+              }
+            }
+            if (oreId) {
+              done++;
+              Game.Item.load(oreId).then(function (itemObj) {
+                var x = undefined,
+                    y = undefined;
+                while (true) {
+                  x = Sprite.rand(0, _this2.col);
+                  y = Sprite.rand(0, _this2.row);
+                  if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
+                    break;
+                  }
+                }
+                block[x * 10000 + y] = true;
+                itemObj.x = x;
+                itemObj.y = y;
+                itemObj.inner = {};
+                itemObj.inner[oreId] = 1;
+                Game.area.bags.add(itemObj);
+                itemObj.draw();
+              });
+            }
+          };
+
+          while (done < privates.data.spawnItem.count) {
+            _loop();
           }
         }
       }

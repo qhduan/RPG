@@ -112,10 +112,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           });
         }
 
-        if (mapObj.spawnMonster && mapObj.spawnMonster.list && mapObj.spawnMonster.position && mapObj.spawnMonster.position.length) {
+        if (mapObj.spawnMonster && mapObj.spawnMonster.list && mapObj.spawnMonster.count) {
           for (var monsterId in mapObj.spawnMonster.list) {
             done--;
             Game.Actor.load(monsterId).then(function () {
+              Complete();
+            });
+          }
+        }
+
+        if (mapObj.spawnItem && mapObj.spawnItem.list && mapObj.spawnItem.count) {
+          for (var oreId in mapObj.spawnItem.list) {
+            done--;
+            Game.Item.load(oreId).then(function () {
               Complete();
             });
           }

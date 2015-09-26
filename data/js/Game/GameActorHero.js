@@ -53,6 +53,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
       this.on("kill", function (event) {
         var actor = event.data;
+
+        if (_this.beAttacking.has(actor)) {
+          _this.beAttacking["delete"](actor);
+        }
+
         if (actor.data.exp) {
           _this.data.exp += actor.data.exp;
         } else {
@@ -128,6 +133,23 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }
 
     _createClass(GameActorHero, [{
+      key: "hasItem",
+      value: function hasItem(id, count) {
+        if (Number.isFinite(count) == false || count <= 0) {
+          count = 1;
+        }
+        for (var key in this.data.items) {
+          if (key == id) {
+            if (this.data.items[key] >= count) {
+              return true;
+            } else {
+              return false;
+            }
+          }
+        }
+        return false;
+      }
+    }, {
       key: "hasQuest",
       value: function hasQuest(id) {
         var _iteratorNormalCompletion3 = true;
@@ -310,6 +332,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           for (var _iterator6 = Game.layers.mapHideLayer.children[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
             var layer = _step6.value;
 
+            // console.log(heroHide, layer.name);
             if (layer.name == heroHide) {
               layer.visible = false;
             } else {

@@ -66,9 +66,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.color = "#000000";
     }
 
+    releaseRenderer (){
+      internal(this).renderer.release();
+    }
+
     get renderer () {
-      let privates = internal(this);
-      return privates.renderer;
+      return internal(this).renderer;
     }
 
     set renderer (value) {
@@ -76,8 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get rendererType () {
-      let privates = internal(this);
-      return privates.rendererType;
+      return internal(this).rendererType;
     }
 
     set rendererType (value) {
@@ -85,12 +87,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     filter (name, value) {
-      let privates = internal(this);
-      return privates.renderer.filter(name, value);
+      return internal(this).renderer.filter(name, value);
     }
 
     findHit (event) {
-      let privates = internal(this);
       let hitted = this.hitTest(this.mouseX, this.mouseY);
       hitted.reverse();
       if (hitted.length)
@@ -99,33 +99,27 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     get width () {
-      let privates = internal(this);
-      return privates.renderer.width;
+      return internal(this).renderer.width;
     }
 
     set width (value) {
-      let privates = internal(this);
-      privates.renderer.width = value;
+      internal(this).renderer.width = value;
     }
 
     get height () {
-      let privates = internal(this);
-      return privates.renderer.height;
+      return internal(this).renderer.height;
     }
 
     set height (value) {
-      let privates = internal(this);
-      privates.renderer.height = value;
+      internal(this).renderer.height = value;
     }
 
     get color () {
-      let privates = internal(this);
-      return privates.renderer.color;
+      return internal(this).renderer.color;
     }
 
     set color (value) {
-      let privates = internal(this);
-      privates.renderer.color = value;
+      internal(this).renderer.color = value;
     }
 
     get canvas () {
@@ -143,13 +137,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     update () {
-      this.draw();
+      this.emit("beforeDraw");
+      this.draw(this.renderer);
+      this.emit("afterDraw");
     }
 
-    draw () {
-      let privates = internal(this);
-      this.emit("beforeDraw");
-
+    draw (renderer) {
       /** this.children, never privates.children, because children are super's */
       if (this.children.length <= 0) {
         return false;
@@ -158,10 +151,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.clear();
 
       for (let child of this.children) {
-        child.draw(this.renderer);
+        child.draw(renderer);
       }
-
-      this.emit("afterDraw");
     }
 
   });

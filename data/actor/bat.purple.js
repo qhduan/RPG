@@ -12,6 +12,9 @@ return {
   type: "monster",
   exp: 1,
   image: "resource\/bat.purple.png",
+  items: {
+    "junk.batWing": 1
+  },
   centerX: 16,
   centerY: 32,
   hitArea: [[0, 0]],
@@ -23,7 +26,7 @@ return {
   $cha: 1,
   tileheight: 32,
   tilewidth: 32,
-  skills: ["sword01"],
+  skills: ["sword.l1"],
   buff: [],
   nerf: [],
   animations: {

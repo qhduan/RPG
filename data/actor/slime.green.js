@@ -23,7 +23,7 @@ return {
   $cha: 1,
   tileheight: 32,
   tilewidth: 32,
-  skills: ["sword01"],
+  skills: ["sword.l1"],
   buff: [],
   nerf: [],
   animations: {

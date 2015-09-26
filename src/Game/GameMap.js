@@ -28,10 +28,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     static load (id) {
       return new Promise(function (resolve, reject) {
         Sprite.load(`map/${id}.json`, `map/${id}.js`).then(function (data) {
-          let mapData = Sprite.copy(data[0]);
-          let mapInfo = data[1]();
-
+          let mapData = data[0];
+          let mapInfo = data[1](); // map/id.js文件会返回一个函数
           mapData.id = id;
+
           for (let key in mapInfo) {
             if (mapData.hasOwnProperty(key)) {
               console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
@@ -89,6 +89,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       Sprite.load(images).then((data) => {
 
+        // 释放空间
+        privates.data.tilesets = null;
+
         privates.sheet = new Sprite.Sheet({
           images: data,
           width: privates.data.tilewidth,
@@ -103,74 +106,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.autoHideMap = {};
 
         // 保存这个地图的所有地图块
+        // 这个空间在draw后会释放
         privates.layers = [];
 
-        privates.data.layers.forEach((element, index, array) => {
-          let layer = element;
-
-          if (layer.name == "block") {
-            // 阻挡层，有东西则表示阻挡
-            if (layer.hasOwnProperty("data")) {
-              for (let y = 0; y < layer.height; y++) {
-                for (let x = 0; x < layer.width; x++) {
-                  let position = x + y * layer.width;
-                  let picture = layer.data[position] - 1;
-                  if (picture >= 0) {
-                    privates.blockedMap[x*10000+y] = true;
-                  }
-                }
-              }
-            } else {
-              console.error(layer, this.data);
-              throw new Error("Game.Map got invalid block layer");
-            }
-          } else if (layer.name == "water") {
-            // 水层，用来钓鱼
-            if (layer.hasOwnProperty("data")) {
-              for (let y = 0; y < layer.height; y++) {
-                for (let x = 0; x < layer.width; x++) {
-                  let position = x + y * layer.width;
-                  let picture = layer.data[position] - 1;
-                  if (picture >= 0) {
-                    privates.waterMap[x*10000+y] = true;
-                  }
-                }
-              }
-            } else {
-              console.error(layer, this.data);
-              throw new Error("Game.Map got invalid water layer");
-            }
-          } else {
-            let layerObj = new Sprite.Container();
-            layerObj.name = layer.name;
-
+        for (let layerData of privates.data.layers) {
+          let layerObj = null;
+          if (layerData.name != "block" && layerData.name != "water") {
+            layerObj = new Sprite.Container();
+            layerObj.name = layerData.name;
             privates.layers.push(layerObj);
-
-            if (layer.hasOwnProperty("data")) { // 渲染普通层
-              for (let y = 0; y < layer.height; y++) {
-                for (let x = 0; x < layer.width; x++) {
-                  let position = x + y * layer.width;
-                  let picture = layer.data[position] - 1;
-                  if (picture >= 0) {
-                    let frame = privates.sheet.getFrame(picture);
-                    frame.x = x * privates.data.tilewidth;
-                    frame.y = y * privates.data.tileheight;
-
-                    if (layer.properties && layer.properties.autohide) {
-                      privates.autoHideMap[x*10000+y] = layer.properties.autohide;
-                    }
-
-                    layerObj.appendChild(frame);
-                  }
-                }
-              }
-            } else {
-              console.error(layer, this.data);
-              throw new Error("Game.Map got invalid layer");
-            }
           }
 
-        });
+          let width = this.col;
+          let height = this.row;
+          for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+              let position = x + y * width;
+              let key = x * 10000 + y;
+              let picture = layerData.data[position] - 1;
+
+              if (picture >= 0) {
+                if (layerData.name == "block") {
+                  privates.blockedMap[key] = true;
+                } else if (layerData.name == "water") {
+                  privates.waterMap[key] = true;
+                } else {
+                  let frame = privates.sheet.getFrame(picture);
+                  frame.x = x * privates.data.tilewidth;
+                  frame.y = y * privates.data.tileheight;
+
+                  if (layerData.properties && layerData.properties.autohide) {
+                    privates.autoHideMap[key] = layerData.properties.autohide;
+                  }
+
+                  layerObj.appendChild(frame);
+                }
+              }
+
+            }
+          }
+        }
 
         // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         this.emit("complete", true);
@@ -251,6 +226,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     draw () {
       let privates = internal(this);
       Game.layers.mapLayer.clear();
+      Game.layers.mapHideLayer.clear();
 
       let autohideLayer = {};
 
@@ -263,36 +239,43 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (layerData.properties && layerData.properties.autohide) {
           let group = layerData.properties.autohide;
-          if (autohideLayer[group]) {
-            autohideLayer[group].push(element);
-          } else {
-            autohideLayer[group] = [element];
+          if (!autohideLayer[group]) {
+            autohideLayer[group] = new Sprite.Container();
           }
+          autohideLayer[group].appendChild(element);
         } else {
           Game.layers.mapLayer.appendChild(element);
         }
-
       });
 
-      for (let key in autohideLayer) {
-        let container = new Sprite.Container();
-        container.name = key;
-        for (let element of autohideLayer[key]) {
-          container.appendChild(element);
-        }
-        container.cache();
-        Game.layers.mapHideLayer.appendChild(container);
+      // 释放冗余空间
+      privates.layers = null;
+      privates.data.layers = null;
+
+      // 给所有自动隐藏的地图缓冲层
+      for (let group in autohideLayer) {
+        autohideLayer[group].cache();
+        let autohideMap = new Sprite.Bitmap(autohideLayer[group].cacheCanvas);
+        autohideMap.x = autohideLayer[group].cacheX;
+        autohideMap.y = autohideLayer[group].cacheY;
+        autohideMap.name = group;
+        Game.layers.mapHideLayer.appendChild(autohideMap);
       }
+      autohideLayer = null;
 
-
+      // 给其他地图缓冲层
       Game.layers.mapLayer.cache();
+      let map = new Sprite.Bitmap(Game.layers.mapLayer.cacheCanvas);
+      Game.layers.mapLayer.clear();
+      Game.layers.mapLayer.appendChild(map);
 
       let minimap = document.createElement("canvas");
       minimap.width = this.col * 8; // 原地图的四倍
       minimap.height = this.row * 8;
       let minimapContext = minimap.getContext("2d");
-      minimapContext.drawImage(Game.layers.mapLayer.cacheCanvas,
-        0, 0, this.width, this.height, 0, 0, minimap.width, minimap.height);
+      minimapContext.drawImage(map.image,
+        0, 0, map.width, map.height,
+        0, 0, minimap.width, minimap.height);
 
       privates.minimap = minimap;
 
@@ -303,14 +286,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         //bgm.setVolume(0.2);
       }
 
+      let block = {};
+
+      // 生成怪物
       if (
         privates.data.spawnMonster &&
         privates.data.spawnMonster.list &&
-        privates.data.spawnMonster.position &&
-        privates.data.spawnMonster.position.length
+        privates.data.spawnMonster.count
       ) {
         let done = 0;
-        while (done < privates.data.spawnMonster.position.length) {
+        while (done < privates.data.spawnMonster.count) {
           let monsterId = null;
           let prob = 0;
           let r = Math.random();
@@ -324,11 +309,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (monsterId) {
             done++;
             Game.Actor.load(monsterId).then((actorObj) => {
-              let pos = privates.data.spawnMonster.position.pop();
-              actorObj.x = pos[0];
-              actorObj.y = pos[1];
+              let x, y;
+              while (true) {
+                x = Sprite.rand(0, this.col);
+                y = Sprite.rand(0, this.row);
+                if (!this.hitTest(x, y) && !block[x*10000+y]) {
+                  break;
+                }
+              }
+              block[x*10000+y] = true;
+              actorObj.x = x;
+              actorObj.y = y;
               Game.area.actors.add(actorObj);
-              actorObj.draw(Game.layers.actorLayer);
+              actorObj.draw();
+            });
+          }
+        }
+      }
+
+      if (
+        privates.data.spawnItem &&
+        privates.data.spawnItem.list &&
+        privates.data.spawnItem.count
+      ) {
+        let done = 0;
+        while (done < privates.data.spawnItem.count) {
+          let oreId = null;
+          let prob = 0;
+          let r = Math.random();
+          for (let key in privates.data.spawnItem.list) {
+            prob += privates.data.spawnItem.list[key];
+            if (r < prob) {
+              oreId = key;
+              break;
+            }
+          }
+          if (oreId) {
+            done++;
+            Game.Item.load(oreId).then((itemObj) => {
+              let x, y;
+              while (true) {
+                x = Sprite.rand(0, this.col);
+                y = Sprite.rand(0, this.row);
+                if (!this.hitTest(x, y) && !block[x*10000+y]) {
+                  break;
+                }
+              }
+              block[x*10000+y] = true;
+              itemObj.x = x;
+              itemObj.y = y;
+              itemObj.inner = {};
+              itemObj.inner[oreId] = 1;
+              Game.area.bags.add(itemObj);
+              itemObj.draw();
             });
           }
         }

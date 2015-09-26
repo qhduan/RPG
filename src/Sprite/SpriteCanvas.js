@@ -125,6 +125,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.context.drawImage.apply(privates.context, arguments);
     }
 
+    release () {
+      // nothing
+    }
+
     /**
      * Remove everything on canvas but a single color
      */

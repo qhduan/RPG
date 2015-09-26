@@ -7,14 +7,18 @@
 */
 "use strict";
 return {
-  id: "fist01",
   name: "拳攻击Level1",
   description: "拳攻击Level1",
   image: "resource\/fist.png",
   icon: "resource\/fist_icon.png",
   sound: "resource\/fist.ogg",
   cost: 1,
-  distance: 0,
+  next: {
+    gold: 10,
+    exp: 10,
+    id: "fist.l2"
+  },
+  distance: 8,
   cooldown: 350,
   type: "normal",
   power: "1d3",
@@ -26,7 +30,7 @@ return {
       frames: [0],
       speed: 20,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 40,
       actor: "meleedown"
     },
@@ -50,7 +54,7 @@ return {
       frames: [3],
       speed: 20,
       next: "",
-      centerX: 0,
+      centerX: 32,
       centerY: 60,
       actor: "meleeup"
     }

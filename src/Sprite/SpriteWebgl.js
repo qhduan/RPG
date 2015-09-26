@@ -244,6 +244,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       gl.drawArrays(gl.TRIANGLE_FAN, 0, 4);
     }
 
+    release () {
+      let privates = internal(this);
+      for (let texture of privates.textureCache.values()) {
+        privates.gl.deleteTexture(texture);
+      }
+      privates.textureCache = new Map();
+    }
+
     createTexture (gl, image) {
       let privates = internal(this);
       if (privates.textureCache.has(image)) {
