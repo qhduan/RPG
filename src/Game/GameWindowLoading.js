@@ -57,7 +57,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let text = [
     "打开游戏菜单之后，游戏是暂停的",
-    "大陆上流传的经验：冒险之前检查好治疗药水库存"
+    "记得带着矿工锄和采药铲，或许能从其中赚点小钱"
   ];
 
   win.assign("begin", function () {
