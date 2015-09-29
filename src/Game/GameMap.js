@@ -28,8 +28,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     static load (id) {
       return new Promise(function (resolve, reject) {
         Sprite.load(`map/${id}.json`, `map/${id}.js`).then(function (data) {
-          let mapData = data[0];
-          let mapInfo = data[1](); // map/id.js文件会返回一个函数
+          let [mapData, mapInfo] = data;
+          mapInfo = mapInfo(); // map/id.js文件会返回一个函数
           mapData.id = id;
 
           for (let key in mapInfo) {
@@ -288,14 +288,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       let block = {};
 
+      // 预设人物占位
+      if (privates.data.actors) {
+        for (let actor of privates.data.actors) {
+          block[actor.x*10000+actor.y] = true;
+        }
+      }
+
       // 生成怪物
       if (
         privates.data.spawnMonster &&
         privates.data.spawnMonster.list &&
         privates.data.spawnMonster.count
       ) {
-        let done = 0;
-        while (done < privates.data.spawnMonster.count) {
+        for (let i = 0, len = privates.data.spawnMonster.count; i < len; i++) {
           let monsterId = null;
           let prob = 0;
           let r = Math.random();
@@ -306,24 +312,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               break;
             }
           }
-          if (monsterId) {
-            done++;
-            Game.Actor.load(monsterId).then((actorObj) => {
-              let x, y;
-              while (true) {
-                x = Sprite.rand(0, this.col);
-                y = Sprite.rand(0, this.row);
-                if (!this.hitTest(x, y) && !block[x*10000+y]) {
-                  break;
-                }
-              }
-              block[x*10000+y] = true;
-              actorObj.x = x;
-              actorObj.y = y;
-              Game.area.actors.add(actorObj);
-              actorObj.draw();
-            });
+          if (!monsterId) {
+            monsterId = Object.keys(privates.data.spawnMonster.list)[0];
           }
+          Game.Actor.load(monsterId).then((actorObj) => {
+            let x, y;
+            while (true) {
+              x = Sprite.rand(0, this.col);
+              y = Sprite.rand(0, this.row);
+              if (!this.hitTest(x, y) && !block[x*10000+y]) {
+                break;
+              }
+            }
+            block[x*10000+y] = true;
+            actorObj.x = x;
+            actorObj.y = y;
+            Game.area.actors.add(actorObj);
+            actorObj.draw();
+          });
         }
       }
 
@@ -332,38 +338,37 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.data.spawnItem.list &&
         privates.data.spawnItem.count
       ) {
-        let done = 0;
-        while (done < privates.data.spawnItem.count) {
-          let oreId = null;
+        for (let i = 0, len = privates.data.spawnItem.count; i < len; i++) {
+          let itemId = null;
           let prob = 0;
           let r = Math.random();
           for (let key in privates.data.spawnItem.list) {
             prob += privates.data.spawnItem.list[key];
             if (r < prob) {
-              oreId = key;
+              itemId = key;
               break;
             }
           }
-          if (oreId) {
-            done++;
-            Game.Item.load(oreId).then((itemObj) => {
-              let x, y;
-              while (true) {
-                x = Sprite.rand(0, this.col);
-                y = Sprite.rand(0, this.row);
-                if (!this.hitTest(x, y) && !block[x*10000+y]) {
-                  break;
-                }
-              }
-              block[x*10000+y] = true;
-              itemObj.x = x;
-              itemObj.y = y;
-              itemObj.inner = {};
-              itemObj.inner[oreId] = 1;
-              Game.area.bags.add(itemObj);
-              itemObj.draw();
-            });
+          if (!itemId) {
+            itemId = Object.keys(privates.data.spawnItem.list)[0];
           }
+          Game.Item.load(itemId).then((itemObj) => {
+            let x, y;
+            while (true) {
+              x = Sprite.rand(0, this.col);
+              y = Sprite.rand(0, this.row);
+              if (!this.hitTest(x, y) && !block[x*10000+y]) {
+                break;
+              }
+            }
+            block[x*10000+y] = true;
+            itemObj.x = x;
+            itemObj.y = y;
+            itemObj.inner = {};
+            itemObj.inner[itemId] = 1;
+            Game.area.items.add(itemObj);
+            itemObj.draw();
+          });
         }
       }
 

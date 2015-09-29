@@ -1,7 +1,7 @@
 {
   "name": "Game",
   "description": "RPG Game",
-  "version": "0.0.2",
+  "version": "0.1.1",
   "homepage": "https://github.com/qhduan/RPG",
   "author": {
     "name": "qhduan",
@@ -12,8 +12,10 @@
     "url": "https://github.com/qhduan/RPG.git"
   },
   "bugs": {
-    "url": "https://github.com/qhduan/RPG/issues"
+    "url": "https://github.com/qhduan/RPG/issues",
+    "email": "mail@qhduan.com"
   },
+  "license": "GPL-3.0",
   "licenses": [
     {
       "type": "GPL",

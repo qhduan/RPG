@@ -46,8 +46,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   heroCustom.height = 64 * 21; // 1344;
   heroCustom.width *= 0.8125;
   heroCustom.height *= 0.9375;
-  heroCustom.tilewidth = heroCustom.width / 13;
-  heroCustom.tileheight = heroCustom.height / 21;
+  heroCustom.tilewidth = heroCustom.width / 13; // 52
+  heroCustom.tileheight = heroCustom.height / 21; // 60
 
   Init();
 
@@ -81,7 +81,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       context.clearRect(0, 0, canvas.width, canvas.height);
 
       document.getElementById("loading").innerHTML = "正在载入预览";
-      Game.drawHero(heroCustom, function (images) {
+      Game.drawHero(heroCustom).then(function (images) {
         let img = images[0];
         context.drawImage(img, 0, 0, img.width, img.height);
         document.getElementById("loading").innerHTML = "预览";

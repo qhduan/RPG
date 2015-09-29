@@ -26,6 +26,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.html = `
     <table><tbody><tr><td>
       <label>请稍等...<small id="loadingWindowProgress"></small></label>
+      <br>
+      <h5 id="loadingWindowText"></h5>
     </td></tr></tbody></table>
   `;
 
@@ -43,6 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     .loadingWindow label {
       padding: 50px;
+      padding-bottom: 100px;
       border-radius:25px;
       background-color: grey;
       font-size: 60px;
@@ -50,9 +53,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
+  let loadingWindowText = win.querySelector("#loadingWindowText");
+
+  let text = [
+    "打开游戏菜单之后，游戏是暂停的",
+    "大陆上流传的经验：冒险之前检查好治疗药水库存"
+  ];
 
   win.assign("begin", function () {
     loadingWindowProgress.innerHTML = "";
+    loadingWindowText.textContent = text[Math.floor(Math.random() * text.length)];
     win.show();
   });
 

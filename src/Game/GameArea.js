@@ -22,51 +22,55 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  // 游戏总是需要预加载的内容
-  function Preload (callback) {
+  // 游戏无论什么时候都需要预加载的内容
+  function Preload () {
+    return new Promise(function (resolve, reject) {
+      let promises = new Set();
 
-    let done = 0;
-    let Complete = function () {
-      done++;
-      if (done >= 0) {
-        if (callback) {
-          callback();
-        }
-      }
-    }
+      let preloadSoundEffects = {
+        hurt: "sound/effect/hurt.ogg" // 伤害效果音
+      };
 
-    let preloadSoundEffects = {
-      hurt: "sound/effect/hurt.ogg"
-    };
-
-    for (let key in preloadSoundEffects) {
-      (function (key, url) {
-        done--;
-        if (Game.sounds && Game.sounds[key]) {
-          Complete();
-        } else {
-          Sprite.load(url).then(function (data) {
-            Game.sounds[key] = data[0];
-            Complete();
-          });
-        }
-      })(key, preloadSoundEffects[key]);
-    }
-
-    let preloadItems = ["bag", "gold"];
-
-    preloadItems.forEach(function (id) {
-      done--;
-      if (Game.items && Game.items[id]) {
-        Complete();
-      } else {
-        Game.Item.load(id).then(function (itemObj) {
-          Complete();
-        });
+      for (let key in preloadSoundEffects) {
+        promises.add(
+          (function (key, url) {
+            return new Promise(function (resolve, reject) {
+              if (Game.sounds && Game.sounds[key]) {
+                resolve();
+              } else {
+                Sprite.load(url).then(function (data) {
+                  Game.sounds[key] = data[0];
+                  resolve();
+                });
+              }
+            });
+          })(key, preloadSoundEffects[key])
+        );
       }
 
+      let preloadItems = [
+        "bag", // 掉落物品用的小包
+        "gold" // 金币图标
+      ];
+
+      preloadItems.forEach(function (id) {
+        promises.add(
+          new Promise(function (resolve, reject) {
+            if (Game.items && Game.items[id]) {
+              resolve();
+            } else {
+              Game.Item.load(id).then(function (itemObj) {
+                resolve();
+              });
+            }
+          })
+        );
+      });
+
+      Promise.all(promises).then(function () {
+        resolve();
+      });
     });
-
   }
 
   // 加载区域，把括地图，角色，物品
@@ -76,41 +80,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.Map.load(id).then(function (mapObj) {
 
         let area = {
-          actors: new Set(),
-          bags: new Set(),
+          actors: new Set(), // 角色
+          bags: new Set(), // 掉落小包
+          items: new Set(), // 其他物品（有碰撞）
           touch: [], // touch或onto会触发的地点/物品
           onto: [], // onto会触发的地点/物品
           map: mapObj
         };
 
-        let done = 0;
-        let Complete = () => {
-          done++;
-          if (done >= 0) {
-            resolve(area);
-          }
-        };
+        let promises = new Set();
 
-        done--;
-        Preload(function () {
-          Complete();
-        });
+        promises.add(Preload());
 
         if (mapObj.data.actors) {
           mapObj.data.actors.forEach(function (element) {
-            done--;
+            promises.add(
+              new Promise(function (resolve, reject) {
+                Game.Actor.load(element.id).then(function (actorObj) {
 
-            Game.Actor.load(element.id).then(function (actorObj) {
+                  for (let key in element) {
+                    actorObj.data[key] = element[key];
+                  }
 
-              for (let key in element) {
-                actorObj.data[key] = element[key];
-              }
-
-              area.actors.add(actorObj);
-              actorObj.draw(Game.layers.actorLayer);
-              Complete();
-            });
-
+                  area.actors.add(actorObj);
+                  actorObj.draw();
+                  resolve();
+                });
+              })
+            );
           });
         }
 
@@ -120,10 +117,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           mapObj.spawnMonster.count
         ) {
           for (let monsterId in mapObj.spawnMonster.list) {
-            done--;
-            Game.Actor.load(monsterId).then(function () {
-              Complete();
-            });
+            promises.add(
+              new Promise(function (resolve, reject) {
+                Game.Actor.load(monsterId).then(function () {
+                  resolve();
+                });
+              })
+            );
           }
         }
 
@@ -132,11 +132,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           mapObj.spawnItem.list &&
           mapObj.spawnItem.count
         ) {
-          for (let oreId in mapObj.spawnItem.list) {
-            done--;
-            Game.Item.load(oreId).then(function () {
-              Complete();
-            });
+          for (let itemId in mapObj.spawnItem.list) {
+            promises.add(
+              new Promise(function (resolve, reject) {
+                Game.Item.load(itemId).then(function () {
+                  resolve();
+                });
+              })
+            );
           }
         }
 
@@ -154,6 +157,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             area.touch.push(touch);
           });
         }
+
+        Promise.all(promises).then(function () {
+          resolve(area);
+        });
 
       }); //map
 

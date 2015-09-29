@@ -117,7 +117,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
             console.time("drawHero");
 
-            Game.drawHero(heroData.custom, function (heroImage) {
+            Game.drawHero(heroData.custom).then(function (heroImage) {
               heroData.image = heroImage;
               Game.hero = new Game.ActorHero(heroData);
 

@@ -69,6 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
         Sprite.load("actor/" + this.data.image).then((data) => {
+          // data is Array
           this.init(data);
         });
       } else {
@@ -389,7 +390,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     set alpha (value) {
       if (Number.isFinite(value) && value >= 0 && value <= 1) {
         this.sprite.alpha = value;
-        this.infoBox.alpha = value;
+        internal(this).infoBox.alpha = value;
       } else {
         console.error(value, this);
         throw new Error("Game.Actor.alpha got invalid value");
@@ -964,6 +965,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         }
       }
+
+      if (Game.area.items) {
+        for (let item of Game.area.items) {
+          if (item.hitTest(x, y)) {
+            return true;
+          }
+        }
+      }
+
       return false;
     };
 

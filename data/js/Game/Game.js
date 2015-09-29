@@ -57,8 +57,6 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
         return new Promise(function (resolve, reject) {
           // 寻找已经存在的bag
           var _iteratorNormalCompletion = true;
-
-          // 如果没有已经存在的bag合适，新建一个
           var _didIteratorError = false;
           var _iteratorError = undefined;
 
@@ -70,6 +68,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
                 return resolve(bag);
               }
             }
+            // 如果没有已经存在的bag合适，新建一个
           } catch (err) {
             _didIteratorError = true;
             _iteratorError = err;

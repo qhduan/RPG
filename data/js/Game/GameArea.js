@@ -23,48 +23,49 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  // 游戏总是需要预加载的内容
-  function Preload(callback) {
+  // 游戏无论什么时候都需要预加载的内容
+  function Preload() {
+    return new Promise(function (resolve, reject) {
+      var promises = new Set();
 
-    var done = 0;
-    var Complete = function Complete() {
-      done++;
-      if (done >= 0) {
-        if (callback) {
-          callback();
-        }
-      }
-    };
+      var preloadSoundEffects = {
+        hurt: "sound/effect/hurt.ogg" // 伤害效果音
+      };
 
-    var preloadSoundEffects = {
-      hurt: "sound/effect/hurt.ogg"
-    };
-
-    for (var key in preloadSoundEffects) {
-      (function (key, url) {
-        done--;
-        if (Game.sounds && Game.sounds[key]) {
-          Complete();
-        } else {
-          Sprite.load(url).then(function (data) {
-            Game.sounds[key] = data[0];
-            Complete();
+      for (var key in preloadSoundEffects) {
+        promises.add((function (key, url) {
+          return new Promise(function (resolve, reject) {
+            if (Game.sounds && Game.sounds[key]) {
+              resolve();
+            } else {
+              Sprite.load(url).then(function (data) {
+                Game.sounds[key] = data[0];
+                resolve();
+              });
+            }
           });
-        }
-      })(key, preloadSoundEffects[key]);
-    }
-
-    var preloadItems = ["bag", "gold"];
-
-    preloadItems.forEach(function (id) {
-      done--;
-      if (Game.items && Game.items[id]) {
-        Complete();
-      } else {
-        Game.Item.load(id).then(function (itemObj) {
-          Complete();
-        });
+        })(key, preloadSoundEffects[key]));
       }
+
+      var preloadItems = ["bag", // 掉落物品用的小包
+      "gold" // 金币图标
+      ];
+
+      preloadItems.forEach(function (id) {
+        promises.add(new Promise(function (resolve, reject) {
+          if (Game.items && Game.items[id]) {
+            resolve();
+          } else {
+            Game.Item.load(id).then(function (itemObj) {
+              resolve();
+            });
+          }
+        }));
+      });
+
+      Promise.all(promises).then(function () {
+        resolve();
+      });
     });
   }
 
@@ -75,58 +76,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.Map.load(id).then(function (mapObj) {
 
         var area = {
-          actors: new Set(),
-          bags: new Set(),
+          actors: new Set(), // 角色
+          bags: new Set(), // 掉落小包
+          items: new Set(), // 其他物品（有碰撞）
           touch: [], // touch或onto会触发的地点/物品
           onto: [], // onto会触发的地点/物品
           map: mapObj
         };
 
-        var done = 0;
-        var Complete = function Complete() {
-          done++;
-          if (done >= 0) {
-            resolve(area);
-          }
-        };
+        var promises = new Set();
 
-        done--;
-        Preload(function () {
-          Complete();
-        });
+        promises.add(Preload());
 
         if (mapObj.data.actors) {
           mapObj.data.actors.forEach(function (element) {
-            done--;
+            promises.add(new Promise(function (resolve, reject) {
+              Game.Actor.load(element.id).then(function (actorObj) {
 
-            Game.Actor.load(element.id).then(function (actorObj) {
+                for (var key in element) {
+                  actorObj.data[key] = element[key];
+                }
 
-              for (var key in element) {
-                actorObj.data[key] = element[key];
-              }
-
-              area.actors.add(actorObj);
-              actorObj.draw(Game.layers.actorLayer);
-              Complete();
-            });
+                area.actors.add(actorObj);
+                actorObj.draw();
+                resolve();
+              });
+            }));
           });
         }
 
         if (mapObj.spawnMonster && mapObj.spawnMonster.list && mapObj.spawnMonster.count) {
+          var _loop = function (monsterId) {
+            promises.add(new Promise(function (resolve, reject) {
+              Game.Actor.load(monsterId).then(function () {
+                resolve();
+              });
+            }));
+          };
+
           for (var monsterId in mapObj.spawnMonster.list) {
-            done--;
-            Game.Actor.load(monsterId).then(function () {
-              Complete();
-            });
+            _loop(monsterId);
           }
         }
 
         if (mapObj.spawnItem && mapObj.spawnItem.list && mapObj.spawnItem.count) {
-          for (var oreId in mapObj.spawnItem.list) {
-            done--;
-            Game.Item.load(oreId).then(function () {
-              Complete();
-            });
+          var _loop2 = function (itemId) {
+            promises.add(new Promise(function (resolve, reject) {
+              Game.Item.load(itemId).then(function () {
+                resolve();
+              });
+            }));
+          };
+
+          for (var itemId in mapObj.spawnItem.list) {
+            _loop2(itemId);
           }
         }
 
@@ -144,8 +147,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             area.touch.push(touch);
           });
         }
+
+        Promise.all(promises).then(function () {
+          resolve(area);
+        });
       }); //map
     });
   });
 })();
-//# sourceMappingURL=GameArea.js.map

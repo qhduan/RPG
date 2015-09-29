@@ -260,6 +260,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
+      // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
+      for (let item of Game.area.items) {
+        let itemHide = Game.area.map.hitAutoHide(item.x, item.y);
+        if (itemHide && itemHide == heroHide) {
+          item.visible = true;
+        } else {
+          if (itemHide) {
+            item.visible = false;
+          } else {
+            item.visible = true;
+          }
+        }
+      }
+
     }
 
     onto () {
@@ -319,9 +333,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     touch () {
       if (!Game.area) return;
-      if (!Game.area.actors) return;
-      if (!Game.area.bags) return;
-      if (!Game.area.touch) return;
 
       let heroPosition = Game.hero.position;
       let heroFace = Game.hero.facePosition;
@@ -355,15 +366,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       // 找最近可“事件”人物 Game.area.actors
       Sprite.each(Game.area.actors, FindUnderHero);
-      // 找最近尸体 Game.area.actors
+      // 找最近尸体 Game.area.bags
+      Sprite.each(Game.area.bags, FindUnderHero);
+      // 找最近物品 Game.area.items
       Sprite.each(Game.area.bags, FindUnderHero);
       // 最近的提示物（例如牌子）
       Game.area.touch.forEach(FindUnderHero);
 
       // 找最近可“事件”人物 Game.area.actors
       Sprite.each(Game.area.actors, FindFaceHero);
-      // 找最近尸体 Game.area.actors
+      // 找最近尸体 Game.area.bags
       Sprite.each(Game.area.bags, FindFaceHero);
+      // 找最近尸体 Game.area.items
+      Sprite.each(Game.area.items, FindFaceHero);
       // 最近的提示物（例如牌子）
       Game.area.touch.forEach(FindFaceHero);
       // 水源

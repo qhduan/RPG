@@ -20,6 +20,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
 
 var _get = function get(_x, _x2, _x3) { var _again = true; _function: while (_again) { var object = _x, property = _x2, receiver = _x3; desc = parent = getter = undefined; _again = false; if (object === null) object = Function.prototype; var desc = Object.getOwnPropertyDescriptor(object, property); if (desc === undefined) { var parent = Object.getPrototypeOf(object); if (parent === null) { return undefined; } else { _x = parent; _x2 = property; _x3 = receiver; _again = true; continue _function; } } else if ("value" in desc) { return desc.value; } else { var getter = desc.get; if (getter === undefined) { return undefined; } return getter.call(receiver); } } };
@@ -73,8 +75,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       value: function load(id) {
         return new Promise(function (resolve, reject) {
           Sprite.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
-            var mapData = data[0];
-            var mapInfo = data[1](); // map/id.js文件会返回一个函数
+            var _data = _slicedToArray(data, 2);
+
+            var mapData = _data[0];
+            var mapInfo = _data[1];
+
+            mapInfo = mapInfo(); // map/id.js文件会返回一个函数
             mapData.id = id;
 
             for (var key in mapInfo) {
@@ -154,8 +160,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         privates.layers = [];
 
         var _iteratorNormalCompletion2 = true;
-
-        // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
@@ -198,6 +202,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
             }
           }
+
+          // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         } catch (err) {
           _didIteratorError2 = true;
           _iteratorError2 = err;
@@ -300,10 +306,37 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
 
         var block = {};
 
+        // 预设人物占位
+        if (privates.data.actors) {
+          var _iteratorNormalCompletion3 = true;
+          var _didIteratorError3 = false;
+          var _iteratorError3 = undefined;
+
+          try {
+            for (var _iterator3 = privates.data.actors[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+              var actor = _step3.value;
+
+              block[actor.x * 10000 + actor.y] = true;
+            }
+          } catch (err) {
+            _didIteratorError3 = true;
+            _iteratorError3 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion3 && _iterator3["return"]) {
+                _iterator3["return"]();
+              }
+            } finally {
+              if (_didIteratorError3) {
+                throw _iteratorError3;
+              }
+            }
+          }
+        }
+
         // 生成怪物
         if (privates.data.spawnMonster && privates.data.spawnMonster.list && privates.data.spawnMonster.count) {
-          var done = 0;
-          while (done < privates.data.spawnMonster.count) {
+          for (var i = 0, len = privates.data.spawnMonster.count; i < len; i++) {
             var monsterId = null;
             var prob = 0;
             var r = Math.random();
@@ -314,67 +347,65 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                 break;
               }
             }
-            if (monsterId) {
-              done++;
-              Game.Actor.load(monsterId).then(function (actorObj) {
-                var x = undefined,
-                    y = undefined;
-                while (true) {
-                  x = Sprite.rand(0, _this2.col);
-                  y = Sprite.rand(0, _this2.row);
-                  if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
-                    break;
-                  }
-                }
-                block[x * 10000 + y] = true;
-                actorObj.x = x;
-                actorObj.y = y;
-                Game.area.actors.add(actorObj);
-                actorObj.draw();
-              });
+            if (!monsterId) {
+              monsterId = Object.keys(privates.data.spawnMonster.list)[0];
             }
+            Game.Actor.load(monsterId).then(function (actorObj) {
+              var x = undefined,
+                  y = undefined;
+              while (true) {
+                x = Sprite.rand(0, _this2.col);
+                y = Sprite.rand(0, _this2.row);
+                if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
+                  break;
+                }
+              }
+              block[x * 10000 + y] = true;
+              actorObj.x = x;
+              actorObj.y = y;
+              Game.area.actors.add(actorObj);
+              actorObj.draw();
+            });
           }
         }
 
         if (privates.data.spawnItem && privates.data.spawnItem.list && privates.data.spawnItem.count) {
-          var done = 0;
-
-          var _loop = function () {
-            var oreId = null;
+          var _loop = function (i, len) {
+            var itemId = null;
             var prob = 0;
             var r = Math.random();
             for (var key in privates.data.spawnItem.list) {
               prob += privates.data.spawnItem.list[key];
               if (r < prob) {
-                oreId = key;
+                itemId = key;
                 break;
               }
             }
-            if (oreId) {
-              done++;
-              Game.Item.load(oreId).then(function (itemObj) {
-                var x = undefined,
-                    y = undefined;
-                while (true) {
-                  x = Sprite.rand(0, _this2.col);
-                  y = Sprite.rand(0, _this2.row);
-                  if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
-                    break;
-                  }
-                }
-                block[x * 10000 + y] = true;
-                itemObj.x = x;
-                itemObj.y = y;
-                itemObj.inner = {};
-                itemObj.inner[oreId] = 1;
-                Game.area.bags.add(itemObj);
-                itemObj.draw();
-              });
+            if (!itemId) {
+              itemId = Object.keys(privates.data.spawnItem.list)[0];
             }
+            Game.Item.load(itemId).then(function (itemObj) {
+              var x = undefined,
+                  y = undefined;
+              while (true) {
+                x = Sprite.rand(0, _this2.col);
+                y = Sprite.rand(0, _this2.row);
+                if (!_this2.hitTest(x, y) && !block[x * 10000 + y]) {
+                  break;
+                }
+              }
+              block[x * 10000 + y] = true;
+              itemObj.x = x;
+              itemObj.y = y;
+              itemObj.inner = {};
+              itemObj.inner[itemId] = 1;
+              Game.area.items.add(itemObj);
+              itemObj.draw();
+            });
           };
 
-          while (done < privates.data.spawnItem.count) {
-            _loop();
+          for (var i = 0, len = privates.data.spawnItem.count; i < len; i++) {
+            _loop(i, len);
           }
         }
       }
@@ -441,4 +472,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameMap;
   })(Sprite.Event));
 })();
-//# sourceMappingURL=GameMap.js.map

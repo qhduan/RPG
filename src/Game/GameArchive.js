@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
           console.time("drawHero");
 
-          Game.drawHero(heroData.custom, function (heroImage) {
+          Game.drawHero(heroData.custom).then(function (heroImage) {
             heroData.image = heroImage;
             Game.hero = new Game.ActorHero(heroData);
 

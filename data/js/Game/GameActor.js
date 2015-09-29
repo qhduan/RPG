@@ -86,6 +86,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
         Sprite.load("actor/" + this.data.image).then(function (data) {
+          // data is Array
           _this.init(data);
         });
       } else {
@@ -666,8 +667,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
 
         var _iteratorNormalCompletion2 = true;
-
-        // 按照地址的距离从近到远排序（从小到大）
         var _didIteratorError2 = false;
         var _iteratorError2 = undefined;
 
@@ -677,6 +676,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             // 计算地址距离
             element.distance = this.distance(element.x, element.y);
           }
+
+          // 按照地址的距离从近到远排序（从小到大）
         } catch (err) {
           _didIteratorError2 = true;
           _iteratorError2 = err;
@@ -766,8 +767,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               }
 
               var _iteratorNormalCompletion3 = true;
-
-              // 按照地址的距离从近到远排序（从小到大）
               var _didIteratorError3 = false;
               var _iteratorError3 = undefined;
 
@@ -777,6 +776,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                   // 计算地址距离
                   element.distance = _this6.distance(element.x, element.y);
                 }
+
+                // 按照地址的距离从近到远排序（从小到大）
               } catch (err) {
                 _didIteratorError3 = true;
                 _iteratorError3 = err;
@@ -934,21 +935,17 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             }
           }
         }
-        return false;
-      }
-    }, {
-      key: "hitTest",
-      value: function hitTest(x, y) {
-        if (this.data.hitArea && this.data.hitArea instanceof Array) {
+
+        if (Game.area.items) {
           var _iteratorNormalCompletion5 = true;
           var _didIteratorError5 = false;
           var _iteratorError5 = undefined;
 
           try {
-            for (var _iterator5 = this.data.hitArea[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
-              var p = _step5.value;
+            for (var _iterator5 = Game.area.items[Symbol.iterator](), _step5; !(_iteratorNormalCompletion5 = (_step5 = _iterator5.next()).done); _iteratorNormalCompletion5 = true) {
+              var item = _step5.value;
 
-              if (x == this.x + p[0] && y == this.y + p[1]) {
+              if (item.hitTest(x, y)) {
                 return true;
               }
             }
@@ -963,6 +960,40 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
             } finally {
               if (_didIteratorError5) {
                 throw _iteratorError5;
+              }
+            }
+          }
+        }
+
+        return false;
+      }
+    }, {
+      key: "hitTest",
+      value: function hitTest(x, y) {
+        if (this.data.hitArea && this.data.hitArea instanceof Array) {
+          var _iteratorNormalCompletion6 = true;
+          var _didIteratorError6 = false;
+          var _iteratorError6 = undefined;
+
+          try {
+            for (var _iterator6 = this.data.hitArea[Symbol.iterator](), _step6; !(_iteratorNormalCompletion6 = (_step6 = _iterator6.next()).done); _iteratorNormalCompletion6 = true) {
+              var p = _step6.value;
+
+              if (x == this.x + p[0] && y == this.y + p[1]) {
+                return true;
+              }
+            }
+          } catch (err) {
+            _didIteratorError6 = true;
+            _iteratorError6 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion6 && _iterator6["return"]) {
+                _iterator6["return"]();
+              }
+            } finally {
+              if (_didIteratorError6) {
+                throw _iteratorError6;
               }
             }
           }
@@ -1218,7 +1249,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       set: function set(value) {
         if (Number.isFinite(value) && value >= 0 && value <= 1) {
           this.sprite.alpha = value;
-          this.infoBox.alpha = value;
+          internal(this).infoBox.alpha = value;
         } else {
           console.error(value, this);
           throw new Error("Game.Actor.alpha got invalid value");
@@ -1271,4 +1302,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return Actor;
   })(Sprite.Event)); // Game.Actor
 })();
-//# sourceMappingURL=GameActor.js.map
