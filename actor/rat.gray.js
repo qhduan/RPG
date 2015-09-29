@@ -23,6 +23,7 @@ return {
   $cha: 1,
   tileheight: 32,
   tilewidth: 32,
+  skills: ["sword.l1"],
   animations: {
     walkdown: [0, 2, "walkdown", 100],
     walkleft: [3, 5, "walkleft", 100],

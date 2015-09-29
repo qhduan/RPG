@@ -1,0 +1,12 @@
+{
+  "name": "Game",
+  "main": "index.html",
+  "window": {
+    "toolbar": false,
+    "resizable": true,
+    "fullscreen": false,
+    "width": 800,
+    "height": 450,
+    "icon": "icon64.png"
+  }
+}
