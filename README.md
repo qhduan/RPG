@@ -8,11 +8,11 @@ Created by http://qhduan.com
 
 Wiki链接：
 
-[世界观](https://github.com/qhduan/RPG/wiki/%E4%B8%96%E7%95%8C%E8%A7%82)
+[世界观](https://github.com/qhduan/RPG/blob/master/world.md)
 
-[游戏操作](https://github.com/qhduan/RPG/wiki/%E6%B8%B8%E6%88%8F%E6%93%8D%E4%BD%9C)
+[游戏操作](https://github.com/qhduan/RPG/blob/master/control.md)
 
-[角色信息](https://github.com/qhduan/RPG/wiki/%E8%A7%92%E8%89%B2%E4%BF%A1%E6%81%AF)
+[角色信息](https://github.com/qhduan/RPG/blob/master/actor.md)
 
 ## 游戏特性
 
