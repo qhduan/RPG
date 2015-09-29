@@ -33,6 +33,7 @@
     "express": "latest",
     "grunt": "latest",
     "grunt-contrib-watch": "latest",
+    "grunt-contrib-concat": "latest",
     "grunt-babel": "latest",
     "babel-core": "latest"
   },

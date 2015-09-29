@@ -634,3 +634,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameActorHero;
   })(Game.Actor));
 })();
+//# sourceMappingURL=GameActorHero.js.map

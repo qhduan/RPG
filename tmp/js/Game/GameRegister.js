@@ -151,6 +151,9 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     "level": 1, // 等级
     "exp": 0, // 经验值
     "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
+
+    "class": "", // 职业，不同职业有不同加成
+
     // 233年2月27日 09时30分
     "time": 233 * (60 * 24 * 30 * 12) + 1 * (60 * 24 * 30) + 26 * (60 * 24) + 9 * 60 + 30,
 

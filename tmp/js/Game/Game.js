@@ -309,7 +309,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           fpsElement.textContent = f.toFixed(1);
         }, 1000);
 
-        console.log("RPG Game Flying!");
+        console.log("RPG Game 0.1.1 Flying!");
       }
     }, {
       key: "paused",

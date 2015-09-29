@@ -276,7 +276,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         fpsElement.textContent = f.toFixed(1);
       }, 1000);
 
-      console.log("RPG Game Flying!");
+      console.log("RPG Game 0.1.1 Flying!");
     }
   };
 
