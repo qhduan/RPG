@@ -55,13 +55,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
   let loadingWindowText = win.querySelector("#loadingWindowText");
 
+  // 提示信息
   let text = [
     "打开游戏菜单之后，游戏是暂停的",
-    "记得带着矿工锄和采药铲，或许能从其中赚点小钱"
+    "记得带着矿工锄和采药铲，或许能从其中赚点小钱",
+    "改变职业的成本会随着你的等级越来越高"
   ];
 
   win.assign("begin", function () {
     loadingWindowProgress.innerHTML = "";
+    // 随机一个提示
     loadingWindowText.textContent = text[Math.floor(Math.random() * text.length)];
     win.show();
   });
