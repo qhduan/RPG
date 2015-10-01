@@ -25,43 +25,39 @@ var babel = require("babel-core");
 
 grunt.tasks(["babel"], {}, function () {
 
-  grunt.tasks(["concat"], {}, function () {
+  grunt.tasks(["watch"]);
 
-    grunt.tasks(["watch"]);
-
-    // 监视grunt-contrib-watch的事件，重新编译指定文件
-    // 如果直接运行babel命令，会把所有文件都重新编译，很慢
-    grunt.event.on("watch", function (action, filepath, target) {
-      var outputPath = filepath.replace("src", "tmp/js");
-      babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
+  // 监视grunt-contrib-watch的事件，重新编译指定文件
+  // 如果直接运行babel命令，会把所有文件都重新编译，很慢
+  grunt.event.on("watch", function (action, filepath, target) {
+    var outputPath = filepath.replace("src", "data/js");
+    babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
+      if (err) throw err;
+      // 保存转换好的代码
+      fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
         if (err) throw err;
-        // 保存转换好的代码
-        fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
-          if (err) throw err;
-          console.log("babel compiled", filepath, outputPath);
-        });
+        console.log("babel compiled", filepath, outputPath);
+      });
 
-        grunt.tasks(["concat"]);
-        // 把转换好的map保存
-        fs.writeFile(outputPath + ".map", JSON.stringify(result.map), { encoding: "utf8" }, function (err) {
-          if (err) throw err;
-        });
+      grunt.tasks(["concat"]);
+      // 把转换好的map保存
+      fs.writeFile(outputPath + ".map", JSON.stringify(result.map), { encoding: "utf8" }, function (err) {
+        if (err) throw err;
       });
     });
+  });
 
-    console.log("\nGrunt Done, Game Starting...\n");
+  console.log("\nGrunt Done, Game Starting...\n");
 
-    var express = require("express");
+  var express = require("express");
 
-    var app = express();
-    app.use(express.static("data/"));
+  var app = express();
+  app.use(express.static("data/"));
 
-    var PORT = 9000;
+  var PORT = 9000;
 
-    app.listen(PORT, function () {
-      console.log("Game Flying at ", PORT);
-    });
-
+  app.listen(PORT, function () {
+    console.log("Game Flying at ", PORT);
   });
 
 });

@@ -72,6 +72,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }));
 
+      // Promise es6
       Promise.all(promises).then(function () {
         resolve([withoutWeapon, withWeapon]);
       });

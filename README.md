@@ -8,11 +8,11 @@ Created by http://qhduan.com
 
 Wiki链接：
 
-[世界观](https://github.com/qhduan/RPG/blob/master/world.md)
+[世界观](https://github.com/qhduan/RPG/blob/master/backgroundsetting/world.md)
 
-[游戏操作](https://github.com/qhduan/RPG/blob/master/control.md)
+[游戏操作](https://github.com/qhduan/RPG/blob/master/backgroundsetting/control.md)
 
-[角色信息](https://github.com/qhduan/RPG/blob/master/actor.md)
+[角色信息](https://github.com/qhduan/RPG/blob/master/backgroundsetting/actor.md)
 
 ## 游戏特性
 
