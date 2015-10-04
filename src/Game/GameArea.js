@@ -145,16 +145,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         if (mapObj.data.onto) {
           mapObj.data.onto.forEach(function (element) {
-            let onto = Sprite.copy(element);
-            onto.type = "onto";
-            area.onto.push(onto);
+            area.onto.push(element);
           });
         }
 
         if (mapObj.data.touch) {
           mapObj.data.touch.forEach(function (element) {
-            let touch = Sprite.copy(element);
-            area.touch.push(touch);
+            area.touch.push(element);
           });
         }
 

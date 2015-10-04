@@ -133,6 +133,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }
 
     _createClass(GameActorHero, [{
+      key: "popup",
+      value: function popup(text) {
+        Game.popup(this.sprite, text, 0, -50);
+      }
+    }, {
       key: "hasItem",
       value: function hasItem(id, count) {
         if (Number.isFinite(count) == false || count <= 0) {
@@ -487,6 +492,51 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         }
       }
     }, {
+      key: "gotoArea",
+      value: function gotoArea(dest, x, y) {
+        Game.pause();
+        Game.windows.loading.begin();
+        Game.windows.loading.update("20%");
+        setTimeout(function () {
+
+          Game.clearStage();
+          Game.windows.loading.update("50%");
+
+          setTimeout(function () {
+
+            Game.loadArea(dest).then(function (area) {
+
+              Game.area = area;
+              Game.windows.loading.update("80%");
+
+              setTimeout(function () {
+
+                Game.hero.data.area = dest;
+                Game.hero.draw();
+                Game.hero.x = x;
+                Game.hero.y = y;
+                area.actors.add(Game.hero);
+
+                area.map.draw();
+                Game.windows.loading.update("100%");
+
+                setTimeout(function () {
+
+                  Game.hero.x = x;
+                  Game.hero.y = y;
+                  Game.hero.data.time += 60; // 加一小时
+                  Game.windows.loading.end();
+                  Game.windows["interface"].datetime();
+                  Game.windows["interface"].refresh();
+                  Game.windows["interface"].show();
+                  Game.start();
+                }, 20);
+              }, 20);
+            });
+          }, 20);
+        }, 20);
+      }
+    }, {
       key: "onto",
       value: function onto() {
         if (!Game.area) return;
@@ -508,37 +558,9 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 找最近可“事件”人物 Game.area.actors
         Sprite.each(Game.area.onto, FindUnderHero);
         if (onto) {
-          if (onto.dest) {
-            Game.pause();
-            Game.windows.loading.begin();
-            Game.windows.loading.update("20%");
-            setTimeout(function () {
-              Game.clearStage();
-              Game.windows.loading.update("50%");
-              setTimeout(function () {
-
-                Game.loadArea(onto.dest).then(function (area) {
-                  Game.windows.loading.update("80%");
-                  setTimeout(function () {
-                    Game.area = area;
-                    area.map.draw(Game.layers.mapLayer);
-                    Game.hero.data.area = onto.dest;
-                    Game.hero.draw(Game.layers.actorLayer);
-                    area.actors.add(Game.hero);
-                    Game.windows.loading.update("100%");
-                    setTimeout(function () {
-                      Game.hero.x = onto.destx;
-                      Game.hero.y = onto.desty;
-                      Game.hero.data.time += 60; // 加一小时
-                      Game.windows.loading.end();
-                      Game.windows["interface"].datetime();
-                      Game.windows["interface"].refresh();
-                    }, 20);
-                  }, 20);
-                });
-              }, 20);
-            }, 20);
-          } // dest, aka. door
+          if (onto.execute) {
+            onto.execute();
+          }
         } // touch
       }
     }, {
@@ -581,7 +603,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         // 找最近尸体 Game.area.bags
         Sprite.each(Game.area.bags, FindUnderHero);
         // 找最近物品 Game.area.items
-        Sprite.each(Game.area.bags, FindUnderHero);
+        Sprite.each(Game.area.items, FindUnderHero);
         // 最近的提示物（例如牌子）
         Game.area.touch.forEach(FindUnderHero);
 
@@ -607,16 +629,6 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           Game.hintObject = null;
           Game.windows["interface"].hideUse();
         } else {
-
-          if (touch.type == "message") {
-            touch.heroUse = function () {
-              Game.popup({
-                x: touch.x * 32 + 16,
-                y: touch.y * 32 + 16
-              }, touch.content, 0, -30);
-            };
-          }
-
           Game.hintObject = touch;
           Game.windows["interface"].showUse();
         }
@@ -634,4 +646,3 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     return GameActorHero;
   })(Game.Actor));
 })();
-//# sourceMappingURL=GameActorHero.js.map

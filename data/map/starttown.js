@@ -57,10 +57,18 @@ map.actors.push({
 map.onto.push({
   x: 60,
   y: 119,
-  dest: "starttown.southforest",
-  destx: 60,
-  desty: 1
+  description: "通往斯塔特森林",
+  execute: function () {
+    Game.hero.gotoArea("starttown.southforest", 60, 1);
+  }
 });
 
+map.touch.push({
+  x: 58,
+  y: 111,
+  heroUse: function () {
+    Game.hero.popup("欢迎来到斯塔特小镇");
+  }
+})
 
 return map;

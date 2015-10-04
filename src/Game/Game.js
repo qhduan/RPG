@@ -149,11 +149,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /** 清理舞台，即删除舞台上所有元素 */
     clearStage () {
-      for (let actor of Game.area.actors) {
-        actor.erase();
-      }
-      for (let bag of Game.area.bags) {
-        bag.erase();
+      if (Game.area) {
+        for (let actor of Game.area.actors) {
+          actor.erase();
+        }
+        for (let bag of Game.area.bags) {
+          bag.erase();
+        }
       }
       this.layers.mapLayer.clear();
       this.layers.mapHideLayer.clear();

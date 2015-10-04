@@ -75,6 +75,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }, 500);
     }
 
+    popup (text) {
+      Game.popup(this.sprite, text, 0, -50);
+    }
+
     get beAttacking () {
       return internal(this).beAttacking;
     }
@@ -276,6 +280,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     }
 
+    gotoArea (dest, x, y) {
+      Game.pause();
+      Game.windows.loading.begin();
+      Game.windows.loading.update("20%");
+      setTimeout(function () {
+
+        Game.clearStage();
+        Game.windows.loading.update("50%");
+
+        setTimeout(function () {
+
+          Game.loadArea(dest).then(function (area) {
+
+            Game.area = area;
+            Game.windows.loading.update("80%");
+
+            setTimeout(function () {
+
+              Game.hero.data.area = dest;
+              Game.hero.draw();
+              Game.hero.x = x;
+              Game.hero.y = y;
+              area.actors.add(Game.hero);
+
+              area.map.draw();
+              Game.windows.loading.update("100%");
+
+              setTimeout(function () {
+
+                Game.hero.x = x;
+                Game.hero.y = y;
+                Game.hero.data.time += 60; // 加一小时
+                Game.windows.loading.end();
+                Game.windows.interface.datetime();
+                Game.windows.interface.refresh();
+                Game.windows.interface.show();
+                Game.start();
+              }, 20);
+            }, 20);
+          });
+
+        }, 20);
+      }, 20);
+    }
+
     onto () {
       if (!Game.area) return;
       if (!Game.area.onto) return;
@@ -296,38 +345,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 找最近可“事件”人物 Game.area.actors
       Sprite.each(Game.area.onto, FindUnderHero);
       if (onto) {
-        if (onto.dest) {
-          Game.pause();
-          Game.windows.loading.begin();
-          Game.windows.loading.update("20%");
-          setTimeout(function () {
-            Game.clearStage();
-            Game.windows.loading.update("50%");
-            setTimeout(function () {
-
-              Game.loadArea(onto.dest).then(function (area) {
-                Game.windows.loading.update("80%");
-                setTimeout(function () {
-                  Game.area = area;
-                  area.map.draw(Game.layers.mapLayer);
-                  Game.hero.data.area = onto.dest;
-                  Game.hero.draw(Game.layers.actorLayer);
-                  area.actors.add(Game.hero);
-                  Game.windows.loading.update("100%");
-                  setTimeout(function () {
-                    Game.hero.x = onto.destx;
-                    Game.hero.y = onto.desty;
-                    Game.hero.data.time += 60; // 加一小时
-                    Game.windows.loading.end();
-                    Game.windows.interface.datetime();
-                    Game.windows.interface.refresh();
-                  }, 20);
-                }, 20);
-              });
-
-            }, 20);
-          }, 20);
-        } // dest, aka. door
+        if (onto.execute) {
+          onto.execute();
+        }
       } // touch
     }
 
@@ -369,7 +389,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 找最近尸体 Game.area.bags
       Sprite.each(Game.area.bags, FindUnderHero);
       // 找最近物品 Game.area.items
-      Sprite.each(Game.area.bags, FindUnderHero);
+      Sprite.each(Game.area.items, FindUnderHero);
       // 最近的提示物（例如牌子）
       Game.area.touch.forEach(FindUnderHero);
 
@@ -395,16 +415,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Game.hintObject = null;
         Game.windows.interface.hideUse();
       } else {
-
-        if (touch.type == "message") {
-          touch.heroUse = function () {
-            Game.popup({
-              x: touch.x * 32 + 16,
-              y: touch.y * 32 + 16
-            }, touch.content, 0, -30);
-          };
-        }
-
         Game.hintObject = touch;
         Game.windows.interface.showUse();
       }

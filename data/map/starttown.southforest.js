@@ -37,19 +37,19 @@ map.spawnItem = {
 map.onto.push({
   x: 60,
   y: 0,
-  dest: "starttown",
   description: "通往斯塔特镇",
-  destx: 60,
-  desty: 118
+  execute: function () {
+    Game.hero.gotoArea("starttown", 60, 118);
+  }
 });
 
 map.onto.push({
   x: 60,
   y: 119,
-  dest: "slimeforest.north",
   description: "通往史莱姆北部森林",
-  destx: 60,
-  desty: 1
+  execute: function () {
+    Game.hero.gotoArea("slimeforest.north", 60, 1);
+  }
 });
 
 return map;
