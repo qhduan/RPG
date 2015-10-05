@@ -325,21 +325,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // html窗口拉伸（css中控制了原始大小）
     for (let win of windows) {
-      internal(win).html.style.transformOrigin = "0 0 0";
       internal(win).html.style.left = `${leftMargin}px`;
       internal(win).html.style.top = `${topMargin}px`;
-
-      if (scale > 1.01 || scale < 0.99) {
-        internal(win).html.style.transform = `scale(${scale}, ${scale}) translateZ(0)`;
-        internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
-        internal(win).html.style.filter = "none";
-        internal(win).html.style.webkitFilter = "blur(0px)";
-        internal(win).html.style.mozFilter = "blur(0px)";
-        internal(win).html.style.msFilter = "blur(0px)";
-      } else {
-        internal(win).html.style.transform = "";
-        //internal(win).html.style.webkitTransform = "";
-      }
+      internal(win).html.style.transformOrigin = "0 0 0";
+      internal(win).html.style.transform = `scale(${scale}, ${scale}) translateZ(0)`;
+      internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
+      internal(win).html.style.filter = "none";
+      internal(win).html.style.webkitFilter = "blur(0px)";
+      internal(win).html.style.mozFilter = "blur(0px)";
+      internal(win).html.style.msFilter = "blur(0px)";
 
     }
 

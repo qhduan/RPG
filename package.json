@@ -1,6 +1,6 @@
 {
-  "name": "Game",
-  "description": "RPG Game",
+  "name": "Elliorwis",
+  "description": "Fantasy RPG Game",
   "version": "0.1.1",
   "homepage": "https://github.com/qhduan/RPG",
   "author": {
@@ -40,6 +40,8 @@
   "keywords": [
     "RPG",
     "Game",
-    "canvas"
+    "canvas",
+    "webgl",
+    "Elliorwis"
   ]
 }

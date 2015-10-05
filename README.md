@@ -1,12 +1,12 @@
-# RPG
+# 艾利韦斯 Elliorwis 奇幻角色扮演游戏 Fantasy RPG Game
 
-Created by http://qhduan.com
+Created by mail@qhduan.com ( http://qhduan.com )
 
-本项目是个人作品，希望制作一个自己觉得不错的开放沙盘2D RPG游戏，A-RPG战斗模式。
+本项目是个人作品，希望制作一个自己觉得不错的开放沙盘2D RPG游戏，即时战斗模式。
 
 游戏引擎使用作者自己开发的Sprite引擎，使用webgl或canvas作为游戏后端。所有代码使用JavaScript ES2015(ES6)开发，代码没使用任何第三方库。
 
-Wiki链接：
+一些设定：
 
 [世界观](https://github.com/qhduan/RPG/blob/master/backgroundsetting/world.md)
 
@@ -16,7 +16,7 @@ Wiki链接：
 
 ## 游戏特性
 
-我所希望的游戏特性
+我所希望的游戏特性（很多地方还未实现）
 
 - 无结尾，但是会有主线剧情结局，类似D&D类游戏的模组模式
 - 有职业，但是职业可变，不同职业可以提供不同的buff，例如战士加力量，魔法师加智力，然后各自降低对应技能的升级经验要求
@@ -25,18 +25,26 @@ Wiki链接：
 - 生活技能，构思中，暂定会有：厨艺，钓鱼，口才，交易，开锁，偷窃
 - 模拟养成要素，布置房间，生存，饥饿值，劳累值
 - 大型战斗，带领NPC，对抗其他NPC，构建大型战场，会建设要塞，攻城，守城，野战，空战
-- 穿插的小游戏，暂定的设想有：钓鱼，打飞机（雷电），赌博（骰子和扑克），开锁（暂时设想是解迷宫），偷窃，等各种小游戏
+- 穿插的小游戏，暂定的设想有：钓鱼，赛车比赛（奇幻赛车？oh no！），打飞机（雷电），赌博（骰子和扑克），开锁（暂时设想是解迷宫），偷窃，等各种小游戏
 - 尽量真实的奇幻世界
 
 ## License 协议
 
-所有原创代码采用GPL v3版本共享，包括Sprite引擎(src/Sprite目录)，和游戏本体(src/Game目录)
+所有原创代码采用GPL-v3协议（详情在文件GPLv3.txt），包括Sprite引擎(src/Sprite目录)，和游戏本体(src/Game目录)
 
-项目中原创资源(非代码)采用CC-BY-SA 3.0方式共享，署名-相同方式共享
+Game's sources (code) are using GPL-v3 license (GPLv3.txt)
+
+项目中原创资源(非代码)采用CC-BY-SA 3.0协议共享，（详情在文件CC-BY-SA.txt）
+
+Game's resources which created by mail@qhduan.com, are using CC-BY-SA 3.0 license (CC-BY-SA.txt)
+
+游戏中部分设定，人物名称，世界地图，城市名称，部分剧情，内容，来自donjon网站（ http://donjon.bin.sh ），采用OpenGameLicense协议（详情在文件OpenGameLicense.txt）
+
+Some events, names, world maps from dojon( http://donjon.bin.sh ), are using Open Game License (OpenGameLicense.txt)
 
 其他非原创资源(非代码)列表，会以credits的方式列出，大部分的资源都会是GPL，CC，或其他兼容协议
 
-项目暂时未使用任何第三方代码
+Other resources I will list them with credits file, most of them are using GPL or CC compatible license
 
 ### 开发环境
 
@@ -44,7 +52,7 @@ node.js 系统运行和测试，非必要，游戏可以完全的以静态HTML�
 
 babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit等更好的支持es6之后就会放弃
 
-地图使用tiled(mapeditor)， [网址](http://www.mapeditor.org/)
+地图使用tiled软件(mapeditor)，格式为json， [网址](http://www.mapeditor.org/)
 
 ### credits 鸣谢
 

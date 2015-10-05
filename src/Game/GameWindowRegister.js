@@ -255,6 +255,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             </select>
           </div>
 
+          <hr>
+
+          <div>
+            <label>
+            信仰
+            </label>
+            <select onchange="" class="">
+              <option value="">无信仰（没有加成）</option>
+              <option value="">魔法之神（智力）</option>
+            </select>
+          </div>
+
+          <div>
+            <label>
+            职业
+            </label>
+            <select onchange="" class="">
+              <option value="">剑士</option>
+              <option value="">弓箭手</option>
+              <option value="">魔法师</option>
+              <option value="">牧师</option>
+              <option value="">吟游诗人</option>
+              <option value="">盗贼</option>
+              <option value="">商人</option>
+            </select>
+          </div>
+
           <div>
             <input id="registerHeroName" placeholder="名字" type="text">
           </div>
@@ -306,6 +333,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     .registerWindow select {
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
       width: 200px;
       height: 40px;
       -webkit-border-radius: 5px;

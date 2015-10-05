@@ -436,21 +436,15 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       for (var _iterator4 = windows[Symbol.iterator](), _step4; !(_iteratorNormalCompletion4 = (_step4 = _iterator4.next()).done); _iteratorNormalCompletion4 = true) {
         var win = _step4.value;
 
-        internal(win).html.style.transformOrigin = "0 0 0";
         internal(win).html.style.left = leftMargin + "px";
         internal(win).html.style.top = topMargin + "px";
-
-        if (scale > 1.01 || scale < 0.99) {
-          internal(win).html.style.transform = "scale(" + scale + ", " + scale + ") translateZ(0)";
-          internal(win).html.style.webkitTransform = "scale(" + scale + ", " + scale + ") translateZ(0)";
-          internal(win).html.style.filter = "none";
-          internal(win).html.style.webkitFilter = "blur(0px)";
-          internal(win).html.style.mozFilter = "blur(0px)";
-          internal(win).html.style.msFilter = "blur(0px)";
-        } else {
-          internal(win).html.style.transform = "";
-          //internal(win).html.style.webkitTransform = "";
-        }
+        internal(win).html.style.transformOrigin = "0 0 0";
+        internal(win).html.style.transform = "scale(" + scale + ", " + scale + ") translateZ(0)";
+        internal(win).html.style.webkitTransform = "scale(" + scale + ", " + scale + ") translateZ(0)";
+        internal(win).html.style.filter = "none";
+        internal(win).html.style.webkitFilter = "blur(0px)";
+        internal(win).html.style.mozFilter = "blur(0px)";
+        internal(win).html.style.msFilter = "blur(0px)";
       }
     } catch (err) {
       _didIteratorError4 = true;
@@ -477,3 +471,4 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     GameWindowResize();
   });
 })();
+//# sourceMappingURL=GameWindow.js.map

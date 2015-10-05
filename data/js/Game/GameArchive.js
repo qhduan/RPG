@@ -136,3 +136,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameArchive;
   })());
 })();
+//# sourceMappingURL=GameArchive.js.map

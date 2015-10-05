@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="1024" height="1024" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <defs>
+  <filter id="svg_1_blur">
+   <feGaussianBlur stdDeviation="0"/>
+  </filter>
+ </defs>
+ <g>
+  <title>Elliorwis</title>
+  <rect x="-1" y="-1" width="1026" height="1026" id="canvas_background" fill="#ffffff"/>
+  <g id="canvasGrid" display="none">
+   <rect id="svg_2" width="100%" height="100%" x="0" y="0" stroke-width="0" fill="url(#gridpattern)"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="561.0853" y="108.5066" id="svg_59" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Fystone Town</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="603.58093" y="453.52087" id="svg_60" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Chano City</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="561.58653" y="238.51319" id="svg_61" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Bastown Forest</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="106.98527" y="47.0023" id="svg_68" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Forest</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="108.98368" y="122.0027" id="svg_69" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Heavy Forest</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="108.98762" y="191.0011" id="svg_70" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Mountain</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="108.98931" y="266.9976" id="svg_71" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Hills</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="125.99073" y="331.99467" id="svg_72" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Flat</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="117.98808" y="413.99542" id="svg_73" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Grass</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="118.98925" y="473.99787" id="svg_74" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Sea</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="117.9892" y="561.99892" id="svg_75" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Lake</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="114.98455" y="633.00644" id="svg_76" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Town</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="111.97989" y="706.01124" id="svg_77" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">City</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="103.98061" y="770.00207" id="svg_78" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Country</text>
+  <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="105.98071" y="846.00195" id="svg_79" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">Castle</text>
+  <g id="svg_83">
+   <path stroke-width="0" fill="#A0D58A" stroke="#000" d="m26.291269,121.274948l13.63936,-31.735031l36.370678,0l13.638611,31.735031l-13.638611,31.734619l-36.370678,0l-13.63936,-31.734619z" id="svg_14" filter="url(#svg_1_blur)" opacity="0.51"/>
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="46.02849" y="131.49612" id="svg_20" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">林</text>
+  </g>
+  <g id="svg_84">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="47.02273" y="61.51891" id="svg_18" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">森</text>
+   <path stroke-width="0" fill="#729C62" stroke="#000" d="m27.285509,51.993759l13.63936,-31.735029l36.370663,0l13.638611,31.735029l-13.638611,31.734604l-36.370663,0l-13.63936,-31.734604z" id="svg_3" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_85">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="48.02899" y="198.49049" id="svg_21" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">山</text>
+   <path stroke-width="0" fill="#7B572D" stroke="#000" d="m27.272779,190.565689l13.639341,-31.735031l36.370686,0l13.638611,31.735031l-13.638611,31.734619l-36.370686,0l-13.639341,-31.734619z" id="svg_4" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_86">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="48.00424" y="269.48239" id="svg_22" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">丘</text>
+   <path stroke-width="0" fill="#A98E49" stroke="#000" d="m28.267019,261.87677l13.63936,-31.735046l36.370682,0l13.638611,31.735046l-13.638611,31.734619l-36.370682,0l-13.63936,-31.734619z" id="svg_6" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_87">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="49.0019" y="342.49012" id="svg_23" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">平</text>
+   <path stroke-width="0" fill="#BBBBBB" stroke="#000" d="m28.26384,333.181488l13.639351,-31.735046l36.370682,0l13.638611,31.735046l-13.638611,31.734619l-36.370682,0l-13.639351,-31.734619z" id="svg_8" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_88">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="47.99944" y="418.98632" id="svg_24" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">草</text>
+   <path stroke-width="0" fill="#EEFF9F" stroke="#000" d="m29.280371,407.481659l13.63936,-31.735046l36.370689,0l13.638611,31.735046l-13.638611,31.734619l-36.370689,0l-13.63936,-31.734619z" id="svg_10" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_89">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="47.00067" y="486.9856" id="svg_25" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">海</text>
+   <path stroke-width="0" fill="#7AD6CA" stroke="#000" d="m28.27021,478.754547l13.639351,-31.735046l36.370682,0l13.638611,31.735046l-13.638611,31.734619l-36.370682,0l-13.639351,-31.734619z" id="svg_17" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_90">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="50.50067" y="563.48181" id="svg_26" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">湖</text>
+   <path stroke-width="0" fill="#A8FFE9" stroke="#000" d="m29.274,555.062317l13.63936,-31.735046l36.370682,0l13.638611,31.735046l-13.638611,31.734619l-36.370682,0l-13.63936,-31.734619z" id="svg_19" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_91">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="48.49516" y="637.4965" id="svg_27" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">镇</text>
+   <path stroke-width="0" fill="#BF7E96" stroke="#000" d="m29.286739,626.351135l13.639362,-31.735046l36.370682,0l13.638596,31.735046l-13.638596,31.734619l-36.370682,0l-13.639362,-31.734619z" id="svg_31" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_92">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="47.99639" y="703.9921" id="svg_28" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m29.280371,694.631714l13.63936,-31.735046l36.370682,0l13.638611,31.735046l-13.638611,31.734619l-36.370682,0l-13.63936,-31.734619z" id="svg_32" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_93">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="49.99516" y="773.98892" id="svg_29" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">村</text>
+   <path stroke-width="0" fill="#FFAC8D" stroke="#000" d="m29.286739,764.913452l13.639362,-31.735046l36.370682,0l13.638596,31.735046l-13.638596,31.734619l-36.370682,0l-13.639362,-31.734619z" id="svg_33" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_96">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="46.9813" y="844.48524" id="svg_30" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">堡</text>
+   <path stroke-width="0" fill="#B6C7EA" stroke="#000" d="m28.295679,835.21759l13.63936,-31.735107l36.370678,0l13.638611,31.735107l-13.638611,31.734619l-36.370678,0l-13.63936,-31.734619z" id="svg_34" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_99">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="498.77637" y="108.77826" id="svg_97" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">镇</text>
+   <path stroke-width="0" fill="#BF7E96" stroke="#000" d="m479.567963,97.632889l13.639343,-31.735046l36.370697,0l13.63855,31.735046l-13.63855,31.734619l-36.370697,0l-13.639343,-31.734619z" id="svg_98" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_102">
+   <path stroke-width="0" fill="#A0D58A" stroke="#000" d="m479.554779,161.171585l13.639343,-31.735016l36.370697,0l13.638672,31.735016l-13.638672,31.734619l-36.370697,0l-13.639343,-31.734619z" id="svg_100" filter="url(#svg_1_blur)" opacity="0.51"/>
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="499.29203" y="171.39283" id="svg_101" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">林</text>
+  </g>
+  <g id="svg_105">
+   <path stroke-width="0" fill="#A0D58A" stroke="#000" d="m479.554779,224.710342l13.639343,-31.734985l36.370697,0l13.638672,31.734985l-13.638672,31.734604l-36.370697,0l-13.639343,-31.734604z" id="svg_103" filter="url(#svg_1_blur)" opacity="0.51"/>
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="499.29203" y="234.93165" id="svg_104" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">林</text>
+  </g>
+  <g id="svg_108">
+   <path stroke-width="0" fill="#A0D58A" stroke="#000" d="m479.242157,288.249146l13.639343,-31.735046l36.370697,0l13.638672,31.735046l-13.638672,31.734619l-36.370697,0l-13.639343,-31.734619z" id="svg_106" filter="url(#svg_1_blur)" opacity="0.51"/>
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="498.97935" y="298.47047" id="svg_107" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">林</text>
+  </g>
+  <g id="svg_111">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="497.97129" y="361.16172" id="svg_109" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m479.25528,351.801147l13.639404,-31.735046l36.370697,0l13.63855,31.735046l-13.63855,31.734619l-36.370697,0l-13.639404,-31.734619z" id="svg_110" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_117">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="497.97129" y="424.68738" id="svg_115" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m479.255219,415.326965l13.639404,-31.735046l36.370636,0l13.638672,31.735046l-13.638672,31.734619l-36.370636,0l-13.639404,-31.734619z" id="svg_116" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_120">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="497.97129" y="488.18674" id="svg_118" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m479.255219,478.826355l13.639404,-31.735046l36.370636,0l13.638672,31.735046l-13.638672,31.734619l-36.370636,0l-13.639404,-31.734619z" id="svg_119" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_123">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="497.95814" y="552.01194" id="svg_121" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m479.242096,542.65155l13.639404,-31.735046l36.370697,0l13.63855,31.735046l-13.63855,31.734619l-36.370697,0l-13.639404,-31.734619z" id="svg_122" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_126">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="447.79453" y="393.20435" id="svg_124" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m429.078461,383.843933l13.639404,-31.735046l36.370667,0l13.638611,31.735046l-13.638611,31.734619l-36.370667,0l-13.639404,-31.734619z" id="svg_125" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_129">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="447.91289" y="456.70372" id="svg_127" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m429.196808,447.343262l13.639404,-31.734985l36.370667,0l13.638611,31.734985l-13.638611,31.734619l-36.370667,0l-13.639404,-31.734619z" id="svg_128" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_132">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="447.91289" y="520.3346" id="svg_130" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m429.196808,510.974182l13.639404,-31.735046l36.370667,0l13.638611,31.735046l-13.638611,31.734619l-36.370667,0l-13.639404,-31.734619z" id="svg_131" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_135">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="548.056" y="392.82591" id="svg_133" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m529.339844,383.465454l13.639404,-31.734985l36.370728,0l13.63855,31.734985l-13.63855,31.734619l-36.370728,0l-13.639404,-31.734619z" id="svg_134" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_138">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="547.99024" y="456.31213" id="svg_136" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m529.27417,446.951721l13.639404,-31.735046l36.370728,0l13.63855,31.735046l-13.63855,31.734619l-36.370728,0l-13.639404,-31.734619z" id="svg_137" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+  <g id="svg_141">
+   <text fill="#000000" stroke="#000" stroke-width="0" stroke-dasharray="2,2" stroke-opacity="null" fill-opacity="null" x="548.00339" y="519.8641" id="svg_139" font-size="24" font-family="Helvetica, Arial, sans-serif" text-anchor="left" xml:space="preserve">城</text>
+   <path stroke-width="0" fill="#CE7975" stroke="#000" d="m529.287354,510.503723l13.639404,-31.735046l36.370605,0l13.638672,31.735046l-13.638672,31.734619l-36.370605,0l-13.639404,-31.734619z" id="svg_140" filter="url(#svg_1_blur)" opacity="0.51"/>
+  </g>
+ </g>
+</svg>

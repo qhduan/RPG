@@ -74,8 +74,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   void main(void) {
 
-     vec4 color = texture2D(image,
-       vec2(texCoord.x * crop.z, texCoord.y * crop.w) + crop.xy).rgba;
+    vec2 t = texCoord;
+    t.x *= crop.z;
+    t.y *= crop.w;
+    t += crop.xy;
+
+     vec4 color = texture2D(image, t).rgba;
 
      if (contrast != 0.0) {
        if (contrast > 0.0) {
@@ -88,6 +92,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      if (brightness != 0.0) {
        color.xyz += brightness;
      }
+
      if (alpha != 1.0) {
        color.a *=  alpha;
      }
@@ -263,7 +268,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         gl.texImage2D(gl.TEXTURE_2D, 0,  gl.RGBA,  gl.RGBA, gl.UNSIGNED_BYTE, image);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 
         // test width&height is power of 2, eg. 256, 512, 1024
         // may speed up
@@ -271,7 +276,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
           gl.generateMipmap(gl.TEXTURE_2D);
         } else {
-          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+          gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
         }
 
         gl.bindTexture(gl.TEXTURE_2D, null);
