@@ -109,66 +109,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
           if (Game.windows["interface"].showing) {
             Game.windows["interface"].hide();
           }
+          Game.windows.main.hide();
 
           Game.windows.loading.begin();
 
           setTimeout(function () {
             var heroData = data.hero;
 
-            console.time("drawHero");
-
             Game.drawHero(heroData.custom).then(function (heroImage) {
               heroData.image = heroImage;
               Game.hero = new Game.ActorHero(heroData);
 
-              console.timeEnd("drawHero");
-              Game.windows.loading.update("20%");
-              console.time("hero complete");
-
               Game.hero.on("complete", function () {
 
-                console.timeEnd("hero complete");
-                Game.windows.loading.update("40%");
-                console.time("area");
-
-                Game.loadArea(heroData.area).then(function (area) {
-
-                  console.timeEnd("area");
-                  Game.windows.loading.update("60%");
-                  console.time("map");
-
-                  Game.area = area;
-
-                  area.map.draw();
-
-                  console.timeEnd("map");
-                  Game.windows.loading.update("80%");
-                  console.time("other");
-
-                  if (!Number.isInteger(Game.hero.data.x) || !Number.isInteger(Game.hero.data.y)) {
-                    if (area.map.data.entry && Number.isInteger(area.map.data.entry.x) && Number.isInteger(area.map.data.entry.y)) {
-                      Game.hero.data.x = area.map.data.entry.x;
-                      Game.hero.data.y = area.map.data.entry.y;
-                    } else {
-                      console.error(Game.hero.data.x, Game.hero.data.y, area.map.data.entry, Game.hero, area.map.data);
-                      throw new Error("Invalid hero position");
-                    }
-                  }
-
-                  Game.windows.loading.update("100%");
-
-                  area.actors.add(Game.hero);
-                  Game.hero.draw();
-                  Game.hero.focus();
-                  Game.windows.main.hide();
-                  Game.windows.loading.end();
-                  Game.windows["interface"].refresh();
-                  Game.windows["interface"].show();
-                  Game.AI.attach(Game.hero);
-                  Game.start();
-
-                  console.timeEnd("other");
-                });
+                Game.hero.gotoArea(heroData.area, heroData.x, heroData.y);
               });
             });
           }, 20);

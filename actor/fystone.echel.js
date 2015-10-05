@@ -8,28 +8,29 @@
 "use strict";
 return {
   name: "伊寇",
-  description: "斯塔特镇里的魔法师",
+  description: "法斯通镇里的魔法师",
   type: "npc",
   contact: [
     {
       name: "闲谈",
       content: [
-        "斯塔特镇的很安静，适合魔法师静心研究"
+        "法斯通镇的很安静，适合魔法师静心研究"
       ]
     },
     {
       name: "关于魔法",
       content: [
         "魔法是深刻的学问，全面的理论，需要细细研究的艺术",
-        "如果你对魔法感兴趣，可以去法师学院，就在帝国首都"
+        "如果你对魔法感兴趣，可以去法师学院，就在帝国首都卡诺，距离法斯通镇并不远"
       ]
     }
   ],
-  trade: {
+  trade: true,
+  items: {
     "potion.healWeak": 5
   },
   quest: [],
-  image: "resource\/starttown.echel.png",
+  image: "resource\/fystone.echel.png",
   centerX: 16,
   centerY: 42,
   hitArea: [[0, 0]],

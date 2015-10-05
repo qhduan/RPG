@@ -198,7 +198,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     "completeQuest": [/* 完成了的任务 */],
 
     // 初始位置
-    "area": "starttown", // 地图id
+    "area": "fystone", // 地图id
     "x": 54,
     "y": 58,
 
@@ -252,7 +252,7 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
       "shoes.normal": 1,
       "potion.healWeak": 5,
       "book.gameAdventure": 1,
-      "book.vegaHistory": 1
+      "book.elliorwisHistory": 1
     },
 
     "gold": 0,

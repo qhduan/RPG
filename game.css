@@ -1,7 +1,4 @@
 
-* {
-  font-family: gamefont;
-}
 
 html, body {
   overflow: hidden;
@@ -18,7 +15,6 @@ html, body {
   -o-user-select: none;
   user-select: none;
 }
-
 
 
 /**
@@ -41,6 +37,10 @@ button:hover, button:active, button:focus {
 button::-moz-focus-inner {
   border: 0;
 }
+
+
+
+
 
 .game-window {
   position: fixed;
@@ -66,7 +66,28 @@ button::-moz-focus-inner {
 }
 
 
+.window-open-animate {
+  animation: windowOpen 0.25s linear;
+  -moz-animation: windowOpen 0.25s linear;
+  -webkit-animation: windowOpen 0.25s linear;
+}
+.window-close-animate {
+  animation: windowClose 0.25s linear;
+  -moz-animation: windowClose 0.25s linear;
+  -webkit-animation: windowClose 0.25s linear;
+}
 
+
+@keyframes windowOpen
+{
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes windowClose
+{
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 .brownButton {
 	-moz-box-shadow:inset 0px 1px 0px 0px #a6827e;

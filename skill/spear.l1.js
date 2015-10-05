@@ -24,7 +24,7 @@ return {
   condition: function () {
     var weapon = Game.hero.data.equipment.weapon;
     if (!weapon || Game.items[weapon].data.type != "spear") {
-      Game.popup(Game.hero.sprite, "需要装备枪", 0, -40);
+      Game.hero.popup("需要装备枪");
       return false;
     }
     return true;

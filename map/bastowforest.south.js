@@ -13,7 +13,7 @@ var map = {
   onto: []
 };
 
-map.name = "斯塔特南部森林";
+map.name = "巴斯托森林南部";
 
 // 自动生成怪物
 map.spawnMonster = {
@@ -37,19 +37,19 @@ map.spawnItem = {
 map.onto.push({
   x: 60,
   y: 0,
-  dest: "starttown",
-  description: "通往斯塔特镇",
-  destx: 60,
-  desty: 118
+  description: "通往巴斯托森林中部",
+  execute: function () {
+    Game.hero.gotoArea("bastowforest.center", 60, 118);
+  }
 });
 
 map.onto.push({
   x: 60,
   y: 119,
-  dest: "slimeforest.north",
-  description: "通往史莱姆北部森林",
-  destx: 60,
-  desty: 1
+  description: "通往首都卡诺城",
+  execute: function () {
+    Game.hero.gotoArea("chano.market", 60, 1);
+  }
 });
 
 return map;

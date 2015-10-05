@@ -19,7 +19,7 @@ return {
     if (Game.hero.hasItem("shovel")) {
       return true;
     } else {
-      Game.popup(Game.hero.sprite, "需要采药铲", 0, -40);
+      Game.hero.popup("需要采药铲");
       return false;
     }
   }

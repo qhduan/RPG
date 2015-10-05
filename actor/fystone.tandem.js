@@ -19,8 +19,8 @@ return {
       ]
     }
   ],
-  quest: ["starttown.clearBat", "starttown.clearRat"],
-  image: "resource\/starttown.tandem.png",
+  quest: ["fystone.clearBat"],
+  image: "resource\/fystone.tandem.png",
   centerX: 16,
   centerY: 42,
   hitArea: [[0, 0]],

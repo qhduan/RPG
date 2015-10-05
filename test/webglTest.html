@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="description" content="RPG">
+    <meta name="author" content="longinus">
+    <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+    <link rel="icon" type="image/png" href="icon32.png" />
+    <title>webgl test</title>
+  </head>
+  <body>
+    <!--babel polyfill eg. Promise -->
+    <script src="../js/browser-polyfill.js"></script>
+
+    <script src="../js/Sprite/Sprite.js"></script>
+    <script src="../js/Sprite/SpriteCanvas.js"></script>
+    <script src="../js/Sprite/SpriteWebgl.js"></script>
+
+    <script>
+
+      var webgl = new Sprite.Webgl(800, 450);
+      document.body.appendChild(webgl.canvas);
+      webgl.canvas.style.border = "1px solid black";
+
+      var img = new Image();
+
+      img.onload = function () {
+
+        console.time("t");
+
+        for (var i = 0, len = 100000; i < len; i++) {
+          webgl.drawImage(img, 0, 0);
+        }
+
+
+        console.timeEnd("t");
+
+      };
+
+      img.src = "../image/main.jpeg";
+
+    </script>
+
+  </body>
+</html>
