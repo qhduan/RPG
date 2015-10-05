@@ -486,12 +486,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.decreaseHP(power);
         }
 
+        /*
         if (state != "dodge" && this != Game.hero) {
           if (Game.sounds.hurt) {
             Game.sounds.hurt.load();
             Game.sounds.hurt.play();
           }
         }
+        */
 
         text.centerX = Math.floor(text.width / 2);
         text.centerY = Math.floor(text.height);
@@ -618,7 +620,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.goingNext = function () {
             _this6.goto(x, y, state, callback);
           };
-          return;
+          return false;
         }
 
         var destBlocked = this.checkCollision(x, y);
@@ -629,24 +631,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               this.stop();
               this.face("down");
               if (callback) callback();
-              return;
+              return false;
             } else if (this.y - y == 1) {
               this.stop();
               this.face("up");
               if (callback) callback();
-              return;
+              return false;
             }
           } else if (this.y == y) {
             if (this.x - x == -1) {
               this.stop();
               this.face("right");
               if (callback) callback();
-              return;
+              return false;
             } else if (this.x - x == 1) {
               this.stop();
               this.face("left");
               if (callback) callback();
-              return;
+              return false;
             }
           }
         }
@@ -720,18 +722,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                     Game.Input.clearDest();
                   }
                   c();
-                  return;
+                  return false;
                 }
                 if (_this6.going) {
-                  return;
+                  return false;
                 }
                 if (result) {
                   if (_this6 == Game.hero) {
                     Game.Input.setDest(dest.x, dest.y);
+                  } else {
+                    // not hero
+                    if (result.length > 30) {
+                      // too far
+                      return false;
+                    }
                   }
                   _this6.gotoPath(result, state, dest.after, callback);
+                  return true;
                 } else {
-                  TestPosition();
+                  return TestPosition();
                 }
               });
             })();
@@ -806,7 +815,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           } // 再次尝试离地点最近的地点
         };
 
-        TestPosition();
+        return TestPosition();
       }
     }, {
       key: "gotoPath",

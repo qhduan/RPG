@@ -191,17 +191,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "show",
       value: function show() {
-        var _this5 = this;
-
         var privates = internal(this);
         GameWindowResize();
         if (this.showing == false && privates.html) {
           this.emit("beforeShow");
-
-          internal(this).html.classList.add("window-open-animate");
-          setTimeout(function () {
-            internal(_this5).html.classList.remove("window-open-animate");
-          }, 300);
 
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -247,10 +240,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.emit("beforeHide");
 
           privates.index = -1;
-          privates.html.style.zIndex = privates.index;
-          privates.html.style.display = "none";
           this.emit("afterHide");
           this.emit("deactive");
+
+          if (privates && privates.html) {
+            privates.html.style.zIndex = privates.index;
+            privates.html.style.display = "none";
+          }
 
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;

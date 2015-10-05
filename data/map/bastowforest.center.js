@@ -35,6 +35,17 @@ map.spawnItem = {
 };
 
 map.onto.push({
+  points: [
+    {x: 16, y: 12},
+    {x: 17, y: 12}
+  ],
+  description: "通往巴斯托森林洞穴",
+  execute: function () {
+    Game.hero.gotoArea("bastowforest.cave", 66, 78);
+  }
+});
+
+map.onto.push({
   x: 60,
   y: 0,
   description: "通往巴斯托森林北部",

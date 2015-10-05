@@ -587,12 +587,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.decreaseHP(power);
       }
 
+      /*
       if (state != "dodge" && this != Game.hero) {
         if (Game.sounds.hurt) {
           Game.sounds.hurt.load();
           Game.sounds.hurt.play();
         }
       }
+      */
 
       text.centerX = Math.floor(text.width / 2);
       text.centerY = Math.floor(text.height);
@@ -723,7 +725,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.goingNext = () => {
           this.goto(x, y, state, callback);
         };
-        return;
+        return false;
       }
 
       let destBlocked = this.checkCollision(x, y);
@@ -734,24 +736,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             this.stop();
             this.face("down");
             if (callback) callback();
-            return;
+            return false;
           } else if (this.y - y == 1) {
             this.stop();
             this.face("up");
             if (callback) callback();
-            return;
+            return false;
           }
         } else if (this.y == y) {
           if (this.x - x == -1) {
             this.stop();
             this.face("right");
             if (callback) callback();
-            return;
+            return false;
           } else if (this.x - x == 1) {
             this.stop();
             this.face("left");
             if (callback) callback();
-            return;
+            return false;
           }
         }
       }
@@ -802,18 +804,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.Input.clearDest();
               }
               c();
-              return;
+              return false;
             }
             if (this.going) {
-              return;
+              return false;
             }
             if (result) {
               if (this == Game.hero) {
                 Game.Input.setDest(dest.x, dest.y);
+              } else { // not hero
+                if (result.length > 30) {
+                  // too far
+                  return false;
+                }
               }
               this.gotoPath(result, state, dest.after, callback);
+              return true;
             } else {
-              TestPosition();
+              return TestPosition();
             }
           });
         } else {
@@ -865,8 +873,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         } // 再次尝试离地点最近的地点
       }
 
-      TestPosition();
-
+      return TestPosition();
     }
 
     gotoPath (path, state, after, callback) {

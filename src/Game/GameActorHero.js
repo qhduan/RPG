@@ -198,6 +198,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     autoHide () {
       if (!Game.area) return;
+      if (!Game.hero) return;
 
       let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
 
@@ -281,7 +282,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     gotoArea (dest, x, y) {
+      var privates = internal(this);
+      privates.beAttacking = new Set();
       Game.pause();
+      Game.windows.interface.hide();
+      Game.windows.stage.hide();
       Game.windows.loading.begin();
       Game.windows.loading.update("20%");
       setTimeout(function () {
@@ -315,8 +320,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.windows.loading.end();
                 Game.windows.interface.datetime();
                 Game.windows.interface.refresh();
-                Game.windows.interface.show();
                 Game.start();
+                setTimeout(function () {
+                  Game.stage.update();
+                  Game.windows.stage.show();
+                  Game.windows.interface.show();
+                }, 20);
               }, 20);
             }, 20);
           });
@@ -338,8 +347,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
         if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
           onto = element;
-        } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+          return;
+        } else if (element.points) {
+          for (let p of element.points) {
+            if (p.x == heroPosition.x && p.y == heroPosition.y) {
+              onto = element;
+              return;
+            }
+          }
+        } else if (
+          Number.isFinite(element.x) &&
+          Number.isFinite(element.y) &&
+          element.x == heroPosition.x &&
+          element.y == heroPosition.y
+        ) {
           onto = element;
+          return;
         }
       }
       // 找最近可“事件”人物 Game.area.actors
@@ -353,6 +376,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     touch () {
       if (!Game.area) return;
+      if (!Game.area.touch) return;
 
       let heroPosition = Game.hero.position;
       let heroFace = Game.hero.facePosition;
@@ -365,8 +389,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (element.heroUse) {
           if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
             touch = element;
-          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+            return;
+          } else if (element.points) {
+            for (let p of element.points) {
+              if (p.x == heroPosition.x && p.y == heroPosition.y) {
+                onto = element;
+                return;
+              }
+            }
+          } else if (
+            Number.isFinite(element.x) &&
+            Number.isFinite(element.y) &&
+            element.x == heroPosition.x &&
+            element.y == heroPosition.y
+          ) {
             touch = element;
+            return;
           }
         }
       }
@@ -378,11 +416,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (element.heroUse) {
           if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
             touch = element;
-          } else if (element.x == heroFace.x && element.y == heroFace.y) {
+          } else if (element.points) {
+            for (let p of element.points) {
+              if (p.x == heroFace.x && p.y == heroFace.y) {
+                onto = element;
+                return;
+              }
+            }
+          } else if (
+            Number.isFinite(element.x) &&
+            Number.isFinite(element.y) &&
+            element.x == heroFace.x &&
+            element.y == heroFace.y
+          ) {
             touch = element;
+            return;
           }
         }
       }
+
+      // 用FindUnderHero函数寻找到玩家当前格子的地点
 
       // 找最近可“事件”人物 Game.area.actors
       Sprite.each(Game.area.actors, FindUnderHero);
@@ -390,8 +443,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Sprite.each(Game.area.bags, FindUnderHero);
       // 找最近物品 Game.area.items
       Sprite.each(Game.area.items, FindUnderHero);
-      // 最近的提示物（例如牌子）
+      // 其他物品（由地图文件定义）
       Game.area.touch.forEach(FindUnderHero);
+
+      // 用FindFaceHero寻找面对着玩家的格子地点
 
       // 找最近可“事件”人物 Game.area.actors
       Sprite.each(Game.area.actors, FindFaceHero);
@@ -399,7 +454,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Sprite.each(Game.area.bags, FindFaceHero);
       // 找最近尸体 Game.area.items
       Sprite.each(Game.area.items, FindFaceHero);
-      // 最近的提示物（例如牌子）
+      // 其他物品（由地图文件定义）
       Game.area.touch.forEach(FindFaceHero);
       // 水源
       if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {

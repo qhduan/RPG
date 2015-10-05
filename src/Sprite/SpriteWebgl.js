@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let vertexShaderSrc = `
   precision mediump float;
   attribute vec2 a_texCoord;
-  varying vec2 texCoord;
+  varying vec2 v_texCoord;
 
   attribute vec2 aVertex;
   uniform vec2 resolution;
@@ -56,7 +56,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      vec2 b = a * 2.0 - 1.0;
 
      gl_Position = vec4(b * vec2(1.0, -1.0), 0.0, 1.0);
-     texCoord = a_texCoord;
+     v_texCoord = a_texCoord;
   }`;
 
   let fragmentShaderSrc = `
@@ -70,11 +70,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   uniform sampler2D image;
 
   // the texCoords passed in from the vertex shader.
-  varying vec2 texCoord;
+  varying vec2 v_texCoord;
 
   void main(void) {
 
-    vec2 t = texCoord;
+    vec2 t = v_texCoord;
     t.x *= crop.z;
     t.y *= crop.w;
     t += crop.xy;

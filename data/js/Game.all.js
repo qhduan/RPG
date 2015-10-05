@@ -406,6 +406,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     });
   }
 })();
+//# sourceMappingURL=Game.js.map
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -599,17 +601,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "show",
       value: function show() {
-        var _this5 = this;
-
         var privates = internal(this);
         GameWindowResize();
         if (this.showing == false && privates.html) {
           this.emit("beforeShow");
-
-          internal(this).html.classList.add("window-open-animate");
-          setTimeout(function () {
-            internal(_this5).html.classList.remove("window-open-animate");
-          }, 300);
 
           var _iteratorNormalCompletion = true;
           var _didIteratorError = false;
@@ -655,10 +650,13 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.emit("beforeHide");
 
           privates.index = -1;
-          privates.html.style.zIndex = privates.index;
-          privates.html.style.display = "none";
           this.emit("afterHide");
           this.emit("deactive");
+
+          if (privates && privates.html) {
+            privates.html.style.zIndex = privates.index;
+            privates.html.style.display = "none";
+          }
 
           var _iteratorNormalCompletion2 = true;
           var _didIteratorError2 = false;
@@ -879,6 +877,8 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     GameWindowResize();
   });
 })();
+//# sourceMappingURL=GameWindow.js.map
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -2138,15 +2138,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows.loading = Game.Window.create("loadingWindow");
 
-  win.html = "\n    <table><tbody><tr><td>\n      <label>请稍等...<small id=\"loadingWindowProgress\"></small></label>\n      <br>\n      <h5 id=\"loadingWindowText\"></h5>\n    </td></tr></tbody></table>\n  ";
+  win.html = "\n    <div id=\"loadingWindowBox\">\n      <img src=\"image/window/loading.svg\" alt=\"loading\" style=\"z-index: 199876;\">\n      <br>\n      <label>请稍等...<small id=\"loadingWindowProgress\"></small></label>\n      <br>\n      <h5 id=\"loadingWindowText\"></h5>\n    </div>\n  ";
 
-  win.css = "\n    .loadingWindow {\n      text-align: center;\n    }\n\n    .loadingWindow table, .loadingWindow tbody, .loadingWindow tr, .loadingWindow td {\n      width: 100%;\n      height: 100%;\n      margin: 0;\n      padding: 0;\n    }\n\n    .loadingWindow label {\n      padding: 50px;\n      padding-bottom: 100px;\n      border-radius:25px;\n      background-color: grey;\n      font-size: 60px;\n    }\n  ";
+  win.css = "\n    .loadingWindow {\n      text-align: center;\n    }\n\n    #loadingWindowBox {\n      width: 500px;\n      height: 300px;\n      border-radius: 25px;\n      position: fixed;\n      top: 75px;\n      left: 150px;\n      background-color: gray;\n    }\n\n    .loadingWindow label {\n      color: white;\n      font-size: 48px;\n    }\n\n    #loadingWindowText {\n      color: white;\n    }\n  ";
 
   var loadingWindowProgress = win.querySelector("#loadingWindowProgress");
   var loadingWindowText = win.querySelector("#loadingWindowText");
 
   // 提示信息
-  var text = ["打开游戏菜单之后，游戏是暂停的", "记得带着矿工锄和采药铲，或许能从其中赚点小钱", "改变职业的成本会随着你的等级越来越高", "你的信仰决定了神对你的祝福，和某些人对你的看法", "信仰是可以改变的，但人们不喜欢这样的人", "没有信仰，也是一种信仰，但是你享受不到神的祝福"];
+  var text = ["打开游戏菜单之后，游戏是暂停的，你可以在这时思考下战斗策略", "记得出门带着矿工锄和采药铲，或许能从其中赚点小钱", "职业、信仰、技能，都可以任意改变，但是必须付出代价", "你的信仰决定了神对你的祝福，还有某些人或者组织对你的看法", "信仰是可以改变的，不过艾利韦斯的居民并不喜欢总是改变自己信仰的人", "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"];
 
   win.assign("begin", function () {
     loadingWindowProgress.innerHTML = "";
@@ -2813,6 +2813,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.hide();
   });
 })();
+//# sourceMappingURL=GameWindowRegister.js.map
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -4473,6 +4475,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 })();
+//# sourceMappingURL=GameArea.js.map
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -6122,12 +6126,14 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.decreaseHP(power);
         }
 
+        /*
         if (state != "dodge" && this != Game.hero) {
           if (Game.sounds.hurt) {
             Game.sounds.hurt.load();
             Game.sounds.hurt.play();
           }
         }
+        */
 
         text.centerX = Math.floor(text.width / 2);
         text.centerY = Math.floor(text.height);
@@ -6254,7 +6260,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           this.goingNext = function () {
             _this6.goto(x, y, state, callback);
           };
-          return;
+          return false;
         }
 
         var destBlocked = this.checkCollision(x, y);
@@ -6265,24 +6271,24 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
               this.stop();
               this.face("down");
               if (callback) callback();
-              return;
+              return false;
             } else if (this.y - y == 1) {
               this.stop();
               this.face("up");
               if (callback) callback();
-              return;
+              return false;
             }
           } else if (this.y == y) {
             if (this.x - x == -1) {
               this.stop();
               this.face("right");
               if (callback) callback();
-              return;
+              return false;
             } else if (this.x - x == 1) {
               this.stop();
               this.face("left");
               if (callback) callback();
-              return;
+              return false;
             }
           }
         }
@@ -6356,18 +6362,25 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                     Game.Input.clearDest();
                   }
                   c();
-                  return;
+                  return false;
                 }
                 if (_this6.going) {
-                  return;
+                  return false;
                 }
                 if (result) {
                   if (_this6 == Game.hero) {
                     Game.Input.setDest(dest.x, dest.y);
+                  } else {
+                    // not hero
+                    if (result.length > 30) {
+                      // too far
+                      return false;
+                    }
                   }
                   _this6.gotoPath(result, state, dest.after, callback);
+                  return true;
                 } else {
-                  TestPosition();
+                  return TestPosition();
                 }
               });
             })();
@@ -6442,7 +6455,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           } // 再次尝试离地点最近的地点
         };
 
-        TestPosition();
+        return TestPosition();
       }
     }, {
       key: "gotoPath",
@@ -7318,6 +7331,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "autoHide",
       value: function autoHide() {
         if (!Game.area) return;
+        if (!Game.hero) return;
 
         var heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
 
@@ -7488,7 +7502,11 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
     }, {
       key: "gotoArea",
       value: function gotoArea(dest, x, y) {
+        var privates = internal(this);
+        privates.beAttacking = new Set();
         Game.pause();
+        Game.windows["interface"].hide();
+        Game.windows.stage.hide();
         Game.windows.loading.begin();
         Game.windows.loading.update("20%");
         setTimeout(function () {
@@ -7522,8 +7540,12 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
                   Game.windows.loading.end();
                   Game.windows["interface"].datetime();
                   Game.windows["interface"].refresh();
-                  Game.windows["interface"].show();
                   Game.start();
+                  setTimeout(function () {
+                    Game.stage.update();
+                    Game.windows.stage.show();
+                    Game.windows["interface"].show();
+                  }, 20);
                 }, 20);
               }, 20);
             });
@@ -7545,8 +7567,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           }
           if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
             onto = element;
-          } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+            return;
+          } else if (element.points) {
+            var _iteratorNormalCompletion10 = true;
+            var _didIteratorError10 = false;
+            var _iteratorError10 = undefined;
+
+            try {
+              for (var _iterator10 = element.points[Symbol.iterator](), _step10; !(_iteratorNormalCompletion10 = (_step10 = _iterator10.next()).done); _iteratorNormalCompletion10 = true) {
+                var p = _step10.value;
+
+                if (p.x == heroPosition.x && p.y == heroPosition.y) {
+                  onto = element;
+                  return;
+                }
+              }
+            } catch (err) {
+              _didIteratorError10 = true;
+              _iteratorError10 = err;
+            } finally {
+              try {
+                if (!_iteratorNormalCompletion10 && _iterator10["return"]) {
+                  _iterator10["return"]();
+                }
+              } finally {
+                if (_didIteratorError10) {
+                  throw _iteratorError10;
+                }
+              }
+            }
+          } else if (Number.isFinite(element.x) && Number.isFinite(element.y) && element.x == heroPosition.x && element.y == heroPosition.y) {
             onto = element;
+            return;
           }
         };
         // 找最近可“事件”人物 Game.area.actors
@@ -7561,6 +7613,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
       key: "touch",
       value: function touch() {
         if (!Game.area) return;
+        if (!Game.area.touch) return;
 
         var heroPosition = Game.hero.position;
         var heroFace = Game.hero.facePosition;
@@ -7573,8 +7626,38 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (element.heroUse) {
             if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
               touch = element;
-            } else if (element.x == heroPosition.x && element.y == heroPosition.y) {
+              return;
+            } else if (element.points) {
+              var _iteratorNormalCompletion11 = true;
+              var _didIteratorError11 = false;
+              var _iteratorError11 = undefined;
+
+              try {
+                for (var _iterator11 = element.points[Symbol.iterator](), _step11; !(_iteratorNormalCompletion11 = (_step11 = _iterator11.next()).done); _iteratorNormalCompletion11 = true) {
+                  var p = _step11.value;
+
+                  if (p.x == heroPosition.x && p.y == heroPosition.y) {
+                    onto = element;
+                    return;
+                  }
+                }
+              } catch (err) {
+                _didIteratorError11 = true;
+                _iteratorError11 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion11 && _iterator11["return"]) {
+                    _iterator11["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError11) {
+                    throw _iteratorError11;
+                  }
+                }
+              }
+            } else if (Number.isFinite(element.x) && Number.isFinite(element.y) && element.x == heroPosition.x && element.y == heroPosition.y) {
               touch = element;
+              return;
             }
           }
         };
@@ -7586,11 +7669,42 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
           if (element.heroUse) {
             if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
               touch = element;
-            } else if (element.x == heroFace.x && element.y == heroFace.y) {
+            } else if (element.points) {
+              var _iteratorNormalCompletion12 = true;
+              var _didIteratorError12 = false;
+              var _iteratorError12 = undefined;
+
+              try {
+                for (var _iterator12 = element.points[Symbol.iterator](), _step12; !(_iteratorNormalCompletion12 = (_step12 = _iterator12.next()).done); _iteratorNormalCompletion12 = true) {
+                  var p = _step12.value;
+
+                  if (p.x == heroFace.x && p.y == heroFace.y) {
+                    onto = element;
+                    return;
+                  }
+                }
+              } catch (err) {
+                _didIteratorError12 = true;
+                _iteratorError12 = err;
+              } finally {
+                try {
+                  if (!_iteratorNormalCompletion12 && _iterator12["return"]) {
+                    _iterator12["return"]();
+                  }
+                } finally {
+                  if (_didIteratorError12) {
+                    throw _iteratorError12;
+                  }
+                }
+              }
+            } else if (Number.isFinite(element.x) && Number.isFinite(element.y) && element.x == heroFace.x && element.y == heroFace.y) {
               touch = element;
+              return;
             }
           }
         };
+
+        // 用FindUnderHero函数寻找到玩家当前格子的地点
 
         // 找最近可“事件”人物 Game.area.actors
         Sprite.each(Game.area.actors, FindUnderHero);
@@ -7598,8 +7712,10 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         Sprite.each(Game.area.bags, FindUnderHero);
         // 找最近物品 Game.area.items
         Sprite.each(Game.area.items, FindUnderHero);
-        // 最近的提示物（例如牌子）
+        // 其他物品（由地图文件定义）
         Game.area.touch.forEach(FindUnderHero);
+
+        // 用FindFaceHero寻找面对着玩家的格子地点
 
         // 找最近可“事件”人物 Game.area.actors
         Sprite.each(Game.area.actors, FindFaceHero);
@@ -7607,7 +7723,7 @@ function _inherits(subClass, superClass) { if (typeof superClass !== "function" 
         Sprite.each(Game.area.bags, FindFaceHero);
         // 找最近尸体 Game.area.items
         Sprite.each(Game.area.items, FindFaceHero);
-        // 最近的提示物（例如牌子）
+        // 其他物品（由地图文件定义）
         Game.area.touch.forEach(FindFaceHero);
         // 水源
         if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
@@ -8687,6 +8803,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     }
   };
 })();
+//# sourceMappingURL=GameRegister.js.map
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -8825,3 +8943,4 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
     return GameArchive;
   })());
 })();
+//# sourceMappingURL=GameArchive.js.map

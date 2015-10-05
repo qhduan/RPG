@@ -80,13 +80,13 @@ button::-moz-focus-inner {
 
 @keyframes windowOpen
 {
-  from { left: -800px; }
-  to { left: 0px; }
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 @keyframes windowClose
 {
-  from { left: 0px; }
-  to { left: 800px; }
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
 .brownButton {

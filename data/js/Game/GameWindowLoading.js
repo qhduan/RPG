@@ -25,15 +25,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var win = Game.windows.loading = Game.Window.create("loadingWindow");
 
-  win.html = "\n    <table><tbody><tr><td>\n      <label>请稍等...<small id=\"loadingWindowProgress\"></small></label>\n      <br>\n      <h5 id=\"loadingWindowText\"></h5>\n    </td></tr></tbody></table>\n  ";
+  win.html = "\n    <div id=\"loadingWindowBox\">\n      <img src=\"image/window/loading.svg\" alt=\"loading\" style=\"z-index: 199876;\">\n      <br>\n      <label>请稍等...<small id=\"loadingWindowProgress\"></small></label>\n      <br>\n      <h5 id=\"loadingWindowText\"></h5>\n    </div>\n  ";
 
-  win.css = "\n    .loadingWindow {\n      text-align: center;\n    }\n\n    .loadingWindow table, .loadingWindow tbody, .loadingWindow tr, .loadingWindow td {\n      width: 100%;\n      height: 100%;\n      margin: 0;\n      padding: 0;\n    }\n\n    .loadingWindow label {\n      padding: 50px;\n      padding-bottom: 100px;\n      border-radius:25px;\n      background-color: grey;\n      font-size: 60px;\n    }\n  ";
+  win.css = "\n    .loadingWindow {\n      text-align: center;\n    }\n\n    #loadingWindowBox {\n      width: 500px;\n      height: 300px;\n      border-radius: 25px;\n      position: fixed;\n      top: 75px;\n      left: 150px;\n      background-color: gray;\n    }\n\n    .loadingWindow label {\n      color: white;\n      font-size: 48px;\n    }\n\n    #loadingWindowText {\n      color: white;\n    }\n  ";
 
   var loadingWindowProgress = win.querySelector("#loadingWindowProgress");
   var loadingWindowText = win.querySelector("#loadingWindowText");
 
   // 提示信息
-  var text = ["打开游戏菜单之后，游戏是暂停的", "记得带着矿工锄和采药铲，或许能从其中赚点小钱", "改变职业的成本会随着你的等级越来越高", "你的信仰决定了神对你的祝福，和某些人对你的看法", "信仰是可以改变的，但人们不喜欢这样的人", "没有信仰，也是一种信仰，但是你享受不到神的祝福"];
+  var text = ["打开游戏菜单之后，游戏是暂停的，你可以在这时思考下战斗策略", "记得出门带着矿工锄和采药铲，或许能从其中赚点小钱", "职业、信仰、技能，都可以任意改变，但是必须付出代价", "你的信仰决定了神对你的祝福，还有某些人或者组织对你的看法", "信仰是可以改变的，不过艾利韦斯的居民并不喜欢总是改变自己信仰的人", "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"];
 
   win.assign("begin", function () {
     loadingWindowProgress.innerHTML = "";
@@ -50,4 +50,3 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.hide();
   });
 })();
-//# sourceMappingURL=GameWindowLoading.js.map

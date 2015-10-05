@@ -163,11 +163,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.showing == false && privates.html) {
         this.emit("beforeShow");
 
-        internal(this).html.classList.add("window-open-animate");
-        setTimeout(() => {
-          internal(this).html.classList.remove("window-open-animate");
-        }, 300);
-
         for (let win of windows) {
           if (win.atop) {
             win.emit("deactive");
@@ -190,10 +185,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.emit("beforeHide");
 
         privates.index = -1;
-        privates.html.style.zIndex = privates.index;
-        privates.html.style.display = "none";
         this.emit("afterHide");
         this.emit("deactive");
+
+        if (privates && privates.html) {
+          privates.html.style.zIndex = privates.index;
+          privates.html.style.display = "none";
+        }
 
         for (let win of windows) {
           if (win.atop) {

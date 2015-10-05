@@ -24,11 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let win = Game.windows.loading = Game.Window.create("loadingWindow");
 
   win.html = `
-    <table><tbody><tr><td>
+    <div id="loadingWindowBox">
+      <img src="image/window/loading.svg" alt="loading" style="z-index: 199876;">
+      <br>
       <label>请稍等...<small id="loadingWindowProgress"></small></label>
       <br>
       <h5 id="loadingWindowText"></h5>
-    </td></tr></tbody></table>
+    </div>
   `;
 
   win.css = `
@@ -36,19 +38,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       text-align: center;
     }
 
-    .loadingWindow table, .loadingWindow tbody, .loadingWindow tr, .loadingWindow td {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    #loadingWindowBox {
+      width: 500px;
+      height: 300px;
+      border-radius: 25px;
+      position: fixed;
+      top: 75px;
+      left: 150px;
+      background-color: gray;
     }
 
     .loadingWindow label {
-      padding: 50px;
-      padding-bottom: 100px;
-      border-radius:25px;
-      background-color: grey;
-      font-size: 60px;
+      color: white;
+      font-size: 48px;
+    }
+
+    #loadingWindowText {
+      color: white;
     }
   `;
 
@@ -57,12 +63,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   // 提示信息
   let text = [
-    "打开游戏菜单之后，游戏是暂停的",
-    "记得带着矿工锄和采药铲，或许能从其中赚点小钱",
-    "改变职业的成本会随着你的等级越来越高",
-    "你的信仰决定了神对你的祝福，和某些人对你的看法",
-    "信仰是可以改变的，但人们不喜欢这样的人",
-    "没有信仰，也是一种信仰，但是你享受不到神的祝福"
+    "打开游戏菜单之后，游戏是暂停的，你可以在这时思考下战斗策略",
+    "记得出门带着矿工锄和采药铲，或许能从其中赚点小钱",
+    "职业、信仰、技能，都可以任意改变，但是必须付出代价",
+    "你的信仰决定了神对你的祝福，还有某些人或者组织对你的看法",
+    "信仰是可以改变的，不过艾利韦斯的居民并不喜欢总是改变自己信仰的人",
+    "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"
   ];
 
   win.assign("begin", function () {
