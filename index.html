@@ -116,13 +116,20 @@
         "js/Game.all.js"
       ];
 
-      if (document.URL.match(/localhost|127\.0\.0\.1/)) {
-        // 如果是本地测试，打开开发者模式
+      if (document.URL.match(/dev/i)) {
         ImportJavascript(development);
         document.title = "艾利韦斯开发";
-      } else {
+      } else if (document.URL.match(/prod/i)) {
         ImportJavascript(product);
         document.title = "艾利韦斯";
+      } else {
+        if (document.URL.match(/localhost|127\.0\.0\.1/)) {
+          ImportJavascript(development);
+          document.title = "艾利韦斯开发";
+        } else {
+          ImportJavascript(product);
+          document.title = "艾利韦斯";
+        }
       }
 
     </script>
