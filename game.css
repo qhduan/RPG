@@ -58,11 +58,16 @@ button::-moz-focus-inner {
   top: 0;
   left: 0;
   width: 720px;
-  height: 370px;
+  height: 332px;
   padding: 40px;
   overflow-y: auto;
+  /*
   background-image: url("image/window/background.png");
   background-repeat: no-repeat;
+  */
+  background-color: rgba(240, 217, 194, 0.85);
+  border: 20px solid rgba(134, 93, 52, 0.85);
+
 }
 
 

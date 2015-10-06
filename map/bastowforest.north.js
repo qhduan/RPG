@@ -14,6 +14,7 @@ var map = {
 };
 
 map.name = "巴斯托森林北部";
+map.type = "outdoor";
 
 // 自动生成怪物
 map.spawnMonster = {
@@ -22,7 +23,7 @@ map.spawnMonster = {
     "robber.green": 0.1,
     "slime.green": 0.1
   },
-  count: 20
+  count: 6
 };
 
 // 自动生成矿产
@@ -35,20 +36,20 @@ map.spawnItem = {
 };
 
 map.onto.push({
-  x: 60,
+  x: 31,
   y: 0,
   description: "通往法斯通镇",
   execute: function () {
-    Game.hero.gotoArea("fystone", 60, 118);
+    Game.hero.gotoArea("fystone", 31, 61);
   }
 });
 
 map.onto.push({
-  x: 60,
-  y: 119,
+  x: 31,
+  y: 62,
   description: "通往巴斯托森林中部",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.center", 60, 1);
+    Game.hero.gotoArea("bastowforest.center", 31, 1);
   }
 });
 
