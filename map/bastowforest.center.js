@@ -41,7 +41,7 @@ map.onto.push({
   ],
   description: "通往巴斯托森林洞穴",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.cave", 31, 38);
+    Game.hero.gotoArea("bastowforest.cave", 66, 78);
   }
 });
 

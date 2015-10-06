@@ -21,21 +21,21 @@ map.spawnMonster = {
     "bat.purple": 0.9,
     "slime.green": 0.1
   },
-  count: 5
+  count: 8
 };
 
 map.onto.push({
-  x: 31,
-  y: 39,
+  x: 66,
+  y: 79,
   description: "通往巴斯托森林中部",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.center", 16, 12);
+    Game.hero.gotoArea("bastowforest.center", 16, 13);
   }
 });
 
 map.touch.push({
-  x: 9,
-  y: 26,
+  x: 27,
+  y: 50,
   description: "通往巴斯托森林中部",
   heroUse: function () {
     Game.confirm("这条梯子看上去只能爬上去，很难爬回来，是否回到巴斯托森林中部？", function () {
