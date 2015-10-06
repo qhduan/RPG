@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON("package.json"),
     babel: {
       options: {
-        sourceMap: "inline"
+        sourceMaps: "inline"
       },
       dist: {
         files: [{
@@ -86,6 +86,17 @@ module.exports = function (grunt) {
         dest: "data/js/all.js"
       }
     },
+    uglify: {
+      all_min : {
+        options : {
+          sourceMap: false,
+          compress: false
+        },
+        files : {
+          "data/js/all.min.js" : ["data/js/all.js"]
+        }
+      }
+    },
     watch: {
       scrpites: {
         files: "src/**/*.js",
@@ -99,6 +110,7 @@ module.exports = function (grunt) {
 
   grunt.loadNpmTasks('grunt-babel');
   grunt.loadNpmTasks('grunt-contrib-concat');
+  grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
   // Default task.

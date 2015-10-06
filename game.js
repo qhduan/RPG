@@ -27,13 +27,15 @@ grunt.tasks(["babel"], {}, function () {
   // 把文件合并
   grunt.tasks(["concat"]);
 
+  grunt.tasks(["uglify"]);
+
   grunt.tasks(["watch"]);
 
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
     var outputPath = filepath.replace("src", "data/js");
-    babel.transformFile(filepath, { sourceMap: "inline" }, function (err, result) {
+    babel.transformFile(filepath, { sourceMaps: "inline" }, function (err, result) {
       if (err) throw err;
       // 保存转换好的代码
       fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
@@ -42,10 +44,7 @@ grunt.tasks(["babel"], {}, function () {
       });
       // 把文件合并
       grunt.tasks(["concat"]);
-      // 把转换好的map保存
-      fs.writeFile(outputPath + ".map", JSON.stringify(result.map), { encoding: "utf8" }, function (err) {
-        if (err) throw err;
-      });
+      grunt.tasks(["uglify"]);
     });
   });
 
