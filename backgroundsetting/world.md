@@ -34,50 +34,50 @@ The Holy Vallon Empire
 
 ## 神系
 
-Malguili, Lord of Knowledge
+Elen, female, Lord of Knowledge
 
-魔奎利 知识之神
+艾琳 女 知识女神
 int+2
 
-Enlon, Lord of Death
+Enlon, male, Lord of Death
 
-恩朗 死亡之主
+恩朗 男 死亡主宰
 str+1
 con+1
 
-Minare, God of the Harvest
+Minare, female, God of the Harvest
 
-密娜 丰收之神
+密娜 女 丰收女神
 con+2
 
-Achiel, Goddess of Protection
+Achiel, male, Goddess of Protection
 
-阿切奥 保护之神
+阿切奥 男 保护之神
 con+1
 dex+1
 
-Racha, Lady of Magic
+Racha, female, Lady of Magic
 
-拉克 魔法女神
+拉克 女 魔法女神
 int+2
 
-Aestor, God of Thieves
+Aestor, male, God of Thieves
 
-阿斯托 盗贼之神
+阿斯托 男 盗贼之神
 dex+2
 
-Hielach, Goddess of Wealth
+Hielach, male, Goddess of Wealth
 
-赫拉克 财富之神
+赫拉克 男 财富之神
 cha+2
 
-Alik, Lord of Healing
+Alik, female, Lord of Healing
 
-阿丽克 治愈之神
+阿丽克 女 治愈女神
 cha+1
 con+1
 
-Amarien, Goddess of Strength
+Amarien, male, Goddess of Strength
 
-阿玛恩 力量之神
+阿玛恩 男 力量之神
 str+2
