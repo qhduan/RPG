@@ -8,7 +8,8 @@ html, body {
 
 /** 所有标签改变鼠标指针 */
 * {
-  cursor: url("image/cursor.gif"), default;
+  /* image/cursor.gif */
+  cursor: url("data:image/gif;base64,R0lGODlhIAAgAPcAAAAAAP////v7/O3t7tnb3gIDBAQFBgUGBzEzNcfLz+Hk58LExmJjZNze4Orr7OPk5XuBhmpucaClqc7T19LW2QkMDgsOECksLqassLrAxLS6vsfKzOLl597h493g4trd39HU1mBrchMYG05ibSAnKzI7QCAlKERNUkBHS254fmFqb2RtckFGSXiBhoKLkJmip3V8gKKrsJ6nrJWcoKCnq3d8f3Z7fn6Dhr3EyLi/w7G4vJKXmqitsLq/wrS5vMrP0gsPERggJAYICUxgak1ha05hawgKC0JSWlNmcCMrLztITzxJUC44PUlYYHSMmERRWB8lKF9xelRkbF9weVZmbm2AikxZYGV1fR0hI298g2JudGVxd3eEi2lzeHF7gDM3OYiSl4yWm4WNkWhucWZsbyMlJpScoH6Eh4GHisDIzI6Ul5edoMPJzMHHyqCkplJUVba6vNXZ287S1MnNz9ba3Onr7Ojq6+bo6eXn6OPl5uLk5U1ibE5jbTA9QyIrL1ZsdiMsMC04PSUuMktdZURPVFNeY0NMUHmIj2p1eoOOk4CJjX+IjKCprau0uKqzt6avs6StsaOssK63uxwmKhQbHhUcHyErLzA+RCIsMDpJTyYwNCcxNSkzNzdDSCQrLkRQVT5ITGl5gFhkaTc+QVpkaGlwc52nq4SLjpWcn7G4u8jP0r7FyIyRk4qPkYeMjra7vdHW2NDV18/U1sjNzyArLzZDSERSV1NhZjlBRFZhZUlRVH+HipmhpKGprKmxtBYcHgsODzE9QTI+QhATFDxFSH+Ii5ukp6CprJ+lp8/V1+fq6+Pm5+Hk5eDj5N/i493g4dzf4Nve3zE4OoKJiwoOD8fLzNvf4Nre39fb3Nba2wECAgIDAzQ1NePm5vDy8vHy8u7v752env39/WBgYB0dHQEBAf///wAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACH5BAEAAOYALAAAAAAgACAAAAj/AH8BAPDLnMGDCBMqXAigS5cZbwqaA1Cu4sKLCQFAcThj4LYgokQZqzQxCACMDAV1UaWqI4AgQ1IYG9jJJEqFAATVAKGq0ZsKMBOZBNCp08mbCHPWQKUqnJBftGixOgMjDBgER5Ea1CbISxdDrdQoiAVrFQ4MMhJl1QoAmCBaTlz5WIMDhzgBNyClMKr14MBcu1ChieBmALgH35bx4ssWwLhyunbtQAVnwYABDdLw4iVqLUYA5KwQsSCNzI7AYlDpmCCOg6zObPkQ4QYACwpSpUqJafNDTzcHOv4Io4YUwB4iVYgVoATKho1XPaA565AtWRhhw28CwERkSCgauMqw/1jRoseca3mYsdHBpYkwICgB+Lk0ZMShVH6+hBiDCFuzDszMgQYXRwQzCRCeJWVJH5cUYQoDF3QSQjHIVDgHM8zQ0QsXhXRoRIIGyYdJJrfYokkno6igghQ8OOOBM9H40osxaHRYCIgTAWCCJwAY4AcJSkhxiiRxfHDHHdas0gsaTH6CY4gDASACFIFIYMYjPTRDAB51NHONI9OgUYsWT/oFwDCBXCGBJDlkeYcddjyzwTGLnDJImWYGIgUEjUTSQ5bKeGNHNb0o8gIheIZ4ACdKqOACIzH82YwycG6gyCYD9QXAJn5QEYULkGiQAQVy2PHCJptMkqhfmwhyggqfaj2gwSwJnIrpqn4l4QcTSyDxRBayoipCpn355YcfJZSwhQpToEpssUkBcmwgUT4LbVLV4nrtttx26+23FwUEADs="), auto;
   -webkit-user-select: none; /* Chrome all / Safari all */
   -moz-user-select: none; /* Firefox all */
   -ms-user-select: none; /* IE 10+ */
@@ -70,29 +71,6 @@ button::-moz-focus-inner {
 
 }
 
-
-.window-open-animate {
-  animation: windowOpen 0.25s linear;
-  -moz-animation: windowOpen 0.25s linear;
-  -webkit-animation: windowOpen 0.25s linear;
-}
-.window-close-animate {
-  animation: windowClose 0.25s linear;
-  -moz-animation: windowClose 0.25s linear;
-  -webkit-animation: windowClose 0.25s linear;
-}
-
-
-@keyframes windowOpen
-{
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-@keyframes windowClose
-{
-  from { opacity: 1; }
-  to { opacity: 0; }
-}
 
 .brownButton {
 	-moz-box-shadow:inset 0px 1px 0px 0px #a6827e;
