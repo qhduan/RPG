@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <div id="loadingWindowBox">
-      <img src="image/window/loading.gif" alt="loading" style="z-index: 199876;">
+      <img id="loadingWindowLoadingIcon" src="image/window/loading.svg" alt="loading">
       <br>
       <label>请稍等...<small id="loadingWindowProgress"></small></label>
       <br>
@@ -36,6 +36,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.css = `
     .loadingWindow {
       text-align: center;
+    }
+
+    #loadingWindowLoadingIcon {
+      width: 50px;
+      height: 50px;
+      margin-top: 15px;
+      margin-bottom: 10px;
+      animation: loadingAnimation 1s linear infinite;
+    }
+
+    @keyframes loadingAnimation
+    {
+      0%   { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
     }
 
     #loadingWindowBox {

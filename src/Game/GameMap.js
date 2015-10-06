@@ -109,6 +109,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // 这个空间在draw后会释放
         privates.layers = [];
 
+        console.time("do map");
+
         for (let layerData of privates.data.layers) {
           let layerObj = null;
           if (layerData.name != "block" && layerData.name != "water") {
@@ -146,6 +148,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
           }
         }
+
+        console.timeEnd("do map");
 
         // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         this.emit("complete", true);
