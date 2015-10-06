@@ -49,8 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   heroCustom.tilewidth = heroCustom.width / 13; // 52
   heroCustom.tileheight = heroCustom.height / 21; // 60
 
-  Init();
-
   function Init () {
 
     window.SelectHero = function (event) {

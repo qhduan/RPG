@@ -15,51 +15,59 @@ var map = {
 };
 
 map.name = "法斯通镇";
+map.type = "outdoor";
 
-// 坦德姆 镇长
-map.actors.push({
-  id: "fystone.tandem",
-  x: 58,
-  y: 44
-});
-
-// 朗克 铁匠
-map.actors.push({
-  id: "fystone.ranc",
-  x: 39,
-  y: 66
-});
-
-// 伊寇 魔法师
-map.actors.push({
-  id: "fystone.echel",
-  x: 75,
-  y: 74
-});
-
-// 盖诺 旅店老板
-map.actors.push({
-  id: "fystone.ganu",
-  x: 85,
-  y: 52
-});
-
-// 通往斯塔特南部森林
 map.onto.push({
-  x: 60,
-  y: 119,
-  description: "通往巴斯托北部森林",
+  x: 27,
+  y: 21,
+  description: "通往坦德姆家",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.north", 60, 1);
+    Game.hero.gotoArea("fystone.tandem", 7, 12);
+  }
+});
+
+map.onto.push({
+  x: 15,
+  y: 42,
+  description: "通往朗克家",
+  execute: function () {
+    Game.hero.gotoArea("fystone.ranc", 7, 12);
+  }
+});
+
+map.onto.push({
+  x: 49,
+  y: 25,
+  description: "通往旅馆",
+  execute: function () {
+    Game.hero.gotoArea("fystone.inn", 7, 12);
+  }
+});
+
+map.onto.push({
+  x: 51,
+  y: 45,
+  description: "通往伊寇家",
+  execute: function () {
+    Game.hero.gotoArea("fystone.echel", 7, 12);
+  }
+});
+
+map.onto.push({
+  x: 31,
+  y: 62,
+  description: "通往巴斯托森林北部",
+  execute: function () {
+    Game.hero.gotoArea("bastowforest.north", 31, 1);
   }
 });
 
 map.touch.push({
-  x: 58,
-  y: 111,
+  x: 30,
+  y: 57,
   heroUse: function () {
     Game.hero.popup("欢迎来到法斯通镇");
   }
-})
+});
 
 return map;

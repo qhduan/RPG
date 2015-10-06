@@ -274,24 +274,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       while (minute.length < 2) minute = "0"+minute;
       datetime.textContent = `${month}月${day}日 ${hour}:${minute}`;
 
-      if (hour >= 20 || hour < 4) { // 20:00 to 4:00
+      var type = Game.area.map.data.type;
+
+      if (type == "indoor") {
+        // do nothing
+        Game.stage.filter("brightness", 0.0);
+      } else if (type == "outdoor") {
+        // 室外
+        if (hour >= 20 || hour < 4) { // 20:00 to 4:00
+          Game.stage.filter("brightness", -0.15);
+        } else if (hour >= 4 && hour < 6) {
+          Game.stage.filter("brightness", -0.1);
+        } else if (hour >= 6 && hour < 8) {
+          Game.stage.filter("brightness", -0.05);
+        } else if (hour >= 8 && hour < 10) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 10 && hour < 12) {
+          Game.stage.filter("brightness", 0.05);
+        } else if (hour >= 12 && hour < 14) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 14 && hour < 16) {
+          Game.stage.filter("brightness", 0.0);
+        } else if (hour >= 16 && hour < 18) {
+          Game.stage.filter("brightness", -0.05);
+        } else if (hour >= 18 && hour < 20) {
+          Game.stage.filter("brightness", -0.1);
+        }
+      } else if (type == "cave") {
+        // caves are dark
         Game.stage.filter("brightness", -0.15);
-      } else if (hour >= 4 && hour < 6) {
-        Game.stage.filter("brightness", -0.1);
-      } else if (hour >= 6 && hour < 8) {
-        Game.stage.filter("brightness", -0.05);
-      } else if (hour >= 8 && hour < 10) {
-        Game.stage.filter("brightness", 0.0);
-      } else if (hour >= 10 && hour < 12) {
-        Game.stage.filter("brightness", 0.05);
-      } else if (hour >= 12 && hour < 14) {
-        Game.stage.filter("brightness", 0.0);
-      } else if (hour >= 14 && hour < 16) {
-        Game.stage.filter("brightness", 0.0);
-      } else if (hour >= 16 && hour < 18) {
-        Game.stage.filter("brightness", -0.05);
-      } else if (hour >= 18 && hour < 20) {
-        Game.stage.filter("brightness", -0.1);
       }
 
     }

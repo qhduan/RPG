@@ -164,7 +164,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             Finish(json);
           }
         } else {
-          console.error(req.response, req.readyState, req.status, req.statusText);
+          console.error("url: ", url);
+          console.error("response: ", req.response,
+          " readyState: ", req.readyState,
+          " status: ", req.status,
+          " statusText: ", req.statusText);
           throw new Error("Sprite.Loader.Fetch Error");
         }
       }

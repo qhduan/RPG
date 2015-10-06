@@ -14,6 +14,7 @@ var map = {
 };
 
 map.name = "巴斯托森林中部";
+map.type = "cave";
 
 // 自动生成怪物
 map.spawnMonster = {

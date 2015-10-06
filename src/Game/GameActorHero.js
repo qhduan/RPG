@@ -61,22 +61,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
       this.on("change", () => {
-        this.autoHide();
         this.onto();
         this.touch();
       });
 
       setInterval(() => {
-        if (Game.paused == false) {
-          this.autoHide();
+        if ( !Game.paused ) {
           this.onto();
           this.touch();
         }
       }, 500);
-    }
-
-    popup (text) {
-      Game.popup(this.sprite, text, 0, -50);
     }
 
     get beAttacking () {
@@ -193,93 +187,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       });
 
-
     }
 
-    autoHide () {
-      if (!Game.area) return;
-      if (!Game.hero) return;
-
-      let heroHide = Game.area.map.hitAutoHide(Game.hero.x, Game.hero.y);
-
-      for (let layer of Game.layers.mapHideLayer.children) {
-
-      // console.log(heroHide, layer.name);
-        if (layer.name == heroHide) {
-          layer.visible = false;
-        } else {
-          layer.visible = true;
-        }
-      }
-
-      // 检查需要隐藏的角色，例如建筑物里的npc
-      for (let actor of Game.area.actors) {
-        if (actor != Game.hero) {
-          let actorHide = Game.area.map.hitAutoHide(actor.x, actor.y);
-          if (actorHide && actorHide == heroHide) {
-            actor.visible = true;
-          } else {
-            if (actorHide) {
-              actor.visible = false;
-            } else {
-              actor.visible = true;
-            }
-          }
-
-          // 当npc紧挨着玩家所在格子的时候，自动面向玩家
-          if (actor.distance(Game.hero) == 1) {
-            let actorFace = actor.facePosition;
-            if (actorFace.x != Game.hero.x || actorFace.y != Game.hero.y) {
-              if (actor.y == Game.hero.y) { // 同一水平
-                if (actor.x < Game.hero.x) { // npc 在玩家左边
-                  actor.face("right");
-                } else if (actor.x > Game.hero.x) { // npc在玩家右边
-                  actor.face("left");
-                }
-              } else if (actor.x == Game.hero.x) { // 同一垂直
-                if (actor.y < Game.hero.y) {
-                  actor.face("down");
-                } else if (actor.y > Game.hero.y) {
-                  actor.face("up");
-                }
-              }
-            }
-          }
-
-
-
-        }
-      }
-
-      // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
-      for (let bag of Game.area.bags) {
-        let bagHide = Game.area.map.hitAutoHide(bag.x, bag.y);
-        if (bagHide && bagHide == heroHide) {
-          bag.visible = true;
-        } else {
-          if (bagHide) {
-            bag.visible = false;
-          } else {
-            bag.visible = true;
-          }
-        }
-      }
-
-      // 检查需要隐藏的小包包，例如建筑物中地下玩家扔下的物品
-      for (let item of Game.area.items) {
-        let itemHide = Game.area.map.hitAutoHide(item.x, item.y);
-        if (itemHide && itemHide == heroHide) {
-          item.visible = true;
-        } else {
-          if (itemHide) {
-            item.visible = false;
-          } else {
-            item.visible = true;
-          }
-        }
-      }
-
-    }
 
     gotoArea (dest, x, y) {
       var privates = internal(this);
@@ -289,6 +198,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.windows.stage.hide();
       Game.windows.loading.begin();
       Game.windows.loading.update("20%");
+
       setTimeout(function () {
 
         Game.clearStage();
@@ -321,19 +231,21 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.windows.interface.datetime();
                 Game.windows.interface.refresh();
                 Game.start();
+
                 setTimeout(function () {
+
                   Game.stage.update();
                   Game.windows.stage.show();
                   Game.windows.interface.show();
-                }, 20);
-              }, 20);
-            }, 20);
-          });
-
-        }, 20);
-      }, 20);
+                }, 5);
+              }, 5);
+            }, 5);
+          }); // loadArea
+        }, 5);
+      }, 5);
     }
 
+    // 当玩家站到某个点的时候执行的命令
     onto () {
       if (!Game.area) return;
       if (!Game.area.onto) return;
@@ -374,6 +286,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       } // touch
     }
 
+    // 当玩家站到或者接触到某个点时执行的命令
     touch () {
       if (!Game.area) return;
       if (!Game.area.touch) return;
@@ -461,7 +374,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         touch = {
           type: "water",
           heroUse: function () {
-            Game.popup(Game.hero.sprite, "This is water", 0, -50);
+            this.popup("This is water");
           }
         };
       }

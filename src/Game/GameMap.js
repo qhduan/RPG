@@ -62,13 +62,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     }
 
-    hitAutoHide (x, y) {
-      if (internal(this).autoHideMap[x*10000+y]) {
-        return internal(this).autoHideMap[x*10000+y];
-      }
-      return null;
-    }
-
     get blockedMap () {
       return internal(this).blockedMap;
     }
@@ -102,14 +95,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         privates.waterMap = {};
         // 计算阻挡地图，如果为object则有阻挡，undefined则无阻挡
         privates.blockedMap = {};
-        // 某些层在玩家走到其中后会自动隐藏
-        privates.autoHideMap = {};
 
         // 保存这个地图的所有地图块
         // 这个空间在draw后会释放
         privates.layers = [];
-
-        console.time("do map");
 
         for (let layerData of privates.data.layers) {
           let layerObj = null;
@@ -137,10 +126,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   frame.x = x * privates.data.tilewidth;
                   frame.y = y * privates.data.tileheight;
 
-                  if (layerData.properties && layerData.properties.autohide) {
-                    privates.autoHideMap[key] = layerData.properties.autohide;
-                  }
-
                   layerObj.appendChild(frame);
                 }
               }
@@ -148,8 +133,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
           }
         }
-
-        console.timeEnd("do map");
 
         // 发送完成事件，第二个参数代表此事件是一次性事件，即不会再次complete
         this.emit("complete", true);
@@ -232,8 +215,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Game.layers.mapLayer.clear();
       Game.layers.mapHideLayer.clear();
 
-      let autohideLayer = {};
-
       privates.layers.forEach((element, index) => {
         let layerData = privates.data.layers[index];
 
@@ -241,31 +222,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           element.alpha = layerData.opacity;
         }
 
-        if (layerData.properties && layerData.properties.autohide) {
-          let group = layerData.properties.autohide;
-          if (!autohideLayer[group]) {
-            autohideLayer[group] = new Sprite.Container();
-          }
-          autohideLayer[group].appendChild(element);
-        } else {
-          Game.layers.mapLayer.appendChild(element);
-        }
+        Game.layers.mapLayer.appendChild(element);
       });
 
       // 释放冗余空间
       privates.layers = null;
       privates.data.layers = null;
-
-      // 给所有自动隐藏的地图缓冲层
-      for (let group in autohideLayer) {
-        autohideLayer[group].cache();
-        let autohideMap = new Sprite.Bitmap(autohideLayer[group].cacheCanvas);
-        autohideMap.x = autohideLayer[group].cacheX;
-        autohideMap.y = autohideLayer[group].cacheY;
-        autohideMap.name = group;
-        Game.layers.mapHideLayer.appendChild(autohideMap);
-      }
-      autohideLayer = null;
 
       // 给其他地图缓冲层
       Game.layers.mapLayer.cache();

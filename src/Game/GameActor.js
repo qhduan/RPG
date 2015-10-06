@@ -223,6 +223,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Game.Actor.quests readonly");
     }
 
+    popup (text) {
+      Game.popup(this.sprite, text, 0, -50);
+    }
+
     makeInfoBox () {
       let privates = internal(this);
       // 名字

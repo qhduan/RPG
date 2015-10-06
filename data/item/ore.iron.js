@@ -19,7 +19,7 @@ return {
     if (Game.hero.hasItem("pickaxe")) {
       return true;
     } else {
-      Game.hero("需要矿工锄");
+      Game.hero.popup("需要矿工锄");
       return false;
     }
   }

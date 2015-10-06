@@ -50,8 +50,10 @@ grunt.tasks(["babel"], {}, function () {
   console.log("\nGrunt Done, Game Starting...\n");
 
   var express = require("express");
+  var compression = require("compression");
 
   var app = express();
+  app.use(compression());
   app.use(express.static("data/"));
 
   var PORT = 9000;

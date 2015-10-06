@@ -21,11 +21,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
+
+  let loadingIconSrc = "data:image/svg+xml;base64," + window.btoa(`
+  <svg id="loadingIcon" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="50" cy="50" r="50" fill="#808080" />
+    <path d="M50,50 h-40 a40,40 0 1,0 40,-40 z" fill="white" />
+    <path d="M49,49 h-30 a30,30 0 1,0 30,-30 z" fill="#808080" />
+  </svg>`);
+
+
   let win = Game.windows.loading = Game.Window.create("loadingWindow");
 
   win.html = `
     <div id="loadingWindowBox">
-      <img id="loadingWindowLoadingIcon" src="image/window/loading.svg" alt="loading">
+      <img id="loadingWindowLoadingIcon" src="${loadingIconSrc}" alt="loading">
       <br>
       <label>请稍等...<small id="loadingWindowProgress"></small></label>
       <br>
