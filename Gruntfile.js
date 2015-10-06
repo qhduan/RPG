@@ -6,7 +6,7 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON("package.json"),
     babel: {
       options: {
-        sourceMap: true
+        sourceMap: "inline"
       },
       dist: {
         files: [{

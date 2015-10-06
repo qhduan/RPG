@@ -31,14 +31,14 @@ grunt.tasks(["babel"], {}, function () {
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
     var outputPath = filepath.replace("src", "data/js");
-    babel.transformFile(filepath, { sourceMaps: true }, function (err, result) {
+    babel.transformFile(filepath, { sourceMap: "inline" }, function (err, result) {
       if (err) throw err;
       // 保存转换好的代码
       fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
         if (err) throw err;
         console.log("babel compiled", filepath, outputPath);
       });
-
+      // 把文件合并
       grunt.tasks(["concat"]);
       // 把转换好的map保存
       fs.writeFile(outputPath + ".map", JSON.stringify(result.map), { encoding: "utf8" }, function (err) {

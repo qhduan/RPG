@@ -10,12 +10,14 @@
     <meta name="author" content="longinus">
     <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
     <link rel="icon" type="image/png" href="icon32.png" />
-    <title>艾利韦斯 0.1.1.2015092704</title>
+    <title>艾利韦斯</title>
     <link rel="stylesheet" href="game.css">
   </head>
   <body>
 
     <script>
+
+      /*
       window.onerror = function (msg, url, line, col, error) {
         // Note that col & error are new to the HTML 5 spec and may not be
         // supported in every browser.  It worked for me in Chrome.
@@ -33,70 +35,97 @@
         // Internet Explorer) will be suppressed.
         return suppressErrorAlert;
       };
+      */
+
+
+      function ImportJavascript (urls) {
+        var all = "";
+        urls.forEach(function (u) {
+          all += "<script src='" + u + "'><\/script>\n";
+        });
+        document.write(all);
+      }
+
+      var development = [
+        "js/browser-polyfill.js",
+
+        "js/Sprite/Sprite.js",
+        "js/Sprite/SpriteCanvas.js",
+        "js/Sprite/SpriteWebgl.js",
+        "js/Sprite/SpriteEvent.js",
+        "js/Sprite/SpriteTween.js",
+        "js/Sprite/SpriteLoad.js",
+        "js/Sprite/SpriteTicker.js",
+        "js/Sprite/SpriteDisplay.js",
+        "js/Sprite/SpriteContainer.js",
+        "js/Sprite/SpriteStage.js",
+        "js/Sprite/SpriteText.js",
+        "js/Sprite/SpriteFrame.js",
+        "js/Sprite/SpriteSheet.js",
+        "js/Sprite/SpriteInput.js",
+        "js/Sprite/SpriteShape.js",
+        "js/Sprite/SpriteBitmap.js",
+
+        "js/Game/Game.js",
+
+        "js/Game/GameWindow.js",
+        "js/Game/GameWindowArchive.js",
+        "js/Game/GameWindowBuy.js",
+        "js/Game/GameWindowChoice.js",
+        "js/Game/GameWindowConfirm.js",
+        "js/Game/GameWindowDialogue.js",
+        "js/Game/GameWindowInterface.js",
+        "js/Game/GameWindowInventory.js",
+        "js/Game/GameWindowLoading.js",
+        "js/Game/GameWindowMain.js",
+        "js/Game/GameWindowMap.js",
+        "js/Game/GameWindowOver.js",
+        "js/Game/GameWindowPickup.js",
+        "js/Game/GameWindowQuest.js",
+        "js/Game/GameWindowRegister.js",
+        "js/Game/GameWindowSell.js",
+        "js/Game/GameWindowSetting.js",
+        "js/Game/GameWindowSkill.js",
+        "js/Game/GameWindowStatus.js",
+        "js/Game/GameWindowSysmenu.js",
+
+        "js/Game/GameAstar.js",
+        "js/Game/GameAI.js",
+        "js/Game/GameCollision.js",
+        "js/Game/GameUI.js",
+        "js/Game/GameArea.js",
+        "js/Game/GameMap.js",
+        "js/Game/GameQuest.js",
+        "js/Game/GameItem.js",
+        "js/Game/GameSkill.js",
+        "js/Game/GameActor.js",
+        "js/Game/GameActorAlly.js",
+        "js/Game/GameActorHero.js",
+        "js/Game/GameActorMonster.js",
+        "js/Game/GameActorNPC.js",
+        "js/Game/GameActorPet.js",
+        "js/Game/GameDrawHero.js",
+        "js/Game/GameInput.js",
+        "js/Game/GameRegister.js",
+        "js/Game/GameArchive.js"
+      ];
+
+      var product = [
+        "js/browser-polyfill.js",
+        "js/Sprite.all.js",
+        "js/Game.all.js"
+      ];
+
+      if (document.URL.match(/localhost|127\.0\.0\.1/)) {
+        // 如果是本地测试，打开开发者模式
+        ImportJavascript(development);
+        document.title = "艾利韦斯开发";
+      } else {
+        ImportJavascript(product);
+        document.title = "艾利韦斯";
+      }
+
     </script>
-
-    <!--babel polyfill eg. Promise -->
-    <script src="js/browser-polyfill.js"></script>
-
-    <script src="js/Sprite/Sprite.js"></script>
-    <script src="js/Sprite/SpriteCanvas.js"></script>
-    <script src="js/Sprite/SpriteWebgl.js"></script>
-    <script src="js/Sprite/SpriteEvent.js"></script>
-    <script src="js/Sprite/SpriteTween.js"></script>
-    <script src="js/Sprite/SpriteLoad.js"></script>
-    <script src="js/Sprite/SpriteTicker.js"></script>
-    <script src="js/Sprite/SpriteDisplay.js"></script>
-    <script src="js/Sprite/SpriteContainer.js"></script>
-    <script src="js/Sprite/SpriteStage.js"></script>
-    <script src="js/Sprite/SpriteText.js"></script>
-    <script src="js/Sprite/SpriteFrame.js"></script>
-    <script src="js/Sprite/SpriteSheet.js"></script>
-    <script src="js/Sprite/SpriteInput.js"></script>
-    <script src="js/Sprite/SpriteShape.js"></script>
-    <script src="js/Sprite/SpriteBitmap.js"></script>
-
-    <script src="js/Game/Game.js"></script>
-
-    <script src="js/Game/GameWindow.js"></script>
-    <script src="js/Game/GameWindowArchive.js"></script>
-    <script src="js/Game/GameWindowBuy.js"></script>
-    <script src="js/Game/GameWindowChoice.js"></script>
-    <script src="js/Game/GameWindowConfirm.js"></script>
-    <script src="js/Game/GameWindowDialogue.js"></script>
-    <script src="js/Game/GameWindowInterface.js"></script>
-    <script src="js/Game/GameWindowInventory.js"></script>
-    <script src="js/Game/GameWindowLoading.js"></script>
-    <script src="js/Game/GameWindowMain.js"></script>
-    <script src="js/Game/GameWindowMap.js"></script>
-    <script src="js/Game/GameWindowOver.js"></script>
-    <script src="js/Game/GameWindowPickup.js"></script>
-    <script src="js/Game/GameWindowQuest.js"></script>
-    <script src="js/Game/GameWindowRegister.js"></script>
-    <script src="js/Game/GameWindowSell.js"></script>
-    <script src="js/Game/GameWindowSetting.js"></script>
-    <script src="js/Game/GameWindowSkill.js"></script>
-    <script src="js/Game/GameWindowStatus.js"></script>
-    <script src="js/Game/GameWindowSysmenu.js"></script>
-
-    <script src="js/Game/GameAstar.js"></script>
-    <script src="js/Game/GameAI.js"></script>
-    <script src="js/Game/GameCollision.js"></script>
-    <script src="js/Game/GameUI.js"></script>
-    <script src="js/Game/GameArea.js"></script>
-    <script src="js/Game/GameMap.js"></script>
-    <script src="js/Game/GameQuest.js"></script>
-    <script src="js/Game/GameItem.js"></script>
-    <script src="js/Game/GameSkill.js"></script>
-    <script src="js/Game/GameActor.js"></script>
-    <script src="js/Game/GameActorAlly.js"></script>
-    <script src="js/Game/GameActorHero.js"></script>
-    <script src="js/Game/GameActorMonster.js"></script>
-    <script src="js/Game/GameActorNPC.js"></script>
-    <script src="js/Game/GameActorPet.js"></script>
-    <script src="js/Game/GameDrawHero.js"></script>
-    <script src="js/Game/GameInput.js"></script>
-    <script src="js/Game/GameRegister.js"></script>
-    <script src="js/Game/GameArchive.js"></script>
 
   </body>
 </html>

@@ -1,10 +1,12 @@
 {
   "name": "Elliorwis",
+  "version": "0.1.1",
   "main": "index.html",
   "window": {
     "toolbar": false,
     "resizable": true,
     "fullscreen": false,
+    "frame": true,
     "width": 800,
     "height": 450,
     "icon": "icon64.png"

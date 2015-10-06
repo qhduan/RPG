@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <div id="loadingWindowBox">
-      <img src="image/window/loading.svg" alt="loading" style="z-index: 199876;">
+      <img src="image/window/loading.gif" alt="loading" style="z-index: 199876;">
       <br>
       <label>请稍等...<small id="loadingWindowProgress"></small></label>
       <br>

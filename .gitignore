@@ -1,2 +1,5 @@
 # node files
 node_modules/
+
+# nw.js build dir
+build/
