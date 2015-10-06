@@ -312,7 +312,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     .registerWindow {
       text-align: center;
-      background-image: url("image/main.jpeg");
+      height: 412px;
+      background-color: rgba(240, 217, 194, 0.85);
+      border: 20px solid rgba(134, 93, 52, 0.85);
     }
 
     .registerWindow input {
@@ -357,6 +359,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   registerWindowBack.addEventListener("click", function () {
     win.hide();
+    Game.windows.main.show();
   });
 
 

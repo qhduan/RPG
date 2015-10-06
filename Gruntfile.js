@@ -19,8 +19,10 @@ module.exports = function (grunt) {
       }
     },
     concat: {
-      sprite: {
+      elliorwis: {
         src: [
+          "data/js/browser-polyfill.js",
+
           "data/js/Sprite/Sprite.js",
           "data/js/Sprite/SpriteCanvas.js",
           "data/js/Sprite/SpriteWebgl.js",
@@ -36,12 +38,8 @@ module.exports = function (grunt) {
           "data/js/Sprite/SpriteSheet.js",
           "data/js/Sprite/SpriteInput.js",
           "data/js/Sprite/SpriteShape.js",
-          "data/js/Sprite/SpriteBitmap.js"
-        ],
-        dest: "data/js/Sprite.all.js"
-      },
-      game: {
-        src: [
+          "data/js/Sprite/SpriteBitmap.js",
+
           "data/js/Game/Game.js",
 
           "data/js/Game/GameWindow.js",
@@ -85,7 +83,7 @@ module.exports = function (grunt) {
           "data/js/Game/GameRegister.js",
           "data/js/Game/GameArchive.js"
         ],
-        dest: "data/js/Game.all.js"
+        dest: "data/js/all.js"
       }
     },
     watch: {

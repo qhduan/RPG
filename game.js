@@ -24,6 +24,8 @@ var grunt = require("grunt");
 var babel = require("babel-core");
 
 grunt.tasks(["babel"], {}, function () {
+  // 把文件合并
+  grunt.tasks(["concat"]);
 
   grunt.tasks(["watch"]);
 

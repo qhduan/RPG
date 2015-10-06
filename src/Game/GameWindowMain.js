@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let win = Game.windows.main = Game.Window.create("mainWindow");
 
   win.html = `
-    <div>
+    <div id="mainWindowBox">
       <h1>维加大陆</h1>
       <button id="mainWindowContinue" class="brownButton">继续旅程</button>
       <br>
@@ -36,9 +36,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    .mainWindow {
+    #mainWindowBox {
       text-align: center;
-      background-image: url("image/main.jpeg");
+      height: 412px;
+      background-color: rgba(240, 217, 194, 0.85);
+      border: 20px solid rgba(134, 93, 52, 0.85);
     }
 
     .mainWindow h1 {
@@ -72,6 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
   mainWindowNew.addEventListener("click", function (event) {
+    win.hide();
     Game.register.reg();
   });
 
