@@ -56,6 +56,20 @@ babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit
 
 地图使用tiled软件(mapeditor)，格式为json， [网址](http://www.mapeditor.org/)
 
+图片压缩使用pngquant
+
+地图和一些svg使用Method-Draw编辑
+
+Run and build Elliorwis using node.js (>=4.0)
+
+Babel.js, translate code from es6 to es5
+
+[tiled](http://www.mapeditor.org) for map and tilesets edit
+
+I use pngquant to compress png images
+
+Some svg were created by Method-Draw
+
 ### 鸣谢 | Credits
 
 游戏所用的地图资源存储在tilesets文件夹中，地图是使用 [tiled](http://www.mapeditor.org/) 编辑的，版权文件列在其中分别列出了（游戏中的地图资源用pngquant压缩过）
