@@ -23,7 +23,7 @@ map.spawnMonster = {
     "robber.green": 0.1,
     "slime.green": 0.1
   },
-  count: 20
+  count: 6
 };
 
 // 自动生成矿产
@@ -32,24 +32,24 @@ map.spawnItem = {
     "ore.iron": 0.5,
     "herb.stramonium": 0.5
   },
-  count: 10
+  count: 6
 };
 
 map.onto.push({
-  x: 60,
+  x: 31,
   y: 0,
   description: "通往巴斯托森林中部",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.center", 60, 118);
+    Game.hero.gotoArea("bastowforest.center", 31, 61);
   }
 });
 
 map.onto.push({
-  x: 60,
-  y: 119,
+  x: 31,
+  y: 62,
   description: "通往首都卡诺城",
   execute: function () {
-    Game.hero.gotoArea("chano.market", 60, 1);
+    Game.hero.gotoArea("chano.market", 31, 1);
   }
 });
 
