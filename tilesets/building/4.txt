@@ -1,0 +1,70 @@
+http://opengameart.org/content/lpc-city-outside
+
+city_outside.png
+= Stone floor bricks  =
+ * By Tuomo Untinen
+= Stone floor bricks with water and Stone brick with deep water  =
+ * Water from LPC made by Lanea Zimmerman (Sharm)
+ * Bricks by Tuomo Untinen
+= Brown windows  =
+ * Hyptosis
+ * Plants by Tuomo Untinen
+= Cement stair tiles  =
+ * Based on cement tiles in LPC made by Lanea Zimmerman (Sharm)
+= Doors  =
+ * By Guido Bos
+= Blueish roof and red roof with tower tops= 
+ * Based LPC made by Lanea Zimmerman (Sharm)
+ * Recoloration by Tuomo Untinen
+ * Clock by Tuomo Untinen
+= Red brick wall = 
+ * From LPC made by Lanea Zimmerman (Sharm)
+ * Wall base by Tuomo Untinen
+= White wall = 
+ * By Tuomo Untinen
+ * Wall base from cement tiles in LPC made by Lanea Zimmerman (Sharm)
+= White and blue roof = 
+ * By Tuomo Untinen
+= Gray windows = 
+ * By Tuomo Untinen
+= Gray brick wall = 
+ * By Tuomo Untinen
+= Yellow brick wall = 
+ * By Tuomo Untinen
+= Red banners and red flag = 
+ * By Tuomo Untinen
+= Monk statues  =
+ * Bright statue base is made by Johann C
+ * Statues are made by Johannes Sjölund
+= Obelisk  =
+ * Obelisk base is made by Johann C
+ * Tuomo Untinen
+= Pedastal and sun clock =
+ * Tuomo Untinen
+= Well =
+ * Xenodora
+ * Wooden parts by Tuomo Untinen
+= Blueish gray brick floor tiles  =
+ * By Tuomo Untinen
+ * Dark border is from Castle_2.png by Lanea Zimmerman (AKA Sharm)
+= Lamp post =
+  * Curt
+  * Sharm
+  * Hyptosis
+= Red chimney =
+ * Tuomo Untinen
+= Round flowerbeds =
+ * Tuomo Untinen
+ * Plant from Daniel Eddeland (http://opengameart.org/content/lpc-farming-tilesets-magic-animations-and-ui-elements) 
+= Market place =
+ * Roof based on "Adobe Town Set" Artist: bluecarrot16 License: CC-BY 3.0 / GPL 3.0 / GPL 2.0 / OGA-BY 3.0 Please link to page on opengameart. Based on "[LPC] Adobe Building Set" Artist: Sharm (Lanea Zimmerman) Contributor: William.Thompsonj (William Thompson) License: CC-BY 3.0 / GPL 3.0 / GPL 2.0 / OGA-BY 3.0 http://opengameart.org/content/lpc-adobe-building-set
+ * Table top Based on LPC base tileset by Lanea Zimmerman (AKA Sharm)
+ * Plants,hammers, tongs and box from Daniel Eddeland (http://opengameart.org/content/lpc-farming-tilesets-magic-animations-and-ui-elements) 
+ * Chest from LPC base tileset by Lanea Zimmerman (AKA Sharm)
+ * Rocks, papers and scissors by caeles.
+ * Dark green bottles by Tuomo Untinen
+ * Purple and green bottle from Hyptosis Mage city
+ * Kettle, pan and scoop by Lanea Zimmerman (AKA Sharm)
+ * Hanging cloths and sack by Tuomo Untinen
+= Boats =
+ * Daniel Eddeland (http://opengameart.org/content/lpc-farming-tilesets-magic-animations-and-ui-elements) 

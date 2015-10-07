@@ -1,20 +1,22 @@
 # 艾利韦斯 Elliorwis 奇幻角色扮演游戏 Fantasy RPG Game
 
+## 中文游戏 Elliorwis is a Chinese Game
+
 Created by mail@qhduan.com ( http://qhduan.com )
 
 本项目是个人作品，希望制作一个自己觉得不错的开放沙盘2D RPG游戏，即时战斗模式。
 
 游戏引擎使用作者自己开发的Sprite引擎，使用webgl或canvas作为游戏后端。所有代码使用JavaScript ES2015(ES6)开发，代码没使用任何第三方库。
 
-一些设定：
+背景设定 | backgroundsetting：
 
-[世界观](https://github.com/qhduan/RPG/blob/master/backgroundsetting/world.md)
+[世界观 | World setting](https://github.com/qhduan/RPG/blob/master/backgroundsetting/world.md)
 
-[游戏操作](https://github.com/qhduan/RPG/blob/master/backgroundsetting/control.md)
+[游戏操作 | Game control](https://github.com/qhduan/RPG/blob/master/backgroundsetting/control.md)
 
-[角色信息](https://github.com/qhduan/RPG/blob/master/backgroundsetting/actor.md)
+[角色信息 | Actor setting](https://github.com/qhduan/RPG/blob/master/backgroundsetting/actor.md)
 
-## 游戏特性
+## 游戏特性 | Feature
 
 我所希望的游戏特性（很多地方还未实现）
 
@@ -28,7 +30,7 @@ Created by mail@qhduan.com ( http://qhduan.com )
 - 穿插的小游戏，暂定的设想有：钓鱼，赛车比赛（奇幻赛车？oh no！），打飞机（雷电），赌博（骰子和扑克），开锁（暂时设想是解迷宫），偷窃，等各种小游戏
 - 尽量真实的奇幻世界
 
-## License 协议
+## 协议 | License
 
 所有原创代码采用GPL-v3协议（详情在文件GPLv3.txt），包括Sprite引擎(src/Sprite目录)，和游戏本体(src/Game目录)
 
@@ -40,13 +42,13 @@ Game's resources which created by mail@qhduan.com, are using CC-BY-SA 3.0 licens
 
 游戏中部分设定，人物名称，世界地图，城市名称，部分剧情，内容，来自donjon网站（ http://donjon.bin.sh ），采用OpenGameLicense协议（详情在文件OpenGameLicense.txt）
 
-Some events, names, world maps from dojon( http://donjon.bin.sh ), are using Open Game License (OpenGameLicense.txt)
+Some events, names, world maps from [dojon](http://donjon.bin.sh/), are using Open Game License (OpenGameLicense.txt)
 
 其他非原创资源(非代码)列表，会以credits的方式列出，大部分的资源都会是GPL，CC，或其他兼容协议
 
 Other resources I will list them with credits file, most of them are using GPL or CC compatible license
 
-### 开发环境
+### 开发环境 | Develop Environment
 
 node.js 系统运行和测试，非必要，游戏可以完全的以静态HTML的方式运行，只是开发与测试需要，实际运行不需要
 
@@ -54,7 +56,9 @@ babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit
 
 地图使用tiled软件(mapeditor)，格式为json， [网址](http://www.mapeditor.org/)
 
-### credits 鸣谢
+### 鸣谢 | Credits
+
+游戏所用的地图资源存储在tilesets文件夹中，地图是使用 [tiled](http://www.mapeditor.org/) 编辑的，版权文件列在其中分别列出了（游戏中的地图资源用pngquant压缩过）
 
 大部分资源来自 OpenGameArt.org (http://opengameart.org)
 因为项目还在不断改进，以后我会列出详细的列表，感谢所有资源提供者
@@ -62,12 +66,14 @@ babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit
 Most resources are from OpenGameArt.org (http://opengameart.org)
 I will list the detail later, thanks
 
-### 关于HTML5 网页游戏
+Elliorwis's map tilesets in 'tilesets' directory, I made them by [tiled](http://www.mapeditor.org/) . Credit files are there too. (images of game are compressed by pngquant)
 
-###### 为什么是网页游戏
+### 关于HTML5 网页游戏 | About HTML5
 
-- 跨平台方便
-- 开发简单，例如让我直接用c++/opengl开发，可能就需要数倍的精力
+###### 为什么是网页游戏 | Why HTML5 and JavaScript
+
+- 跨平台方便 | cross platform
+- 开发简单，例如让我直接用c++/opengl开发，可能就需要数倍的精力 | easy for use
 
 其实可能主要的原因还是我比较熟悉，我就熟悉两个语言，一个c++，一个js。
 其他很多语言我都写过东西，但是比较精通的就这两个吧。
@@ -76,11 +82,13 @@ JS的跨平台简直太容易了，当然这是在牺牲了一定性能的前提
 比如说我做的这个游戏，我在windows上我想用node-webkit封装也行，想用cordova/phonegap封装也行，想随便写个server用浏览器打开本地服务器也行，这一点，应该没有任何其他编程语言能做到。
 但是你要说跨平台这一点到底有什么用，或许，也只是让我觉得舒服而已。
 
-###### 游戏有没有在线元素
+###### 艾利韦斯是在线游戏吗？ | Is Elliorwis an online game?
 
-没有，可能永远也不会有，能力有限
+艾利韦斯不是传统的网页游戏，通过浏览器可以游戏，但是我同时也会发布不同平台的客户端（例如win32， osx32， linux32）
 
-###### HTML5的缺陷log
+No, you can play Elliorwis on browser. But I also will publish clients for different platforms (eg. win32, osx32, linux32)
+
+###### HTML5的缺陷 | Problem of HTML5
 
 缺陷1：绘图速度慢。
 webgl的速度实际上还可以，对于2D游戏来说，基本足够
@@ -99,7 +107,7 @@ webgl的速度实际上还可以，对于2D游戏来说，基本足够
 缺陷5：内存占用大，比如说对于webgl渲染，就需要两套材质，一套是image，一套是webgl的texture，这样很不好。
 这个我想不到解决办法，幸运的是现在手机/PC的内存都很大，在合理的地图大小下，在中高端手机和一般电脑里面应该不会有问题。
 
-### 测试游戏
+### 测试游戏 | Game test
 
 游戏发展还在非常原始的阶段，但是已经可以进行简单测试，需要一定动手能力
 
@@ -108,25 +116,14 @@ webgl的速度实际上还可以，对于2D游戏来说，基本足够
 - linux(node-webkit，firefox，chrome)
 - android(cordova, chrome)
 
-在线测试网址：
+现在，因为游戏还在开发过程中，所以我并没有制作游戏客户端，想尝试的话，可以在线（只在最新版本的chromium与firefox上测试过）
+
+两个连接是一样的
+
 http://qhduan.github.io/RPG/
 
-[谨点]
-注意，因为游戏尚在开发阶段，所以很多图片资源尚未优化合并，js代码也尚未合并uglify，所以打开速度可能非常慢，但是不影响运行速度。
-如果想要尝试，可以用chrome或者firefox打开，并且期待网速快，如果无法打开尝试刷新。
+http://eliorwis.qhduan.com/
 
-本地打开方式：
+For now, game is developing, I didn't publish clients, so online test is the only way.
 
-方法1：下载项目，只需要项目中的data目录，然后下载node-webkit( http://nwjs.io/ )，使用
-
-windows: nw.exe 游戏目录/data
-
-linux: nw 游戏目录/data
-
-方法2：下载项目，用firefox直接打开项目data目录下的index.html文件
-
-注：这种方法可能只支持firefox，因为chrome的权限控制比较严格，会出错，IE未测试，应该不行。还有游戏存档功能可能也会有影响
-
-方法3： 随便使用一种网页服务，例如python
-
-安装python，在游戏目录的data目录下，运行“python -m SimpleHTTPServer”命令，然后打开浏览器，并进入地址 http://localhost:8000/
+Both links are same, only Chinese version
