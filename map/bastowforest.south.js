@@ -47,9 +47,9 @@ map.onto.push({
 map.onto.push({
   x: 31,
   y: 62,
-  description: "通往首都卡诺城",
+  description: "通往首都卡诺城市场区",
   execute: function () {
-    Game.hero.gotoArea("chano.market", 31, 1);
+    Game.hero.gotoArea("chano.market", 15, 1);
   }
 });
 
