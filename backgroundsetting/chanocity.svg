@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+  <g display="none" overflow="visible" y="0" x="0" height="100%" width="100%" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path id="svg_6" d="m309.442993,111.341736l16.499298,-31.499985l43.998993,0l16.498627,31.499985l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <path id="svg_4" d="m208.442978,54.341743l16.499313,-31.499992l43.998993,0l16.498627,31.499992l-16.498627,31.499992l-43.998993,0l-16.499313,-31.499992z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_1" y="65" x="220.5" stroke-width="0" stroke="#000" fill="#000000">市场</text>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_2" y="119" x="325.5" stroke-width="0" stroke="#000" fill="#000000">猎人</text>
+  <path id="svg_5" d="m116.442978,121.341736l16.499313,-31.499985l43.998993,0l16.498627,31.499985l-16.498627,31.5l-43.998993,0l-16.499313,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text style="cursor: move;" xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_3" y="129" x="132.5" stroke-width="0" stroke="#000" fill="#000000">贵族</text>
+  <path id="svg_7" d="m218.442993,341.341736l16.499298,-31.5l43.998993,0l16.498657,31.5l-16.498657,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_8" y="348" x="234.5" stroke-width="0" stroke="#000" fill="#000000">贫民</text>
+  <path id="svg_9" d="m125.442993,296.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_10" y="304" x="141.5" stroke-width="0" stroke="#000" fill="#000000">竞技</text>
+  <path id="svg_11" d="m123.442993,204.341736l16.499298,-31.499985l43.998993,0l16.498627,31.499985l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_12" y="212" x="138.5" stroke-width="0" stroke="#000" fill="#000000">宫殿</text>
+  <path id="svg_13" d="m216.442993,242.341736l16.499298,-31.499985l43.998993,0l16.498657,31.499985l-16.498657,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_14" y="250" x="232.5" stroke-width="0" stroke="#000" fill="#000000">飞船</text>
+  <path id="svg_15" d="m213.442993,151.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_16" y="159" x="229.5" stroke-width="0" stroke="#000" fill="#000000">神庙</text>
+  <path id="svg_17" d="m307.442993,296.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_18" y="309" x="321.5" stroke-width="0" stroke="#000" fill="#000000">骑士</text>
+  <path id="svg_19" d="m307.442993,198.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_20" y="206" x="322.5" stroke-width="0" stroke="#000" fill="#000000">学院</text>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_21" y2="95" x2="303.5" y1="78" x1="281.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_22" y2="112.11077" x2="247.5" y1="94" x1="247.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_23" y2="98.03122" x2="192.46878" y1="82" x1="208.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_24" y2="160.038405" x2="345.5" y1="147" x1="345.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_26" y2="178.041595" x2="303.541595" y1="166" x1="291.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_28" y2="188" x2="207.5" y1="170" x1="220.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_29" y2="228" x2="202.5" y1="233" x1="214.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_30" y2="302" x2="256.5" y1="282" x1="256.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_31" y2="275" x2="305.5" y1="260" x1="290.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_32" y2="217" x2="302.5" y1="227" x1="292.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_33" y2="280.230249" x2="206.269751" y1="266" x1="220.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_34" y2="205.416488" x2="251.5" y1="186" x1="251.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_35" y2="124" x2="305.5" y1="134" x1="290.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_37" y2="257.248457" x2="347.5" y1="237" x1="347.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_38" y2="134" x2="197.5" y1="143" x1="207.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_39" y2="166" x2="160.5" y1="157" x1="160.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+  <line stroke-linecap="null" stroke-linejoin="null" id="svg_40" y2="253.041595" x2="164.5" y1="241" x1="164.5" fill-opacity="null" stroke-opacity="null" stroke-width="1.5" stroke="#000" fill="none"/>
+ </g>
+</svg>
