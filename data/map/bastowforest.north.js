@@ -32,7 +32,7 @@ map.spawnItem = {
     "ore.iron": 0.5,
     "herb.stramonium": 0.5
   },
-  count: 10
+  count: 6
 };
 
 map.onto.push({
