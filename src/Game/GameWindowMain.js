@@ -25,7 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.html = `
     <div id="mainWindowBox">
-      <h1>维加大陆</h1>
+      <h1>Elliorwis</h1>
+      <h4>艾利韦斯</h4>
+      <br>
       <button id="mainWindowContinue" class="brownButton">继续旅程</button>
       <br>
       <button id="mainWindowNew" class="brownButton">新的旅程</button>
@@ -45,6 +47,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     .mainWindow h1 {
       font-size: 60px;
+      margin-bottom: 0;
+      text-shadow: 0 0 15px #111;
+    }
+
+    .mainWindow h4 {
+      margin-bottom: 0;
+      text-shadow: 0 0 15px #111;
     }
 
     .mainWindow button {

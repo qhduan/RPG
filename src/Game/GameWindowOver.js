@@ -86,6 +86,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       overWindowReason.innerHTML = "";
     }
     overWindowMessage.textContent = deadText[Math.floor(Math.random() * deadText.length)];
+    Game.windows.stage.hide();
+    Game.windows.interface.hide();
     win.show();
   });
 

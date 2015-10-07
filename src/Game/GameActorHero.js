@@ -306,7 +306,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else if (element.points) {
             for (let p of element.points) {
               if (p.x == heroPosition.x && p.y == heroPosition.y) {
-                onto = element;
+                touch = element;
                 return;
               }
             }
@@ -332,7 +332,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else if (element.points) {
             for (let p of element.points) {
               if (p.x == heroFace.x && p.y == heroFace.y) {
-                onto = element;
+                touch = element;
                 return;
               }
             }
