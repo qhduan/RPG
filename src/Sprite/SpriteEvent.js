@@ -75,7 +75,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /**
      * Register an event
      * @param {string} event The event type, eg. "click"
-     * @param {function} listener The callback function when event fired
+     * @param {function} listener The function when event fired
      */
     on (event, listener) {
       let privates = internal(this);

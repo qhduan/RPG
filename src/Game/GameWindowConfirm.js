@@ -64,60 +64,60 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  Game.assign("confirm", function (message, yes, no) {
+  Game.assign("confirm", (message) => {
 
-    let win = Game.Window.create("confirmWindow");
-    win.html = confirmHTML;
-    win.css = confirmCSS;
-    win.show();
+    return new Promise((resolve, reject) => {
 
-    let confirmWindowMessage = win.querySelector("#confirmWindowMessage");
-    let confirmWindowYes = win.querySelector("#confirmWindowYes");
-    let confirmWindowNo = win.querySelector("#confirmWindowNo");
+      let win = Game.Window.create("confirmWindow");
+      win.html = confirmHTML;
+      win.css = confirmCSS;
+      win.show();
 
-    if (typeof message == "string") {
-      confirmWindowMessage.textContent = message;
-    } else if (message.message) {
-      confirmWindowMessage.textContent = message.message;
-      if (message.yes) {
-        confirmWindowYes.textContent = message.yes;
+      let confirmWindowMessage = win.querySelector("#confirmWindowMessage");
+      let confirmWindowYes = win.querySelector("#confirmWindowYes");
+      let confirmWindowNo = win.querySelector("#confirmWindowNo");
+
+      if (typeof message == "string") {
+        confirmWindowMessage.textContent = message;
+      } else if (message.message) {
+        confirmWindowMessage.textContent = message.message;
+        if (message.yes) {
+          confirmWindowYes.textContent = message.yes;
+        }
+        if (message.no) {
+          confirmWindowNo.textContent = message.no;
+        }
+      } else {
+        throw new Error("Game.confirm got invalid arguments");
       }
-      if (message.no) {
-        confirmWindowNo.textContent = message.no;
-      }
-    } else {
-      console.error(message, yes, no);
-      throw new Error("Game.confirm got invalid arguments");
-    }
 
 
-    win.whenUp(["esc"], function () {
-      setTimeout(function () {
+      win.whenUp(["esc"], function () {
+        setTimeout(function () {
+          confirmWindowNo.click();
+        }, 20);
+      });
+
+      win.whenUp(["y", "Y"], function () {
+        confirmWindowYes.click();
+      });
+
+      win.whenUp(["n", "N"], function () {
         confirmWindowNo.click();
-      }, 20);
+      });
+
+      confirmWindowYes.addEventListener("click", function () {
+        win.destroy();
+        resolve();
+      });
+
+      confirmWindowNo.addEventListener("click", function () {
+        win.destroy();
+        reject();
+      });
+
     });
 
-    win.whenUp(["y", "Y"], function () {
-      confirmWindowYes.click();
-    });
-
-    win.whenUp(["n", "N"], function () {
-      confirmWindowNo.click();
-    });
-
-    confirmWindowYes.addEventListener("click", function () {
-      win.destroy();
-      if (yes) {
-        yes();
-      }
-    });
-
-    confirmWindowNo.addEventListener("click", function () {
-      win.destroy();
-      if (no) {
-        no();
-      }
-    });
   });
 
 

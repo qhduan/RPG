@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <div class="window-box">
       <button id="pickupWindowClose" class="brownButton">关闭</button>
       <button id="pickupWindowAll" class="brownButton">A 全部</button>
-      <table border="1" cellspacing="0" cellpadding="0">
+      <table border="0">
         <thead>
           <tr>
             <td style="width: 40px;"></td>
@@ -44,13 +44,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
-    .pickupWindow table {
-      width: 100%;
+
+    #pickupWindowTable tr:nth-child(odd) {
+      background-color: rgba(192, 192, 192, 0.6);
     }
 
-    .pickupWindow table img {
+    .pickupWindow table {
       width: 100%;
-      height: 100%;
     }
 
     .pickupWindow button {
@@ -128,12 +128,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     lastSelect = select;
 
     if (!itemObj.inner || Object.keys(itemObj.inner).length <= 0) {
-      for (let bag of Game.area.bags) {
-        if (bag == itemObj) {
-          Game.area.bags.delete(bag);
-          itemObj.erase();
-        }
+
+      if (Game.area.bags.has(itemObj)) {
+        itemObj.erase();
+        Game.area.bags.delete(itemObj);
       }
+
+      if (Game.area.items.has(itemObj)) {
+        itemObj.erase();
+        Game.area.items.delete(itemObj);
+      }
+
       Game.windows.pickup.hide();
       return;
     }
@@ -155,7 +160,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
       if (item.icon) {
-        line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+        line += `  <td style="text-align: center;"><img alt="" src="${item.icon.src}"></td>\n`;
       } else {
         line += `  <td> </td>\n`;
       }

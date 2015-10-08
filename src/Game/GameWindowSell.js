@@ -42,7 +42,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     <span id="sellWindowGold"></span>
 
     <div style="overflow: auto; height: 300px;">
-      <table border="1" cellspacing="0" cellpadding="0">
+      <table border="0">
         <thead>
           <tr>
             <td style="width: 40px;"></td>
@@ -60,6 +60,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
+
+    #sellWindowTable tr:nth-child(odd) {
+      background-color: rgba(192, 192, 192, 0.6);
+    }
+
     #sellWindowItemBar > button {
       width: 60px;
       height: 40px;
@@ -80,11 +85,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     .sellWindow table {
       width: 100%;
-    }
-
-    .sellWindow table img {
-      width: 100%;
-      height: 100%;
     }
 
     .sellWindow table button {
@@ -221,7 +221,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 
       if (item.icon) {
-        line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+        line += `  <td style="text-align: center;"><img alt="" src="${item.icon.src}"></td>\n`;
       } else {
         line += `  <td> </td>\n`;
       }

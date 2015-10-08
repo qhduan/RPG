@@ -374,7 +374,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         touch = {
           type: "water",
           heroUse: function () {
-            this.popup("This is water");
+            Game.choice({
+              "喝水": "drink",
+              "钓鱼": "fish"
+            }).then(function (choice) {
+              switch (choice) {
+                case "drink":
+                  Game.hero.popup("drink");
+                break;
+                case "fish":
+                  Game.hero.popup("fish");
+                break;
+              }
+            });
           }
         };
       }

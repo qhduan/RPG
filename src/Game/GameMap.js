@@ -102,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         for (let layerData of privates.data.layers) {
           let layerObj = null;
-          if (layerData.name != "block" && layerData.name != "water") {
+          if (layerData.name != "block") {
             layerObj = new Sprite.Container();
             layerObj.name = layerData.name;
             privates.layers.push(layerObj);
@@ -119,14 +119,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               if (picture >= 0) {
                 if (layerData.name == "block") {
                   privates.blockedMap[key] = true;
-                } else if (layerData.name == "water") {
-                  privates.waterMap[key] = true;
                 } else {
                   let frame = privates.sheet.getFrame(picture);
                   frame.x = x * privates.data.tilewidth;
                   frame.y = y * privates.data.tileheight;
-
                   layerObj.appendChild(frame);
+                  if (layerData.name == "water") {
+                    privates.waterMap[key] = true;
+                  }
                 }
               }
 

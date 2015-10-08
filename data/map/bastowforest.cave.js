@@ -39,8 +39,10 @@ map.touch.push({
   y: 46,
   description: "通往巴斯托森林中部",
   heroUse: function () {
-    Game.confirm("这条梯子看上去只能爬上去，很难爬回来，是否回到巴斯托森林中部？", function () {
+    Game.confirm("这条梯子看上去只能爬上去，很难爬回来，是否回到巴斯托森林中部？").then(function () {
       Game.hero.gotoArea("bastowforest.center", 53, 13);
+    }).catch(function () {
+      // no
     });
   }
 });

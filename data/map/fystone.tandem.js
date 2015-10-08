@@ -28,7 +28,7 @@ map.onto.push({
   y: 13,
   description: "通往法斯通镇",
   execute: function () {
-    Game.hero.gotoArea("fystone", 27, 22);
+    Game.hero.gotoArea("fystone", 18, 14);
   }
 });
 

@@ -532,9 +532,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /** 闪一闪人物，例如被击中时的效果 */
     flash () {
       this.sprite.alpha = 0.5;
-      setTimeout(() => {
+      Sprite.Ticker.after(10, () => {
         this.sprite.alpha = 1;
-      }, 200);
+      });
     }
 
     /** 受到attacker的skill技能的伤害 */
@@ -723,229 +723,233 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     /** 行走到指定地点 */
-    goto (x, y, state, callback) {
+    goto (x, y, state) {
+      return new Promise((resolve, reject) => {
 
-      if (this.going) {
-        this.goingNext = () => {
-          this.goto(x, y, state, callback);
-        };
-        return false;
-      }
+        if (this.going) {
+          this.goingNext = () => {
+            this.goto(x, y, state).then(resolve);
+          };
+          return false;
+        }
 
-      let destBlocked = this.checkCollision(x, y);
+        let destBlocked = this.checkCollision(x, y);
 
-      if (destBlocked) {
-        if (this.x == x) {
-          if (this.y - y == -1) {
-            this.stop();
-            this.face("down");
-            if (callback) callback();
-            return false;
-          } else if (this.y - y == 1) {
-            this.stop();
-            this.face("up");
-            if (callback) callback();
-            return false;
-          }
-        } else if (this.y == y) {
-          if (this.x - x == -1) {
-            this.stop();
-            this.face("right");
-            if (callback) callback();
-            return false;
-          } else if (this.x - x == 1) {
-            this.stop();
-            this.face("left");
-            if (callback) callback();
-            return false;
+        if (destBlocked) {
+          if (this.x == x) {
+            if (this.y - y == -1) {
+              this.stop();
+              this.face("down");
+              resolve();
+              return false;
+            } else if (this.y - y == 1) {
+              this.stop();
+              this.face("up");
+              resolve();
+              return false;
+            }
+          } else if (this.y == y) {
+            if (this.x - x == -1) {
+              this.stop();
+              this.face("right");
+              resolve();
+              return false;
+            } else if (this.x - x == 1) {
+              this.stop();
+              this.face("left");
+              resolve();
+              return false;
+            }
           }
         }
-      }
 
-      let positionChoice = [];
-      // 上下左右
-      if (this.checkCollision(x, y-1) == false) {
-        positionChoice.push({x: x, y: y-1, after: "down"});
-      }
-      if (this.checkCollision(x, y+1) == false) {
-        positionChoice.push({x: x, y: y+1, after: "up"});
-      }
-      if (this.checkCollision(x-1, y) == false) {
-        positionChoice.push({x: x-1, y: y, after: "right"});
-      }
-      if (this.checkCollision(x+1, y) == false) {
-        positionChoice.push({x: x+1, y: y, after: "left"});
-      }
+        let positionChoice = [];
+        // 上下左右
+        if (this.checkCollision(x, y-1) == false) {
+          positionChoice.push({x: x, y: y-1, after: "down"});
+        }
+        if (this.checkCollision(x, y+1) == false) {
+          positionChoice.push({x: x, y: y+1, after: "up"});
+        }
+        if (this.checkCollision(x-1, y) == false) {
+          positionChoice.push({x: x-1, y: y, after: "right"});
+        }
+        if (this.checkCollision(x+1, y) == false) {
+          positionChoice.push({x: x+1, y: y, after: "left"});
+        }
 
-      for (let element of positionChoice) { // 计算地址距离
-        element.distance = this.distance(element.x, element.y);
-      }
+        for (let element of positionChoice) { // 计算地址距离
+          element.distance = this.distance(element.x, element.y);
+        }
 
-      // 按照地址的距离从近到远排序（从小到大）
-      positionChoice.sort((a, b) => {
-        return a.distance - b.distance;
-      });
+        // 按照地址的距离从近到远排序（从小到大）
+        positionChoice.sort((a, b) => {
+          return a.distance - b.distance;
+        });
 
-      // 如果真正的目的地有可能走，插入到第一位，写在这里是因为目的地并不一定是distance最小的
-      if (this.checkCollision(x, y) == false) {
-        positionChoice.splice(0, 0, {x: x, y: y});
-      }
+        // 如果真正的目的地有可能走，插入到第一位，写在这里是因为目的地并不一定是distance最小的
+        if (this.checkCollision(x, y) == false) {
+          positionChoice.splice(0, 0, {x: x, y: y});
+        }
 
-      let index = 0;
-      let otherChoice = false;
+        let index = 0;
+        let otherChoice = false;
 
-      let TestPosition = () => {
-        if (index < positionChoice.length) {
-          let dest = positionChoice[index]; // 保存第一个选项
-          index++;
-          Game.Astar.getPath({x: this.x, y: this.y}, dest, (result) => {
-            this.gettingPath = false;
-            if (this.goingNext) {
-              let c = this.goingNext;
-              this.goingNext = null;
-              this.going = false;
-              if (this == Game.hero) {
-                Game.Input.clearDest();
-              }
-              c();
-              return false;
-            }
-            if (this.going) {
-              return false;
-            }
-            if (result) {
-              if (this == Game.hero) {
-                Game.Input.setDest(dest.x, dest.y);
-              } else { // not hero
-                if (result.length > 30) {
-                  // too far
-                  return false;
+        let TestPosition = () => {
+          if (index < positionChoice.length) {
+            let dest = positionChoice[index]; // 保存第一个选项
+            index++;
+            Game.Astar.getPath({x: this.x, y: this.y}, dest).then((result) => {
+              this.gettingPath = false;
+              if (this.goingNext) {
+                let c = this.goingNext;
+                this.goingNext = null;
+                this.going = false;
+                if (this == Game.hero) {
+                  Game.Input.clearDest();
                 }
+                c();
+                return false;
               }
-              this.gotoPath(result, state, dest.after, callback);
-              return true;
-            } else {
-              return TestPosition();
-            }
-          });
-        } else {
-          if (otherChoice == false) {
-            otherChoice = true;
-            let otherPositionChoice = [];
-            // 四个角
-            if (this.checkCollision(x-1, y-1) == false) {
-              otherPositionChoice.push({x: x-1, y: y-1, after: "right"});
-            }
-            if (this.checkCollision(x+1, y-1) == false) {
-              otherPositionChoice.push({x: x+1, y: y-1, after: "left"});
-            }
-            if (this.checkCollision(x-1, y+1) == false) {
-              otherPositionChoice.push({x: x-1, y: y+1, after: "right"});
-            }
-            if (this.checkCollision(x+1, y+1) == false) {
-              otherPositionChoice.push({x: x+1, y: y+1, after: "left"});
-            }
-            // 四个远方向
-            if (this.checkCollision(x, y-2) == false) {
-              otherPositionChoice.push({x: x, y: y-2, after: "down"});
-            }
-            if (this.checkCollision(x, y+2) == false) {
-              otherPositionChoice.push({x: x, y: y+2, after: "up"});
-            }
-            if (this.checkCollision(x-2, y) == false) {
-              otherPositionChoice.push({x: x-2, y: y, after: "right"});
-            }
-            if (this.checkCollision(x+2, y) == false) {
-              otherPositionChoice.push({x: x+2, y: y, after: "left"});
-            }
-
-            for (let element of otherPositionChoice) { // 计算地址距离
-              element.distance = this.distance(element.x, element.y);
-            }
-
-            // 按照地址的距离从近到远排序（从小到大）
-            otherPositionChoice.sort((a, b) => {
-              return a.distance - b.distance;
+              if (this.going) {
+                return false;
+              }
+              if (result) {
+                if (this == Game.hero) {
+                  Game.Input.setDest(dest.x, dest.y);
+                } else { // not hero
+                  if (result.length > 30) {
+                    // too far
+                    return false;
+                  }
+                }
+                this.gotoPath(result, state, dest.after).then(resolve);
+                return true;
+              } else {
+                return TestPosition();
+              }
             });
+          } else {
+            if (otherChoice == false) {
+              otherChoice = true;
+              let otherPositionChoice = [];
+              // 四个角
+              if (this.checkCollision(x-1, y-1) == false) {
+                otherPositionChoice.push({x: x-1, y: y-1, after: "right"});
+              }
+              if (this.checkCollision(x+1, y-1) == false) {
+                otherPositionChoice.push({x: x+1, y: y-1, after: "left"});
+              }
+              if (this.checkCollision(x-1, y+1) == false) {
+                otherPositionChoice.push({x: x-1, y: y+1, after: "right"});
+              }
+              if (this.checkCollision(x+1, y+1) == false) {
+                otherPositionChoice.push({x: x+1, y: y+1, after: "left"});
+              }
+              // 四个远方向
+              if (this.checkCollision(x, y-2) == false) {
+                otherPositionChoice.push({x: x, y: y-2, after: "down"});
+              }
+              if (this.checkCollision(x, y+2) == false) {
+                otherPositionChoice.push({x: x, y: y+2, after: "up"});
+              }
+              if (this.checkCollision(x-2, y) == false) {
+                otherPositionChoice.push({x: x-2, y: y, after: "right"});
+              }
+              if (this.checkCollision(x+2, y) == false) {
+                otherPositionChoice.push({x: x+2, y: y, after: "left"});
+              }
 
-            if (otherPositionChoice.length) {
-              index = 0;
-              positionChoice = otherPositionChoice;
-              TestPosition();
+              for (let element of otherPositionChoice) { // 计算地址距离
+                element.distance = this.distance(element.x, element.y);
+              }
+
+              // 按照地址的距离从近到远排序（从小到大）
+              otherPositionChoice.sort((a, b) => {
+                return a.distance - b.distance;
+              });
+
+              if (otherPositionChoice.length) {
+                index = 0;
+                positionChoice = otherPositionChoice;
+                TestPosition();
+              }
             }
-          }
-        } // 再次尝试离地点最近的地点
-      }
+          } // 再次尝试离地点最近的地点
+        }
 
-      return TestPosition();
+        return TestPosition();
+
+      });
     }
 
-    gotoPath (path, state, after, callback) {
-      this.going = true;
-      let index = 1;
-      let Walk = () => {
-        if (Game.paused) {
-          this.stop();
-          this.going = false;
-          if (this == Game.hero) {
-            Game.Input.clearDest();
-          }
-          return;
-        }
-        if (this.goingNext) {
-          let c = this.goingNext;
-          this.goingNext = null;
-          this.going = false;
-          if (this == Game.hero) {
-            Game.Input.clearDest();
-          }
-          c();
-          return;
-        }
-
-        if (index < path.length) {
-          let current = {x: this.x, y: this.y};
-          let dest = path[index];
-          let direction = null;
-          if (dest.x == current.x) {
-            if (dest.y > current.y) {
-              direction = "down";
-            } else if (dest.y < current.y) {
-              direction = "up";
-            }
-          } else if (dest.y == current.y) {
-            if (dest.x > current.x) {
-              direction = "right"
-            } else if (dest.x < current.x) {
-              direction = "left";
-            }
-          }
-
-          if (direction) {
-            let currentDirection = this.direction;
-            if (direction != currentDirection) {
-              this.stop();
-              this.face(direction);
-            }
-            let goResult = this.go(state, direction, () => Walk());
-            if (goResult != true) {
-              this.going = false;
-            }
-            index++;
-          }
-        } else { // 正常结束
-          if (after) {
+    gotoPath (path, state, after) {
+      return new Promise((resolve, reject) => {
+        this.going = true;
+        let index = 1;
+        let Walk = () => {
+          if (Game.paused) {
             this.stop();
-            this.face(after);
+            this.going = false;
+            if (this == Game.hero) {
+              Game.Input.clearDest();
+            }
+            return;
           }
-          if (this == Game.hero) {
-            Game.Input.clearDest();
+          if (this.goingNext) {
+            let c = this.goingNext;
+            this.goingNext = null;
+            this.going = false;
+            if (this == Game.hero) {
+              Game.Input.clearDest();
+            }
+            c();
+            return;
           }
-          this.going = false;
-          if (callback) callback();
+
+          if (index < path.length) {
+            let current = {x: this.x, y: this.y};
+            let dest = path[index];
+            let direction = null;
+            if (dest.x == current.x) {
+              if (dest.y > current.y) {
+                direction = "down";
+              } else if (dest.y < current.y) {
+                direction = "up";
+              }
+            } else if (dest.y == current.y) {
+              if (dest.x > current.x) {
+                direction = "right"
+              } else if (dest.x < current.x) {
+                direction = "left";
+              }
+            }
+
+            if (direction) {
+              let currentDirection = this.direction;
+              if (direction != currentDirection) {
+                this.stop();
+                this.face(direction);
+              }
+              this.go(state, direction).then(() => {
+                Walk()
+              });
+              index++;
+            }
+          } else { // 正常结束
+            if (after) {
+              this.stop();
+              this.face(after);
+            }
+            if (this == Game.hero) {
+              Game.Input.clearDest();
+            }
+            this.going = false;
+            resolve();
+          }
         }
-      }
-      Walk();
+        Walk();
+      });
     }
 
     face (direction) {
@@ -1002,109 +1006,98 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    go (state, direction, callback = null) {
-
-      if (Game.paused) {
-        return false;
-      }
-
-      // 如果正在战斗动画，则不走
-      if (
-        this.sprite.paused == false &&
-        this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)
-      ) {
-        return false;
-      }
-
-      if (this.walking) {
-        return false;
-      }
-
-      if (this.attacking) {
-        return false;
-      }
-
-      if (this.direction != direction) {
-        this.walking = true;
-        this.stop();
-        this.face(direction);
-        // wait 4 ticks
-        Sprite.Ticker.after(4, () => {
-          this.walking = false;
-        });
-        return false;
-      }
-
-      let newPosition = this.facePosition;
-
-      if (this.checkCollision(newPosition.x, newPosition.y) == false) {
-        // 没碰撞，开始行走
-        this.walking = true;
-
-        // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
-        // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
-        let oldX = this.data.x;
-        let oldY = this.data.y;
-        this.data.x = newPosition.x;
-        this.data.y = newPosition.y;
-
-        // walk
-        // 这些数组和必须是32，为了保证一次go行走32个像素
-        let speed = [3,3,2,3,3,2,3,3,2,3,3,2]; // 和是32
-        if (state == "run") {
-          // speed = [6,7,6,7,6]; // 和是32
-          speed = [4,4,4,4,4,4,4,4]; // 和是32
+    go (state, direction) {
+      return new Promise((resolve, reject) => {
+        if (Game.paused) {
+          return;
         }
-        // 比预计多一个，这样是为了流畅
-        // 因为下一次go可能紧挨着这次
-        let times = speed.length + 1;
 
-        let whilesId = Sprite.Ticker.whiles(times, (last) => {
-          if (Game.paused) {
-            this.data.x = oldX;
-            this.data.y = oldY;
+        // 如果正在战斗动画，则不走
+        if (
+          this.sprite.paused == false &&
+          this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)
+        ) {
+          return;
+        }
+
+        if (this.walking) {
+          return;
+        }
+
+        if (this.attacking) {
+          return;
+        }
+
+        if (this.direction != direction) {
+          this.walking = true;
+          this.stop();
+          this.face(direction);
+          // wait 4 ticks
+          Sprite.Ticker.after(4, () => {
             this.walking = false;
-            this.emit("change");
-            Sprite.Ticker.clearWhiles(whilesId);
-            if (callback) {
-              callback();
-            }
-            return;
+          });
+          return;
+        }
+
+        let newPosition = this.facePosition;
+
+        if (this.checkCollision(newPosition.x, newPosition.y) == false) {
+          // 没碰撞，开始行走
+          this.walking = true;
+
+          // 把角色位置设置为新位置，为了占领这个位置，这样其他角色就会碰撞
+          // 但是不能用this.x = newX这样设置，因为this.x的设置会同时设置this.sprite.x
+          let oldX = this.data.x;
+          let oldY = this.data.y;
+          this.data.x = newPosition.x;
+          this.data.y = newPosition.y;
+
+          // walk
+          // 这些数组和必须是32，为了保证一次go行走32个像素
+          let speed = [3,3,2,3,3,2,3,3,2,3,3,2]; // 和是32
+          if (state == "run") {
+            // speed = [6,7,6,7,6]; // 和是32
+            speed = [4,4,4,4,4,4,4,4]; // 和是32
           }
 
-          if (last) {
-            this.x = newPosition.x;
-            this.y = newPosition.y;
-            this.walking = false;
-            this.emit("change");
-
-            if (callback) {
-              callback();
+          let whilesId = Sprite.Ticker.whiles(speed.length, (last) => {
+            if (Game.paused) {
+              this.data.x = oldX;
+              this.data.y = oldY;
+              this.walking = false;
+              this.emit("change");
+              Sprite.Ticker.clearWhiles(whilesId);
+              resolve();
+              return;
             }
-          } else {
-            switch (direction) {
-              case "up":
-                this.sprite.y -= speed.pop();
-                break;
-              case "down":
-                this.sprite.y += speed.pop();
-                break;
-              case "left":
-                this.sprite.x -= speed.pop();
-                break;
-              case "right":
-                this.sprite.x += speed.pop();
-                break;
+            if (last) {
+              this.x = newPosition.x;
+              this.y = newPosition.y;
+              this.walking = false;
+              this.emit("change");
+              resolve();
+            } else {
+              switch (direction) {
+                case "up":
+                  this.sprite.y -= speed.pop();
+                  break;
+                case "down":
+                  this.sprite.y += speed.pop();
+                  break;
+                case "left":
+                  this.sprite.x -= speed.pop();
+                  break;
+                case "right":
+                  this.sprite.x += speed.pop();
+                  break;
+              }
             }
-          }
-        });
+          });
 
-        // 播放行走动画
-        this.play(state + direction, 1);
-        return true;
-      }
-
-      return false;
+          // 播放行走动画
+          this.play(state + direction, 1);
+        }
+      });
     }
 
     /** 在Game.actorLayer上删除人物 */

@@ -18,8 +18,8 @@ map.name = "法斯通镇";
 map.type = "outdoor";
 
 map.onto.push({
-  x: 27,
-  y: 21,
+  x: 18,
+  y: 13,
   description: "通往坦德姆家",
   execute: function () {
     Game.hero.gotoArea("fystone.tandem", 7, 12);
@@ -27,8 +27,8 @@ map.onto.push({
 });
 
 map.onto.push({
-  x: 15,
-  y: 42,
+  x: 9,
+  y: 25,
   description: "通往朗克家",
   execute: function () {
     Game.hero.gotoArea("fystone.ranc", 7, 12);
@@ -36,8 +36,8 @@ map.onto.push({
 });
 
 map.onto.push({
-  x: 49,
-  y: 25,
+  x: 8,
+  y: 39,
   description: "通往旅馆",
   execute: function () {
     Game.hero.gotoArea("fystone.inn", 7, 12);
@@ -45,8 +45,8 @@ map.onto.push({
 });
 
 map.onto.push({
-  x: 51,
-  y: 45,
+  x: 36,
+  y: 30,
   description: "通往伊寇家",
   execute: function () {
     Game.hero.gotoArea("fystone.echel", 7, 12);
@@ -54,8 +54,8 @@ map.onto.push({
 });
 
 map.onto.push({
-  x: 31,
-  y: 62,
+  x: 23,
+  y: 46,
   description: "通往巴斯托森林北部",
   execute: function () {
     Game.hero.gotoArea("bastowforest.north", 31, 1);

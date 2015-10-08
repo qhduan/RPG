@@ -30,38 +30,35 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} start 起始位置 eg. {x: 0, y: 0}
      * @param {Object} end
      */
-     static getPath (start, end, callback) {
-
-       // console.time("t");
-
-       let blocked = {};
-       for (let actor of Game.area.actors) {
-         if (actor.x != start.x || actor.y != start.y) {
-           blocked[actor.x * 10000 + actor.y] = true;
+     static getPath (start, end) {
+       return new Promise(function (resolve, reject) {
+         let blocked = {};
+         for (let actor of Game.area.actors) {
+           if (actor.x != start.x || actor.y != start.y) {
+             blocked[actor.x * 10000 + actor.y] = true;
+           }
          }
-       }
 
-       let result = path(function (x, y) {
-         // 判断函数，判断是否阻挡
-         if (x < 0 || x >= Game.area.map.col) {
-           return true; // 有阻挡，返回true
-         }
-         if (y < 0 || y >= Game.area.map.row) {
-           return true; // 有阻挡，返回true
-         }
-         let key = x * 10000 + y;
-         if (Game.area.map.blockedMap[key]) {
-           return true; // 有阻挡，返回true
-         }
-         if (blocked[key]) {
-           return true; // 有阻挡，返回true
-         }
-         return false; // 没有阻挡
-       }, start, end);
+         let result = path(function (x, y) {
+           // 判断函数，判断是否阻挡
+           if (x < 0 || x >= Game.area.map.col) {
+             return true; // 有阻挡，返回true
+           }
+           if (y < 0 || y >= Game.area.map.row) {
+             return true; // 有阻挡，返回true
+           }
+           let key = x * 10000 + y;
+           if (Game.area.map.blockedMap[key]) {
+             return true; // 有阻挡，返回true
+           }
+           if (blocked[key]) {
+             return true; // 有阻挡，返回true
+           }
+           return false; // 没有阻挡
+         }, start, end);
 
-       // console.timeEnd("t");
-
-       callback(result);
+         resolve(result);
+       });
      }
 
 

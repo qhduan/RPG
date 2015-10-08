@@ -28,13 +28,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <div id="skillWindowItemBar">
         <button id="skillWindowClose" class="brownButton">关闭</button>
       </div>
-      <table border="1" cellspacing="0" cellpadding="0">
+      <table border="0">
         <thead>
           <tr>
-            <td style="width: 40px;"></td>
-            <td style="width: 120px;"></td>
-            <td></td>
-            <td style="width: 60px;"></td>
+            <th style="width: 40px;"></th>
+            <th style="width: 120px;"></th>
+            <th></td>
+            <th style="width: 60px;"></th>
           </tr>
         </thead>
         <tbody id="skillWindowTable"></tbody>
@@ -45,6 +45,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   win.css = `
     .skillWindow table {
       width: 100%;
+    }
+
+    .skillWindow tr:nth-child(odd) {
+      background-color: rgba(192, 192, 192, 0.6);
     }
 
     .skillWindow table img {
@@ -170,7 +174,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         options["升级"] = "levelup";
       }
 
-      Game.choice(options, function (choice) {
+      Game.choice(options).then((choice) => {
         switch(choice) {
           case "shortcut":
             Game.choice({
@@ -182,7 +186,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               6:5,
               7:6,
               8:7
-            }, function (choice) {
+            }).then((choice) => {
               if (Number.isFinite(choice) && choice >= 0) {
                 Game.hero.data.bar[choice] = {
                   id: skillId,
@@ -205,7 +209,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.dialogue(cannot);
                 return;
               }
-              Game.confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`, function () {                let nextId = skill.data.next.id;
+              Game.confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`).then(() => {
+                let nextId = skill.data.next.id;
                 Game.hero.data.skills.splice(index, 1);
                 Game.hero.data.skills.push(nextId);
                 Game.hero.data.gold -= skill.data.next.gold;
@@ -215,11 +220,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   Game.windows.loading.end();
                   win.open();
                 });
+              }).catch(() => {
+                // no
               });
             }
             break;
           case "remove":
-            Game.confirm(`真的要遗忘 ${skill.data.name} 技能吗？`, function () {
+            Game.confirm(`真的要遗忘 ${skill.data.name} 技能吗？`).then(() => {
               Game.hero.data.bar.forEach(function (element, index, array) {
                 if (element && element.id == skillId) {
                   array[index] = null;
@@ -228,6 +235,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               Game.hero.data.skills.splice(index, 1);
               Game.windows.interface.refresh();
               win.open();
+            }).catch(() => {
+              // no
             });
             break;
         }

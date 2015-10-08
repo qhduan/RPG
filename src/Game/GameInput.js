@@ -31,13 +31,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     if (Sprite.Input.isPressed("left")) {
-      Game.hero.go(state, "left", CheckHeroAction);
+      Game.hero.go(state, "left").then(CheckHeroAction);
     } else if (Sprite.Input.isPressed("up")) {
-      Game.hero.go(state, "up", CheckHeroAction);
+      Game.hero.go(state, "up").then(CheckHeroAction);
     } else if (Sprite.Input.isPressed("right")) {
-      Game.hero.go(state, "right", CheckHeroAction);
+      Game.hero.go(state, "right").then(CheckHeroAction);
     } else if (Sprite.Input.isPressed("down")) {
-      Game.hero.go(state, "down", CheckHeroAction);
+      Game.hero.go(state, "down").then(CheckHeroAction);
     }
   }
 
@@ -83,7 +83,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
 
         if (Game.hero.x != data.x || Game.hero.y != data.y) {
-          Game.hero.goto(data.x, data.y, "run", function () {
+          Game.hero.goto(data.x, data.y, "run").then(() => {
             destIcon.visible = false;
             if (Game.hintObject && Game.hintObject.heroUse) {
               Game.hintObject.heroUse();

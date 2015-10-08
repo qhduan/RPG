@@ -157,6 +157,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   sysmenuWindowExit.addEventListener("click", function (event) {
     Game.clearStage();
+    Game.windows.interface.hide();
+    Game.windows.stage.hide();
     win.hide();
     Game.windows.main.show();
   });

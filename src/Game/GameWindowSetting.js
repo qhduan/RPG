@@ -68,8 +68,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
   let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
 
-  settingWindowShortcut.addEventListener("click", function (event) {
-    Game.choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}, function (choice) {
+  settingWindowShortcut.addEventListener("click", (event) => {
+    Game.choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
       if (Number.isFinite(choice)) {
         Game.hero.data.bar[choice] = null;
         Game.windows.interface.refresh();
@@ -78,12 +78,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
 
-  settingWindowShortcutAll.addEventListener("click", function (event) {
-    Game.confirm("确定要删除所有快捷栏图表吗？", function () {
+  settingWindowShortcutAll.addEventListener("click", (event) => {
+    Game.confirm("确定要删除所有快捷栏图表吗？").then(() => {
       for (let i = 0; i < 8; i++) {
         Game.hero.data.bar[i] = null;
       }
       Game.windows.interface.refresh();
+    }).catch(() => {
+      // no
     });
   });
 
@@ -91,11 +93,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     settingWindowRendererType.textContent = Game.stage.rendererType;
   });
 
-  settingWindowClose.addEventListener("click", function (event) {
+  settingWindowClose.addEventListener("click", (event) => {
     win.hide();
   });
 
-  settingWindowScale.addEventListener("click", function (event) {
+  settingWindowScale.addEventListener("click", (event) => {
     Game.config.scale = !Game.config.scale;
     win.show();
   });
@@ -133,7 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   }
 
-  settingWindowFullscreen.addEventListener("click", function (event) {
+  settingWindowFullscreen.addEventListener("click", (event) => {
     toggleFullScreen();
   });
 

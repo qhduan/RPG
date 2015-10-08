@@ -41,11 +41,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       <span id="inventoryWindowGold"></span>
 
-      <div style="overflow: auto; height: 300px;">
-        <table border="0" cellspacing="0" cellpadding="0">
+      <div style="overflow: auto; height: 310px;">
+        <table border="0">
           <thead>
             <tr>
-              <td style="width: 40px;"></td>
+              <td style="width: 40px; text-align: center;"></td>
               <td style="width: 120px;"></td>
               <td style="width: 30px;"></td>
               <td style="width: 30px;"></td>
@@ -60,6 +60,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
+
+    #inventoryWindowItemBar {
+      height: 50px;
+    }
+
     #inventoryWindowItemBar > button {
       width: 60px;
       height: 40px;
@@ -82,31 +87,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       width: 100%;
     }
 
-    .inventoryWindow table img {
-      width: 100%;
-      height: 100%;
-    }
-
     .inventoryWindow table button {
       width: 60px;
       height: 40px;
       font-size: 16px;
     }
 
-    .inventoryWindow td {
-      border-bottom:1px solid #ccc;
-    }
-
-    .inventoryWindow tr:nth-child(odd) {
-      background-color: #ccc;
+    #inventoryWindowTable tr:nth-child(odd) {
+      background-color: rgba(192, 192, 192, 0.6);
     }
 
     #inventoryWindowGold {
       position: absolute;
       right: 100px;
-      bottom: 30px;
+      bottom: 10px;
       font-size: 20px;
       color: black;
+      font-weight: bold;
     }
   `;
 
@@ -235,7 +232,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (item.icon) {
-        line += `  <td><img alt="" src="${item.icon.src}"></td>\n`;
+        line += `  <td style="text-align: center;"><img alt="" src="${item.icon.src}"></td>\n`;
       } else {
         line += `  <td> </td>\n`;
       }
@@ -313,7 +310,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       options["丢弃"] = "drop";
 
-      Game.choice(options, function (choice) {
+      Game.choice(options).then((choice) => {
         switch (choice) {
           case "puton":
             let type = item.data.type;

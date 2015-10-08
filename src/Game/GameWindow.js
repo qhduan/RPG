@@ -27,7 +27,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**窗口z-index，不断递增 */
   let zIndex = 227;
 
+  let windowContainer = document.createElement("div");
+  windowContainer.style.width = `${Game.config.width}px`;
+  windowContainer.style.height = `${Game.config.height}px`;
+  windowContainer.style.position = `fixed`;
+  document.body.appendChild(windowContainer);
+
   Game.assign("Window", class GameWindow extends Sprite.Event {
+
+    /**
+     *
+     */
     static create (id) {
       let win = new Game.Window(id)
       return win;
@@ -50,8 +60,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.html.classList.add(id);
       privates.html.classList.add("game-window");
       privates.html.style.display = "none";
-      document.body.appendChild(privates.html);
-      document.head.appendChild(privates.css)
+
+      windowContainer.appendChild(privates.html);
+      document.head.appendChild(privates.css);
 
       privates.html.addEventListener("mousedown", (event) => {
         let x = event.clientX;
@@ -61,22 +72,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         let top = null;
         let scale = null;
 
-        if (privates.html.style.left) {
-          let t = privates.html.style.left.match(/(\d+)px/);
+        if (windowContainer.style.left) {
+          let t = windowContainer.style.left.match(/(\d+)px/);
           if (t) {
             left = parseInt(t[1]);
           }
         }
 
-        if (privates.html.style.top) {
-          let t = privates.html.style.top.match(/(\d+)px/);
+        if (windowContainer.style.top) {
+          let t = windowContainer.style.top.match(/(\d+)px/);
           if (t) {
             top = parseInt(t[1]);
           }
         }
 
-        if (privates.html.style.transform) {
-          let t = privates.html.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
+        if (windowContainer.style.transform) {
+          let t = windowContainer.style.transform.match(/scale\(([\d\.]+), ([\d\.]+)\)/);
           if (t) {
             scale = parseFloat(t[1]);
           } else {
@@ -107,7 +118,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.hide();
       }
       if (privates.html) {
-        document.body.removeChild(privates.html);
+        privates.html.parentNode.removeChild(privates.html);
         privates.html = null;
       }
       if (privates.css) {
@@ -283,15 +294,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     let topMargin = 0;
     let mobile = false;
 
-    if (navigator.userAgent.match(/iPad|iPhone|iPod|Android|BlackBerry|webOS|IEMobile|Opera Mini/i)) {
-      if (width < height) {
-        let t = width;
-        width = height;
-        height = t;
-        mobile = true;
-      }
-    }
-
     if (Game.config.scale == false) {
       // 不拉伸游戏窗口，按原始大小计算窗口居中
       leftMargin = Math.floor((width - Game.config.width) / 2);
@@ -317,28 +319,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         w / Game.config.width,
         h / Game.config.height
       );
-
-      // scale = scale.toFixed(3);
     }
 
-    // html窗口拉伸（css中控制了原始大小）
-    for (let win of windows) {
-      internal(win).html.style.left = `${leftMargin}px`;
-      internal(win).html.style.top = `${topMargin}px`;
-      internal(win).html.style.transformOrigin = "0 0 0";
-      internal(win).html.style.transform = `scale(${scale}, ${scale}) translateZ(0)`;
-      internal(win).html.style.webkitTransform = `scale(${scale}, ${scale}) translateZ(0)`;
-      internal(win).html.style.filter = "none";
-      internal(win).html.style.webkitFilter = "blur(0px)";
-      internal(win).html.style.mozFilter = "blur(0px)";
-      internal(win).html.style.msFilter = "blur(0px)";
-
-    }
-
-    if (Game.hero) {
-      Game.hero.focus();
-    }
-
+    let style = windowContainer.style;
+    style.left =                  `${leftMargin}px`;
+    style.top =                   `${topMargin}px`;
+    style.transformOrigin =       `left top 0`;
+    style.webkitTransformOrigin = `left top 0`;
+    style.transform =             `scale(${scale}, ${scale}) translateZ(0)`;
+    style.webkitTransform =       `scale(${scale}, ${scale}) translateZ(0)`;
+    style.filter =                `none`;
+    style.webkitFilter =          `blur(0px)`;
   }
 
   GameWindowResize();

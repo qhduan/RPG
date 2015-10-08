@@ -66,57 +66,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  Game.choice = function (options, callback) {
+  Game.choice = function (options) {
+    return new Promise(function (resolve, reject) {
+      let win = Game.Window.create("choiceWindow");
+      win.html = choiceHTML;
+      win.css = choiceCSS;
+      win.show();
 
-    let win = Game.Window.create("choiceWindow");
-    win.html = choiceHTML;
-    win.css = choiceCSS;
-    win.show();
+      let choiceWindowButtonContainer = win.querySelector("#choiceWindowButtonContainer");
+      let choiceWindowNo = win.querySelector("#choiceWindowNo");
+      let buttonArray = [];
 
-    let choiceWindowButtonContainer = win.querySelector("#choiceWindowButtonContainer");
-    let choiceWindowNo = win.querySelector("#choiceWindowNo");
-    let buttonArray = [];
+      Sprite.each(options, function (value, key) {
+        let button = document.createElement("button");
+        button.textContent = `${buttonArray.length+1}. ${key}`;
+        button.classList.add("brownButton");
 
-    Sprite.each(options, function (value, key) {
-      let button = document.createElement("button");
-      button.textContent = `${buttonArray.length+1}. ${key}`;
-      button.classList.add("brownButton");
+        choiceWindowButtonContainer.appendChild(button);
+        buttonArray.push(button);
 
-      choiceWindowButtonContainer.appendChild(button);
-      buttonArray.push(button);
+        button.addEventListener("click", function () {
+          win.hide();
+          win.destroy();
+          resolve(value)
+        });
+      });
 
-      button.addEventListener("click", function () {
+      choiceWindowNo.addEventListener("click", function () {
         win.hide();
         win.destroy();
-        if (callback) {
-          callback(value);
+        resolve(null)
+      });
+
+      win.whenUp(["esc"], function () {
+        setTimeout(function () {
+          choiceWindowNo.click();
+        }, 20);
+      });
+
+      win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+        // match 1 to 9
+        let num = parseInt(key) - 1; // get 0 to 8
+        let element = buttonArray[num];
+        if (element) {
+          element.click();
         }
       });
     });
-
-    choiceWindowNo.addEventListener("click", function () {
-      win.hide();
-      win.destroy();
-      if (callback) {
-        callback(null);
-      }
-    });
-
-    win.whenUp(["esc"], function () {
-      setTimeout(function () {
-        choiceWindowNo.click();
-      }, 20);
-    });
-
-    win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
-      // match 1 to 9
-      let num = parseInt(key) - 1; // get 0 to 8
-      let element = buttonArray[num];
-      if (element) {
-        element.click();
-      }
-    });
-
   };
 
 })();

@@ -104,7 +104,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         是为了保证NPC对话框不会关闭，或者说玩家在执行完某个选项之后依然存在
         但是又不能简单的不关闭对话框，因为选项会有变化，所以要经常重新打开
       */
-      Game.choice(options, (choice) => {
+      Game.choice(options).then((choice) => {
         switch (choice) {
           case "trade": // 玩家交易的选择，默认是买
             this.heroUse();
@@ -115,17 +115,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             quest.forEach((quest, index) => {
               questOption[quest.name] = index;
             });
-            Game.choice(questOption, (choice) => {
+            Game.choice(questOption).then((choice) => {
               if (Number.isInteger(choice)) {
                 let q = quest[choice];
                 Game.confirm({
                   message: q.before,
                   yes: "接受任务",
                   no: "拒绝"
-                }, () => {
+                }).then(() => {
                   Game.hero.data.currentQuest.push(q);
                   this.heroUse();
-                }, () => {
+                }).catch(() => {
                   this.heroUse();
                 });
               } else {
@@ -138,7 +138,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             completeQuest.forEach((quest, index) => {
               completeQuestOption[quest.name] = index;
             });
-            Game.choice(completeQuestOption, (choice) => {
+            Game.choice(completeQuestOption).then((choice) => {
               if (Number.isInteger(choice)) {
                 let quest = completeQuest[choice];
 

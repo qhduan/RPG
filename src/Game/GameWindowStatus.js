@@ -30,7 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         <button id="statusWindowInventory" class="brownButton">物品</button>
         <label id="heroName"></label>
       </div>
-      <table border="0" cellspacing="0" cellpadding="0">
+      <table border="0">
         <tr>
           <td id="statusWindowTable">
             <label id="heroHP"></label>
@@ -48,7 +48,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             <label id="heroMDEF"></label>
           </td>
           <td style="width: 50%;">
-            <table id="statusWindowEquipmentTable" border="1" cellspacing="0" cellpadding="0">
+            <table id="statusWindowEquipmentTable" border="0">
               <tbody>
                 <tr>
                   <td class="statusWindowEquipmentText">头部</td>
@@ -89,6 +89,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   `;
 
   win.css = `
+
+    #statusWindowEquipmentTable tr:nth-child(odd) {
+      background-color: rgba(192, 192, 192, 0.6);
+    }
+
     #heroName {
       font-size: 24px;
       margin-left: 240px;

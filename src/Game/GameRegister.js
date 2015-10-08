@@ -52,102 +52,115 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // defined at bottom
   let HeroDefault = null;
 
-  function Init () {
+  Array.from(
+    document.querySelectorAll(".registerWindow #registerWindowDisplaySelect select")
+  ).forEach(function (element) {
+    element.addEventListener("change", function () {
+      ApplyHeroDisplay();
+    });
+  });
 
-    window.SelectHero = function (event) {
-      let value = event.target.value;
-      let type = event.target.getAttribute("data-type");
-      if (heroCustom[type] != value) {
-        if (type == "sex") {
-          heroCustom.hair = "";
+  Array.from(
+    document.querySelectorAll(".registerWindow #registerWindowPersonal select")
+  ).forEach(function (element) {
+    element.addEventListener("change", function () {
+      ApplyHeroPersonal();
+    });
+  });
+
+  function ApplyHeroDisplay () {
+    Array.from(
+      document.querySelectorAll(".registerWindow #registerWindowDisplaySelect select")
+    ).forEach(function (element) {
+      let type = element.getAttribute("data-type");
+      let value = element.value;
+      if (type == "malehair" || type == "femalehair") {
+        if (heroCustom.sex == "male" && type == "malehair") {
+          heroCustom.hair = value;
+        } else if (heroCustom.sex == "female" && type == "femalehair") {
+          heroCustom.hair = value;
         }
+      } else if (heroCustom.hasOwnProperty(type)) {
         heroCustom[type] = value;
-        DisplayHero();
       }
-      if (heroCustom.sex == "male") {
-        document.getElementById("customMaleHair").style.display = "block";
-        document.getElementById("customFemaleHair").style.display = "none";
-      } else {
-        document.getElementById("customMaleHair").style.display = "none";
-        document.getElementById("customFemaleHair").style.display = "block";
-      }
-    };
+    });
+    if (heroCustom.sex == "male") {
+      document.getElementById("customMaleHair").style.display = "block";
+      document.getElementById("customFemaleHair").style.display = "none";
+    } else {
+      document.getElementById("customMaleHair").style.display = "none";
+      document.getElementById("customFemaleHair").style.display = "block";
+    }
+    DisplayHero();
+  };
 
-    let beliefText = {
-      None: "信仰决定了神对你的祝福，当然没有信仰也是一种信仰，但你将无法享受神的祝福",
-      Elen: "艾琳 - 知识女神",
-      Enlon: "恩朗 - 死亡主宰",
-      Minare: "密娜 - 丰收女神",
-      Achiel: "阿切奥 - 保护之神",
-      Racha: "拉克 - 魔法女神",
-      Aestor: "阿斯托 - 盗贼之神",
-      Hielach: "赫拉克 - 财富之神",
-      Alik: "阿丽克 - 治愈女神",
-      Amarien: "阿玛恩 - 力量之神"
-    };
+  let beliefText = {
+    None: "信仰决定了神对你的祝福，当然没有信仰也是一种信仰，但你将无法享受神的祝福",
+    Elen: "艾琳 - 知识女神",
+    Enlon: "恩朗 - 死亡主宰",
+    Minare: "密娜 - 丰收女神",
+    Achiel: "阿切奥 - 保护之神",
+    Racha: "拉克 - 魔法女神",
+    Aestor: "阿斯托 - 盗贼之神",
+    Hielach: "赫拉克 - 财富之神",
+    Alik: "阿丽克 - 治愈女神",
+    Amarien: "阿玛恩 - 力量之神"
+  };
 
-    let classText = {
-      warrior: "战士是艾利韦斯最常见的冒险职业，擅长使用剑和枪",
-      archer: "弓箭手擅长远程攻击，一般使用弓箭作为武器",
-      wizard: "魔法师擅长使用魔法进行远程攻击",
-      priest: "牧师擅长治疗，也会使用神术",
-      bard: "吟游诗人的表演可以鼓舞士气或者削弱敌人的士气",
-      thief: "盗贼总是躲藏在阴影中",
-      business: "商人擅长交易和说服，帮助你更快的获得资金"
-    };
+  let classText = {
+    warrior: "战士是艾利韦斯最常见的冒险职业，擅长使用剑和枪",
+    archer: "弓箭手擅长远程攻击，一般使用弓箭作为武器",
+    wizard: "魔法师擅长使用魔法进行远程攻击",
+    priest: "牧师擅长治疗，也会使用神术",
+    bard: "吟游诗人的表演可以鼓舞士气或者削弱敌人的士气",
+    thief: "盗贼总是躲藏在阴影中",
+    business: "商人擅长交易和说服，帮助你更快的获得资金"
+  };
 
-    let registerWindowBeliefChoice = document.querySelector("#registerWindowBeliefChoice");
-    let registerWindowClassChoice = document.querySelector("#registerWindowClassChoice");
+  let registerWindowBelief = document.querySelector("#registerWindowBelief");
+  let registerWindowClass = document.querySelector("#registerWindowClass");
 
-    let registerWindowBelief = document.querySelector("#registerWindowBelief");
-    let registerWindowClass = document.querySelector("#registerWindowClass");
+  function ApplyHeroPersonal () {
 
-    registerWindowBeliefChoice.value = "None";
-    registerWindowClassChoice.value = "warrior";
-    registerWindowBelief.textContent = beliefText["None"];
-    registerWindowClass.textContent = classText["warrior"];
-
-    window.ChoiceHero = function (event) {
+    Array.from(
+      document.querySelectorAll(".registerWindow #registerWindowPersonal select")
+    ).forEach(function (element) {
       let value = event.target.value;
       let type = event.target.getAttribute("data-type");
-      if (type == "belief") {
-        HeroDefault.belief = value;
-        registerWindowBelief.textContent = beliefText[value];
-      } else if (type == "class") {
-        HeroDefault.class = value;
-        registerWindowClass.textContent = classText[value];
-      }
-    };
+      HeroDefault[type] = value;
+    });
 
-    DisplayHero();
+    registerWindowBelief.textContent = beliefText[HeroDefault.belief];
+    registerWindowClass.textContent = classText[HeroDefault.class];
+  };
 
-    function DisplayHero () {
+  function DisplayHero () {
 
-      let canvas = document.getElementById("registerPreview");
-      let context = canvas.getContext("2d");
-      context.clearRect(0, 0, canvas.width, canvas.height);
+    let canvas = document.querySelector(".registerWindow canvas");
+    let context = canvas.getContext("2d");
+    context.clearRect(0, 0, canvas.width, canvas.height);
 
-      document.getElementById("loading").innerHTML = "正在载入预览";
-      Game.drawHero(heroCustom).then(function (images) {
-        let img = images[0];
-        context.drawImage(img, 0, 0, img.width, img.height);
-        document.getElementById("loading").innerHTML = "预览";
-      });
-    }
-
+    document.getElementById("loading").innerHTML = "Loading";
+    Game.drawHero(heroCustom).then(function (images) {
+      let img = images[0];
+      context.drawImage(img, 0, 0, img.width, img.height);
+      document.getElementById("loading").innerHTML = "";
+    });
   }
 
   Game.assign("register", class GameRegister {
 
     // 注册模块
     static reg () {
+      Array.from(
+        document.querySelectorAll(".registerWindow select")
+      ).forEach(function (element) {
+        element.selectedIndex = 0;
+      });
+      ApplyHeroDisplay();
+      ApplyHeroPersonal();
       document.getElementById("registerHeroName").value = "";
       Game.windows.register.show();
-      Init();
-    }
-
-    static back () {
-      Game.windows.main.show();
     }
 
     static submit () {
@@ -185,7 +198,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "exp": 0, // 经验值
     "type": "hero", // 标识这个actor的类别是hero，其他类别如npc，monster
 
-    "class": "", // 职业，不同职业有不同加成
+    "belief": "None",
+    "class": "warrior", // 职业，不同职业有不同加成
 
     // 233年2月27日 09时30分
     "time": 233*(60*24*30*12) + 1*(60*24*30) + 26*(60*24) + 9*(60) + 30,
@@ -232,8 +246,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     // 初始位置
     "area": "fystone", // 地图id
-    "x": 54,
-    "y": 58,
+    "x": 18,
+    "y": 15,
 
 
     "centerX": 26,

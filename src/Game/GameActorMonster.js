@@ -126,11 +126,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 return;
               }
               let directions = ["down", "left", "right", "up"];
-              this.go("walk",
-                directions[Math.floor(Math.random() * directions.length)],
-                () => {
-                  this.stop();
-                });
+              this.go("walk", directions[Math.floor(Math.random() * directions.length)]).then(() => {
+                this.stop();
+              });
             }
           }
         } // not attacking

@@ -58,9 +58,9 @@ button::-moz-focus-inner {
   position: absolute;
   top: 0;
   left: 0;
-  width: 720px;
-  height: 332px;
-  padding: 40px;
+  width: 760px;
+  height: 390px;
+  padding: 10px;
   overflow-y: auto;
   /*
   background-image: url("image/window/background.png");
