@@ -22,7 +22,7 @@ map.onto.push({
   y: 13,
   description: "通往法斯通镇",
   execute: function () {
-    Game.hero.gotoArea("fystone", 49, 26);
+    Game.hero.gotoArea("fystone", 8, 40);
   }
 });
 
@@ -35,13 +35,15 @@ map.touch.push({
   ],
   description: "床",
   heroUse: function () {
-    Game.confirm("要睡觉吗？", function () {
+    Game.confirm("要睡觉吗？").then(function () {
       Game.windows.interface.hide();
       Game.windows.stage.hide();
       setTimeout(function () {
         Game.windows.stage.show();
         Game.windows.interface.show();
       }, 500);
+    }).catch(function () {
+      // no
     });
   }
 });
