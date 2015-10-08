@@ -125,8 +125,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Array.from(
       document.querySelectorAll(".registerWindow #registerWindowPersonal select")
     ).forEach(function (element) {
-      let value = event.target.value;
-      let type = event.target.getAttribute("data-type");
+      let value = element.value;
+      let type = element.getAttribute("data-type");
       HeroDefault[type] = value;
     });
 
