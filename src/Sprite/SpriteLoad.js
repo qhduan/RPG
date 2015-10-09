@@ -92,8 +92,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let req = new XMLHttpRequest();
     req.open("GET", url, true);
-    req.timeout = 5000; // 5 seconds
+    req.timeout = 10000; // 10 seconds
 
+    // looks like req.responseType=blob has some async problem, so I use arraybuffer
     switch (type) {
       case "js":
         req.responseType = "text";
@@ -121,8 +122,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         alert(`资源${url}超时没有加载成功！`);
         throw new Error("Sprite.Loader.Fetch timeout 3 times");
       } else {
-        console.error("Sprite.Loader.Fetch timeout try again, ", timeout + 1);
-        Fetch(url, callback, timeout + 1);
+        console.error("Sprite.Loader.Fetch timeout try again, ", timeout + 1, " ", url);
+        setTimeout(function () {
+          Fetch(url, callback, timeout + 1);
+        }, 50);
       }
     };
 
@@ -178,8 +181,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             alert(`资源${url}错误没有加载成功！`);
             throw new Error("Sprite.Loader.Fetch error 3 times");
           } else {
-            console.error("Sprite.Loader.Fetch error try again, ", timeout + 1);
-            Fetch(url, callback, timeout + 1);
+            console.error("Sprite.Loader.Fetch error try again, ", timeout + 1, " ", url);
+            setTimeout(function () {
+              Fetch(url, callback, timeout + 1);
+            }, 50);
           }
         }
       }
