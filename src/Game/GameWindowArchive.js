@@ -87,7 +87,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   archiveWindowClose.addEventListener("click", function () {
     win.hide();
-    if (!Game.hero) {
+    if ( !Game.windows.interface.showing ) {
       Game.windows.main.show();
     }
   });
@@ -100,7 +100,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   win.assign("open", function () {
 
-    if (Game.hero) {
+    if ( Game.windows.interface.showing && Game.hero ) {
       archiveWindowSave.style.visibility = "visible";
     } else {
       archiveWindowSave.style.visibility = "hidden";

@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    */
   let Downloading = new Map();
 
-  function Fetch (url, callback, timeout) {
+  function Fetch (url, callback, timeout = 0) {
 
     let type = null;
     if (url.match(/js$/)) {
@@ -81,16 +81,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return;
     }
 
-    if (Downloading.has(url)) {
-      Downloading.get(url).push(callback);
-      return;
-    }
+    if ( !timeout ) {
+      if (Downloading.has(url)) {
+        Downloading.get(url).push(callback);
+        return;
+      }
 
-    Downloading.set(url, []);
+      Downloading.set(url, []);
+    }
 
     let req = new XMLHttpRequest();
     req.open("GET", url, true);
-    req.timeout = 15000; // 15 seconds
+    req.timeout = 5000; // 5 seconds
 
     switch (type) {
       case "js":
@@ -114,11 +116,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       callback = function () {};
 
     req.ontimeout = function () {
-      if (timeout) {
+      if (timeout >= 2) {
         console.error(url);
-        throw new Error("Sprite.Loader.Fetch timeout twice");
+        throw new Error("Sprite.Loader.Fetch timeout 3 times");
       } else {
-        Fetch(url, callback, true);
+        Fetch(url, callback, timeout + 1);
       }
     };
 
