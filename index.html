@@ -43,6 +43,47 @@
       };
       */
 
+      (function CheckSupport () {
+        (function CheckCanvasSupport () {
+          var c = document.createElement("canvas");
+          if (c.getContext("2d")) {
+            console.log("canvas 2d supported");
+            var w = document.createElement("canvas");
+            if (w.getContext("webgl") || w.getContext("experimental-webgl")) {
+              console.log("webgl supported");
+            } else {
+              console.log("webgl not supported");
+            }
+          } else {
+            alert("canvas 2d 不支持，无法运行！");
+            throw new Error("canvas 2d not supported");
+          }
+        })();
+        (function CheckLocalStorageSupport () {
+          if (window.localStorage && window.localStorage.getItem && window.localStorage.setItem) {
+            console.log("localStorage supported");
+          } else {
+            alert("localStorage 不支持，无法运行！");
+            throw new Error("localStorage not supported");
+          }
+        })();
+        (function () {
+          if (window.ArrayBuffer) {
+            console.log("ArrayBuffer supported");
+          } else {
+            alert("ArrayBuffer 不支持，无法运行！");
+            throw new Error("ArrayBuffer not supported");
+          }
+        })();
+        (function () {
+          if (window.Blob) {
+            console.log("Blob supported");
+          } else {
+            alert("Blob 不支持，无法运行！");
+            throw new Error("Blob not supported");
+          }
+        })();
+      })();
 
       function ImportJavascript (urls) {
         var all = "";
