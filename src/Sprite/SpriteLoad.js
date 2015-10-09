@@ -99,10 +99,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         req.responseType = "text";
         break;
       case "image":
-        req.responseType = "blob";
+        req.responseType = "arraybuffer";
         break;
       case "audio":
-        req.responseType = "blob";
+        req.responseType = "arraybuffer";
         break;
       case "json":
         req.responseType = "json";
@@ -118,8 +118,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.ontimeout = function () {
       if (timeout >= 2) {
         console.error(url);
+        alert(`资源${url}超时没有加载成功！`);
         throw new Error("Sprite.Loader.Fetch timeout 3 times");
       } else {
+        console.error("Sprite.Loader.Fetch timeout try again, ", timeout + 1);
         Fetch(url, callback, timeout + 1);
       }
     };
@@ -139,16 +141,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             }
             Finish(fun);
           } else if (type == "image") {
-            let blob = req.response;
+            let arraybuffer = req.response;
             let image = new Image();
             image.onload = function () {
               // window.URL.revokeObjectURL(image.src);
               image.onload = null;
               Finish(image);
             };
-            image.src = window.URL.createObjectURL(blob);
+            image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
           } else if (type == "audio") {
-            let blob = req.response;
+            let arraybuffer = req.response;
             let audio = new Audio();
             audio.oncanplay = function () {
               // 如果reoke掉audio，那么audio.load()方法则不能用了
@@ -156,7 +158,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               audio.oncanplay = null;
               Finish(audio);
             };
-            audio.src = window.URL.createObjectURL(blob);
+            audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
           } else if (type == "json") {
             let json = req.response;
             if (!json) {
@@ -171,7 +173,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           " readyState: ", req.readyState,
           " status: ", req.status,
           " statusText: ", req.statusText);
-          throw new Error("Sprite.Loader.Fetch Error");
+          if (timeout >= 2) {
+            console.error(url);
+            alert(`资源${url}错误没有加载成功！`);
+            throw new Error("Sprite.Loader.Fetch error 3 times");
+          } else {
+            console.error("Sprite.Loader.Fetch error try again, ", timeout + 1);
+            Fetch(url, callback, timeout + 1);
+          }
         }
       }
     };

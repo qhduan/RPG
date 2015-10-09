@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         throw new Error("Sprite.Canvas canvas is not supported");
       }
 
-      console.log("canvas inited");
+      console.log("Sprite.Canvas 2d inited");
 
       /**
        * Color after clear canvas

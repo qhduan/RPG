@@ -883,6 +883,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     }
 
+    /**
+     * 按照指定的path和state行走
+     * 行走结束后如果after有定义，则面向after的方向
+     */
     gotoPath (path, state, after) {
       return new Promise((resolve, reject) => {
         this.going = true;
@@ -952,6 +956,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
     }
 
+    /**
+     * 让人物面向某个direction
+     */
     face (direction) {
       let animation = "face" + direction;
       if (this.animation != animation) {
@@ -960,8 +967,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    // 参数t中记录了某个方格的方位xy，测试这个方格是否和玩家有冲突
-    // 返回true为有碰撞，返回false为无碰撞
+    /**
+     * 参数t中记录了某个方格的方位xy，测试这个方格是否和玩家有冲突
+     * 返回true为有碰撞，返回false为无碰撞
+     */
     checkCollision (x, y) {
       // 地图边缘碰撞
       if (x < 0 || y < 0 || x >= Game.area.map.data.width || y >= Game.area.map.data.height) {
@@ -981,6 +990,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
+      // 地图上的物品碰撞
       if (Game.area.items) {
         for (let item of Game.area.items) {
           if (item.hitTest(x, y)) {
@@ -992,6 +1002,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return false;
     };
 
+    /**
+     * 测试人物碰撞
+     */
     hitTest (x, y) {
       if (this.data.hitArea && this.data.hitArea instanceof Array) {
         for (let p of this.data.hitArea) {
@@ -1006,6 +1019,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
+    /**
+     * 用state的姿态（walk，run）向direction方向走
+     * 如果人物现在不是direction方向的，优先转头
+     */
     go (state, direction) {
       return new Promise((resolve, reject) => {
         if (Game.paused) {
@@ -1125,7 +1142,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    /** 镜头集中 */
+    /** 镜头移动到中心为这个人物 */
     focus () {
       let privates = internal(this);
       privates.infoBox.x = this.sprite.x;

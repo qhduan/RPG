@@ -228,7 +228,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.filter("contrast", 0);
       this.alpha = 1;
 
-      console.log("webgl inited. max texture size: %d",
+      console.log("Sprite.Webgl inited, max texture size: %d",
         gl.getParameter(gl.MAX_TEXTURE_SIZE));
     }
 
