@@ -75,71 +75,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Container.cacheCanvas readonly");
     }
 
-    findMinMax () {
-      let minX = null, minY = null, maxX = null, maxY = null;
-
-      for (let child of this.children) {
-        if (child.findMinMax) {
-          let r = child.findMinMax();
-          if (minX === null || minX > r.minX) {
-            minX = r.minX;
-          }
-          if (minY === null || minY > r.minY) {
-            minY = r.minY;
-          }
-          if (maxX === null || maxX < r.maxX) {
-            maxX = r.maxX;
-          }
-          if (maxY === null || maxY < r.maxY) {
-            maxY = r.maxY;
-          }
-        } else {
-          if (minX === null || minX > child.x) {
-            minX = child.x;
-          }
-          if (minY === null || minY > child.y) {
-            minY = child.y;
-          }
-          if (child.width && child.height) {
-            if (maxX === null || maxX < child.x + child.width) {
-              maxX = child.x + child.width;
-            }
-            if (maxY === null || maxY < child.y + child.height) {
-              maxY = child.y + child.height;
-            }
-          }
-        }
-      }
-      return {
-        minX, minY, maxX, maxY
-      };
-    }
-
     /**
      * Remove canvas cache
      */
     clearCache () {
-      let privates = internal(this);
-      privates.cacheCanvas = null;
-      if (privates.cacheX) {
-        delete privates.cacheX;
-      }
-      if (privates.cacheY) {
-        delete privates.cacheY;
-      }
-      if (privates.cacheWidth) {
-        delete privates.cacheWidth;
-      }
-      if (privates.cacheHeight) {
-        delete privates.cacheHeight;
-      }
+      internal(this).cacheCanvas = null;
     }
 
     /**
      * Prerender all children as cache
      * generate a just size cache
      */
-    cache (x, y, width, height) {
+    cache (width, height) {
       let privates = internal(this);
       if (privates.cacheCanvas) {
         this.clearCache();
@@ -147,33 +94,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let p = this.parent;
       this.parent = null;
 
-      let r = this.findMinMax();
-      if (
-        r &&
-        Number.isFinite(r.minX) &&
-        Number.isFinite(r.minY) &&
-        Number.isFinite(r.maxX) &&
-        Number.isFinite(r.maxY)
-      ) {
-        let width = r.maxX - r.minX;
-        let height = r.maxY - r.minY;
-        let canvas = document.createElement("canvas");
-        canvas.width = width;
-        canvas.height = height;
-        let context = canvas.getContext("2d");
-        context.save();
-        context.translate(-r.minX, -r.minY);
-        this.draw(context);
-        context.restore();
-        privates.cacheX = r.minX;
-        privates.cacheY = r.minY;
-        privates.cacheWidth = width;
-        privates.cacheHeight = height;
-        privates.cacheCanvas = canvas;
-      } else {
-        console.error(r);
-        throw new Error("Sprite.Container.cache cannot work something wrong");
-      }
+      let canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      let context = canvas.getContext("2d");
+      this.draw(context);
+      privates.cacheCanvas = canvas;
 
       this.parent = p;
     }

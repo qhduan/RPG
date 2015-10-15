@@ -158,7 +158,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
       this.layers.mapLayer.clear();
-      this.layers.mapHideLayer.clear();
       for (let layer of this.stage.children) {
         layer.clear();
       }
@@ -178,9 +177,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 地图层
       privates.layers.mapLayer = new Sprite.Container();
       privates.layers.mapLayer.name = "mapLayer";
-      // 地图层 - 2
-      privates.layers.mapHideLayer = new Sprite.Container();
-      privates.layers.mapHideLayer.name = "mapHideLayer";
       // 物品层
       privates.layers.itemLayer = new Sprite.Container();
       privates.layers.itemLayer.name = "itemLayer";
@@ -199,7 +195,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       privates.stage.appendChild(
         privates.layers.mapLayer,
-        privates.layers.mapHideLayer,
         privates.layers.itemLayer,
         privates.layers.actorLayer,
         privates.layers.infoLayer,

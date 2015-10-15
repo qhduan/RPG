@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="580" height="400" xmlns="http://www.w3.org/2000/svg">
+ <!-- Created with Method Draw - http://github.com/duopixel/Method-Draw/ -->
+
+ <g>
+  <title>background</title>
+  <rect fill="#fff" id="canvas_background" height="402" width="582" y="-1" x="-1"/>
+  <g display="none" id="canvasGrid">
+   <rect fill="url(#gridpattern)" stroke-width="0" y="0" x="0" height="100%" width="100%" id="svg_25"/>
+  </g>
+ </g>
+ <g>
+  <title>Layer 1</title>
+  <path id="svg_4" d="m237.442978,192.341736l16.499313,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499313,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_1" y="203" x="249.5" stroke-width="0" stroke="#000" fill="#000000">市场</text>
+  <path id="svg_5" d="m175.442993,161.341736l16.499298,-31.499985l43.998993,0l16.498627,31.499985l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text style="cursor: move;" xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_3" y="169" x="191.5" stroke-width="0" stroke="#000" fill="#000000">住宅</text>
+  <path id="svg_9" d="m176.442993,224.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_10" y="232" x="192.5" stroke-width="0" stroke="#000" fill="#000000">竞技</text>
+  <path id="svg_11" d="m237.442993,127.341743l16.499298,-31.499992l43.998993,0l16.498627,31.499992l-16.498627,31.499992l-43.998993,0l-16.499298,-31.499992z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_12" y="135" x="252.5" stroke-width="0" stroke="#000" fill="#000000">宫殿</text>
+  <path id="svg_13" d="m299.442993,223.341736l16.499298,-31.5l43.998993,0l16.498657,31.5l-16.498657,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_14" y="231" x="315.5" stroke-width="0" stroke="#000" fill="#000000">飞船</text>
+  <path id="svg_15" d="m299.442993,160.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_16" y="168" x="315.5" stroke-width="0" stroke="#000" fill="#000000">神庙</text>
+  <path id="svg_2" d="m238.442993,257.341736l16.499298,-31.5l43.998993,0l16.498627,31.5l-16.498627,31.5l-43.998993,0l-16.499298,-31.5z" stroke-width="1.5" stroke="#000" fill="#fff"/>
+  <text xml:space="preserve" text-anchor="left" font-family="Helvetica, Arial, sans-serif" font-size="24" id="svg_6" y="265" x="254.5" stroke-width="0" stroke="#000" fill="#000000">南门</text>
+ </g>
+</svg>

@@ -213,7 +213,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     draw () {
       let privates = internal(this);
       Game.layers.mapLayer.clear();
-      Game.layers.mapHideLayer.clear();
 
       privates.layers.forEach((element, index) => {
         let layerData = privates.data.layers[index];
@@ -230,7 +229,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       privates.data.layers = null;
 
       // 给其他地图缓冲层
-      Game.layers.mapLayer.cache();
+      Game.layers.mapLayer.cache(this.width, this.height);
       let map = new Sprite.Bitmap(Game.layers.mapLayer.cacheCanvas);
       Game.layers.mapLayer.clear();
       Game.layers.mapLayer.appendChild(map);

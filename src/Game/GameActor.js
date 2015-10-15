@@ -591,14 +591,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         this.decreaseHP(power);
       }
 
-      /*
+
       if (state != "dodge" && this != Game.hero) {
         if (Game.sounds.hurt) {
           Game.sounds.hurt.load();
+          Game.sounds.hurt.volume = 0.2;
           Game.sounds.hurt.play();
         }
       }
-      */
+
 
       text.centerX = Math.floor(text.width / 2);
       text.centerY = Math.floor(text.height);
@@ -708,6 +709,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.lastAttackCooldown = skill.data.cooldown;
       this.attacking = true;
 
+      if (this.going) {
+        this.going = false;
+      }
+
+      Game.Input.clearDest();
+
       this.data.sp -= skill.data.cost;
       this.refreshBar();
 
@@ -809,10 +816,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                   Game.Input.clearDest();
                 }
                 c();
-                return false;
+                return;
               }
               if (this.going) {
-                return false;
+                return;
               }
               if (result) {
                 if (this == Game.hero) {
@@ -820,11 +827,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 } else { // not hero
                   if (result.length > 30) {
                     // too far
-                    return false;
+                    return;
                   }
                 }
                 this.gotoPath(result, state, dest.after).then(resolve);
-                return true;
+                return;
               } else {
                 return TestPosition();
               }

@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       <br>
       <button id="mainWindowLoad" class="brownButton">读取进度</button>
       <br>
+      <button id="mainWindowFullscreen" class="brownButton">全屏</button>
     </div>
   `;
 
@@ -45,15 +46,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       border: 20px solid rgba(134, 93, 52, 0.85);
     }
 
+    #mainWindowFullscreen {
+      position: absolute;
+      left: 640px;
+      top: 30px;
+    }
+
     .mainWindow h1 {
       font-size: 60px;
       margin-bottom: 0;
-      text-shadow: 0 0 15px #111;
     }
 
     .mainWindow h4 {
       margin-bottom: 0;
-      text-shadow: 0 0 15px #111;
     }
 
     .mainWindow button {
@@ -63,9 +68,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   `;
 
-  let mainWindowContinue = win.querySelector("button#mainWindowContinue");
-  let mainWindowNew = win.querySelector("button#mainWindowNew");
-  let mainWindowLoad = win.querySelector("button#mainWindowLoad");
+  let mainWindowContinue = win.querySelector("#mainWindowContinue");
+  let mainWindowNew = win.querySelector("#mainWindowNew");
+  let mainWindowLoad = win.querySelector("#mainWindowLoad");
+  let mainWindowFullscreen = win.querySelector("#mainWindowFullscreen");
+
+  mainWindowFullscreen.addEventListener("click", (event) => {
+    Game.windows.setting.toggle();
+  });
 
   win.on("beforeShow", function () {
     if (!Game.Archive.last()) {

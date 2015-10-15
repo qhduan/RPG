@@ -80,6 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (Game.hero.data.currentQuest.length) {
         completeQuest = [];
         for (let quest of Game.hero.data.currentQuest) {
+          console.log(Game.Quest.isComplete(quest), quest.to, this.id)
           if (quest.to == this.id && Game.Quest.isComplete(quest)) {
             completeQuest.push(quest);
           }

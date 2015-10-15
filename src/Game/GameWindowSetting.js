@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     settingWindowClose.click();
   });
 
-  function toggleFullScreen () {
+  win.assign("toggle", function () {
     if (!document.fullscreenElement &&    // alternative standard method
         !document.mozFullScreenElement &&
         !document.webkitFullscreenElement &&
@@ -133,10 +133,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         document.webkitExitFullscreen();
       }
     }
-  }
+  });
 
   settingWindowFullscreen.addEventListener("click", (event) => {
-    toggleFullScreen();
+    win.toggle();
   });
 
 
