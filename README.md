@@ -1,6 +1,6 @@
 # 艾利韦斯 Elliorwis 奇幻角色扮演游戏 Fantasy RPG Game
 
-## 中文游戏 Elliorwis is a Chinese Game
+## Elliorwis is a Chinese Game
 
 Created by mail@qhduan.com ( http://qhduan.com )
 
@@ -8,7 +8,7 @@ Created by mail@qhduan.com ( http://qhduan.com )
 
 游戏引擎使用作者自己开发的Sprite引擎，使用webgl或canvas作为游戏后端。所有代码使用JavaScript ES2015(ES6)开发，代码没使用任何第三方库。
 
-背景设定 | backgroundsetting：
+背景设定：
 
 [世界观 | World view](https://github.com/qhduan/RPG/blob/master/background/world.md)
 
@@ -32,11 +32,11 @@ Created by mail@qhduan.com ( http://qhduan.com )
 
 ## 协议 | License
 
-所有原创代码采用GPL-v3协议（详情在文件GPLv3.txt），包括Sprite引擎(src/Sprite目录)，和游戏本体(src/Game目录)
+所有原创代码采用GPL-v3协议（详情在文件GPLv3.txt），包括Sprite引擎(src/Sprite)，和游戏本体(src/Game)
 
 项目中原创资源(非代码)采用CC-BY-SA 3.0协议共享，（详情在文件CC-BY-SA.txt）
 
-游戏中部分设定，人物名称，世界地图，城市名称，部分剧情，内容，来自donjon网站（ http://donjon.bin.sh ），采用OpenGameLicense协议（详情在文件OpenGameLicense.txt）
+游戏中部分设定，人物名称，世界地图，城市名称，部分剧情，内容，来自donjon网站（ http://donjon.bin.sh ），采用OpenGameLicense协议（OpenGameLicense.txt）
 
 其他非原创资源(非代码)列表，会以credits的方式列出，大部分的资源都会是GPL，CC，或其他兼容协议
 
@@ -96,10 +96,11 @@ webgl的速度实际上还可以，对于2D游戏来说，基本足够
 
 游戏发展还在非常原始的阶段，但是已经可以进行简单测试，需要一定动手能力
 
-游戏将支持多平台，已经测试的平台包括：
+游戏将支持多平台，可行的平台将会包括（Maybe no IE）：
 - windows(node-webkit，firefox，chrome)
 - linux(node-webkit，firefox，chrome)
 - android(cordova, chrome)
+- ios(cordova, safari)
 
 现在，因为游戏还在开发过程中，所以我并没有制作游戏客户端，想尝试的话，可以在线（只在最新版本的chromium与firefox上测试过）
 
