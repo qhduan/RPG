@@ -10,11 +10,11 @@ Created by mail@qhduan.com ( http://qhduan.com )
 
 背景设定 | backgroundsetting：
 
-[世界观 | World setting](https://github.com/qhduan/RPG/blob/master/background/world.md)
+[世界观 | World view](https://github.com/qhduan/RPG/blob/master/background/world.md)
 
 [游戏操作 | Game control](https://github.com/qhduan/RPG/blob/master/background/control.md)
 
-[角色信息 | Actor setting](https://github.com/qhduan/RPG/blob/master/background/actor.md)
+[角色信息 | Actor Information](https://github.com/qhduan/RPG/blob/master/background/actor.md)
 
 ## 游戏特性 | Feature
 
