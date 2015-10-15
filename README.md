@@ -34,19 +34,11 @@ Created by mail@qhduan.com ( http://qhduan.com )
 
 所有原创代码采用GPL-v3协议（详情在文件GPLv3.txt），包括Sprite引擎(src/Sprite目录)，和游戏本体(src/Game目录)
 
-Game's sources (code) are using GPL-v3 license (GPLv3.txt)
-
 项目中原创资源(非代码)采用CC-BY-SA 3.0协议共享，（详情在文件CC-BY-SA.txt）
-
-Game's resources which created by mail@qhduan.com, are using CC-BY-SA 3.0 license (CC-BY-SA.txt)
 
 游戏中部分设定，人物名称，世界地图，城市名称，部分剧情，内容，来自donjon网站（ http://donjon.bin.sh ），采用OpenGameLicense协议（详情在文件OpenGameLicense.txt）
 
-Some events, names, world maps from [dojon](http://donjon.bin.sh/), are using Open Game License (OpenGameLicense.txt)
-
 其他非原创资源(非代码)列表，会以credits的方式列出，大部分的资源都会是GPL，CC，或其他兼容协议
-
-Other resources I will list them with credits file, most of them are using GPL or CC compatible license
 
 ### 开发环境 | Develop Environment
 
@@ -60,27 +52,12 @@ babel.js 为了写es6代码，非必要，在短暂的未来chrome，node-webkit
 
 地图和一些svg使用Method-Draw编辑
 
-Run and build Elliorwis using node.js (>=4.0)
-
-Babel.js, translate code from es6 to es5
-
-[tiled](http://www.mapeditor.org) for map and tilesets edit
-
-I use pngquant to compress png images
-
-Some svg were created by Method-Draw
-
 ### 鸣谢 | Credits
 
 游戏所用的地图资源存储在tilesets文件夹中，地图是使用 [tiled](http://www.mapeditor.org/) 编辑的，版权文件列在其中分别列出了（游戏中的地图资源用pngquant压缩过）
 
 大部分资源来自 OpenGameArt.org (http://opengameart.org)
 因为项目还在不断改进，以后我会列出详细的列表，感谢所有资源提供者
-
-Most resources are from OpenGameArt.org (http://opengameart.org)
-I will list the detail later, thanks
-
-Elliorwis's map tilesets in 'tilesets' directory, I made them by [tiled](http://www.mapeditor.org/) . Credit files are there too. (images of game are compressed by pngquant)
 
 ### 关于HTML5 网页游戏 | About HTML5
 
@@ -96,13 +73,7 @@ JS的跨平台简直太容易了，当然这是在牺牲了一定性能的前提
 比如说我做的这个游戏，我在windows上我想用node-webkit封装也行，想用cordova/phonegap封装也行，想随便写个server用浏览器打开本地服务器也行，这一点，应该没有任何其他编程语言能做到。
 但是你要说跨平台这一点到底有什么用，或许，也只是让我觉得舒服而已。
 
-###### 艾利韦斯是在线游戏吗？ | Is Elliorwis an online game?
-
-艾利韦斯不是传统的网页游戏，通过浏览器可以游戏，但是我同时也会发布不同平台的客户端（例如win32， osx32， linux32）
-
-No, you can play Elliorwis on browser. But I also will publish clients for different platforms (eg. win32, osx32, linux32)
-
-###### HTML5的缺陷 | Problem of HTML5
+###### HTML5的缺陷
 
 缺陷1：绘图速度慢。
 webgl的速度实际上还可以，对于2D游戏来说，基本足够
@@ -138,6 +109,4 @@ http://qhduan.github.io/RPG/
 
 http://eliorwis.qhduan.com/
 
-For now, game is developing, I didn't publish clients, so online test is the only way.
-
-Both links are same, only Chinese version
+Only Chinese version
