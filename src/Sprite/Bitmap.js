@@ -21,18 +21,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Define Sprite.Bitmap
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
-  Sprite.assign("Bitmap", class SpriteBitmap extends Sprite.Display {
+  class SpriteBitmap extends Sprite.Display {
     /**
      * Sprite.Bitmap's constructor
      * @constructor
-     */
+    */
     constructor (image) {
       super();
 
@@ -62,7 +62,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /**
      * @return {Image} Return Sprite.Bitmap's image
-     */
+    */
     get image () {
       return internal(this).image;
     }
@@ -74,7 +74,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /**
      * @return {number} Return Sprite.Bitmap's width
-     */
+    */
     get width () {
       return internal(this).image.width;
     }
@@ -86,7 +86,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /**
      * @return {number} Return Sprite.Bitmap's height
-     */
+    */
     get height () {
       return internal(this).image.height;
     }
@@ -98,7 +98,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /**
      * @param {Object} renderer Draw image on the renderer
-     */
+    */
     draw (renderer) {
       if (this.alpha <= 0.01 || this.visible != true) {
         return;
@@ -107,7 +107,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.drawImage(renderer, image, 0, 0, image.width, image.height);
     }
 
-  });
+  }
+
+  Sprite.assign("Bitmap", SpriteBitmap);
 
 
 })();

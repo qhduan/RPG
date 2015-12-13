@@ -27,29 +27,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Display
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
    * @class
-   */
-  Sprite.assign("Canvas", (function () {
+  */
+
+  var SpriteCanvas = (function () {
     _createClass(SpriteCanvas, null, [{
       key: "support",
 
       /**
        * @static
        * @return {boolean} The browser whether or not support HTML5 canvas
-       */
+      */
       value: function support() {
         var canvas = document.createElement("canvas");
-        var context = canvas.getContext("2d");
-        if (context) {
+        if (canvas.getContext("2d")) {
           return true;
         }
         return false;
@@ -267,5 +267,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteCanvas;
-  })());
+  })();
+
+  Sprite.assign("Canvas", SpriteCanvas);
 })();

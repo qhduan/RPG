@@ -31,25 +31,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
 
 Sprite.Tween.get(Game.hero)
-.promise(function () {
-  return new Promise(function (resolve) {
+.promise( () => {
+  return new Promise((resolve) => {
     Game.hero.goto(Game.hero.x, Game.hero.y + 5,"walk").then(resolve);
   })
 })
 .wait(2000)
-.promise(function () {
-  return new Promise(function (resolve) {
+.promise( () => {
+  return new Promise((resolve) => {
     Game.hero.goto(Game.hero.x + 5, Game.hero.y, "walk").then(resolve);
   })
 })
 .to({alpha: 0}, 500)
 .wait(500)
 .to({alpha: 1}, 500)
-.call(function () {
+.call( () => {
   Game.popup(Game.hero.sprite, "hello", 0, -50);
 })
 .wait(2000)
-.call(function () {
+.call( () => {
   console.log("ok");
 });
 
@@ -64,9 +64,9 @@ Sprite.Tween.get(Game.hero)
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
-  Sprite.assign("Tween", (function (_Sprite$Event) {
+  var SpriteTween = (function (_Sprite$Event) {
     _inherits(SpriteTween, _Sprite$Event);
 
     _createClass(SpriteTween, null, [{
@@ -226,5 +226,7 @@ Sprite.Tween.get(Game.hero)
     }]);
 
     return SpriteTween;
-  })(Sprite.Event));
+  })(Sprite.Event);
+
+  Sprite.assign("Tween", SpriteTween);
 })();

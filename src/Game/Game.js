@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
     // root级别api入口
   class GameCore {
@@ -44,7 +44,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     addBag (x, y) {
-      return new Promise(function (resolve, reject) {
+      return new Promise( (resolve, reject) => {
         // 寻找已经存在的bag
         for (let bag of Game.area.bags) {
           if (bag.hitTest(x, y)) {
@@ -216,9 +216,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        * BB
        * 这样就是B的上半身被人物A遮盖，这就很奇怪
        */
-      privates.stage.on("beforeDraw", function () {
+      privates.stage.on("beforeDraw", () => {
         if (Game.hero) {
-          Game.layers.actorLayer.children.sort(function (a, b) {
+          Game.layers.actorLayer.children.sort( (a, b) => {
             if (a.y < b.y) return -1;
             if (a.y > b.y) return 1;
             return 0;
@@ -241,10 +241,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /*
       let updateNext = false;
-      Game.stage.on("change", function () {
+      Game.stage.on("change", () => {
         updateNext = true;
       });
-      Sprite.Ticker.on("tick", function () {
+      Sprite.Ticker.on("tick", () => {
        if (Game.paused == false && updateNext) {
          Game.stage.update();
          updateNext = false;
@@ -261,12 +261,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       document.body.appendChild(fpsElement);
 
       let fps = 0;
-      let start = new Date().getTime();
-      privates.stage.on("afterDraw", function () {
+      let start = Date.now();
+      privates.stage.on("afterDraw", () => {
         fps++;
       });
-      setInterval(function () {
-        let now = new Date().getTime();
+      setInterval( () => {
+        let now = Date.now();
         let f = fps / ((now - start)/1000);
         fps = 0;
         start = now;
@@ -278,6 +278,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   };
 
   let Game = window.Game = new GameCore();
+
 
   // under node-webkit
   if (window.require) {
@@ -295,7 +296,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   if (GameBootstrap() == false) {
-    document.addEventListener("readystatechange", function () {
+    document.addEventListener("readystatechange", () => {
       GameBootstrap();
     });
   }

@@ -19,12 +19,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-(function () {
+( () => {
   "use strict";
 
   // 游戏无论什么时候都需要预加载的内容
   function Preload () {
-    return new Promise(function (resolve, reject) {
+    return new Promise( (resolve, reject) => {
       let promises = new Set();
 
       let preloadSoundEffects = {
@@ -33,12 +33,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       for (let key in preloadSoundEffects) {
         promises.add(
-          (function (key, url) {
-            return new Promise(function (resolve, reject) {
+          ((key, url) => {
+            return new Promise( (resolve, reject) => {
               if (Game.sounds && Game.sounds[key]) {
                 resolve();
               } else {
-                Sprite.load(url).then(function (data) {
+                Sprite.Loader.load(url).then( (data) => {
                   Game.sounds[key] = data[0];
                   resolve();
                 });
@@ -53,13 +53,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         "gold" // 金币图标
       ];
 
-      preloadItems.forEach(function (id) {
+      preloadItems.forEach((id) => {
         promises.add(
-          new Promise(function (resolve, reject) {
+          new Promise( (resolve, reject) => {
             if (Game.items && Game.items[id]) {
               resolve();
             } else {
-              Game.Item.load(id).then(function (itemObj) {
+              Game.Item.load(id).then( (itemObj) => {
                 resolve();
               });
             }
@@ -67,19 +67,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         );
       });
 
-      Promise.all(promises).then(function () {
-        resolve();
-      });
+      Promise.all(promises).then(resolve, reject);
     });
   }
 
+
   // 加载区域，把括地图，角色，物品
-  Game.assign("loadArea", function (id) {
-    return new Promise(function (resolve, reject) {
+  Game.assign("loadArea", (id) => {
+    return new Promise( (resolve, reject) => {
 
-      Game.Map.load(id).then(function (mapObj) {
-
-        let area = {
+      Promise.all([
+        Game.Map.load(id),
+        Preload()
+      ]).then( ([mapObj]) => {
+        return {
           actors: new Set(), // 角色
           bags: new Set(), // 掉落小包
           items: new Set(), // 其他物品（有碰撞）
@@ -87,79 +88,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           onto: [], // onto会触发的地点/物品
           map: mapObj
         };
+      }).then( (area) => {
 
         let promises = new Set();
 
-        promises.add(Preload());
-
-        if (mapObj.data.actors) {
-          mapObj.data.actors.forEach(function (element) {
-            promises.add(
-              new Promise(function (resolve, reject) {
-                Game.Actor.load(element.id).then(function (actorObj) {
-
-                  for (let key in element) {
-                    actorObj.data[key] = element[key];
-                  }
-
-                  area.actors.add(actorObj);
-                  actorObj.draw();
-                  resolve();
-                });
-              })
-            );
+        if (area.map.data.actors) {
+          area.map.data.actors.forEach( (element) => {
+            promises.add( Game.Actor.load(element.id).then( (actorObj) => {
+              for (let key in element) {
+                actorObj.data[key] = element[key];
+              }
+              area.actors.add(actorObj);
+              actorObj.draw();
+            }));
           });
         }
 
         if (
-          mapObj.spawnMonster &&
-          mapObj.spawnMonster.list &&
-          mapObj.spawnMonster.count
+          area.map.spawnMonster &&
+          area.map.spawnMonster.list &&
+          area.map.spawnMonster.count
         ) {
-          for (let monsterId in mapObj.spawnMonster.list) {
-            promises.add(
-              new Promise(function (resolve, reject) {
-                Game.Actor.load(monsterId).then(function () {
-                  resolve();
-                });
-              })
-            );
+          for (let monsterId in area.map.spawnMonster.list) {
+            promises.add( Game.Actor.load(monsterId) );
           }
         }
 
         if (
-          mapObj.spawnItem &&
-          mapObj.spawnItem.list &&
-          mapObj.spawnItem.count
+          area.map.spawnItem &&
+          area.map.spawnItem.list &&
+          area.map.spawnItem.count
         ) {
-          for (let itemId in mapObj.spawnItem.list) {
-            promises.add(
-              new Promise(function (resolve, reject) {
-                Game.Item.load(itemId).then(function () {
-                  resolve();
-                });
-              })
-            );
+          for (let itemId in area.map.spawnItem.list) {
+            promises.add( Game.Item.load(itemId) );
           }
         }
 
-        if (mapObj.data.onto) {
-          mapObj.data.onto.forEach(function (element) {
+        if (area.map.data.onto) {
+          area.map.data.onto.forEach( (element) => {
             area.onto.push(element);
           });
         }
 
-        if (mapObj.data.touch) {
-          mapObj.data.touch.forEach(function (element) {
+        if (area.map.data.touch) {
+          area.map.data.touch.forEach( (element) => {
             area.touch.push(element);
           });
         }
 
-        Promise.all(promises).then(function () {
+        Promise.all(promises).then( () => {
           resolve(area);
         });
 
-      }); //map
+      });
 
     });
   });

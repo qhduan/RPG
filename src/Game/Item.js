@@ -18,16 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   Game.assign("Item", class GameItem extends Sprite.Event {
 
     static load (id) {
-      return new Promise(function (resolve, reject) {
-        Sprite.load(`item/${id}.js`).then(function (data) {
+      return new Promise( (resolve, reject) => {
+        Sprite.Loader.load(`item/${id}.js`).then( (data) => {
           let itemData = data[0]();
           itemData.id = id;
           let itemObj = new Game.Item(itemData);
@@ -52,7 +52,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (this.data.image) {
-        Sprite.load(`item/${this.data.image}`).then((data) => {
+        Sprite.Loader.load(`item/${this.data.image}`).then((data) => {
           let image = data[0];
           privates.icon = image;
 

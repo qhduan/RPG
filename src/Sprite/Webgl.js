@@ -22,10 +22,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @fileoverview Define the Sprite.Webgl, a renderer, other choice from Sprite.Canvas
  * @author mail@qhduan.com (QH Duan)
  */
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
 
   function isPOT (value) {
@@ -103,8 +103,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Renderer using webgl
    * @class
-   */
-  Sprite.assign("Webgl", class SpriteWebgl {
+  */
+  class SpriteWebgl {
 
     /**
      * @static
@@ -112,14 +112,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      */
     static support () {
       let canvas = document.createElement("canvas");
-      let gl = canvas.getContext("webgl");
-      if (!gl) {
-        canvas.getContext("experimental-webgl");
+      if ( canvas.getContext("webgl") || canvas.getContext("experimental-webgl") ) {
+        return true;
       }
-      if (!gl) {
-        return false;
-      }
-      return true;
+      return false;
     }
 
     /**
@@ -477,8 +473,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       throw new Error("Sprite.Webgl.canvas cannot write");
     }
 
-  });
+  }
 
+  Sprite.assign("Webgl", SpriteWebgl);
 
 
 })();

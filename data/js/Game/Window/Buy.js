@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 0;
     var table = "";
-    Sprite.each(items, function (itemCount, itemId) {
+    Sprite.Util.each(items, function (itemCount, itemId) {
       var item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1) return;

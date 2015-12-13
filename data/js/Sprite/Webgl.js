@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   function isPOT(value) {
     return value > 0 && (value - 1 & value) === 0;
@@ -52,8 +52,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Renderer using webgl
    * @class
-   */
-  Sprite.assign("Webgl", (function () {
+  */
+
+  var SpriteWebgl = (function () {
     _createClass(SpriteWebgl, null, [{
       key: "support",
 
@@ -63,14 +64,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        */
       value: function support() {
         var canvas = document.createElement("canvas");
-        var gl = canvas.getContext("webgl");
-        if (!gl) {
-          canvas.getContext("experimental-webgl");
+        if (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")) {
+          return true;
         }
-        if (!gl) {
-          return false;
-        }
-        return true;
+        return false;
       }
 
       /**
@@ -429,5 +426,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteWebgl;
-  })());
+  })();
+
+  Sprite.assign("Webgl", SpriteWebgl);
 })();

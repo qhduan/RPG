@@ -4401,12 +4401,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var SpriteCore = (function () {
-    function SpriteCore() {
-      _classCallCheck(this, SpriteCore);
+  var Sprite = (function () {
+    function Sprite() {
+      _classCallCheck(this, Sprite);
     }
 
-    _createClass(SpriteCore, [{
+    _createClass(Sprite, [{
       key: "assign",
       value: function assign(name, object) {
         Object.defineProperty(this, name, {
@@ -4419,81 +4419,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }]);
 
-    return SpriteCore;
+    return Sprite;
   })();
 
-  ;
-
-  var Sprite = window.Sprite = new SpriteCore();
-
-  /**
-   * Function Sprite.Namespace, return an unique Private-Properties function
-   * for javascript private properties need, for es6
-   */
-  Sprite.assign("Namespace", function () {
-    /**
-     * Using closure variable store private properties
-     * and different file have different "privateProperties"
-     */
-    var privates = new WeakMap();
-    return function (object) {
-      if (privates.has(object) == false) {
-        privates.set(object, {});
-      }
-      return privates.get(object);
-    };
-  });
-
-  /**
-   * @param {number} N The min number
-   * @param {number} M The max number
-   * @return {number} A random integer N <= return < M, aka. [N, M)
-   */
-  Sprite.assign("rand", function (N, M) {
-    var r = M - N;
-    r *= Math.random();
-    return N + Math.floor(r);
-  });
-
-  /**
-   * @param {Object} object The object we require copy
-   * @return {Object} A deep copy of object
-   */
-  Sprite.assign("copy", function (object) {
-    return JSON.parse(JSON.stringify(object));
-  });
-
-  Sprite.assign("each", function (obj, functional) {
-    if (obj.forEach) {
-      obj.forEach(functional);
-    } else {
-      for (var key in obj) {
-        functional(obj[key], key, obj);
-      }
-    }
-  });
-
-  Sprite.assign("uuid", function () {
-    // generate a UUID
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, function (c) {
-      var r = Math.floor(Math.random() * 16);
-      if (c == "x") {
-        return r.toString(16);
-      } else {
-        return (r & 0x03 | 0x08).toString(16);
-      }
-    });
-  });
-
-  Sprite.assign("btoa", function (str) {
-    // convert str to base64
-    return window.btoa(unescape(encodeURIComponent(str)));
-  });
-
-  Sprite.assign("atob", function (str) {
-    // convert base64 str to original
-    return decodeURIComponent(escape(window.atob(str)));
-  });
+  window.Sprite = new Sprite();
 })();
 
 "use strict";
@@ -4523,31 +4452,161 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Class Sprite.Display
+ * @fileoverview Define Sprite.Bitmap
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var SpriteUtil = (function () {
+    function SpriteUtil() {
+      _classCallCheck(this, SpriteUtil);
+    }
+
+    _createClass(SpriteUtil, null, [{
+      key: "timeout",
+      value: function timeout(ms) {
+        return new Promise(function (resolve, reject) {
+          setTimeout(resolve, ms);
+        });
+      }
+
+      /**
+       * Function Sprite.Util.namespace, return an unique Private-Properties function
+       * for javascript private properties need, for es6
+       * @return {object} privates
+      */
+
+    }, {
+      key: "namespace",
+      value: function namespace() {
+        /**
+         * Using closure variable store private properties
+         * and different file have different "privateProperties"
+        */
+        var privates = new WeakMap();
+        return function (object) {
+          if (privates.has(object) == false) {
+            privates.set(object, {});
+          }
+          return privates.get(object);
+        };
+      }
+    }, {
+      key: "uuid",
+      value: function uuid() {
+        // generate a UUID
+        return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, function (c) {
+          var r = Math.floor(Math.random() * 16);
+          if (c == "x") {
+            return r.toString(16);
+          } else {
+            return (r & 0x03 | 0x08).toString(16);
+          }
+        });
+      }
+    }, {
+      key: "copy",
+      value: function copy(obj) {
+        return JSON.parse(JSON.stringify(obj));
+      }
+    }, {
+      key: "each",
+      value: function each(obj, callback) {
+        if (obj.forEach) {
+          obj.forEach(callback);
+        } else {
+          for (var key in obj) {
+            callback(obj[key], key, obj);
+          }
+        }
+      }
+    }, {
+      key: "btoa",
+      value: function btoa(str) {
+        // convert str to base64
+        return window.btoa(unescape(encodeURIComponent(str)));
+      }
+    }, {
+      key: "atob",
+      value: function atob(str) {
+        // convert base64 str to original
+        return decodeURIComponent(escape(window.atob(str)));
+      }
+
+      /**
+       * @param {number} N The min number
+       * @param {number} M The max number
+       * @return {number} A random integer N <= return < M, aka. [N, M)
+      */
+
+    }, {
+      key: "randInt",
+      value: function randInt(N, M) {
+        var r = M - N;
+        r *= Math.random();
+        return N + Math.floor(r);
+      }
+    }]);
+
+    return SpriteUtil;
+  })();
+
+  Sprite.assign("Util", SpriteUtil);
+})();
+"use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+/*
+
+2D Game Sprite Library, Built using JavaScript ES6
+Copyright (C) 2015 qhduan(http://qhduan.com)
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+*/
+
+/**
+ * @fileoverview Class Sprite.Display
+ * @author mail@qhduan.com (QH Duan)
+*/
+
+(function () {
+  "use strict";
+
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Canvas, an renderer using canvas.getContext("2d")
    * @class
-   */
-  Sprite.assign("Canvas", (function () {
+  */
+
+  var SpriteCanvas = (function () {
     _createClass(SpriteCanvas, null, [{
       key: "support",
 
       /**
        * @static
        * @return {boolean} The browser whether or not support HTML5 canvas
-       */
+      */
       value: function support() {
         var canvas = document.createElement("canvas");
-        var context = canvas.getContext("2d");
-        if (context) {
+        if (canvas.getContext("2d")) {
           return true;
         }
         return false;
@@ -4765,7 +4824,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteCanvas;
-  })());
+  })();
+
+  Sprite.assign("Canvas", SpriteCanvas);
 })();
 
 "use strict";
@@ -4801,7 +4862,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   function isPOT(value) {
     return value > 0 && (value - 1 & value) === 0;
@@ -4822,8 +4883,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Renderer using webgl
    * @class
-   */
-  Sprite.assign("Webgl", (function () {
+  */
+
+  var SpriteWebgl = (function () {
     _createClass(SpriteWebgl, null, [{
       key: "support",
 
@@ -4833,14 +4895,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
        */
       value: function support() {
         var canvas = document.createElement("canvas");
-        var gl = canvas.getContext("webgl");
-        if (!gl) {
-          canvas.getContext("experimental-webgl");
+        if (canvas.getContext("webgl") || canvas.getContext("experimental-webgl")) {
+          return true;
         }
-        if (!gl) {
-          return false;
-        }
-        return true;
+        return false;
       }
 
       /**
@@ -5199,7 +5257,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteWebgl;
-  })());
+  })();
+
+  Sprite.assign("Webgl", SpriteWebgl);
 })();
 
 "use strict";
@@ -5231,18 +5291,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Event
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Event, hold all events emit, bubble
    * @class
-   */
-  Sprite.assign("Event", (function () {
+  */
+
+  var SpriteEvent = (function () {
     /**
      * construct Sprite.Event
      * @constructor
@@ -5297,7 +5358,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             privates.listeners.set(event, new Map());
           }
 
-          var id = Sprite.uuid();
+          var id = Sprite.Util.uuid();
           privates.listeners.get(event).set(id, listener);
           return id;
         }
@@ -5442,7 +5503,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteEvent;
-  })());
+  })();
+
+  Sprite.assign("Event", SpriteEvent);
 })();
 
 "use strict";
@@ -5478,25 +5541,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /*
 
 Sprite.Tween.get(Game.hero)
-.promise(function () {
-  return new Promise(function (resolve) {
+.promise( () => {
+  return new Promise((resolve) => {
     Game.hero.goto(Game.hero.x, Game.hero.y + 5,"walk").then(resolve);
   })
 })
 .wait(2000)
-.promise(function () {
-  return new Promise(function (resolve) {
+.promise( () => {
+  return new Promise((resolve) => {
     Game.hero.goto(Game.hero.x + 5, Game.hero.y, "walk").then(resolve);
   })
 })
 .to({alpha: 0}, 500)
 .wait(500)
 .to({alpha: 1}, 500)
-.call(function () {
+.call( () => {
   Game.popup(Game.hero.sprite, "hello", 0, -50);
 })
 .wait(2000)
-.call(function () {
+.call( () => {
   console.log("ok");
 });
 
@@ -5511,9 +5574,9 @@ Sprite.Tween.get(Game.hero)
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
-  Sprite.assign("Tween", (function (_Sprite$Event) {
+  var SpriteTween = (function (_Sprite$Event) {
     _inherits(SpriteTween, _Sprite$Event);
 
     _createClass(SpriteTween, null, [{
@@ -5673,10 +5736,16 @@ Sprite.Tween.get(Game.hero)
     }]);
 
     return SpriteTween;
-  })(Sprite.Event));
+  })(Sprite.Event);
+
+  Sprite.assign("Tween", SpriteTween);
 })();
 
 "use strict";
+
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 /*
 
@@ -5706,7 +5775,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Cache all url and element
@@ -5740,7 +5809,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Cache.set(url, obj);
 
       if (type == "json") {
-        obj = Sprite.copy(obj);
+        obj = Sprite.Util.copy(obj);
       }
 
       if (callback) {
@@ -5895,86 +5964,101 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.send();
   }
 
-  Sprite.assign("load", function () {
-    var args = Array.prototype.slice.call(arguments);
-    return new Promise(function (resolve, reject) {
-      var urls = [];
+  var SpriteLoader = (function () {
+    function SpriteLoader() {
+      _classCallCheck(this, SpriteLoader);
+    }
 
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+    _createClass(SpriteLoader, null, [{
+      key: "load",
+      value: function load() {
+        var args = Array.prototype.slice.call(arguments);
 
-      try {
-        for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var element = _step2.value;
+        return new Promise(function (resolve, reject) {
 
-          if (typeof element == "string") {
-            urls.push(element);
-          } else if (element instanceof Array) {
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
+          var urls = [];
 
-            try {
-              for (var _iterator3 = element[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var url = _step3.value;
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
-                urls.push(url);
-              }
-            } catch (err) {
-              _didIteratorError3 = true;
-              _iteratorError3 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                  _iterator3.return();
+          try {
+            for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var element = _step2.value;
+
+              if (typeof element == "string") {
+                urls.push(element);
+              } else if (element instanceof Array) {
+                var _iteratorNormalCompletion3 = true;
+                var _didIteratorError3 = false;
+                var _iteratorError3 = undefined;
+
+                try {
+                  for (var _iterator3 = element[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var url = _step3.value;
+
+                    urls.push(url);
+                  }
+                } catch (err) {
+                  _didIteratorError3 = true;
+                  _iteratorError3 = err;
+                } finally {
+                  try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                      _iterator3.return();
+                    }
+                  } finally {
+                    if (_didIteratorError3) {
+                      throw _iteratorError3;
+                    }
+                  }
                 }
-              } finally {
-                if (_didIteratorError3) {
-                  throw _iteratorError3;
-                }
+              } else {
+                console.error(element, args);
+                throw new Error("Sprite.Loader.load got invalid argument");
               }
             }
-          } else {
-            console.error(element, args);
-            throw new Error("Sprite.load got invalid argument");
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
           }
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
 
-      var done = 0;
-      var ret = [];
-      ret.length = urls.length;
+          var done = 0;
+          var ret = [];
+          ret.length = urls.length;
 
-      var Done = function Done() {
-        done++;
+          var Done = function Done() {
+            done++;
 
-        if (done >= ret.length) {
-          resolve(ret);
-        }
-      };
+            if (done >= ret.length) {
+              resolve(ret);
+            }
+          };
 
-      urls.forEach(function (element, index) {
-        Fetch(element, function (result) {
-          ret[index] = result;
-          Done();
+          urls.forEach(function (element, index) {
+            Fetch(element, function (result) {
+              ret[index] = result;
+              Done();
+            });
+          });
         });
-      });
-    });
-  });
+      }
+    }]);
+
+    return SpriteLoader;
+  })();
+
+  Sprite.assign("Loader", SpriteLoader);
 })();
 
 "use strict";
@@ -6093,8 +6177,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return SpriteTicker;
   })(Sprite.Event);
 
-  ;
-
   Sprite.assign("Ticker", new SpriteTicker());
 })();
 
@@ -6131,7 +6213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   var hitCanvas = document.createElement("canvas");
   hitCanvas.width = 1;
@@ -6144,14 +6226,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Display, base class for all other classes
    * @class
    * @extends Sprite.Event
-   */
-  Sprite.assign("Display", (function (_Sprite$Event) {
+  */
+
+  var SpriteDisplay = (function (_Sprite$Event) {
     _inherits(SpriteDisplay, _Sprite$Event);
 
     /**
      * construct Sprite.Display
      * @constructor
-     */
+    */
 
     function SpriteDisplay() {
       _classCallCheck(this, SpriteDisplay);
@@ -6465,7 +6548,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteDisplay;
-  })(Sprite.Event));
+  })(Sprite.Event);
+
+  Sprite.assign("Display", SpriteDisplay);
 })();
 
 "use strict";
@@ -6509,13 +6594,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Contain everything which inherit from Sprite.Display
    * @class
-   */
-  Sprite.assign("Container", (function (_Sprite$Display) {
+  */
+
+  var SpriteContainer = (function (_Sprite$Display) {
     _inherits(SpriteContainer, _Sprite$Display);
 
     /**
@@ -6867,7 +6953,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteContainer;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Container", SpriteContainer);
 })();
 
 "use strict";
@@ -6908,14 +6996,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Main Stage, display object
    * @class
    * @extends Sprite.Container
-   */
-  Sprite.assign("Stage", (function (_Sprite$Container) {
+  */
+
+  var SpriteStage = (function (_Sprite$Container) {
     _inherits(SpriteStage, _Sprite$Container);
 
     /** @function Sprite.Stage.constructor
@@ -7073,7 +7162,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteStage;
-  })(Sprite.Container));
+  })(Sprite.Container);
+
+  Sprite.assign("Stage", SpriteStage);
 })();
 
 "use strict";
@@ -7114,7 +7205,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   var textCanvas = document.createElement("canvas");
   textCanvas.width = 1;
@@ -7125,8 +7216,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Text, contain text
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Text", (function (_Sprite$Display) {
+  */
+
+  var SpriteText = (function (_Sprite$Display) {
     _inherits(SpriteText, _Sprite$Display);
 
     /**
@@ -7276,7 +7368,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteText;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Text", SpriteText);
 })();
 
 "use strict";
@@ -7317,13 +7411,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
-   */
-  Sprite.assign("Frame", (function (_Sprite$Display) {
+  */
+
+  var SpriteFrame = (function (_Sprite$Display) {
     _inherits(SpriteFrame, _Sprite$Display);
 
     function SpriteFrame(image, sx, sy, width, height) {
@@ -7412,7 +7507,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteFrame;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Frame", SpriteFrame);
 })();
 
 "use strict";
@@ -7455,14 +7552,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Sheet, contain sprite's sheet and it's animation
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Sheet", (function (_Sprite$Display) {
+  */
+
+  var SpriteSheet = (function (_Sprite$Display) {
     _inherits(SpriteSheet, _Sprite$Display);
 
     /**
@@ -7834,7 +7932,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteSheet;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Sheet", SpriteSheet);
 })();
 
 "use strict";
@@ -7866,7 +7966,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Input
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
@@ -7964,8 +8064,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Sprite.Input, only has static methods
    * @class
-   */
-  Sprite.assign("Input", (function () {
+  */
+
+  var SpriteInput = (function () {
     function SpriteInput() {
       _classCallCheck(this, SpriteInput);
     }
@@ -7976,7 +8077,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {string} key Key-string ('A', 'a') or key-number (65, 97)
        * @return {boolean} If the key is pressing, return true, otherwise, false
-       */
+      */
       value: function isPressed(key) {
         if (Number.isFinite(key)) {
           if (pressed.has(key)) {
@@ -7998,7 +8099,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenPress",
@@ -8044,7 +8145,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenDown",
@@ -8090,7 +8191,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenUp",
@@ -8135,7 +8236,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteInput;
-  })());
+  })();
+
+  Sprite.assign("Input", SpriteInput);
 })();
 
 "use strict";
@@ -8176,14 +8279,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Shape
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Shape", (function (_Sprite$Display) {
+  */
+
+  var SpriteShape = (function (_Sprite$Display) {
     _inherits(SpriteShape, _Sprite$Display);
 
     /**
@@ -8478,7 +8582,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteShape;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Shape", SpriteShape);
 })();
 
 "use strict";
@@ -8514,20 +8620,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Define Sprite.Bitmap
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
-  Sprite.assign("Bitmap", (function (_Sprite$Display) {
+  var SpriteBitmap = (function (_Sprite$Display) {
     _inherits(SpriteBitmap, _Sprite$Display);
 
     /**
      * Sprite.Bitmap's constructor
      * @constructor
-     */
+    */
 
     function SpriteBitmap(image) {
       _classCallCheck(this, SpriteBitmap);
@@ -8563,14 +8669,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {Image} Return Sprite.Bitmap's image
-       */
+      */
 
     }, {
       key: "draw",
 
       /**
        * @param {Object} renderer Draw image on the renderer
-       */
+      */
       value: function draw(renderer) {
         if (this.alpha <= 0.01 || this.visible != true) {
           return;
@@ -8590,7 +8696,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {number} Return Sprite.Bitmap's width
-       */
+      */
 
     }, {
       key: "width",
@@ -8604,7 +8710,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {number} Return Sprite.Bitmap's height
-       */
+      */
 
     }, {
       key: "height",
@@ -8618,7 +8724,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteBitmap;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Bitmap", SpriteBitmap);
 })();
 
 "use strict";
@@ -8650,7 +8758,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   // root级别api入口
 
@@ -8900,10 +9008,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         /*
         let updateNext = false;
-        Game.stage.on("change", function () {
+        Game.stage.on("change", () => {
           updateNext = true;
         });
-        Sprite.Ticker.on("tick", function () {
+        Sprite.Ticker.on("tick", () => {
          if (Game.paused == false && updateNext) {
            Game.stage.update();
            updateNext = false;
@@ -8920,12 +9028,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         document.body.appendChild(fpsElement);
 
         var fps = 0;
-        var start = new Date().getTime();
+        var start = Date.now();
         privates.stage.on("afterDraw", function () {
           fps++;
         });
         setInterval(function () {
-          var now = new Date().getTime();
+          var now = Date.now();
           var f = fps / ((now - start) / 1000);
           fps = 0;
           start = now;
@@ -9062,7 +9170,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
   /** 全部窗口 */
   var windows = new Set();
   /**窗口z-index，不断递增 */
@@ -9709,7 +9817,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 0;
     var table = "";
-    Sprite.each(items, function (itemCount, itemId) {
+    Sprite.Util.each(items, function (itemCount, itemId) {
       var item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1) return;
@@ -9890,7 +9998,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var choiceWindowNo = win.querySelector("#choiceWindowNo");
       var buttonArray = [];
 
-      Sprite.each(options, function (value, key) {
+      Sprite.Util.each(options, function (value, key) {
         var button = document.createElement("button");
         button.textContent = buttonArray.length + 1 + ". " + key;
         button.classList.add("brownButton");
@@ -9954,7 +10062,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   var confirmHTML = "\n  <div class=\"window-box\">\n    <div style=\"width: 100%; height: 100%;\">\n      <table>\n        <tr><td><span id=\"confirmWindowMessage\"></span></td></tr>\n        <tr><td>\n          <button id=\"confirmWindowYes\" class=\"brownButton\">确定</button>\n          <button id=\"confirmWindowNo\" class=\"brownButton\">取消</button>\n        </td></tr>\n      </table>\n    </div>\n  </div>\n  ";
 
@@ -10493,7 +10601,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var item = Game.items[itemId];
       var equipment = null;
 
-      Sprite.each(Game.hero.data.equipment, function (element, key) {
+      Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
         if (element == item.id) equipment = key;
       });
 
@@ -10567,7 +10675,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var itemCount = Game.hero.data.items[itemId];
         var equipment = null;
 
-        Sprite.each(Game.hero.data.equipment, function (element, key) {
+        Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
           if (element == item.id) equipment = key;
         });
 
@@ -11003,7 +11111,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   pickupWindowAll.addEventListener("click", function (event) {
     var itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
-      Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+      Sprite.Util.each(itemObj.inner, function (itemCount, itemId, inner) {
         if (itemId == "gold") {
           Game.hero.data.gold += itemCount;
         } else {
@@ -11068,7 +11176,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 1;
     var table = "";
-    Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+    Sprite.Util.each(itemObj.inner, function (itemCount, itemId, inner) {
       var item = Game.items[itemId];
 
       var line = "";
@@ -11531,7 +11639,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 0;
     var table = "";
-    Sprite.each(Game.hero.data.items, function (itemCount, itemId) {
+    Sprite.Util.each(Game.hero.data.items, function (itemCount, itemId) {
       var item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1) return;
@@ -11662,7 +11770,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             array[index] = null;
           }
         });
-        Sprite.each(Game.hero.data.equipment, function (element, key) {
+        Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
           if (element == itemId) {
             Game.hero.data.equipment[key] = null;
           }
@@ -12039,7 +12147,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var lastSelect = -1;
 
-  Sprite.each(statusWindowEquipmentButton, function (button, key) {
+  Sprite.Util.each(statusWindowEquipmentButton, function (button, key) {
     button.addEventListener("click", function () {
       if (Game.hero.data.equipment[key]) {
         Game.hero.data.equipment[key] = null;
@@ -12127,7 +12235,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    Sprite.each(Game.hero.data.equipment, function (element, key) {
+    Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
       var button = statusWindowEquipmentButton[key];
 
       if (element) {
@@ -12735,7 +12843,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function pixelCollide(A, B) {
     // 对图像进行某种意义上的移动，例如把上面的图的A和B都平移到左上角，也就是AA的左上角变为0,0坐标
 
-    var now = new Date().getTime();
+    var now = Date.now();
 
     // WWWHHH
     var key = A.w * 1000 + A.h;
@@ -12779,7 +12887,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
-  Game.assign("actorCollision", function (actorSprite, blockSprite) {
+  function actorCollision(actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
     var actorRect = actorSprite.getFrame(0);
     // 阻挡的块则检测当前frame
@@ -12797,10 +12905,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  });
+  }
 
   // 技能碰撞检测
-  Game.assign("skillCollision", function (skillSprite, actorSprite) {
+  function skillCollision(skillSprite, actorSprite) {
     var skillRect = skillSprite.getFrame();
     var actorRect = actorSprite.getFrame();
 
@@ -12810,7 +12918,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  });
+  }
 })();
 
 "use strict";
@@ -12902,6 +13010,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
+var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; })();
+
 /*
 
 A-RPG Game, Built using JavaScript ES6
@@ -12941,7 +13051,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             if (Game.sounds && Game.sounds[key]) {
               resolve();
             } else {
-              Sprite.load(url).then(function (data) {
+              Sprite.Loader.load(url).then(function (data) {
                 Game.sounds[key] = data[0];
                 resolve();
               });
@@ -12966,9 +13076,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }));
       });
 
-      Promise.all(promises).then(function () {
-        resolve();
-      });
+      Promise.all(promises).then(resolve, reject);
     });
   }
 
@@ -12976,9 +13084,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.assign("loadArea", function (id) {
     return new Promise(function (resolve, reject) {
 
-      Game.Map.load(id).then(function (mapObj) {
+      Promise.all([Game.Map.load(id), Preload()]).then(function (_ref) {
+        var _ref2 = _slicedToArray(_ref, 1);
 
-        var area = {
+        var mapObj = _ref2[0];
+
+        return {
           actors: new Set(), // 角色
           bags: new Set(), // 掉落小包
           items: new Set(), // 其他物品（有碰撞）
@@ -12986,64 +13097,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           onto: [], // onto会触发的地点/物品
           map: mapObj
         };
+      }).then(function (area) {
 
         var promises = new Set();
 
-        promises.add(Preload());
-
-        if (mapObj.data.actors) {
-          mapObj.data.actors.forEach(function (element) {
-            promises.add(new Promise(function (resolve, reject) {
-              Game.Actor.load(element.id).then(function (actorObj) {
-
-                for (var key in element) {
-                  actorObj.data[key] = element[key];
-                }
-
-                area.actors.add(actorObj);
-                actorObj.draw();
-                resolve();
-              });
+        if (area.map.data.actors) {
+          area.map.data.actors.forEach(function (element) {
+            promises.add(Game.Actor.load(element.id).then(function (actorObj) {
+              for (var key in element) {
+                actorObj.data[key] = element[key];
+              }
+              area.actors.add(actorObj);
+              actorObj.draw();
             }));
           });
         }
 
-        if (mapObj.spawnMonster && mapObj.spawnMonster.list && mapObj.spawnMonster.count) {
-          var _loop = function _loop(monsterId) {
-            promises.add(new Promise(function (resolve, reject) {
-              Game.Actor.load(monsterId).then(function () {
-                resolve();
-              });
-            }));
-          };
-
-          for (var monsterId in mapObj.spawnMonster.list) {
-            _loop(monsterId);
+        if (area.map.spawnMonster && area.map.spawnMonster.list && area.map.spawnMonster.count) {
+          for (var monsterId in area.map.spawnMonster.list) {
+            promises.add(Game.Actor.load(monsterId));
           }
         }
 
-        if (mapObj.spawnItem && mapObj.spawnItem.list && mapObj.spawnItem.count) {
-          var _loop2 = function _loop2(itemId) {
-            promises.add(new Promise(function (resolve, reject) {
-              Game.Item.load(itemId).then(function () {
-                resolve();
-              });
-            }));
-          };
-
-          for (var itemId in mapObj.spawnItem.list) {
-            _loop2(itemId);
+        if (area.map.spawnItem && area.map.spawnItem.list && area.map.spawnItem.count) {
+          for (var itemId in area.map.spawnItem.list) {
+            promises.add(Game.Item.load(itemId));
           }
         }
 
-        if (mapObj.data.onto) {
-          mapObj.data.onto.forEach(function (element) {
+        if (area.map.data.onto) {
+          area.map.data.onto.forEach(function (element) {
             area.onto.push(element);
           });
         }
 
-        if (mapObj.data.touch) {
-          mapObj.data.touch.forEach(function (element) {
+        if (area.map.data.touch) {
+          area.map.data.touch.forEach(function (element) {
             area.touch.push(element);
           });
         }
@@ -13051,7 +13140,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         Promise.all(promises).then(function () {
           resolve(area);
         });
-      }); //map
+      });
     });
   });
 })();
@@ -13091,7 +13180,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   Game.assign("Map", (function (_Sprite$Event) {
     _inherits(GameMap, _Sprite$Event);
@@ -13124,7 +13213,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
             var _data = _slicedToArray(data, 2);
 
             var mapData = _data[0];
@@ -13186,7 +13275,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       ;
 
-      Sprite.load(images).then(function (data) {
+      Sprite.Loader.load(images).then(function (data) {
 
         // 释放空间
         privates.data.tilesets = null;
@@ -13535,7 +13624,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("quest/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("quest/" + id + ".js").then(function (data) {
             var questData = data[0]();
             questData.id = id;
             resolve(questData);
@@ -13617,7 +13706,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   Game.assign("Item", (function (_Sprite$Event) {
     _inherits(GameItem, _Sprite$Event);
@@ -13626,7 +13715,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("item/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("item/" + id + ".js").then(function (data) {
             var itemData = data[0]();
             itemData.id = id;
             var itemObj = new Game.Item(itemData);
@@ -13655,7 +13744,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (_this.data.image) {
-        Sprite.load("item/" + _this.data.image).then(function (data) {
+        Sprite.Loader.load("item/" + _this.data.image).then(function (data) {
           var image = data[0];
           privates.icon = image;
 
@@ -13906,7 +13995,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   Game.assign("Skill", (function (_Sprite$Event) {
     _inherits(GameSkill, _Sprite$Event);
@@ -13915,7 +14004,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("skill/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("skill/" + id + ".js").then(function (data) {
             var skillData = data[0]();
             var skillObj = new Game.Skill(skillData);
             Game.skills[id] = skillObj;
@@ -13935,7 +14024,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var privates = internal(_this);
       privates.data = skillData;
 
-      Sprite.load("skill/" + _this.data.image, "skill/" + _this.data.icon, "skill/" + _this.data.sound).then(function (data) {
+      Sprite.Loader.load("skill/" + _this.data.image, "skill/" + _this.data.icon, "skill/" + _this.data.sound).then(function (data) {
         var image = data[0];
         privates.icon = data[1];
         privates.sound = data[2];
@@ -14212,7 +14301,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /*
     角色类，包括涉及到hero和npc
@@ -14226,7 +14315,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("actor/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("actor/" + id + ".js").then(function (data) {
             var actorData = data[0]();
             actorData.id = id;
 
@@ -14265,7 +14354,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (_this.data.image instanceof Array) {
         _this.init(_this.data.image);
       } else if (typeof _this.data.image == "string") {
-        Sprite.load("actor/" + _this.data.image).then(function (data) {
+        Sprite.Loader.load("actor/" + _this.data.image).then(function (data) {
           // data is Array
           _this.init(data);
         });
@@ -14764,7 +14853,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (!skill) return 0;
 
         // 只有当这个skill的cooldown结
-        var now = new Date().getTime();
+        var now = Date.now();
         if (Number.isFinite(this.lastAttack) && Number.isFinite(this.lastAttackCooldown) && now - this.lastAttack < this.lastAttackCooldown) {
           return 0;
         }
@@ -15554,7 +15643,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -15609,7 +15698,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -15895,57 +15984,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "gotoArea",
       value: function gotoArea(dest, x, y) {
         var privates = internal(this);
-        privates.beAttacking = new Set();
-        Game.pause();
-        Game.windows.interface.hide();
-        Game.windows.stage.hide();
-        Game.windows.loading.begin();
-        Game.windows.loading.update("20%");
 
-        setTimeout(function () {
+        Sprite.Util.timeout(5).then(function () {
 
+          privates.beAttacking = new Set();
+          Game.pause();
+          Game.windows.interface.hide();
+          Game.windows.stage.hide();
+          Game.windows.loading.begin();
+          Game.windows.loading.update("30%");
           Game.clearStage();
+          return Sprite.Util.timeout(5);
+        }).then(function () {
+
+          return Game.loadArea(dest);
+        }).then(function (area) {
+
+          Game.area = area;
           Game.windows.loading.update("50%");
+          return Sprite.Util.timeout(5);
+        }).then(function () {
 
-          setTimeout(function () {
+          Game.hero.data.area = dest;
+          Game.hero.draw();
+          Game.hero.x = x;
+          Game.hero.y = y;
+          Game.area.actors.add(Game.hero);
+          Game.area.map.draw();
+          Game.windows.loading.update("80%");
+          return Sprite.Util.timeout(5);
+        }).then(function () {
 
-            Game.loadArea(dest).then(function (area) {
+          Game.hero.x = x;
+          Game.hero.y = y;
+          Game.hero.data.time += 60; // 加一小时
+          Game.windows.loading.end();
+          Game.windows.interface.datetime();
+          Game.windows.interface.refresh();
+          Game.start();
+          Game.windows.loading.update("100%");
+          return Sprite.Util.timeout(5);
+        }).then(function () {
 
-              Game.area = area;
-              Game.windows.loading.update("80%");
-
-              setTimeout(function () {
-
-                Game.hero.data.area = dest;
-                Game.hero.draw();
-                Game.hero.x = x;
-                Game.hero.y = y;
-                area.actors.add(Game.hero);
-
-                area.map.draw();
-                Game.windows.loading.update("100%");
-
-                setTimeout(function () {
-
-                  Game.hero.x = x;
-                  Game.hero.y = y;
-                  Game.hero.data.time += 60; // 加一小时
-                  Game.windows.loading.end();
-                  Game.windows.interface.datetime();
-                  Game.windows.interface.refresh();
-                  Game.start();
-
-                  setTimeout(function () {
-
-                    Game.stage.update();
-                    Game.windows.stage.show();
-                    Game.windows.interface.show();
-                  }, 5);
-                }, 5);
-              }, 5);
-            }); // loadArea
-          }, 5);
-        }, 5);
+          Game.stage.update();
+          Game.windows.stage.show();
+          Game.windows.interface.show();
+        });
       }
 
       // 当玩家站到某个点的时候执行的命令
@@ -16000,7 +16084,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
         };
         // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.onto, FindUnderHero);
+        Sprite.Util.each(Game.area.onto, FindUnderHero);
         if (onto) {
           if (onto.execute) {
             onto.execute();
@@ -16108,22 +16192,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         // 用FindUnderHero函数寻找到玩家当前格子的地点
 
         // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.actors, FindUnderHero);
+        Sprite.Util.each(Game.area.actors, FindUnderHero);
         // 找最近尸体 Game.area.bags
-        Sprite.each(Game.area.bags, FindUnderHero);
+        Sprite.Util.each(Game.area.bags, FindUnderHero);
         // 找最近物品 Game.area.items
-        Sprite.each(Game.area.items, FindUnderHero);
+        Sprite.Util.each(Game.area.items, FindUnderHero);
         // 其他物品（由地图文件定义）
         Game.area.touch.forEach(FindUnderHero);
 
         // 用FindFaceHero寻找面对着玩家的格子地点
 
         // 找最近可“事件”人物 Game.area.actors
-        Sprite.each(Game.area.actors, FindFaceHero);
+        Sprite.Util.each(Game.area.actors, FindFaceHero);
         // 找最近尸体 Game.area.bags
-        Sprite.each(Game.area.bags, FindFaceHero);
+        Sprite.Util.each(Game.area.bags, FindFaceHero);
         // 找最近尸体 Game.area.items
-        Sprite.each(Game.area.items, FindFaceHero);
+        Sprite.Util.each(Game.area.items, FindFaceHero);
         // 其他物品（由地图文件定义）
         Game.area.touch.forEach(FindFaceHero);
         // 水源
@@ -16169,7 +16253,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return GameActorHero;
   })(Game.Actor));
 })();
-
 "use strict";
 
 var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
@@ -16205,7 +16288,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -16371,7 +16454,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -16611,7 +16694,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -16750,7 +16833,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         imageUrls.push(BASE + "/weapons/" + heroCustom.sex + "/weapons.png");
       }
 
-      Sprite.load(imageUrls).then(function (data) {
+      Sprite.Loader.load(imageUrls).then(function (data) {
         CombineHeroImage(data, heroCustom.width, heroCustom.height).then(function (data) {
           resolve(data);
         });
@@ -16896,13 +16979,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /*
       let mousePressed = false;
-       Game.stage.on("stagemousedown", function (event) {
+       Game.stage.on("stagemousedown", (event) => {
         mousePressed = true;
       });
-       Game.stage.on("stagemouseup", function (event) {
+       Game.stage.on("stagemouseup", (event) => {
         mousePressed = false;
       });
-       Game.stage.on("mouseleave", function (event) { // mouse leave canvas
+       Game.stage.on("mouseleave", (event) => { // mouse leave canvas
         mousePressed = false;
       });
       */

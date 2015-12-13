@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.skill = Game.Window.create("skillWindow");
@@ -82,17 +82,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let lastSelect = -1;
 
-  skillWindowClose.addEventListener("click", function (event) {
+  skillWindowClose.addEventListener("click", (event) => {
     win.hide();
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       win.hide();
     }, 20);
   });
 
-  win.assign("open", function (select) {
+  win.assign("open", (select) => {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -102,7 +102,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let index = 0;
     let table = "";
-    Game.hero.data.skills.forEach(function (skillId) {
+    Game.hero.data.skills.forEach((skillId) => {
       let skill = Game.skills[skillId];
 
       let line = "";
@@ -126,14 +126,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.skill.show();
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = win.querySelectorAll(".skillWindowManage");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = win.querySelectorAll(".skillWindowManage").length;
 
     if (lastSelect == -1) {
@@ -159,7 +159,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  skillWindowTable.addEventListener("click", function (event) {
+  skillWindowTable.addEventListener("click", (event) => {
     let skillId = event.target.getAttribute("data-id");
     let index = Game.hero.data.skills.indexOf(skillId);
     if (skillId && Game.skills.hasOwnProperty(skillId) && index != -1) {
@@ -216,7 +216,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
                 Game.hero.data.gold -= skill.data.next.gold;
                 Game.hero.data.exp -= skill.data.next.exp;
                 Game.windows.loading.begin();
-                Game.Skill.load(nextId).then(function (skillObj) {
+                Game.Skill.load(nextId).then( (skillObj) => {
                   Game.windows.loading.end();
                   win.open();
                 });
@@ -227,7 +227,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             break;
           case "remove":
             Game.confirm(`真的要遗忘 ${skill.data.name} 技能吗？`).then(() => {
-              Game.hero.data.bar.forEach(function (element, index, array) {
+              Game.hero.data.bar.forEach((element, index, array) => {
                 if (element && element.id == skillId) {
                   array[index] = null;
                 }

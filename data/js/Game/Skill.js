@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   Game.assign("Skill", (function (_Sprite$Event) {
     _inherits(GameSkill, _Sprite$Event);
@@ -40,7 +40,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("skill/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("skill/" + id + ".js").then(function (data) {
             var skillData = data[0]();
             var skillObj = new Game.Skill(skillData);
             Game.skills[id] = skillObj;
@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var privates = internal(_this);
       privates.data = skillData;
 
-      Sprite.load("skill/" + _this.data.image, "skill/" + _this.data.icon, "skill/" + _this.data.sound).then(function (data) {
+      Sprite.Loader.load("skill/" + _this.data.image, "skill/" + _this.data.icon, "skill/" + _this.data.sound).then(function (data) {
         var image = data[0];
         privates.icon = data[1];
         privates.sound = data[2];

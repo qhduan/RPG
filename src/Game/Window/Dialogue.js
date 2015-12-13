@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.dialogue = Game.Window.create("dialogueWindow");
@@ -87,19 +87,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let dialogueWindowClose = document.getElementById("dialogueWindowClose");
   let dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
-  dialogueWindowNext.addEventListener("click", function () {
+  dialogueWindowNext.addEventListener("click", () => {
     DialogueNext();
   });
 
-  dialogueWindowClose.addEventListener("click", function () {
-    setTimeout(function () {
+  dialogueWindowClose.addEventListener("click", () => {
+    setTimeout( () => {
       Game.windows.dialogue.hide();
       dialogueContent = [];
       dialogueIndex = 0;
     }, 20);
   });
 
-  Game.dialogue = function (content, name) {
+  Game.dialogue = (content, name) => {
     dialogueWindowNext.style.display = "block";
     dialogueWindowClose.style.display = "none";
     if (name && name.length) {
@@ -122,7 +122,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   };
 
-  win.whenUp(["enter", "space", "esc"], function () {
+  win.whenUp(["enter", "space", "esc"], () => {
     if (Game.windows.dialogue.showing) {
       if (dialogueWindowNext.style.display != "none") {
         dialogueWindowNext.click();

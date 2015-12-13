@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.map = Game.Window.create("mapWindow");
@@ -62,17 +62,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let mapWindowClose = win.querySelector("#mapWindowClose");
   let mapWindowMap = win.querySelector("#mapWindowMap");
 
-  mapWindowClose.addEventListener("click", function (event) {
+  mapWindowClose.addEventListener("click", (event) => {
     Game.windows.map.hide();
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       mapWindowClose.click();
     }, 20);
   });
 
-  win.on("beforeShow", function (event) {
+  win.on("beforeShow", (event) => {
     if (Game.stage && Game.area && Game.area.map) {
       let stage = {
         x: Game.stage.x,

@@ -36,14 +36,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Main Stage, display object
    * @class
    * @extends Sprite.Container
-   */
-  Sprite.assign("Stage", (function (_Sprite$Container) {
+  */
+
+  var SpriteStage = (function (_Sprite$Container) {
     _inherits(SpriteStage, _Sprite$Container);
 
     /** @function Sprite.Stage.constructor
@@ -201,5 +202,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteStage;
-  })(Sprite.Container));
+  })(Sprite.Container);
+
+  Sprite.assign("Stage", SpriteStage);
 })();

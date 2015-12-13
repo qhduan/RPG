@@ -18,16 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   Game.assign("Skill", class GameSkill extends Sprite.Event {
 
     static load (id) {
-      return new Promise(function (resolve, reject) {
-        Sprite.load(`skill/${id}.js`).then(function (data) {
+      return new Promise( (resolve, reject) => {
+        Sprite.Loader.load(`skill/${id}.js`).then( (data) => {
           let skillData = data[0]();
           let skillObj = new Game.Skill(skillData);
           Game.skills[id] = skillObj;
@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let privates = internal(this);
       privates.data = skillData;
 
-      Sprite.load(
+      Sprite.Loader.load(
         `skill/${this.data.image}`,
         `skill/${this.data.icon}`,
         `skill/${this.data.sound}`
@@ -230,7 +230,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (sprite.paused == true) {
             Game.layers.skillLayer.removeChild(sprite);
           } else {
-            sprite.on("animationend", function () {
+            sprite.on("animationend", () => {
               Game.layers.skillLayer.removeChild(sprite);
             });
           }
@@ -239,7 +239,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           if (sprite.paused == true) {
             Game.layers.skillLayer.removeChild(sprite);
           } else {
-            sprite.on("animationend", function () {
+            sprite.on("animationend", () => {
               Game.layers.skillLayer.removeChild(sprite);
             });
           }

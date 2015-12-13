@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Input
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
-(function () {
+( () => {
  "use strict";
 
   let keyTable = {
@@ -102,13 +102,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let pressed = new Map();
 
-  window.addEventListener("keydown", function (event) {
+  window.addEventListener("keydown", (event) => {
     event = event || window.event;
     let keyCode = event.keyCode;
     pressed.set(keyCode, true);
   });
 
-  window.addEventListener("keyup", function (event) {
+  window.addEventListener("keyup", (event) => {
     event = event || window.event;
     let keyCode = event.keyCode;
     if (pressed.has(keyCode)) {
@@ -119,13 +119,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Sprite.Input, only has static methods
    * @class
-   */
-  Sprite.assign("Input", class SpriteInput {
+  */
+  class SpriteInput {
 
     /**
      * @param {string} key Key-string ('A', 'a') or key-number (65, 97)
      * @return {boolean} If the key is pressing, return true, otherwise, false
-     */
+    */
     static isPressed (key) {
       if (Number.isFinite(key)) {
         if (pressed.has(key)) {
@@ -147,10 +147,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /**
      * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
      * @param {function} callback When key in keys is pressed, callback
-     */
+    */
     static whenPress (keys, callback) {
       if (callback) {
-        window.addEventListener("keypress", function (event) {
+        window.addEventListener("keypress", (event) => {
           event = event || window.event;
           let keyCode = event.keyCode;
           for (let key of keys) {
@@ -169,10 +169,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /**
      * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
      * @param {function} callback When key in keys is pressed, callback
-     */
+    */
     static whenDown (keys, callback) {
       if (callback) {
-        window.addEventListener("keydown", function (event) {
+        window.addEventListener("keydown", (event) => {
           event = event || window.event;
           let keyCode = event.keyCode;
           for (let key of keys) {
@@ -191,10 +191,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     /**
      * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
      * @param {function} callback When key in keys is pressed, callback
-     */
+    */
     static whenUp (keys, callback) {
       if (callback) {
-        window.addEventListener("keyup", function (event) {
+        window.addEventListener("keyup", (event) => {
           event = event || window.event;
           let keyCode = event.keyCode;
           for (let key of keys) {
@@ -209,7 +209,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         throw new Error("Sprite.Input.whenUp got invalid arguments");
       }
     }
-  });
+  }
+
+  Sprite.assign("Input", SpriteInput);
 
 
 })();

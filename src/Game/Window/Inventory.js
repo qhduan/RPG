@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.inventory = Game.Window.create("inventoryWindow");
@@ -121,54 +121,54 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let inventoryWindowGold = win.querySelector("span#inventoryWindowGold");
   let inventoryWindowTable = win.querySelector("#inventoryWindowTable");
 
-  inventoryWindowClose.addEventListener("click", function (event) {
+  inventoryWindowClose.addEventListener("click", (event) => {
     win.hide();
   });
 
-  inventoryWindowStatus.addEventListener("click", function (event) {
+  inventoryWindowStatus.addEventListener("click", (event) => {
     win.hide();
     Game.windows.status.open();
   });
 
-  win.whenUp(["tab"], function () {
-    setTimeout(function () {
+  win.whenUp(["tab"], () => {
+    setTimeout( () => {
       win.hide();
       Game.windows.status.open();
     }, 20);
   });
 
-  inventoryWindowAll.addEventListener("click", function (event) {
+  inventoryWindowAll.addEventListener("click", (event) => {
     win.open();
   });
 
-  inventoryWindowWeapon.addEventListener("click", function (event) {
+  inventoryWindowWeapon.addEventListener("click", (event) => {
     win.open("sword|spear|bow");
   });
 
-  inventoryWindowArmor.addEventListener("click", function (event) {
+  inventoryWindowArmor.addEventListener("click", (event) => {
     win.open("head|body|feet");
   });
 
-  inventoryWindowPotion.addEventListener("click", function (event) {
+  inventoryWindowPotion.addEventListener("click", (event) => {
     win.open("potion");
   });
 
-  inventoryWindowMaterial.addEventListener("click", function (event) {
+  inventoryWindowMaterial.addEventListener("click", (event) => {
     win.open("material");
   });
 
-  inventoryWindowBook.addEventListener("click", function (event) {
+  inventoryWindowBook.addEventListener("click", (event) => {
     win.open("book|scroll|letter");
   });
 
-  inventoryWindowMisc.addEventListener("click", function (event) {
+  inventoryWindowMisc.addEventListener("click", (event) => {
     win.open("misc");
   });
 
   let lastFilter = null;
   let lastSelect = -1;
 
-  win.assign("open", function (filter, select) {
+  win.assign("open", (filter, select) => {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -210,12 +210,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     let index = 0;
     let ids = Object.keys(Game.hero.data.items);
     ids.sort();
-    ids.forEach(function (itemId) {
+    ids.forEach((itemId) => {
       let itemCount = Game.hero.data.items[itemId];
       let item = Game.items[itemId];
       let equipment = null;
 
-      Sprite.each(Game.hero.data.equipment, function (element, key) {
+      Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
         if (element == item.id)
           equipment = key;
       });
@@ -250,14 +250,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = inventoryWindowTable.querySelectorAll("button");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = inventoryWindowTable.querySelectorAll("button").length;
 
     if (lastSelect == -1) {
@@ -283,14 +283,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  inventoryWindowTable.addEventListener("click", function (event) {
+  inventoryWindowTable.addEventListener("click", (event) => {
     let itemId = event.target.getAttribute("data-id");
     if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
       let item = Game.items[itemId];
       let itemCount = Game.hero.data.items[itemId];
       let equipment = null;
 
-      Sprite.each(Game.hero.data.equipment, function (element, key) {
+      Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
         if (element == item.id)
           equipment = key;
       });
@@ -352,7 +352,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
             delete Game.hero.data.items[itemId];
 
-            Game.hero.data.bar.forEach(function (element, index, array) {
+            Game.hero.data.bar.forEach((element, index, array) => {
               if (element && element.id == itemId) {
                 array[index] = null;
               }
@@ -371,7 +371,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
               6:5,
               7:6,
               8:7
-            }, function (choice) {
+            }, (choice) => {
               if (Number.isFinite(choice) && choice >= 0) {
                 Game.hero.data.bar[choice] = {
                   id: item.id,
@@ -387,13 +387,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.whenUp(["esc"], function () {
-    setTimeout(function () {
+  win.whenUp(["esc"], () => {
+    setTimeout( () => {
       win.hide();
     }, 20);
   });
 
-  win.whenUp(["left", "right"], function (key) {
+  win.whenUp(["left", "right"], (key) => {
     if (key == "right") {
       let filter = lastFilter;
       if (filter == null) {

@@ -18,16 +18,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   Game.assign("Map", class GameMap extends Sprite.Event {
 
     static load (id) {
-      return new Promise(function (resolve, reject) {
-        Sprite.load(`map/${id}.json`, `map/${id}.js`).then(function (data) {
+      return new Promise( (resolve, reject) => {
+        Sprite.Loader.load(`map/${id}.json`, `map/${id}.js`).then( (data) => {
           let [mapData, mapInfo] = data;
           mapInfo = mapInfo(); // map/id.js文件会返回一个函数
           mapData.id = id;
@@ -41,7 +41,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           }
 
           let mapObj = new Game.Map(mapData);
-          mapObj.on("complete", function () {
+          mapObj.on("complete", () => {
             resolve(mapObj);
           })
         });
@@ -80,7 +80,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         images.push(`map/${element.image}`);
       };
 
-      Sprite.load(images).then((data) => {
+      Sprite.Loader.load(images).then((data) => {
 
         // 释放空间
         privates.data.tilesets = null;

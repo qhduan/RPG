@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Shape
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Shape", class SpriteShape extends Sprite.Display {
+  */
+  class SpriteShape extends Sprite.Display {
     /**
      * construct Sprite.Shape
      * @constructor
@@ -291,7 +291,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         );
       }
     }
-  });
+  }
+
+  Sprite.assign("Shape", SpriteShape);
 
 
 })();

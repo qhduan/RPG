@@ -32,12 +32,13 @@ grunt.tasks(["babel"], {}, function () {
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
-    var stat = null;
-    try {
-      stat = fs.statSync(filepath);
-    } catch (e) { }
 
-    if (stat && stat.isFile && stat.isFile() && filepath.indexOf("src") != -1 ) {
+    if (filepath.indexOf("src") == -1) return;
+
+    fs.stat(filepath, function (err, stat) {
+      if ( err ) return;
+      if ( !stat.isFile() ) return;
+
       var outputPath = filepath.replace("src", "data/js");
       babel.transformFile(filepath, {
         presets: ["es2015"]
@@ -51,8 +52,7 @@ grunt.tasks(["babel"], {}, function () {
         });
 
       });
-    }
-
+    });
   });
 
   console.log("Grunt Done");

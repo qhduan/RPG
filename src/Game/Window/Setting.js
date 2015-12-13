@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.setting = Game.Window.create("settingWindow");
@@ -89,7 +89,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 
-  win.on("beforeShow", function () {
+  win.on("beforeShow", () => {
     settingWindowRendererType.textContent = Game.stage.rendererType;
   });
 
@@ -103,11 +103,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   });
 
 
-  win.whenUp(["esc"], function (key) {
+  win.whenUp(["esc"], (key) => {
     settingWindowClose.click();
   });
 
-  win.assign("toggle", function () {
+  win.assign("toggle", () => {
     if (!document.fullscreenElement &&    // alternative standard method
         !document.mozFullScreenElement &&
         !document.webkitFullscreenElement &&

@@ -132,7 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 0;
     var table = "";
-    Sprite.each(Game.hero.data.items, function (itemCount, itemId) {
+    Sprite.Util.each(Game.hero.data.items, function (itemCount, itemId) {
       var item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1) return;
@@ -263,7 +263,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             array[index] = null;
           }
         });
-        Sprite.each(Game.hero.data.equipment, function (element, key) {
+        Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
           if (element == itemId) {
             Game.hero.data.equipment[key] = null;
           }

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   Game.assign("Archive", class GameArchive {
@@ -94,14 +94,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         Game.windows.loading.begin();
 
-        setTimeout(function () {
+        setTimeout( () => {
           let heroData = data.hero;
 
-          Game.drawHero(heroData.custom).then(function (heroImage) {
+          Game.drawHero(heroData.custom).then( (heroImage) => {
             heroData.image = heroImage;
             Game.hero = new Game.ActorHero(heroData);
 
-            Game.hero.on("complete", function () {
+            Game.hero.on("complete", () => {
 
               Game.hero.gotoArea(heroData.area, heroData.x, heroData.y);
 

@@ -36,13 +36,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
-   */
-  Sprite.assign("Frame", (function (_Sprite$Display) {
+  */
+
+  var SpriteFrame = (function (_Sprite$Display) {
     _inherits(SpriteFrame, _Sprite$Display);
 
     function SpriteFrame(image, sx, sy, width, height) {
@@ -131,5 +132,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteFrame;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Frame", SpriteFrame);
 })();

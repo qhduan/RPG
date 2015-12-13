@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Main Stage, display object
    * @class
    * @extends Sprite.Container
-   */
-  Sprite.assign("Stage", class SpriteStage extends Sprite.Container {
+  */
+  class SpriteStage extends Sprite.Container {
 
     /** @function Sprite.Stage.constructor
      * consturct a Sprite.Stage with width and height
@@ -155,7 +155,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-  });
+  }
+
+  Sprite.assign("Stage", SpriteStage);
 
 
 })();

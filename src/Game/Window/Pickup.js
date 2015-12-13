@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.pickup = Game.Window.create("pickupWindow");
@@ -75,14 +75,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let currentItemObj = null;
   let lastSelect = -1;
 
-  pickupWindowClose.addEventListener("click", function (event) {
+  pickupWindowClose.addEventListener("click", (event) => {
     Game.windows.pickup.hide();
   });
 
-  pickupWindowAll.addEventListener("click", function (event) {
+  pickupWindowAll.addEventListener("click", (event) => {
     let itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
-      Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+      Sprite.Util.each(itemObj.inner, (itemCount, itemId, inner) => {
         if (itemId == "gold") {
           Game.hero.data.gold += itemCount;
         } else {
@@ -98,17 +98,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.whenUp(["a", "A"], function (key) {
+  win.whenUp(["a", "A"], (key) => {
     pickupWindowAll.click();
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       win.hide();
     }, 20);
   });
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], function (key) {
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8", "9"], (key) => {
     let buttons = pickupWindowTable.querySelectorAll("button");
     for (let i = 0, len = buttons.length; i < len; i++) {
       let buttonIndex = buttons[i].getAttribute("data-index");
@@ -120,7 +120,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.assign("open", function (itemObj, select) {
+  win.assign("open", (itemObj, select) => {
     if (typeof select == "undefined") {
       select = -1;
     }
@@ -147,7 +147,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let index = 1;
     let table = "";
-    Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+    Sprite.Util.each(itemObj.inner, (itemCount, itemId, inner) => {
       let item = Game.items[itemId];
 
       let line = "";
@@ -179,14 +179,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.pickup.show();
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = pickupWindowTable.querySelectorAll("button");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = pickupWindowTable.querySelectorAll("button").length;
 
     if (lastSelect == -1) {
@@ -212,7 +212,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  pickupWindowTable.addEventListener("click", function (event) {
+  pickupWindowTable.addEventListener("click", (event) => {
     let itemId = event.target.getAttribute("data-id");
     if (itemId && currentItemObj.inner && currentItemObj.inner.hasOwnProperty(itemId)) {
       let itemCount = currentItemObj.inner[itemId];

@@ -135,13 +135,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /*
       let mousePressed = false;
-       Game.stage.on("stagemousedown", function (event) {
+       Game.stage.on("stagemousedown", (event) => {
         mousePressed = true;
       });
-       Game.stage.on("stagemouseup", function (event) {
+       Game.stage.on("stagemouseup", (event) => {
         mousePressed = false;
       });
-       Game.stage.on("mouseleave", function (event) { // mouse leave canvas
+       Game.stage.on("mouseleave", (event) => { // mouse leave canvas
         mousePressed = false;
       });
       */

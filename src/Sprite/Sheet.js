@@ -23,17 +23,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Sheet, contain sprite's sheet and it's animation
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Sheet", class SpriteSheet extends Sprite.Display {
+  */
+  class SpriteSheet extends Sprite.Display {
     /**
      * construct Sprite.Sheet
      * @param config
@@ -340,7 +340,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       frame.draw(renderer);
     }
 
-  });
+  }
 
+  Sprite.assign("Sheet", SpriteSheet);
 
 })();

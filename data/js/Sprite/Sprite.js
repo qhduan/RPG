@@ -32,12 +32,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var SpriteCore = (function () {
-    function SpriteCore() {
-      _classCallCheck(this, SpriteCore);
+  var Sprite = (function () {
+    function Sprite() {
+      _classCallCheck(this, Sprite);
     }
 
-    _createClass(SpriteCore, [{
+    _createClass(Sprite, [{
       key: "assign",
       value: function assign(name, object) {
         Object.defineProperty(this, name, {
@@ -50,79 +50,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }]);
 
-    return SpriteCore;
+    return Sprite;
   })();
 
-  ;
-
-  var Sprite = window.Sprite = new SpriteCore();
-
-  /**
-   * Function Sprite.Namespace, return an unique Private-Properties function
-   * for javascript private properties need, for es6
-   */
-  Sprite.assign("Namespace", function () {
-    /**
-     * Using closure variable store private properties
-     * and different file have different "privateProperties"
-     */
-    var privates = new WeakMap();
-    return function (object) {
-      if (privates.has(object) == false) {
-        privates.set(object, {});
-      }
-      return privates.get(object);
-    };
-  });
-
-  /**
-   * @param {number} N The min number
-   * @param {number} M The max number
-   * @return {number} A random integer N <= return < M, aka. [N, M)
-   */
-  Sprite.assign("rand", function (N, M) {
-    var r = M - N;
-    r *= Math.random();
-    return N + Math.floor(r);
-  });
-
-  /**
-   * @param {Object} object The object we require copy
-   * @return {Object} A deep copy of object
-   */
-  Sprite.assign("copy", function (object) {
-    return JSON.parse(JSON.stringify(object));
-  });
-
-  Sprite.assign("each", function (obj, functional) {
-    if (obj.forEach) {
-      obj.forEach(functional);
-    } else {
-      for (var key in obj) {
-        functional(obj[key], key, obj);
-      }
-    }
-  });
-
-  Sprite.assign("uuid", function () {
-    // generate a UUID
-    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, function (c) {
-      var r = Math.floor(Math.random() * 16);
-      if (c == "x") {
-        return r.toString(16);
-      } else {
-        return (r & 0x03 | 0x08).toString(16);
-      }
-    });
-  });
-
-  Sprite.assign("btoa", function (str) {
-    // convert str to base64
-    return window.btoa(unescape(encodeURIComponent(str)));
-  });
-
-  Sprite.assign("atob", function (str) {
-    // convert base64 str to original
-    return decodeURIComponent(escape(window.atob(str)));
-  });
+  window.Sprite = new Sprite();
 })();

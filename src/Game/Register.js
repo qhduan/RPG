@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   // 英雄组件数据
@@ -54,16 +54,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   Array.from(
     document.querySelectorAll(".registerWindow #registerWindowDisplaySelect select")
-  ).forEach(function (element) {
-    element.addEventListener("change", function () {
+  ).forEach((element) => {
+    element.addEventListener("change", () => {
       ApplyHeroDisplay();
     });
   });
 
   Array.from(
     document.querySelectorAll(".registerWindow #registerWindowPersonal select")
-  ).forEach(function (element) {
-    element.addEventListener("change", function () {
+  ).forEach((element) => {
+    element.addEventListener("change", () => {
       ApplyHeroPersonal();
     });
   });
@@ -71,7 +71,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function ApplyHeroDisplay () {
     Array.from(
       document.querySelectorAll(".registerWindow #registerWindowDisplaySelect select")
-    ).forEach(function (element) {
+    ).forEach((element) => {
       let type = element.getAttribute("data-type");
       let value = element.value;
       if (type == "malehair" || type == "femalehair") {
@@ -124,7 +124,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     Array.from(
       document.querySelectorAll(".registerWindow #registerWindowPersonal select")
-    ).forEach(function (element) {
+    ).forEach((element) => {
       let value = element.value;
       let type = element.getAttribute("data-type");
       HeroDefault[type] = value;
@@ -141,7 +141,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     context.clearRect(0, 0, canvas.width, canvas.height);
 
     document.getElementById("loading").innerHTML = "Loading";
-    Game.drawHero(heroCustom).then(function (images) {
+    Game.drawHero(heroCustom).then( (images) => {
       let img = images[0];
       context.drawImage(img, 0, 0, img.width, img.height);
       document.getElementById("loading").innerHTML = "";
@@ -154,7 +154,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     static reg () {
       Array.from(
         document.querySelectorAll(".registerWindow select")
-      ).forEach(function (element) {
+      ).forEach((element) => {
         element.selectedIndex = 0;
       });
       ApplyHeroDisplay();

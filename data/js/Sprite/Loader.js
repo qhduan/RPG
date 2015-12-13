@@ -1,5 +1,9 @@
 "use strict";
 
+var _createClass = (function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; })();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
 /*
 
 2D Game Sprite Library, Built using JavaScript ES6
@@ -28,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Cache all url and element
@@ -62,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Cache.set(url, obj);
 
       if (type == "json") {
-        obj = Sprite.copy(obj);
+        obj = Sprite.Util.copy(obj);
       }
 
       if (callback) {
@@ -217,84 +221,99 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.send();
   }
 
-  Sprite.assign("load", function () {
-    var args = Array.prototype.slice.call(arguments);
-    return new Promise(function (resolve, reject) {
-      var urls = [];
+  var SpriteLoader = (function () {
+    function SpriteLoader() {
+      _classCallCheck(this, SpriteLoader);
+    }
 
-      var _iteratorNormalCompletion2 = true;
-      var _didIteratorError2 = false;
-      var _iteratorError2 = undefined;
+    _createClass(SpriteLoader, null, [{
+      key: "load",
+      value: function load() {
+        var args = Array.prototype.slice.call(arguments);
 
-      try {
-        for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-          var element = _step2.value;
+        return new Promise(function (resolve, reject) {
 
-          if (typeof element == "string") {
-            urls.push(element);
-          } else if (element instanceof Array) {
-            var _iteratorNormalCompletion3 = true;
-            var _didIteratorError3 = false;
-            var _iteratorError3 = undefined;
+          var urls = [];
 
-            try {
-              for (var _iterator3 = element[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
-                var url = _step3.value;
+          var _iteratorNormalCompletion2 = true;
+          var _didIteratorError2 = false;
+          var _iteratorError2 = undefined;
 
-                urls.push(url);
-              }
-            } catch (err) {
-              _didIteratorError3 = true;
-              _iteratorError3 = err;
-            } finally {
-              try {
-                if (!_iteratorNormalCompletion3 && _iterator3.return) {
-                  _iterator3.return();
+          try {
+            for (var _iterator2 = args[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+              var element = _step2.value;
+
+              if (typeof element == "string") {
+                urls.push(element);
+              } else if (element instanceof Array) {
+                var _iteratorNormalCompletion3 = true;
+                var _didIteratorError3 = false;
+                var _iteratorError3 = undefined;
+
+                try {
+                  for (var _iterator3 = element[Symbol.iterator](), _step3; !(_iteratorNormalCompletion3 = (_step3 = _iterator3.next()).done); _iteratorNormalCompletion3 = true) {
+                    var url = _step3.value;
+
+                    urls.push(url);
+                  }
+                } catch (err) {
+                  _didIteratorError3 = true;
+                  _iteratorError3 = err;
+                } finally {
+                  try {
+                    if (!_iteratorNormalCompletion3 && _iterator3.return) {
+                      _iterator3.return();
+                    }
+                  } finally {
+                    if (_didIteratorError3) {
+                      throw _iteratorError3;
+                    }
+                  }
                 }
-              } finally {
-                if (_didIteratorError3) {
-                  throw _iteratorError3;
-                }
+              } else {
+                console.error(element, args);
+                throw new Error("Sprite.Loader.load got invalid argument");
               }
             }
-          } else {
-            console.error(element, args);
-            throw new Error("Sprite.load got invalid argument");
+          } catch (err) {
+            _didIteratorError2 = true;
+            _iteratorError2 = err;
+          } finally {
+            try {
+              if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                _iterator2.return();
+              }
+            } finally {
+              if (_didIteratorError2) {
+                throw _iteratorError2;
+              }
+            }
           }
-        }
-      } catch (err) {
-        _didIteratorError2 = true;
-        _iteratorError2 = err;
-      } finally {
-        try {
-          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-            _iterator2.return();
-          }
-        } finally {
-          if (_didIteratorError2) {
-            throw _iteratorError2;
-          }
-        }
-      }
 
-      var done = 0;
-      var ret = [];
-      ret.length = urls.length;
+          var done = 0;
+          var ret = [];
+          ret.length = urls.length;
 
-      var Done = function Done() {
-        done++;
+          var Done = function Done() {
+            done++;
 
-        if (done >= ret.length) {
-          resolve(ret);
-        }
-      };
+            if (done >= ret.length) {
+              resolve(ret);
+            }
+          };
 
-      urls.forEach(function (element, index) {
-        Fetch(element, function (result) {
-          ret[index] = result;
-          Done();
+          urls.forEach(function (element, index) {
+            Fetch(element, function (result) {
+              ret[index] = result;
+              Done();
+            });
+          });
         });
-      });
-    });
-  });
+      }
+    }]);
+
+    return SpriteLoader;
+  })();
+
+  Sprite.assign("Loader", SpriteLoader);
 })();

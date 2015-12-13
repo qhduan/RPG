@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.buy = Game.Window.create("buyWindow");
@@ -120,51 +120,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let lastFilter = null;
   let lastSelect = -1;
 
-  buyWindowClose.addEventListener("click", function () {
+  buyWindowClose.addEventListener("click", () => {
     win.hide();
   });
 
-  buyWindowSell.addEventListener("click", function () {
+  buyWindowSell.addEventListener("click", () => {
     win.hide();
     Game.windows.sell.open(lastItems);
   });
 
-  win.whenUp(["tab"], function () {
-    setTimeout(function () {
+  win.whenUp(["tab"], () => {
+    setTimeout( () => {
       win.hide();
       Game.windows.sell.open(lastItems);
     }, 20);
   });
 
-  buyWindowAll.addEventListener("click", function (event) {
+  buyWindowAll.addEventListener("click", (event) => {
     win.open(lastItems, null);
   });
 
-  buyWindowWeapon.addEventListener("click", function (event) {
+  buyWindowWeapon.addEventListener("click", (event) => {
     win.open(lastItems, "sword|spear|bow");
   });
 
-  buyWindowArmor.addEventListener("click", function (event) {
+  buyWindowArmor.addEventListener("click", (event) => {
     win.open(lastItems, "head|body|feet");
   });
 
-  buyWindowPotion.addEventListener("click", function (event) {
+  buyWindowPotion.addEventListener("click", (event) => {
     win.open(lastItems, "potion");
   });
 
-  buyWindowMaterial.addEventListener("click", function (event) {
+  buyWindowMaterial.addEventListener("click", (event) => {
     win.open(lastItems, "material");
   });
 
-  buyWindowBook.addEventListener("click", function (event) {
+  buyWindowBook.addEventListener("click", (event) => {
     win.open(lastItems, "book|scroll|letter");
   });
 
-  buyWindowMisc.addEventListener("click", function (event) {
+  buyWindowMisc.addEventListener("click", (event) => {
     win.open(lastItems, "misc");
   });
 
-  win.assign("open", function (items, filter, select) {
+  win.assign("open", (items, filter, select) => {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -205,7 +205,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let index = 0;
     let table = "";
-    Sprite.each(items, function (itemCount, itemId) {
+    Sprite.Util.each(items, (itemCount, itemId) => {
       let item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1)
@@ -245,14 +245,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = buyWindowTable.querySelectorAll("button");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = buyWindowTable.querySelectorAll("button").length;
     if (count <= 0) return;
 
@@ -279,13 +279,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.whenUp(["esc"], function () {
-    setTimeout(function () {
+  win.whenUp(["esc"], () => {
+    setTimeout( () => {
       win.hide();
     }, 20);
   });
 
-  win.whenUp(["left", "right"], function (key) {
+  win.whenUp(["left", "right"], (key) => {
     if (key == "right") {
       let filter = lastFilter;
       if (filter == null) {
@@ -325,7 +325,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  buyWindowTable.addEventListener("click", function (event) {
+  buyWindowTable.addEventListener("click", (event) => {
     let itemId = event.target.getAttribute("data-id");
     if (itemId && lastItems.hasOwnProperty(itemId)) {
       let item = Game.items[itemId];

@@ -114,7 +114,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     return SpriteTicker;
   })(Sprite.Event);
 
-  ;
-
   Sprite.assign("Ticker", new SpriteTicker());
 })();

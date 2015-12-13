@@ -49,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   var lastSelect = -1;
 
-  Sprite.each(statusWindowEquipmentButton, function (button, key) {
+  Sprite.Util.each(statusWindowEquipmentButton, function (button, key) {
     button.addEventListener("click", function () {
       if (Game.hero.data.equipment[key]) {
         Game.hero.data.equipment[key] = null;
@@ -137,7 +137,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    Sprite.each(Game.hero.data.equipment, function (element, key) {
+    Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
       var button = statusWindowEquipmentButton[key];
 
       if (element) {

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   /**
@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * @param {Object} end
      */
      static getPath (start, end) {
-       return new Promise(function (resolve, reject) {
+       return new Promise( (resolve, reject) => {
          let blocked = {};
          for (let actor of Game.area.actors) {
            if (actor.x != start.x || actor.y != start.y) {
@@ -39,7 +39,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
            }
          }
 
-         let result = path(function (x, y) {
+         let result = path((x, y) => {
            // 判断函数，判断是否阻挡
            if (x < 0 || x >= Game.area.map.col) {
              return true; // 有阻挡，返回true
@@ -198,7 +198,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function path (collisionFunction, start, end) {
 
     // 开启列表和关闭列表
-    let open = new BinaryHeap(function (element) {
+    let open = new BinaryHeap((element) => {
       return element.f;
     });
     let openIndex = new Set();
@@ -217,7 +217,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     openIndex.add(startElement.key);
     open.push(startElement);
 
-    let push2open = function (x, y, end, best) {
+    let push2open = (x, y, end, best) => {
       if (!collisionFunction(x, y)) { // 验证up
         let key = x * 10000 + y;
         if (!openIndex.has(key) && !closeIndex.has(key)) {

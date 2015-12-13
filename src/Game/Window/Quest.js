@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
 
@@ -72,34 +72,34 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let questWindowTable = win.querySelector("#questWindowTable");
 
 
-  questWindowClose.addEventListener("click", function () {
+  questWindowClose.addEventListener("click", () => {
     win.hide();
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       questWindowClose.click();
     }, 20);
   });
 
-  questWindowCurrent.addEventListener("click", function () {
+  questWindowCurrent.addEventListener("click", () => {
     win.hide();
     win.current();
   });
 
-  questWindowPast.addEventListener("click", function () {
+  questWindowPast.addEventListener("click", () => {
     win.hide();
     win.past();
   });
 
-  win.assign("current", function () {
+  win.assign("current", () => {
 
     questWindowCurrent.disabled = true;
     questWindowPast.disabled = false;
 
     let table = "";
     let list = Game.hero.data.currentQuest;
-    list.forEach(function (quest) {
+    list.forEach((quest) => {
 
       let complete = Game.Quest.isComplete(quest);
 
@@ -138,14 +138,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  win.assign("past", function () {
+  win.assign("past", () => {
 
     questWindowCurrent.disabled = false;
     questWindowPast.disabled = true;
 
     let table = "";
     let list = Game.hero.data.completeQuest;
-    list.forEach(function (quest) {
+    list.forEach((quest) => {
 
       let line = `<div class="questWindowItem">\n`;
       line += `  <label style="font-size: 20px; margin: 10px;">${quest.name}[已完成]</label>\n`;
@@ -182,7 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  questWindowTable.addEventListener("click", function (event) {
+  questWindowTable.addEventListener("click", (event) => {
     let id = event.target.getAttribute("data-id");
     if (id) {
       if (type == "remove") {

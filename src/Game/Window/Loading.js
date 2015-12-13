@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
 
@@ -94,18 +94,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"
   ];
 
-  win.assign("begin", function () {
+  win.assign("begin", () => {
     loadingWindowProgress.innerHTML = "";
     // 随机一个提示
     loadingWindowText.textContent = text[Math.floor(Math.random() * text.length)];
     win.show();
   });
 
-  win.assign("update", function (value) {
+  win.assign("update", (value) => {
     loadingWindowProgress.innerHTML = value;
   });
 
-  win.assign("end", function () {
+  win.assign("end", () => {
     win.hide();
   });
 

@@ -23,16 +23,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Frame, a frame of Sprite.Sheet
    * @class
-   */
-  Sprite.assign("Frame", class SpriteFrame extends Sprite.Display {
+  */
+  class SpriteFrame extends Sprite.Display {
 
     constructor (image, sx, sy, width, height) {
       super();
@@ -109,7 +109,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       );
     }
 
-  });
+  }
+
+  Sprite.assign("Frame", SpriteFrame);
 
 
 })();

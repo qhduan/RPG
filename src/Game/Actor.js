@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /*
     角色类，包括涉及到hero和npc
@@ -31,8 +31,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   Game.assign("Actor", class Actor extends Sprite.Event {
 
     static load (id) {
-      return new Promise(function (resolve, reject) {
-        Sprite.load(`actor/${id}.js`).then(function (data) {
+      return new Promise( (resolve, reject) => {
+        Sprite.Loader.load(`actor/${id}.js`).then( (data) => {
           let actorData = data[0]();
           actorData.id = id;
 
@@ -68,7 +68,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (this.data.image instanceof Array) {
         this.init(this.data.image);
       } else if (typeof this.data.image == "string") {
-        Sprite.load("actor/" + this.data.image).then((data) => {
+        Sprite.Loader.load("actor/" + this.data.image).then( (data) => {
           // data is Array
           this.init(data);
         });
@@ -680,7 +680,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         return 0;
 
       // 只有当这个skill的cooldown结
-      let now = new Date().getTime();
+      let now = Date.now();
       if (
         Number.isFinite(this.lastAttack) &&
         Number.isFinite(this.lastAttackCooldown) &&
@@ -731,7 +731,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     /** 行走到指定地点 */
     goto (x, y, state) {
-      return new Promise((resolve, reject) => {
+      return new Promise( (resolve, reject) => {
 
         if (this.going) {
           this.goingNext = () => {
@@ -895,7 +895,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
      * 行走结束后如果after有定义，则面向after的方向
      */
     gotoPath (path, state, after) {
-      return new Promise((resolve, reject) => {
+      return new Promise( (resolve, reject) => {
         this.going = true;
         let index = 1;
         let Walk = () => {

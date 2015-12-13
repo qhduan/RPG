@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.sysmenu = Game.Window.create("sysmenuWindow");
@@ -87,11 +87,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let sysmenuWindowClose = win.querySelector("button#sysmenuWindowClose");
 
-  win.whenUp(["esc"], function (key) {
+  win.whenUp(["esc"], (key) => {
     sysmenuWindowClose.click();
   });
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], (key) => {
     switch (key) {
       case "1":
         sysmenuWindowInventory.click();
@@ -120,42 +120,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  sysmenuWindowInventory.addEventListener("click", function (event) {
+  sysmenuWindowInventory.addEventListener("click", (event) => {
     win.hide();
     Game.windows.inventory.open();
   });
 
-  sysmenuWindowStatus.addEventListener("click", function (event) {
+  sysmenuWindowStatus.addEventListener("click", (event) => {
     win.hide();
     Game.windows.status.open();
   });
 
-  sysmenuWindowSkill.addEventListener("click", function (event) {
+  sysmenuWindowSkill.addEventListener("click", (event) => {
     win.hide();
     Game.windows.skill.open();
   });
 
-  sysmenuWindowQuest.addEventListener("click", function (event) {
+  sysmenuWindowQuest.addEventListener("click", (event) => {
     win.hide();
     Game.windows.quest.current();
   });
 
-  sysmenuWindowMap.addEventListener("click", function (event) {
+  sysmenuWindowMap.addEventListener("click", (event) => {
     win.hide();
     Game.windows.map.show();
   });
 
-  sysmenuWindowSetting.addEventListener("click", function (event) {
+  sysmenuWindowSetting.addEventListener("click", (event) => {
     win.hide();
     Game.windows.setting.show();
   });
 
-  sysmenuWindowArchive.addEventListener("click", function (event) {
+  sysmenuWindowArchive.addEventListener("click", (event) => {
     win.hide();
     Game.windows.archive.open();
   });
 
-  sysmenuWindowExit.addEventListener("click", function (event) {
+  sysmenuWindowExit.addEventListener("click", (event) => {
     Game.clearStage();
     Game.windows.interface.hide();
     Game.windows.stage.hide();
@@ -163,7 +163,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.main.show();
   });
 
-  sysmenuWindowClose.addEventListener("click", function (event) {
+  sysmenuWindowClose.addEventListener("click", (event) => {
     win.hide();
   });
 

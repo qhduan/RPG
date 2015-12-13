@@ -36,11 +36,12 @@ module.exports = function (grunt) {
           "data/js/polyfill.js",
 
           "data/js/Sprite/Sprite.js",
+          "data/js/Sprite/Util.js",
           "data/js/Sprite/Canvas.js",
           "data/js/Sprite/Webgl.js",
           "data/js/Sprite/Event.js",
           "data/js/Sprite/Tween.js",
-          "data/js/Sprite/Load.js",
+          "data/js/Sprite/Loader.js",
           "data/js/Sprite/Ticker.js",
           "data/js/Sprite/Display.js",
           "data/js/Sprite/Container.js",

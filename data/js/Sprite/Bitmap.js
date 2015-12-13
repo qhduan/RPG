@@ -31,20 +31,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Define Sprite.Bitmap
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
-  Sprite.assign("Bitmap", (function (_Sprite$Display) {
+  var SpriteBitmap = (function (_Sprite$Display) {
     _inherits(SpriteBitmap, _Sprite$Display);
 
     /**
      * Sprite.Bitmap's constructor
      * @constructor
-     */
+    */
 
     function SpriteBitmap(image) {
       _classCallCheck(this, SpriteBitmap);
@@ -80,14 +80,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {Image} Return Sprite.Bitmap's image
-       */
+      */
 
     }, {
       key: "draw",
 
       /**
        * @param {Object} renderer Draw image on the renderer
-       */
+      */
       value: function draw(renderer) {
         if (this.alpha <= 0.01 || this.visible != true) {
           return;
@@ -107,7 +107,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {number} Return Sprite.Bitmap's width
-       */
+      */
 
     }, {
       key: "width",
@@ -121,7 +121,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       /**
        * @return {number} Return Sprite.Bitmap's height
-       */
+      */
 
     }, {
       key: "height",
@@ -135,5 +135,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteBitmap;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Bitmap", SpriteBitmap);
 })();

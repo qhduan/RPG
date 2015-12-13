@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
- (function () {
+ ( () => {
    "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   let textCanvas = document.createElement("canvas");
   textCanvas.width = 1;
@@ -37,8 +37,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Text, contain text
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Text", class SpriteText extends Sprite.Display {
+  */
+  class SpriteText extends Sprite.Display {
     /**
      * construct Sprite.Text
      * @constructor
@@ -182,7 +182,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         );
       }
     }
-  });
+  }
+
+  Sprite.assign("Text", SpriteText);
 
 
 })();

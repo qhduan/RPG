@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.interface = Game.Window.create("interfaceWindow");
@@ -140,25 +140,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   // 玩家的sp
   let interfaceWindowSP = win.querySelector("#interfaceWindowSP");
 
-  win.assign("hideUse", function () {
+  win.assign("hideUse", () => {
     interfaceWindowUse.style.visibility = "hidden";
   });
 
-  win.assign("showUse", function () {
+  win.assign("showUse", () => {
     interfaceWindowUse.style.visibility = "visible";
   });
 
-  win.on("active", function () {
+  win.on("active", () => {
     Game.start();
   });
 
-  win.on("deactive", function () {
+  win.on("deactive", () => {
     Game.pause();
   })
 
-  win.whenUp(["esc"], function (key) {
+  win.whenUp(["esc"], (key) => {
     if (Game.windows.interface.atop) {
-      setTimeout(function () {
+      setTimeout( () => {
         interfaceWindowMenu.click();
       }, 20);
     }
@@ -177,7 +177,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     interfaceWindowBar.innerHTML = buttonHTML;
   }
 
-  setInterval(function () {
+  setInterval( () => {
     if (Game.hero && Game.paused == false) {
       Game.hero.data.time++;
       Game.windows.interface.datetime();
@@ -188,7 +188,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let buttons = win.querySelectorAll(".interfaceWindowButton");
   let buttonTexts = win.querySelectorAll(".interfaceWindowButtonText");
 
-  interfaceWindowBar.addEventListener("click", function (event) {
+  interfaceWindowBar.addEventListener("click", (event) => {
     let index = event.target.getAttribute("data-index");
     if (index) {
       let element = Game.hero.data.bar[index];
@@ -197,7 +197,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           let cooldown = Game.hero.fire(element.id);
           if (cooldown) {
             event.target.disabled = true;
-            setTimeout(function () {
+            setTimeout( () => {
               event.target.disabled = false;
             }, cooldown);
           }
@@ -211,14 +211,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], function (key) {
+  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], (key) => {
     let num = parseInt(key);
     if (Number.isInteger(num) && num >= 0 && num < buttons.length) {
       buttons[num - 1].click();
     }
   });
 
-  win.whenUp(["e", "E", "space", "enter"], function (key) {
+  win.whenUp(["e", "E", "space", "enter"], (key) => {
     if (Game.windows.interface.showing) {
       if (Game.hintObject && Game.hintObject.heroUse) {
         Game.hintObject.heroUse();
@@ -226,13 +226,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  interfaceWindowUse.addEventListener("click", function (event) {
+  interfaceWindowUse.addEventListener("click", (event) => {
     if (Game.hintObject && Game.hintObject.heroUse) {
       Game.hintObject.heroUse();
     }
   });
 
-  win.assign("status", function () {
+  win.assign("status", () => {
     if (Game.hero) {
       let hp = Game.hero.data.hp / Game.hero.data.$hp;
       let sp = Game.hero.data.sp / Game.hero.data.$sp;
@@ -248,7 +248,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.assign("datetime", function () {
+  win.assign("datetime", () => {
     if (Game.hero && Game.hero.data && Number.isInteger(Game.hero.data.time)) {
       let YEARMIN = 60*24*30*12;
       let MONTHMIN = 60*24*30;
@@ -308,7 +308,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.assign("refresh", function () {
+  win.assign("refresh", () => {
     for (let i = 0; i < 8; i++) {
       let element = Game.hero.data.bar[i];
       let button = buttons[i];
@@ -344,7 +344,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     interfaceWindowMap.textContent = Game.area.map.data.name;
   });
 
-  interfaceWindowMenu.addEventListener("click", function (event) {
+  interfaceWindowMenu.addEventListener("click", (event) => {
     Game.windows.sysmenu.show();
   });
 

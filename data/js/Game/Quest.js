@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("quest/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("quest/" + id + ".js").then(function (data) {
             var questData = data[0]();
             questData.id = id;
             resolve(questData);

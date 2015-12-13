@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
 
@@ -70,7 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let archiveWindowClose = win.querySelector("button#archiveWindowClose");
   let archiveWindowTable = win.querySelector("#archiveWindowTable");
 
-  archiveWindowSave.addEventListener("click", function () {
+  archiveWindowSave.addEventListener("click", () => {
     let canvas = document.createElement("canvas");
     canvas.width = 80;
     canvas.height = 45;
@@ -85,20 +85,20 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.open();
   });
 
-  archiveWindowClose.addEventListener("click", function () {
+  archiveWindowClose.addEventListener("click", () => {
     win.hide();
     if ( !Game.windows.interface.showing ) {
       Game.windows.main.show();
     }
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       archiveWindowClose.click();
     }, 20);
   });
 
-  win.assign("open", function () {
+  win.assign("open", () => {
 
     if ( Game.windows.interface.showing && Game.hero ) {
       archiveWindowSave.style.visibility = "visible";
@@ -108,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let table = "";
     let list = Game.Archive.list();
-    list.forEach(function (element) {
+    list.forEach((element) => {
       let line = `<div class="archiveWindowItem">\n`;
       let archive = Game.Archive.get(`SAVE_${element}`);
       line += `  <button data-type="remove" data-id="SAVE_${element}" class="brownButton" style="float: right;">删除</button>\n`;
@@ -124,7 +124,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.archive.show();
   });
 
-  archiveWindowTable.addEventListener("click", function (event) {
+  archiveWindowTable.addEventListener("click", (event) => {
     let type = event.target.getAttribute("data-type");
     let id = event.target.getAttribute("data-id");
     if (type && id) {

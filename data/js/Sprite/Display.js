@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   var hitCanvas = document.createElement("canvas");
   hitCanvas.width = 1;
@@ -44,14 +44,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Display, base class for all other classes
    * @class
    * @extends Sprite.Event
-   */
-  Sprite.assign("Display", (function (_Sprite$Event) {
+  */
+
+  var SpriteDisplay = (function (_Sprite$Event) {
     _inherits(SpriteDisplay, _Sprite$Event);
 
     /**
      * construct Sprite.Display
      * @constructor
-     */
+    */
 
     function SpriteDisplay() {
       _classCallCheck(this, SpriteDisplay);
@@ -365,5 +366,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteDisplay;
-  })(Sprite.Event));
+  })(Sprite.Event);
+
+  Sprite.assign("Display", SpriteDisplay);
 })();

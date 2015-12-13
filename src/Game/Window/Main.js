@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.main = Game.Window.create("mainWindow");
@@ -77,7 +77,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.windows.setting.toggle();
   });
 
-  win.on("beforeShow", function () {
+  win.on("beforeShow", () => {
     if (!Game.Archive.last()) {
       mainWindowContinue.style.visibility = "hidden";
     } else {
@@ -85,19 +85,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  mainWindowContinue.addEventListener("click", function (event) {
+  mainWindowContinue.addEventListener("click", (event) => {
     win.hide();
-    setTimeout(function () {
+    setTimeout( () => {
       Game.Archive.load();
     }, 20);
   });
 
-  mainWindowNew.addEventListener("click", function (event) {
+  mainWindowNew.addEventListener("click", (event) => {
     win.hide();
     Game.register.reg();
   });
 
-  mainWindowLoad.addEventListener("click", function (event) {
+  mainWindowLoad.addEventListener("click", (event) => {
     win.hide();
     Game.windows.archive.open();
   });

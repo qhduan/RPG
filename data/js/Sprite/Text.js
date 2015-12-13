@@ -36,7 +36,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   var textCanvas = document.createElement("canvas");
   textCanvas.width = 1;
@@ -47,8 +47,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
    * Class Sprite.Text, contain text
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Text", (function (_Sprite$Display) {
+  */
+
+  var SpriteText = (function (_Sprite$Display) {
     _inherits(SpriteText, _Sprite$Display);
 
     /**
@@ -198,5 +199,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteText;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Text", SpriteText);
 })();

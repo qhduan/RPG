@@ -36,14 +36,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Shape
    * @class
    * @extends Sprite.Display
-   */
-  Sprite.assign("Shape", (function (_Sprite$Display) {
+  */
+
+  var SpriteShape = (function (_Sprite$Display) {
     _inherits(SpriteShape, _Sprite$Display);
 
     /**
@@ -338,5 +339,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteShape;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Shape", SpriteShape);
 })();

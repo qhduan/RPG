@@ -38,7 +38,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var choiceWindowNo = win.querySelector("#choiceWindowNo");
       var buttonArray = [];
 
-      Sprite.each(options, function (value, key) {
+      Sprite.Util.each(options, function (value, key) {
         var button = document.createElement("button");
         button.textContent = buttonArray.length + 1 + ". " + key;
         button.classList.add("brownButton");

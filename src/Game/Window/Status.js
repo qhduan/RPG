@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.status = Game.Window.create("statusWindow");
@@ -168,8 +168,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
   let lastSelect = -1;
 
-  Sprite.each(statusWindowEquipmentButton, function (button, key) {
-    button.addEventListener("click", function () {
+  Sprite.Util.each(statusWindowEquipmentButton, (button, key) => {
+    button.addEventListener("click", () => {
       if (Game.hero.data.equipment[key]) {
         Game.hero.data.equipment[key] = null;
       } else {
@@ -202,29 +202,29 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let statusWindowInventory = win.querySelector("button#statusWindowInventory");
   let statusWindowEquipmentTable = win.querySelector("#statusWindowEquipmentTable");
 
-  statusWindowClose.addEventListener("click", function (event) {
+  statusWindowClose.addEventListener("click", (event) => {
     win.hide();
   });
 
-  statusWindowInventory.addEventListener("click", function (event) {
+  statusWindowInventory.addEventListener("click", (event) => {
     win.hide();
     Game.windows.inventory.open();
   });
 
-  win.whenUp(["tab"], function () {
-    setTimeout(function () {
+  win.whenUp(["tab"], () => {
+    setTimeout( () => {
       win.hide();
       Game.windows.inventory.open();
     }, 20);
   });
 
-  win.whenUp(["esc"], function (key) {
-    setTimeout(function () {
+  win.whenUp(["esc"], (key) => {
+    setTimeout( () => {
       win.hide();
     }, 20)
   });
 
-  win.assign("update", function (select) {
+  win.assign("update", (select) => {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -256,7 +256,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
     }
 
-    Sprite.each(Game.hero.data.equipment, function (element, key) {
+    Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
       let button = statusWindowEquipmentButton[key];
 
       if (element) {
@@ -272,14 +272,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     });
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = statusWindowEquipmentTable.querySelectorAll("button");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = statusWindowEquipmentTable.querySelectorAll("button").length;
 
     if (lastSelect == -1) {
@@ -305,7 +305,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.assign("open", function (select) {
+  win.assign("open", (select) => {
     win.update(select);
     win.show();
   });

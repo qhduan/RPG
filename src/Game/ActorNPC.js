@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -64,7 +64,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 玩家接受任务
       let quest = null;
       if (this.quest) {
-        quest = this.quest.filter(function (quest) {
+        quest = this.quest.filter((quest) => {
           if (Game.hero.hasQuest(quest.id)) {
             return false;
           }

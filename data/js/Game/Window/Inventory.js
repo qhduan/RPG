@@ -137,7 +137,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       var item = Game.items[itemId];
       var equipment = null;
 
-      Sprite.each(Game.hero.data.equipment, function (element, key) {
+      Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
         if (element == item.id) equipment = key;
       });
 
@@ -211,7 +211,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         var itemCount = Game.hero.data.items[itemId];
         var equipment = null;
 
-        Sprite.each(Game.hero.data.equipment, function (element, key) {
+        Sprite.Util.each(Game.hero.data.equipment, function (element, key) {
           if (element == item.id) equipment = key;
         });
 

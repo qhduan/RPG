@@ -117,7 +117,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         imageUrls.push(BASE + "/weapons/" + heroCustom.sex + "/weapons.png");
       }
 
-      Sprite.load(imageUrls).then(function (data) {
+      Sprite.Loader.load(imageUrls).then(function (data) {
         CombineHeroImage(data, heroCustom.width, heroCustom.height).then(function (data) {
           resolve(data);
         });

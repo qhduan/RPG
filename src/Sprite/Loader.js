@@ -23,10 +23,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Cache all url and element
@@ -59,7 +59,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       Cache.set(url, obj);
 
       if (type == "json") {
-        obj = Sprite.copy(obj);
+        obj = Sprite.Util.copy(obj);
       }
 
       if (callback) {
@@ -114,23 +114,23 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     if (typeof callback != "function")
-      callback = function () {};
+      callback = () => {};
 
-    req.ontimeout = function () {
+    req.ontimeout = () => {
       if (timeout >= 2) {
         console.error(url);
         alert(`资源${url}超时没有加载成功！`);
         throw new Error("Sprite.Loader.Fetch timeout 3 times");
       } else {
         console.error("Sprite.Loader.Fetch timeout try again, ", timeout + 1, " ", url);
-        setTimeout(function () {
+        setTimeout( () => {
           Fetch(url, callback, timeout + 1);
         }, 50);
       }
     };
 
     let done = false;
-    req.onreadystatechange = function () {
+    req.onreadystatechange = () => {
       if (req.readyState == 4 && !done) {
         done = true;
         if (req.response) {
@@ -146,7 +146,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else if (type == "image") {
             let arraybuffer = req.response;
             let image = new Image();
-            image.onload = function () {
+            image.onload = () => {
               // window.URL.revokeObjectURL(image.src);
               image.onload = null;
               Finish(image);
@@ -155,7 +155,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           } else if (type == "audio") {
             let arraybuffer = req.response;
             let audio = new Audio();
-            audio.oncanplay = function () {
+            audio.oncanplay = () => {
               // 如果reoke掉audio，那么audio.load()方法则不能用了
               // window.URL.revokeObjectURL(audio.src);
               audio.oncanplay = null;
@@ -182,7 +182,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             throw new Error("Sprite.Loader.Fetch error 3 times");
           } else {
             console.error("Sprite.Loader.Fetch error try again, ", timeout + 1, " ", url);
-            setTimeout(function () {
+            setTimeout( () => {
               Fetch(url, callback, timeout + 1);
             }, 50);
           }
@@ -192,44 +192,52 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     req.send();
   }
 
-  Sprite.assign("load", function () {
-    let args = Array.prototype.slice.call(arguments);
-    return new Promise(function (resolve, reject) {
-      let urls = [];
+  class SpriteLoader {
 
-      for (let element of args) {
-        if (typeof element == "string") {
-          urls.push(element);
-        } else if (element instanceof Array) {
-          for (let url of element) {
-            urls.push(url);
+    static load () {
+      let args = Array.prototype.slice.call(arguments);
+
+      return new Promise( (resolve, reject) => {
+
+        let urls = [];
+
+        for (let element of args) {
+          if (typeof element == "string") {
+            urls.push(element);
+          } else if (element instanceof Array) {
+            for (let url of element) {
+              urls.push(url);
+            }
+          } else {
+            console.error(element, args);
+            throw new Error("Sprite.Loader.load got invalid argument");
           }
-        } else {
-          console.error(element, args);
-          throw new Error("Sprite.load got invalid argument");
         }
-      }
 
-      let done = 0;
-      let ret = [];
-      ret.length = urls.length;
+        let done = 0;
+        let ret = [];
+        ret.length = urls.length;
 
-      let Done = () => {
-        done++;
+        let Done = () => {
+          done++;
 
-        if (done >= ret.length) {
-          resolve(ret);
+          if (done >= ret.length) {
+            resolve(ret);
+          }
         }
-      }
 
-      urls.forEach((element, index) => {
-        Fetch(element, (result) => {
-          ret[index] = result;
-          Done();
+        urls.forEach((element, index) => {
+          Fetch(element, (result) => {
+            ret[index] = result;
+            Done();
+          });
         });
-      });
 
-    });
-  });
+      });
+    }
+
+  }
+
+  Sprite.assign("Loader", SpriteLoader);
 
 })();

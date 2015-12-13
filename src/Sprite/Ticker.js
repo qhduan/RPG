@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
   let tickerCount = 0;
@@ -82,8 +82,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.off("tick", id);
     }
 
-  };
+  }
 
   Sprite.assign("Ticker", new SpriteTicker());
+
 
 })();

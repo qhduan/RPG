@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   let confirmHTML = `
   <div class="window-box">
@@ -92,26 +92,26 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
 
-      win.whenUp(["esc"], function () {
-        setTimeout(function () {
+      win.whenUp(["esc"], () => {
+        setTimeout( () => {
           confirmWindowNo.click();
         }, 20);
       });
 
-      win.whenUp(["y", "Y"], function () {
+      win.whenUp(["y", "Y"], () => {
         confirmWindowYes.click();
       });
 
-      win.whenUp(["n", "N"], function () {
+      win.whenUp(["n", "N"], () => {
         confirmWindowNo.click();
       });
 
-      confirmWindowYes.addEventListener("click", function () {
+      confirmWindowYes.addEventListener("click", () => {
         win.destroy();
         resolve();
       });
 
-      confirmWindowNo.addEventListener("click", function () {
+      confirmWindowNo.addEventListener("click", () => {
         win.destroy();
         reject();
       });

@@ -27,18 +27,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Event
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Class Sprite.Event, hold all events emit, bubble
    * @class
-   */
-  Sprite.assign("Event", (function () {
+  */
+
+  var SpriteEvent = (function () {
     /**
      * construct Sprite.Event
      * @constructor
@@ -93,7 +94,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             privates.listeners.set(event, new Map());
           }
 
-          var id = Sprite.uuid();
+          var id = Sprite.Util.uuid();
           privates.listeners.get(event).set(id, listener);
           return id;
         }
@@ -238,5 +239,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteEvent;
-  })());
+  })();
+
+  Sprite.assign("Event", SpriteEvent);
 })();

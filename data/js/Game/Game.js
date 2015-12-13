@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   // root级别api入口
 
@@ -277,10 +277,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
         /*
         let updateNext = false;
-        Game.stage.on("change", function () {
+        Game.stage.on("change", () => {
           updateNext = true;
         });
-        Sprite.Ticker.on("tick", function () {
+        Sprite.Ticker.on("tick", () => {
          if (Game.paused == false && updateNext) {
            Game.stage.update();
            updateNext = false;
@@ -297,12 +297,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         document.body.appendChild(fpsElement);
 
         var fps = 0;
-        var start = new Date().getTime();
+        var start = Date.now();
         privates.stage.on("afterDraw", function () {
           fps++;
         });
         setInterval(function () {
-          var now = new Date().getTime();
+          var now = Date.now();
           var f = fps / ((now - start) / 1000);
           fps = 0;
           start = now;

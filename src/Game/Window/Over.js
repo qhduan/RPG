@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.over = Game.Window.create("overWindow");
@@ -79,7 +79,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     "不幸的事情终于发生了……下次在冒险前一定要吃饱饭"
   ];
 
-  win.assign("open", function (reason) {
+  win.assign("open", (reason) => {
     if (reason) {
       overWindowReason.textContent = reason;
     } else {
@@ -91,7 +91,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  overWindowClose.addEventListener("click", function (event) {
+  overWindowClose.addEventListener("click", (event) => {
     Game.clearStage();
     win.hide();
     Game.windows.main.show();

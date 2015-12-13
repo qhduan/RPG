@@ -43,7 +43,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   pickupWindowAll.addEventListener("click", function (event) {
     var itemObj = currentItemObj;
     if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
-      Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+      Sprite.Util.each(itemObj.inner, function (itemCount, itemId, inner) {
         if (itemId == "gold") {
           Game.hero.data.gold += itemCount;
         } else {
@@ -108,7 +108,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     var index = 1;
     var table = "";
-    Sprite.each(itemObj.inner, function (itemCount, itemId, inner) {
+    Sprite.Util.each(itemObj.inner, function (itemCount, itemId, inner) {
       var item = Game.items[itemId];
 
       var line = "";

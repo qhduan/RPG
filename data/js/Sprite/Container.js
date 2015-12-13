@@ -39,13 +39,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /**
    * Contain everything which inherit from Sprite.Display
    * @class
-   */
-  Sprite.assign("Container", (function (_Sprite$Display) {
+  */
+
+  var SpriteContainer = (function (_Sprite$Display) {
     _inherits(SpriteContainer, _Sprite$Display);
 
     /**
@@ -397,5 +398,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteContainer;
-  })(Sprite.Display));
+  })(Sprite.Display);
+
+  Sprite.assign("Container", SpriteContainer);
 })();

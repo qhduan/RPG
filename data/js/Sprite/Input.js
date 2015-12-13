@@ -27,7 +27,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 /**
  * @fileoverview Class Sprite.Input
  * @author mail@qhduan.com (QH Duan)
- */
+*/
 
 (function () {
   "use strict";
@@ -125,8 +125,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /**
    * Sprite.Input, only has static methods
    * @class
-   */
-  Sprite.assign("Input", (function () {
+  */
+
+  var SpriteInput = (function () {
     function SpriteInput() {
       _classCallCheck(this, SpriteInput);
     }
@@ -137,7 +138,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {string} key Key-string ('A', 'a') or key-number (65, 97)
        * @return {boolean} If the key is pressing, return true, otherwise, false
-       */
+      */
       value: function isPressed(key) {
         if (Number.isFinite(key)) {
           if (pressed.has(key)) {
@@ -159,7 +160,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenPress",
@@ -205,7 +206,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenDown",
@@ -251,7 +252,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       /**
        * @param {Array} keys Keys to monitor, eg. ["A", "B", "C", "a", "b", "c"]
        * @param {function} callback When key in keys is pressed, callback
-       */
+      */
 
     }, {
       key: "whenUp",
@@ -296,5 +297,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }]);
 
     return SpriteInput;
-  })());
+  })();
+
+  Sprite.assign("Input", SpriteInput);
 })();

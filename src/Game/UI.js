@@ -18,12 +18,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let popupCache = new Map();
 
-  Game.assign("popup", function (obj, text, adjustX = 0, adjustY = 0) {
+  Game.assign("popup", (obj, text, adjustX = 0, adjustY = 0) => {
 
     if (popupCache.has(obj)) {
       let popup = popupCache.get(obj);
@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     Game.layers.dialogueLayer.appendChild(dialogueContainer);
 
     if (obj instanceof Sprite.Event) {
-      obj.on("change", function () {
+      obj.on("change", () => {
         dialogueContainer.x = obj.x + adjustX;
         dialogueContainer.y = obj.y + adjustY;
       });

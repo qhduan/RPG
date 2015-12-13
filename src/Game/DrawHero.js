@@ -19,13 +19,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-(function () {
+( () => {
   "use strict";
 
   // 合并图片
   // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
   function CombineHeroImage (images, width, height) {
-    return new Promise(function (resolve, reject) {
+    return new Promise( (resolve, reject) => {
       let canvas = document.createElement("canvas");
       canvas.height = height;
       canvas.width = width;
@@ -50,11 +50,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       withoutWeapon.src = canvas.toDataURL("image/png");
 
       promises.add(
-        new Promise(function (resolve, reject) {
+        new Promise( (resolve, reject) => {
           if (withoutWeapon.complete) {
             resolve();
           } else {
-            withoutWeapon.onload = function () {
+            withoutWeapon.onload = () => {
               resolve();
             };
           }
@@ -70,11 +70,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       withWeapon.src = canvas.toDataURL("image/png");
 
       promises.add(
-        new Promise(function (resolve, reject) {
+        new Promise( (resolve, reject) => {
           if (withWeapon.complete) {
             resolve();
           } else {
-            withWeapon.onload = function () {
+            withWeapon.onload = () => {
               resolve();
             };
           }
@@ -82,7 +82,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       );
 
       // Promise es6 
-      Promise.all(promises).then(function () {
+      Promise.all(promises).then( () => {
         resolve([withoutWeapon, withWeapon]);
       });
     });
@@ -96,8 +96,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   // 把多张图片合成一张，并返回
-  Game.assign("drawHero", function (heroCustom) {
-    return new Promise(function (resolve, reject) {
+  Game.assign("drawHero", (heroCustom) => {
+    return new Promise( (resolve, reject) => {
       let BASE = "hero";
       let imageUrls = [];
 
@@ -137,8 +137,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         imageUrls.push(`${BASE}/weapons/${heroCustom.sex}/weapons.png`);
       }
 
-      Sprite.load(imageUrls).then(function (data) {
-        CombineHeroImage(data, heroCustom.width, heroCustom.height).then(function (data) {
+      Sprite.Loader.load(imageUrls).then( (data) => {
+        CombineHeroImage(data, heroCustom.width, heroCustom.height).then( (data) => {
           resolve(data);
         });
       });

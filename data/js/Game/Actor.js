@@ -31,7 +31,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   /*
     角色类，包括涉及到hero和npc
@@ -45,7 +45,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("actor/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("actor/" + id + ".js").then(function (data) {
             var actorData = data[0]();
             actorData.id = id;
 
@@ -84,7 +84,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (_this.data.image instanceof Array) {
         _this.init(_this.data.image);
       } else if (typeof _this.data.image == "string") {
-        Sprite.load("actor/" + _this.data.image).then(function (data) {
+        Sprite.Loader.load("actor/" + _this.data.image).then(function (data) {
           // data is Array
           _this.init(data);
         });
@@ -583,7 +583,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         if (!skill) return 0;
 
         // 只有当这个skill的cooldown结
-        var now = new Date().getTime();
+        var now = Date.now();
         if (Number.isFinite(this.lastAttack) && Number.isFinite(this.lastAttackCooldown) && now - this.lastAttack < this.lastAttackCooldown) {
           return 0;
         }

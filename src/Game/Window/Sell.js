@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.sell = Game.Window.create("sellWindow");
@@ -120,51 +120,51 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let lastFilter = null;
   let lastSelect = -1;
 
-  sellWindowClose.addEventListener("click", function () {
+  sellWindowClose.addEventListener("click", () => {
     win.hide();
   });
 
-  sellWindowBuy.addEventListener("click", function () {
+  sellWindowBuy.addEventListener("click", () => {
     win.hide();
     Game.windows.buy.open(lastItems);
   });
 
-  win.whenUp(["tab"], function () {
-    setTimeout(function () {
+  win.whenUp(["tab"], () => {
+    setTimeout( () => {
       win.hide();
       Game.windows.buy.open(lastItems);
     }, 20);
   });
 
-  sellWindowAll.addEventListener("click", function (event) {
+  sellWindowAll.addEventListener("click", (event) => {
     win.open(lastItems, null);
   });
 
-  sellWindowWeapon.addEventListener("click", function (event) {
+  sellWindowWeapon.addEventListener("click", (event) => {
     win.open(lastItems, "sword|spear|bow");
   });
 
-  sellWindowArmor.addEventListener("click", function (event) {
+  sellWindowArmor.addEventListener("click", (event) => {
     win.open(lastItems, "head|body|feet");
   });
 
-  sellWindowPotion.addEventListener("click", function (event) {
+  sellWindowPotion.addEventListener("click", (event) => {
     win.open(lastItems, "potion");
   });
 
-  sellWindowMaterial.addEventListener("click", function (event) {
+  sellWindowMaterial.addEventListener("click", (event) => {
     win.open(lastItems, "material");
   });
 
-  sellWindowBook.addEventListener("click", function (event) {
+  sellWindowBook.addEventListener("click", (event) => {
     win.open(lastItems, "book|scroll|letter");
   });
 
-  sellWindowMisc.addEventListener("click", function (event) {
+  sellWindowMisc.addEventListener("click", (event) => {
     win.open(lastItems, "misc");
   });
 
-  win.assign("open", function (items, filter, select) {
+  win.assign("open", (items, filter, select) => {
 
     if (typeof select == "undefined") {
       select = -1;
@@ -205,7 +205,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     let index = 0;
     let table = "";
-    Sprite.each(Game.hero.data.items, function (itemCount, itemId) {
+    Sprite.Util.each(Game.hero.data.items, (itemCount, itemId) => {
       let item = Game.items[itemId];
 
       if (filter && filter.indexOf(item.data.type) == -1)
@@ -240,14 +240,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     win.show();
   });
 
-  win.whenUp(["enter"], function () {
+  win.whenUp(["enter"], () => {
     let buttons = sellWindowTable.querySelectorAll("button");
     if (lastSelect >= 0 && lastSelect < buttons.length) {
       buttons[lastSelect].click();
     }
   });
 
-  win.whenUp(["up", "down"], function (key) {
+  win.whenUp(["up", "down"], (key) => {
     let count = sellWindowTable.querySelectorAll("button").length;
     if (count <= 0) return;
 
@@ -274,13 +274,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  win.whenUp(["esc"], function () {
-    setTimeout(function () {
+  win.whenUp(["esc"], () => {
+    setTimeout( () => {
       win.hide();
     }, 20);
   });
 
-  win.whenUp(["left", "right"], function (key) {
+  win.whenUp(["left", "right"], (key) => {
     if (key == "right") {
       let filter = lastFilter;
       if (filter == null) {
@@ -320,7 +320,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  sellWindowTable.addEventListener("click", function (event) {
+  sellWindowTable.addEventListener("click", (event) => {
     let itemId = event.target.getAttribute("data-id");
     if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
       let item = Game.items[itemId];
@@ -333,12 +333,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       }
 
       if (itemCount == 1) {
-        Game.hero.data.bar.forEach(function (element, index, array) {
+        Game.hero.data.bar.forEach((element, index, array) => {
           if (element && element.id == itemId) {
             array[index] = null;
           }
         });
-        Sprite.each(Game.hero.data.equipment, function (element, key) {
+        Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
           if (element == itemId) {
             Game.hero.data.equipment[key] = null;
           }

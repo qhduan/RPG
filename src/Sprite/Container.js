@@ -24,16 +24,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-(function () {
+( () => {
  "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
    * Contain everything which inherit from Sprite.Display
    * @class
-   */
-  Sprite.assign("Container", class SpriteContainer extends Sprite.Display {
+  */
+  class SpriteContainer extends Sprite.Display {
 
     /**
      * Construct Sprite.Container
@@ -261,7 +261,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       this.emit("removedChildren");
     }
 
-  });
+  }
+
+  Sprite.assign("Container", SpriteContainer);
 
 
 })();

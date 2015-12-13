@@ -33,7 +33,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 (function () {
   "use strict";
 
-  var internal = Sprite.Namespace();
+  var internal = Sprite.Util.namespace();
 
   Game.assign("Map", (function (_Sprite$Event) {
     _inherits(GameMap, _Sprite$Event);
@@ -66,7 +66,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       key: "load",
       value: function load(id) {
         return new Promise(function (resolve, reject) {
-          Sprite.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
+          Sprite.Loader.load("map/" + id + ".json", "map/" + id + ".js").then(function (data) {
             var _data = _slicedToArray(data, 2);
 
             var mapData = _data[0];
@@ -128,7 +128,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
       ;
 
-      Sprite.load(images).then(function (data) {
+      Sprite.Loader.load(images).then(function (data) {
 
         // 释放空间
         privates.data.tilesets = null;

@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
 
@@ -69,7 +69,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       destIcon.centerX = 5;
       destIcon.centerY = 5;
 
-      Game.windows.stage.on("mousedown", function (event) {
+      Game.windows.stage.on("mousedown", (event) => {
         let data = event.data;
 
         data.x += Game.stage.centerX;
@@ -99,7 +99,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       });
 
-      Sprite.Ticker.on("tick", function () {
+      Sprite.Ticker.on("tick", () => {
 
         if (Game.paused) return;
         if (!Game.hero) return;
@@ -116,7 +116,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
   });
 
-  Game.assign("initInput", function () {
+  Game.assign("initInput", () => {
 
 
 
@@ -125,15 +125,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   /*
     let mousePressed = false;
 
-    Game.stage.on("stagemousedown", function (event) {
+    Game.stage.on("stagemousedown", (event) => {
       mousePressed = true;
     });
 
-    Game.stage.on("stagemouseup", function (event) {
+    Game.stage.on("stagemouseup", (event) => {
       mousePressed = false;
     });
 
-    Game.stage.on("mouseleave", function (event) { // mouse leave canvas
+    Game.stage.on("mouseleave", (event) => { // mouse leave canvas
       mousePressed = false;
     });
     */

@@ -70,7 +70,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   function pixelCollide(A, B) {
     // 对图像进行某种意义上的移动，例如把上面的图的A和B都平移到左上角，也就是AA的左上角变为0,0坐标
 
-    var now = new Date().getTime();
+    var now = Date.now();
 
     // WWWHHH
     var key = A.w * 1000 + A.h;
@@ -114,7 +114,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   }
 
   // 角色碰撞检测，先简单的矩形检测，如有碰撞可能则进行像素级检测
-  Game.assign("actorCollision", function (actorSprite, blockSprite) {
+  function actorCollision(actorSprite, blockSprite) {
     // 角色只检测frame 0，因为角色老变动，避免卡住，只检测第一个frame
     var actorRect = actorSprite.getFrame(0);
     // 阻挡的块则检测当前frame
@@ -132,10 +132,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  });
+  }
 
   // 技能碰撞检测
-  Game.assign("skillCollision", function (skillSprite, actorSprite) {
+  function skillCollision(skillSprite, actorSprite) {
     var skillRect = skillSprite.getFrame();
     var actorRect = actorSprite.getFrame();
 
@@ -145,5 +145,5 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       return pixelCollide(data.A, data.B);
     }
     return false;
-  });
+  }
 })();

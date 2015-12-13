@@ -18,7 +18,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
   let win = Game.windows.register = Game.Window.create("registerWindow");
@@ -394,11 +394,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
   let registerWindowSubmit = win.querySelector("#registerWindowSubmit");
   let registerWindowBack = win.querySelector("#registerWindowBack");
 
-  registerWindowSubmit.addEventListener("click", function () {
+  registerWindowSubmit.addEventListener("click", () => {
     Game.register.submit();
   });
 
-  registerWindowBack.addEventListener("click", function () {
+  registerWindowBack.addEventListener("click", () => {
     win.hide();
     Game.windows.main.show();
   });

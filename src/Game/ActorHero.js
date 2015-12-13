@@ -18,10 +18,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-(function () {
+( () => {
   "use strict";
 
-  let internal = Sprite.Namespace();
+  let internal = Sprite.Util.namespace();
 
   /**
     英雄类
@@ -125,7 +125,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       if (touchActor.length) {
         let faceAttacker = false;
         let facePosition = this.facePosition;
-        touchActor.forEach(function (actor) {
+        touchActor.forEach((actor) => {
           if (actor.hitTest(facePosition.x, facePosition.y)) {
             faceAttacker = true;
           }
@@ -192,57 +192,59 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
     gotoArea (dest, x, y) {
       var privates = internal(this);
-      privates.beAttacking = new Set();
-      Game.pause();
-      Game.windows.interface.hide();
-      Game.windows.stage.hide();
-      Game.windows.loading.begin();
-      Game.windows.loading.update("20%");
 
-      setTimeout(function () {
+      Sprite.Util.timeout(5).then( () => {
 
+        privates.beAttacking = new Set();
+        Game.pause();
+        Game.windows.interface.hide();
+        Game.windows.stage.hide();
+        Game.windows.loading.begin();
+        Game.windows.loading.update("30%");
         Game.clearStage();
+        return Sprite.Util.timeout(5);
+
+      }).then( () => {
+
+        return Game.loadArea(dest);
+
+      }).then( (area) => {
+
+        Game.area = area;
         Game.windows.loading.update("50%");
+        return Sprite.Util.timeout(5);
 
-        setTimeout(function () {
+      }).then( () => {
 
-          Game.loadArea(dest).then(function (area) {
+        Game.hero.data.area = dest;
+        Game.hero.draw();
+        Game.hero.x = x;
+        Game.hero.y = y;
+        Game.area.actors.add(Game.hero);
+        Game.area.map.draw();
+        Game.windows.loading.update("80%");
+        return Sprite.Util.timeout(5);
 
-            Game.area = area;
-            Game.windows.loading.update("80%");
+      }).then( () => {
 
-            setTimeout(function () {
+        Game.hero.x = x;
+        Game.hero.y = y;
+        Game.hero.data.time += 60; // 加一小时
+        Game.windows.loading.end();
+        Game.windows.interface.datetime();
+        Game.windows.interface.refresh();
+        Game.start();
+        Game.windows.loading.update("100%");
+        return Sprite.Util.timeout(5);
 
-              Game.hero.data.area = dest;
-              Game.hero.draw();
-              Game.hero.x = x;
-              Game.hero.y = y;
-              area.actors.add(Game.hero);
+      }).then( () => {
 
-              area.map.draw();
-              Game.windows.loading.update("100%");
+        Game.stage.update();
+        Game.windows.stage.show();
+        Game.windows.interface.show();
 
-              setTimeout(function () {
+      });
 
-                Game.hero.x = x;
-                Game.hero.y = y;
-                Game.hero.data.time += 60; // 加一小时
-                Game.windows.loading.end();
-                Game.windows.interface.datetime();
-                Game.windows.interface.refresh();
-                Game.start();
-
-                setTimeout(function () {
-
-                  Game.stage.update();
-                  Game.windows.stage.show();
-                  Game.windows.interface.show();
-                }, 5);
-              }, 5);
-            }, 5);
-          }); // loadArea
-        }, 5);
-      }, 5);
     }
 
     // 当玩家站到某个点的时候执行的命令
@@ -253,7 +255,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let heroPosition = Game.hero.position;
       let onto = null;
 
-      let FindUnderHero = function (element) {
+      let FindUnderHero = (element) => {
         if (onto != null || element == Game.hero) {
           return;
         }
@@ -278,7 +280,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
       // 找最近可“事件”人物 Game.area.actors
-      Sprite.each(Game.area.onto, FindUnderHero);
+      Sprite.Util.each(Game.area.onto, FindUnderHero);
       if (onto) {
         if (onto.execute) {
           onto.execute();
@@ -295,7 +297,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       let heroFace = Game.hero.facePosition;
       let touch = null;
 
-      let FindUnderHero = function (element) {
+      let FindUnderHero = (element) => {
         if (touch != null || element == Game.hero) {
           return;
         }
@@ -322,7 +324,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
         }
       }
 
-      let FindFaceHero = function (element) {
+      let FindFaceHero = (element) => {
         if (touch != null || element == Game.hero) {
           return;
         }
@@ -351,33 +353,33 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       // 用FindUnderHero函数寻找到玩家当前格子的地点
 
       // 找最近可“事件”人物 Game.area.actors
-      Sprite.each(Game.area.actors, FindUnderHero);
+      Sprite.Util.each(Game.area.actors, FindUnderHero);
       // 找最近尸体 Game.area.bags
-      Sprite.each(Game.area.bags, FindUnderHero);
+      Sprite.Util.each(Game.area.bags, FindUnderHero);
       // 找最近物品 Game.area.items
-      Sprite.each(Game.area.items, FindUnderHero);
+      Sprite.Util.each(Game.area.items, FindUnderHero);
       // 其他物品（由地图文件定义）
       Game.area.touch.forEach(FindUnderHero);
 
       // 用FindFaceHero寻找面对着玩家的格子地点
 
       // 找最近可“事件”人物 Game.area.actors
-      Sprite.each(Game.area.actors, FindFaceHero);
+      Sprite.Util.each(Game.area.actors, FindFaceHero);
       // 找最近尸体 Game.area.bags
-      Sprite.each(Game.area.bags, FindFaceHero);
+      Sprite.Util.each(Game.area.bags, FindFaceHero);
       // 找最近尸体 Game.area.items
-      Sprite.each(Game.area.items, FindFaceHero);
+      Sprite.Util.each(Game.area.items, FindFaceHero);
       // 其他物品（由地图文件定义）
       Game.area.touch.forEach(FindFaceHero);
       // 水源
       if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
         touch = {
           type: "water",
-          heroUse: function () {
+          heroUse: () => {
             Game.choice({
               "喝水": "drink",
               "钓鱼": "fish"
-            }).then(function (choice) {
+            }).then( (choice) => {
               switch (choice) {
                 case "drink":
                   Game.hero.popup("drink");
