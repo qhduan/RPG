@@ -23,26 +23,6 @@
 
     <script>
 
-      /*
-      window.onerror = function (msg, url, line, col, error) {
-        // Note that col & error are new to the HTML 5 spec and may not be
-        // supported in every browser.  It worked for me in Chrome.
-        var extra = !col ? '' : '\ncolumn: ' + col;
-        extra += !error ? '' : '\nerror: ' + error;
-
-        // You can view the information in an alert to see things working like this:
-        alert("Error: " + msg + "\nurl: " + url + "\nline: " + line + extra);
-
-        // TODO: Report this error via ajax so you can keep track
-        //       of what pages have JS issues
-
-        var suppressErrorAlert = true;
-        // If you return true, then error alerts (like in older versions of
-        // Internet Explorer) will be suppressed.
-        return suppressErrorAlert;
-      };
-      */
-
       (function CheckSupport () {
         (function CheckCanvasSupport () {
           var c = document.createElement("canvas");
@@ -94,71 +74,72 @@
       }
 
       var development = [
-        "js/browser-polyfill.js",
+        "js/polyfill.js",
 
         "js/Sprite/Sprite.js",
-        "js/Sprite/SpriteCanvas.js",
-        "js/Sprite/SpriteWebgl.js",
-        "js/Sprite/SpriteEvent.js",
-        "js/Sprite/SpriteTween.js",
-        "js/Sprite/SpriteLoad.js",
-        "js/Sprite/SpriteTicker.js",
-        "js/Sprite/SpriteDisplay.js",
-        "js/Sprite/SpriteContainer.js",
-        "js/Sprite/SpriteStage.js",
-        "js/Sprite/SpriteText.js",
-        "js/Sprite/SpriteFrame.js",
-        "js/Sprite/SpriteSheet.js",
-        "js/Sprite/SpriteInput.js",
-        "js/Sprite/SpriteShape.js",
-        "js/Sprite/SpriteBitmap.js",
+        "js/Sprite/Canvas.js",
+        "js/Sprite/Webgl.js",
+        "js/Sprite/Event.js",
+        "js/Sprite/Tween.js",
+        "js/Sprite/Load.js",
+        "js/Sprite/Ticker.js",
+        "js/Sprite/Display.js",
+        "js/Sprite/Container.js",
+        "js/Sprite/Stage.js",
+        "js/Sprite/Text.js",
+        "js/Sprite/Frame.js",
+        "js/Sprite/Sheet.js",
+        "js/Sprite/Input.js",
+        "js/Sprite/Shape.js",
+        "js/Sprite/Bitmap.js",
 
         "js/Game/Game.js",
 
-        "js/Game/GameWindow.js",
-        "js/Game/GameWindowArchive.js",
-        "js/Game/GameWindowBuy.js",
-        "js/Game/GameWindowChoice.js",
-        "js/Game/GameWindowConfirm.js",
-        "js/Game/GameWindowDialogue.js",
-        "js/Game/GameWindowInterface.js",
-        "js/Game/GameWindowInventory.js",
-        "js/Game/GameWindowLoading.js",
-        "js/Game/GameWindowMain.js",
-        "js/Game/GameWindowMap.js",
-        "js/Game/GameWindowOver.js",
-        "js/Game/GameWindowPickup.js",
-        "js/Game/GameWindowQuest.js",
-        "js/Game/GameWindowRegister.js",
-        "js/Game/GameWindowSell.js",
-        "js/Game/GameWindowSetting.js",
-        "js/Game/GameWindowSkill.js",
-        "js/Game/GameWindowStatus.js",
-        "js/Game/GameWindowSysmenu.js",
+        "js/Game/Window.js",
 
-        "js/Game/GameAstar.js",
-        "js/Game/GameAI.js",
-        "js/Game/GameCollision.js",
-        "js/Game/GameUI.js",
-        "js/Game/GameArea.js",
-        "js/Game/GameMap.js",
-        "js/Game/GameQuest.js",
-        "js/Game/GameItem.js",
-        "js/Game/GameSkill.js",
-        "js/Game/GameActor.js",
-        "js/Game/GameActorAlly.js",
-        "js/Game/GameActorHero.js",
-        "js/Game/GameActorMonster.js",
-        "js/Game/GameActorNPC.js",
-        "js/Game/GameActorPet.js",
-        "js/Game/GameDrawHero.js",
-        "js/Game/GameInput.js",
-        "js/Game/GameRegister.js",
-        "js/Game/GameArchive.js"
+        "js/Game/Window/Archive.js",
+        "js/Game/Window/Buy.js",
+        "js/Game/Window/Choice.js",
+        "js/Game/Window/Confirm.js",
+        "js/Game/Window/Dialogue.js",
+        "js/Game/Window/Interface.js",
+        "js/Game/Window/Inventory.js",
+        "js/Game/Window/Loading.js",
+        "js/Game/Window/Main.js",
+        "js/Game/Window/Map.js",
+        "js/Game/Window/Over.js",
+        "js/Game/Window/Pickup.js",
+        "js/Game/Window/Quest.js",
+        "js/Game/Window/Register.js",
+        "js/Game/Window/Sell.js",
+        "js/Game/Window/Setting.js",
+        "js/Game/Window/Skill.js",
+        "js/Game/Window/Status.js",
+        "js/Game/Window/Sysmenu.js",
+
+        "js/Game/Astar.js",
+        "js/Game/AI.js",
+        "js/Game/Collision.js",
+        "js/Game/UI.js",
+        "js/Game/Area.js",
+        "js/Game/Map.js",
+        "js/Game/Quest.js",
+        "js/Game/Item.js",
+        "js/Game/Skill.js",
+        "js/Game/Actor.js",
+        "js/Game/ActorAlly.js",
+        "js/Game/ActorHero.js",
+        "js/Game/ActorMonster.js",
+        "js/Game/ActorNPC.js",
+        "js/Game/ActorPet.js",
+        "js/Game/DrawHero.js",
+        "js/Game/Input.js",
+        "js/Game/Register.js",
+        "js/Game/Archive.js"
       ];
 
       var product = [
-        "js/all.min.js"
+        "js/all.js"
       ];
 
       if (document.URL.match(/dev/i)) {

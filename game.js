@@ -26,33 +26,36 @@ var babel = require("babel-core");
 
 grunt.tasks(["babel"], {}, function () {
 
+  grunt.tasks(["concat"]);
   grunt.tasks(["watch"]);
 
   // 监视grunt-contrib-watch的事件，重新编译指定文件
   // 如果直接运行babel命令，会把所有文件都重新编译，很慢
   grunt.event.on("watch", function (action, filepath, target) {
+    var stat = null;
     try {
-      fs.statSync(filepath);
-    } catch (e) {
-      console.log(filepath, "wrong or not exists");
-      return;
-    }
-    var outputPath = filepath.replace("src", "data/js");
-    babel.transformFile(filepath, {
-      sourceMaps: "inline",
-      presets: ["es2015"]
-    }, function (err, result) {
-      if (err) throw err;
-      // 保存转换好的代码
-      fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
-        if (err) throw err;
-        console.log("babel compiled", filepath, outputPath);
-      });
+      stat = fs.statSync(filepath);
+    } catch (e) { }
 
-    });
+    if (stat && stat.isFile && stat.isFile() && filepath.indexOf("src") != -1 ) {
+      var outputPath = filepath.replace("src", "data/js");
+      babel.transformFile(filepath, {
+        presets: ["es2015"]
+      }, function (err, result) {
+        if (err) throw err;
+        // 保存转换好的代码
+        fs.writeFile(outputPath, result.code, { encoding: "utf8" }, function (err) {
+          if (err) throw err;
+          console.log("babel compiled", filepath, outputPath);
+          grunt.tasks(["concat"]);
+        });
+
+      });
+    }
+
   });
 
-  console.log("\nGrunt Done, Game Starting...\n");
+  console.log("Grunt Done");
 
   var express = require("express");
   var compression = require("compression");
