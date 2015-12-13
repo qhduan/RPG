@@ -61,14 +61,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
       this.on("change", () => {
-        this.onto();
-        this.touch();
+        this.whenOnto();
+        this.whenTouch();
       });
 
       setInterval(() => {
         if ( !Game.paused ) {
-          this.onto();
-          this.touch();
+          this.whenOnto();
+          this.whenTouch();
         }
       }, 500);
     }
@@ -246,7 +246,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // 当玩家站到某个点的时候执行的命令
-    onto () {
+    whenOnto () {
       if (!Game.area) return;
       if (!Game.area.onto) return;
 
@@ -287,7 +287,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
     }
 
     // 当玩家站到或者接触到某个点时执行的命令
-    touch () {
+    whenTouch () {
       if (!Game.area) return;
       if (!Game.area.touch) return;
 
