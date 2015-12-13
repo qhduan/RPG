@@ -36,11 +36,11 @@ map.spawnItem = {
 };
 
 map.onto.push({
-  x: 31,
-  y: 0,
+  x: 0,
+  y: 15,
   description: "通往法斯通镇",
   execute: function () {
-    Game.hero.gotoArea("fystone", 23, 45);
+    Game.hero.gotoArea("fystone", 45, 38);
   }
 });
 

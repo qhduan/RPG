@@ -54,11 +54,11 @@ map.onto.push({
 });
 
 map.onto.push({
-  x: 23,
-  y: 46,
+  x: 46,
+  y: 38,
   description: "通往巴斯托森林北部",
   execute: function () {
-    Game.hero.gotoArea("bastowforest.north", 31, 1);
+    Game.hero.gotoArea("bastowforest.north", 1, 15);
   }
 });
 
