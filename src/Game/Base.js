@@ -24,6 +24,8 @@ import Sprite from "../Sprite/Sprite.js";
 
 let internal = Sprite.Util.namespace();
 
+let Game = null;
+
   // root级别api入口
 class Base {
 
@@ -229,7 +231,7 @@ class Base {
     });
 
     Sprite.Ticker.on("tick", () => {
-      if (this.paused == false) {
+      if ( !this.paused ) {
         this.stage.update();
       }
     });
@@ -257,9 +259,9 @@ class Base {
 
     console.log("Elliorwis 0.2.0 Flying!");
   }
-};
+}
 
-let Game = new Base();
+Game = new Base();
 console.log("Game Base Constructed");
 
 export default Game;

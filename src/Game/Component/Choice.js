@@ -50,14 +50,14 @@ export default function Choice (options) {
       button.addEventListener("click", () => {
         win.hide();
         win.destroy();
-        resolve(value)
+        resolve(value);
       });
     });
 
     choiceWindowNo.addEventListener("click", () => {
       win.hide();
       win.destroy();
-      resolve(null)
+      resolve(null);
     });
 
     win.whenUp(["esc"], () => {
@@ -76,4 +76,4 @@ export default function Choice (options) {
     });
 
   });
-};
+}

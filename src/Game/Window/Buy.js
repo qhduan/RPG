@@ -116,7 +116,7 @@ win.assign("open", (items, filter, select) => {
   buyWindowBook.style.color = defaultColor;
   buyWindowMisc.style.color = defaultColor;
 
-  if (filter == null) {
+  if ( !filter ) {
     buyWindowAll.style.color = activeColor;
   } else if (filter.match(/sword/)) {
     buyWindowWeapon.style.color = activeColor;
@@ -220,7 +220,7 @@ win.whenUp(["esc"], () => {
 win.whenUp(["left", "right"], (key) => {
   if (key == "right") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "sword|spear|bow";
     } else if (filter.match(/sword/)) {
       filter = "head|body|feet";
@@ -238,7 +238,7 @@ win.whenUp(["left", "right"], (key) => {
     win.open(lastItems, filter);
   } else if (key == "left") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "misc";
     } else if (filter.match(/sword/)) {
       filter = null;
@@ -271,7 +271,7 @@ buyWindowTable.addEventListener("click", (event) => {
 
     lastItems[itemId]--;
 
-    if (lastItems[itemId] == 0) {
+    if (lastItems[itemId] === 0) {
       delete lastItems[itemId];
     }
 

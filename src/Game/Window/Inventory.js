@@ -112,7 +112,7 @@ win.assign("open", (filter, select) => {
   inventoryWindowBook.style.color = defaultColor;
   inventoryWindowMisc.style.color = defaultColor;
 
-  if (filter == null) {
+  if ( !filter ) {
     inventoryWindowAll.style.color = activeColor;
   } else if (filter.match(/sword/)) {
     inventoryWindowWeapon.style.color = activeColor;
@@ -247,14 +247,12 @@ inventoryWindowTable.addEventListener("click", (event) => {
           }
           Game.hero.data.equipment[type] = item.id;
           return win.open(lastFilter);
-          break;
         case "takeoff":
           if (item.data.type.match(/sword|spear|bow/))
             Game.hero.data.equipment.weapon = null;
           else
             Game.hero.data.equipment[item.data.type] = null;
           return win.open(lastFilter);
-          break;
         case "use":
           if (item.heroUse) {
             item.heroUse();
@@ -288,7 +286,6 @@ inventoryWindowTable.addEventListener("click", (event) => {
 
           Game.windows.interface.refresh();
           return win.open(lastFilter);
-          break;
         case "shortcut":
           Choice({
             1:0,
@@ -324,7 +321,7 @@ win.whenUp(["esc"], () => {
 win.whenUp(["left", "right"], (key) => {
   if (key == "right") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "sword|spear|bow";
     } else if (filter.match(/sword/)) {
       filter = "head|body|feet";
@@ -342,7 +339,7 @@ win.whenUp(["left", "right"], (key) => {
     win.open(filter, -1);
   } else if (key == "left") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "misc";
     } else if (filter.match(/sword/)) {
       filter = null;

@@ -43,7 +43,7 @@ export default class Window extends Sprite.Event {
    *
    */
   static create (id, html) {
-    let win = new Window(id, html)
+    let win = new Window(id, html);
     return win;
   }
 
@@ -172,7 +172,7 @@ export default class Window extends Sprite.Event {
   show () {
     let privates = internal(this);
     GameWindowResize();
-    if (this.showing == false && privates.html) {
+    if (privates.html && !this.showing) {
       this.emit("beforeShow");
 
       for (let win of windows) {
@@ -280,7 +280,7 @@ function GameWindowResize () {
   let topMargin = 0;
   let mobile = false;
 
-  if (Game.config.scale == false) {
+  if ( !Game.config.scale ) {
     // 不拉伸游戏窗口，按原始大小计算窗口居中
     leftMargin = Math.floor((width - Game.config.width) / 2);
     topMargin = Math.floor((height - Game.config.height) / 2);

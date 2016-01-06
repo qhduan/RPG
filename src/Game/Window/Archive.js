@@ -81,7 +81,7 @@ win.assign("open", () => {
     line += `  <img alt="" src="${archive.screenshot || ""}" width="80" height="45" style="display: inline-block; margin: 5px;">\n`;
     line += `  <label style="font-size: 20px; margin: 10px;">${archive.name}</label>\n`;
     line += `  <label style="margin: 10px;">${archive.date}</label>\n`;
-    line += "</div>\n"
+    line += "</div>\n";
     table += line;
   });
 

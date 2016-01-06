@@ -184,7 +184,7 @@ export default class Map extends Sprite.Event {
   }
 
   get row () { // height / tileheight
-    return this.data.height
+    return this.data.height;
   }
 
   set row (value) {

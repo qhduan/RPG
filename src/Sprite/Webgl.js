@@ -457,7 +457,7 @@ export default class Webgl {
       if (value != privates.canvas.height) {
         privates.canvas.height = value;
         privates.gl.viewport(0, 0, privates.canvas.width, privates.canvas.height);
-        privates.gl.uniform2f(resolutionLoc, privates.canvas.width, privates.canvas.height);
+        privates.gl.uniform2f(privates.resolutionLoc, privates.canvas.width, privates.canvas.height);
       }
     } else {
       console.error(value, this);

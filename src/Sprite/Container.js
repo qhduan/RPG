@@ -149,7 +149,7 @@ export default class Container extends Display {
    */
   draw (renderer) {
     let privates = internal(this);
-    if (this.alpha < 0.01 || this.visible != true) {
+    if (this.alpha < 0.01 || !this.visible) {
       return;
     }
 
@@ -165,7 +165,7 @@ export default class Container extends Display {
     } else {
       if (this.children.length > 0) {
         for (let child of this.children) {
-          if (child.visible == true && child.alpha >= 0.01) {
+          if (child.visible && child.alpha >= 0.01) {
             child.draw(renderer);
           }
         }
@@ -195,7 +195,7 @@ export default class Container extends Display {
     }
 
     for (let element of args) {
-      if (element instanceof Display == false) {
+      if (element instanceof Display === false) {
         console.error(element);
         throw new Error("SpriteContainer.appendChild only accept SpriteDisplay or it's sub-class");
       }
@@ -221,7 +221,7 @@ export default class Container extends Display {
 
     let index = args[0];
     for (let i = 1, len = args.length; i < len; i++) {
-      if (args[i] instanceof Display == false) {
+      if (args[i] instanceof Display === false) {
         console.error(args[i]);
         throw new Error("SpriteContainer.appendChildAt only can accept SpriteDisplay or it's sub-class");
       }

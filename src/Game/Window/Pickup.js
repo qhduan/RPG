@@ -45,7 +45,7 @@ pickupWindowAll.addEventListener("click", (event) => {
   let itemObj = currentItemObj;
   if (itemObj && itemObj.inner && Object.keys(itemObj.inner).length > 0) {
     Object.keys(itemObj.inner).forEach(itemId => {
-      const itemCount = inner[itemId];
+      const itemCount = itemObj.inner[itemId];
       if (itemId == "gold") {
         Game.hero.data.gold += itemCount;
       } else {

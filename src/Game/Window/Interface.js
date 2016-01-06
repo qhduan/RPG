@@ -57,7 +57,7 @@ win.on("active", () => {
 
 win.on("deactive", () => {
   Game.pause();
-})
+});
 
 win.whenUp(["esc"], (key) => {
   if (Game.windows.interface.atop) {
@@ -73,7 +73,7 @@ function InitInterfaceBar () {
   for (let i = 0; i < buttonCount; i++) {
     let line = "";
     line += `<button data-index="${i}" class="interfaceWindowButton">`;
-    line += `<label data-index="${i}" class="interfaceWindowButtonText"></label>`
+    line += `<label data-index="${i}" class="interfaceWindowButtonText"></label>`;
     line += `</button>\n`;
     buttonHTML += line;
   }
@@ -81,7 +81,7 @@ function InitInterfaceBar () {
 }
 
 setInterval( () => {
-  if (Game.hero && Game.paused == false) {
+  if (Game.hero && !Game.paused ) {
     Game.hero.data.time++;
     Game.windows.interface.datetime();
   }

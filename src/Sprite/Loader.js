@@ -39,7 +39,7 @@ let Cache = new Map();
  */
 let Downloading = new Map();
 
-function Fetch (url, callback, timeout = 0) {
+function fetchData (url, callback, timeout = 0) {
 
   let type = null;
   if (url.match(/js$/)) {
@@ -52,11 +52,11 @@ function Fetch (url, callback, timeout = 0) {
     type = "json";
   } else {
     console.error(url);
-    throw new Error("Fetch got an invalid url");
+    throw new Error("fetchData got an invalid url");
   }
 
   // finished
-  const Finish = (obj) => {
+  const gotData = function (obj) {
 
     if ( !Cache.has(url) ) {
       Cache.set(url, obj);
@@ -71,17 +71,17 @@ function Fetch (url, callback, timeout = 0) {
     }
     if (Downloading.has(url)) {
       const callbacks = Downloading.get(url);
-      for (const callback of callbacks) {
-        if (callback) {
-          callback(obj);
+      for (const cb of callbacks) {
+        if (cb) {
+          cb(obj);
         }
       }
       Downloading.delete(url);
     }
-  }
+  };
 
   if (Cache.has(url)) {
-    Finish(Cache.get(url));
+    gotData(Cache.get(url));
     return;
   }
 
@@ -114,7 +114,7 @@ function Fetch (url, callback, timeout = 0) {
       break;
     default:
       console.error(type, url);
-      throw new Error("Fetch something wrong");
+      throw new Error("fetchData something wrong");
   }
 
   if (typeof callback != "function")
@@ -124,11 +124,11 @@ function Fetch (url, callback, timeout = 0) {
     if (timeout >= 2) {
       console.error(url);
       alert(`资源${url}超时没有加载成功！`);
-      throw new Error("SpriteLoader.Fetch timeout 3 times");
+      throw new Error("SpriteLoader.fetchData timeout 3 times");
     } else {
-      console.error("SpriteLoader.Fetch timeout try again, ", timeout + 1, " ", url);
+      console.error("SpriteLoader.fetchData timeout try again, ", timeout + 1, " ", url);
       setTimeout( () => {
-        Fetch(url, callback, timeout + 1);
+        fetchData(url, callback, timeout + 1);
       }, 50);
     }
   };
@@ -146,14 +146,14 @@ function Fetch (url, callback, timeout = 0) {
             console.error(req.response, url);
             throw e;
           }
-          Finish(fun);
+          gotData(fun);
         } else if (type == "image") {
           let arraybuffer = req.response;
           let image = new Image();
           image.onload = () => {
             // window.URL.revokeObjectURL(image.src);
             image.onload = null;
-            Finish(image);
+            gotData(image);
           };
           image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
         } else if (type == "audio") {
@@ -163,7 +163,7 @@ function Fetch (url, callback, timeout = 0) {
             // 如果reoke掉audio，那么audio.load()方法则不能用了
             // window.URL.revokeObjectURL(audio.src);
             audio.oncanplay = null;
-            Finish(audio);
+            gotData(audio);
           };
           audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
         } else if (type == "json") {
@@ -172,7 +172,7 @@ function Fetch (url, callback, timeout = 0) {
             console.error(url);
             throw new Error("Loader invalid json");
           }
-          Finish(json);
+          gotData(json);
         }
       } else {
         console.error("url: ", url);
@@ -183,11 +183,11 @@ function Fetch (url, callback, timeout = 0) {
         if (timeout >= 2) {
           console.error(url);
           alert(`资源${url}错误没有加载成功！`);
-          throw new Error("SpriteLoader.Fetch error 3 times");
+          throw new Error("SpriteLoader.fetchData error 3 times");
         } else {
-          console.error("SpriteLoader.Fetch error try again, ", timeout + 1, " ", url);
+          console.error("SpriteLoader.fetchData error try again, ", timeout + 1, " ", url);
           setTimeout( () => {
-            Fetch(url, callback, timeout + 1);
+            fetchData(url, callback, timeout + 1);
           }, 50);
         }
       }
@@ -222,18 +222,18 @@ export default class Loader {
       let ret = [];
       ret.length = urls.length;
 
-      const Done = () => {
+      const gotResult = () => {
         done++;
 
         if (done >= ret.length) {
           resolve(ret);
         }
-      }
+      };
 
       urls.forEach((element, index) => {
-        Fetch(element, (result) => {
+        fetchData(element, (result) => {
           ret[index] = result;
-          Done();
+          gotResult();
         });
       });
 

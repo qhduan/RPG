@@ -90,7 +90,7 @@ export default class Event {
       });
       return null;
     } else {
-      if (privates.listeners.has(event) == false) {
+      if ( !privates.listeners.has(event) ) {
         privates.listeners.set(event, new Map());
       }
 
@@ -134,7 +134,7 @@ export default class Event {
       }
     }
 
-    if (privates.parent && bubble == true) {
+    if (privates.parent && bubble) {
       privates.parent.emitBubble(event, target, data);
     }
   }
@@ -166,7 +166,7 @@ export default class Event {
       }
     }
 
-    if (privates.parent && bubble == true) {
+    if (privates.parent && bubble) {
       privates.parent.emitBubble(event, this, data);
     }
   }

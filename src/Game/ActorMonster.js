@@ -44,7 +44,7 @@ export default class ActorMonster extends Actor {
     super.damage(attacker, skill);
     let privates = internal(this);
 
-    if (privates.attacking == false) {
+    if ( !privates.attacking ) {
       this.goto(attacker.x, attacker.y, "walk");
     }
   }
@@ -71,10 +71,10 @@ export default class ActorMonster extends Actor {
 
       let tickCount = event.data;
 
-      if (tickCount % 20 == 0) {
+      if (tickCount % 20 === 0) {
         let barChanged = false;
 
-        if (this.data.hp < this.data.$hp && privates.attacking == false) {
+        if (this.data.hp < this.data.$hp && !privates.attacking) {
           this.data.hp++;
           barChanged = true;
         }
@@ -90,7 +90,7 @@ export default class ActorMonster extends Actor {
       }
 
       if (privates.attacking) {
-        if (tickCount % dodo == 0) {
+        if (tickCount % dodo === 0) {
           if (
             Game.hero &&
             this.facePosition.x == Game.hero.x &&
@@ -119,7 +119,7 @@ export default class ActorMonster extends Actor {
           }
         }
       } else {
-        if (tickCount % dodo == 0) {
+        if (tickCount % dodo === 0) {
           if (Game.hero && Game.hero.distance(this) < 8) {
             this.goto(Game.hero.x, Game.hero.y, "walk");
             privates.attacking = true;

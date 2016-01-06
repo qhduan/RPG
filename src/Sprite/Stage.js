@@ -62,7 +62,7 @@ export default class Stage extends Container {
     }
 
     if (!privates.renderer) {
-      throw new Error("SpriteStage all renderer not support");
+      throw new Error("Stage all renderer not support");
     }
 
     /**
@@ -80,7 +80,7 @@ export default class Stage extends Container {
   }
 
   set renderer (value) {
-    throw new Error("SpriteStage renderer readonly");
+    throw new Error("Stage renderer readonly");
   }
 
   get rendererType () {
@@ -88,7 +88,7 @@ export default class Stage extends Container {
   }
 
   set rendererType (value) {
-    throw new Error("SpriteStage.rendererType readonly")
+    throw new Error("Stage.rendererType readonly");
   }
 
   filter (name, value) {
@@ -132,7 +132,7 @@ export default class Stage extends Container {
   }
 
   set canvas (value) {
-    throw new Error("SpriteStage.canvas readonly")
+    throw new Error("Stage.canvas readonly");
   }
 
   /// @function SpriteStage.clear

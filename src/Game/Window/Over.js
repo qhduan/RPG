@@ -32,6 +32,7 @@ export default WindowOver;
 
 let overWindowMessage = win.querySelector("#overWindowMessage");
 let overWindowReason = win.querySelector("#overWindowReason");
+let overWindowClose = win.querySelector("button#overWindowClose");
 
 let deadText = [
   "不幸的事情终于发生了……即便你的内心曾对神灵祈祷",

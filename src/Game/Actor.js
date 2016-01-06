@@ -87,12 +87,12 @@ export default class Actor extends Sprite.Event {
     let privates = internal(this);
     let data = privates.data;
 
-    for (let image of images) {
+    for (const image of images) {
       if (!(image instanceof Image) && !(image.getContext && image.getContext("2d"))) {
         console.error(image, images, this);
         throw new Error("Game.Actor got invalid image, not Image or Canvas");
       }
-    };
+    }
 
     let sprite = new Sprite.Sheet({
       images: images, // images is Array
@@ -117,7 +117,7 @@ export default class Actor extends Sprite.Event {
 
     sprite.on("change", () => {
       privates.infoBox.x = sprite.x;
-      privates.infoBox.y = sprite.y - sprite.centerY - 20
+      privates.infoBox.y = sprite.y - sprite.centerY - 20;
     });
 
     let completeCount = -1;
@@ -557,11 +557,11 @@ export default class Actor extends Sprite.Event {
 
     if (type == "normal") {
       power += attacker.data.atk;
-      power -= this.data.def
+      power -= this.data.def;
       power = Math.max(0, power);
     } else { // type == magic
       power += attacker.data.matk;
-      power - this.data.mdef
+      power -= this.data.mdef;
       power = Math.max(0, power);
     }
 
@@ -637,7 +637,7 @@ export default class Actor extends Sprite.Event {
     }
 
     // 无动画或者停止状态，现有优先级为-1（最低级）
-    if (typeof this.animationPriority == "undefined" || this.sprite.paused == true) {
+    if (typeof this.animationPriority == "undefined" || this.sprite.paused ) {
       this.animationPriority = -1;
     }
 
@@ -655,8 +655,8 @@ export default class Actor extends Sprite.Event {
   stop () {
     if (!this.sprite.currentAnimation) return;
 
-    if ((this.sprite.paused && !this.sprite.currentAnimation.match(/face/))
-      || this.sprite.currentAnimation.match(/walk|run/)) {
+    if ( (this.sprite.paused && !this.sprite.currentAnimation.match(/face/)) ||
+        this.sprite.currentAnimation.match(/walk|run/) ) {
       switch (this.direction) {
         case "up":
           this.sprite.play("faceup");
@@ -705,7 +705,7 @@ export default class Actor extends Sprite.Event {
     if ( // 玩家使用技能是可能有条件的，例如剑技能需要装备剑
       this.type == "hero" &&
       skill.data.condition &&
-      skill.data.condition() == false
+      !skill.data.condition()
     ) {
       return 0;
     }
@@ -777,16 +777,16 @@ export default class Actor extends Sprite.Event {
 
       let positionChoice = [];
       // 上下左右
-      if (this.checkCollision(x, y-1) == false) {
+      if ( !this.checkCollision(x, y-1) ) {
         positionChoice.push({x: x, y: y-1, after: "down"});
       }
-      if (this.checkCollision(x, y+1) == false) {
+      if ( !this.checkCollision(x, y+1) ) {
         positionChoice.push({x: x, y: y+1, after: "up"});
       }
-      if (this.checkCollision(x-1, y) == false) {
+      if ( !this.checkCollision(x-1, y) ) {
         positionChoice.push({x: x-1, y: y, after: "right"});
       }
-      if (this.checkCollision(x+1, y) == false) {
+      if ( !this.checkCollision(x+1, y) ) {
         positionChoice.push({x: x+1, y: y, after: "left"});
       }
 
@@ -800,7 +800,7 @@ export default class Actor extends Sprite.Event {
       });
 
       // 如果真正的目的地有可能走，插入到第一位，写在这里是因为目的地并不一定是distance最小的
-      if (this.checkCollision(x, y) == false) {
+      if ( !this.checkCollision(x, y) ) {
         positionChoice.splice(0, 0, {x: x, y: y});
       }
 
@@ -842,33 +842,33 @@ export default class Actor extends Sprite.Event {
             }
           });
         } else {
-          if (otherChoice == false) {
+          if ( !otherChoice ) {
             otherChoice = true;
             let otherPositionChoice = [];
             // 四个角
-            if (this.checkCollision(x-1, y-1) == false) {
+            if ( !this.checkCollision(x-1, y-1) ) {
               otherPositionChoice.push({x: x-1, y: y-1, after: "right"});
             }
-            if (this.checkCollision(x+1, y-1) == false) {
+            if ( !this.checkCollision(x+1, y-1) ) {
               otherPositionChoice.push({x: x+1, y: y-1, after: "left"});
             }
-            if (this.checkCollision(x-1, y+1) == false) {
+            if ( !this.checkCollision(x-1, y+1) ) {
               otherPositionChoice.push({x: x-1, y: y+1, after: "right"});
             }
-            if (this.checkCollision(x+1, y+1) == false) {
+            if ( !this.checkCollision(x+1, y+1) ) {
               otherPositionChoice.push({x: x+1, y: y+1, after: "left"});
             }
             // 四个远方向
-            if (this.checkCollision(x, y-2) == false) {
+            if ( !this.checkCollision(x, y-2) ) {
               otherPositionChoice.push({x: x, y: y-2, after: "down"});
             }
-            if (this.checkCollision(x, y+2) == false) {
+            if ( !this.checkCollision(x, y+2) ) {
               otherPositionChoice.push({x: x, y: y+2, after: "up"});
             }
-            if (this.checkCollision(x-2, y) == false) {
+            if ( !this.checkCollision(x-2, y) ) {
               otherPositionChoice.push({x: x-2, y: y, after: "right"});
             }
-            if (this.checkCollision(x+2, y) == false) {
+            if ( !this.checkCollision(x+2, y) ) {
               otherPositionChoice.push({x: x+2, y: y, after: "left"});
             }
 
@@ -888,7 +888,7 @@ export default class Actor extends Sprite.Event {
             }
           }
         } // 再次尝试离地点最近的地点
-      }
+      };
 
       return TestPosition();
 
@@ -935,7 +935,7 @@ export default class Actor extends Sprite.Event {
             }
           } else if (dest.y == current.y) {
             if (dest.x > current.x) {
-              direction = "right"
+              direction = "right";
             } else if (dest.x < current.x) {
               direction = "left";
             }
@@ -948,7 +948,7 @@ export default class Actor extends Sprite.Event {
               this.face(direction);
             }
             this.go(state, direction).then(() => {
-              Walk()
+              Walk();
             });
             index++;
           }
@@ -963,7 +963,7 @@ export default class Actor extends Sprite.Event {
           this.going = false;
           resolve();
         }
-      }
+      };
       Walk();
     });
   }
@@ -1012,7 +1012,7 @@ export default class Actor extends Sprite.Event {
     }
 
     return false;
-  };
+  }
 
   /**
    * 测试人物碰撞
@@ -1043,7 +1043,7 @@ export default class Actor extends Sprite.Event {
 
       // 如果正在战斗动画，则不走
       if (
-        this.sprite.paused == false &&
+        !this.sprite.paused &&
         this.sprite.currentAnimation.match(/skillcast|thrust|slash|shoot/)
       ) {
         return;
@@ -1070,7 +1070,7 @@ export default class Actor extends Sprite.Event {
 
       let newPosition = this.facePosition;
 
-      if (this.checkCollision(newPosition.x, newPosition.y) == false) {
+      if ( !this.checkCollision(newPosition.x, newPosition.y) ) {
         // 没碰撞，开始行走
         this.walking = true;
 

@@ -77,7 +77,7 @@ export default class Tween extends Event {
 
   nextAction () {
     let privates = internal(this);
-    if (privates.doing == false && privates.action.length > 0) {
+    if (privates.action.length > 0 && !privates.doing) {
       let action = privates.action[0];
       privates.action.splice(0, 1);
       switch (action.type) {

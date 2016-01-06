@@ -84,13 +84,13 @@ win.assign("current", () => {
 
     if (quest.target && quest.target.kill == "kill") {
       for (let k of quest.target.kill) {
-        line += `<div style="margin: 10px;">${k.name}：${k.current} / ${t.need}</div>`;
+        line += `<div style="margin: 10px;">${k.name}：${k.current} / ${k.need}</div>`;
       }
     }
 
     line += `  <label style="margin: 10px;">给予人：${quest.fromMap} 的 ${quest.fromName}</label>\n`;
     line += `  <label style="margin: 10px;">交付人：${quest.toMap} 的 ${quest.toName}</label>\n`;
-    line += "</div>\n"
+    line += "</div>\n";
     table += line;
   });
 
@@ -128,13 +128,13 @@ win.assign("past", () => {
 
     if (quest.target && quest.target.type == "kill") {
       for (let k of quest.target.kill) {
-        line += `<div style="margin: 10px;">${k.name}：${k.current} / ${t.need}</div>`;
+        line += `<div style="margin: 10px;">${k.name}：${k.current} / ${k.need}</div>`;
       }
     }
 
     line += `  <label style="margin: 10px;">给予人：${quest.fromMap} 的 ${quest.fromName}</label>\n`;
     line += `  <label style="margin: 10px;">交付人：${quest.toMap} 的 ${quest.toName}</label>\n`;
-    line += "</div>\n"
+    line += "</div>\n";
     table += line;
   });
 
@@ -144,17 +144,4 @@ win.assign("past", () => {
 
   questWindowTable.innerHTML = table;
   win.show();
-});
-
-questWindowTable.addEventListener("click", (event) => {
-  let id = event.target.getAttribute("data-id");
-  if (id) {
-    if (type == "remove") {
-      Game.Archive.remove(id);
-      win.open();
-    } else if (type == "load") {
-      Game.Archive.load(id);
-      win.hide();
-    }
-  }
 });

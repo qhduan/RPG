@@ -102,7 +102,7 @@ export default class Bitmap extends Display {
    * @param {Object} renderer Draw image on the renderer
   */
   draw (renderer) {
-    if (this.alpha <= 0.01 || this.visible != true) {
+    if (this.alpha <= 0.01 || !this.visible) {
       return;
     }
     let image = internal(this).image;

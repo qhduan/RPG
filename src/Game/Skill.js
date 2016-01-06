@@ -203,6 +203,38 @@ export default class Skill extends Sprite.Event {
 
       CheckHit();
 
+      // 攻击结束时运行Stop函数
+      const Finish = () => {
+        Sprite.Ticker.off("tick", listener);
+
+        if (hitted.length > 0 && this.data.animations.hitted) {
+          let actor = hitted[0];
+          sprite.x = actor.sprite.x;
+          sprite.y = actor.sprite.y;
+          sprite.play("hitted");
+          if ( sprite.paused ) {
+            Game.layers.skillLayer.removeChild(sprite);
+          } else {
+            sprite.on("animationend", () => {
+              Game.layers.skillLayer.removeChild(sprite);
+            });
+          }
+        } else {
+          // 如果动画已经播完，则停止
+          if ( sprite.paused ) {
+            Game.layers.skillLayer.removeChild(sprite);
+          } else {
+            sprite.on("animationend", () => {
+              Game.layers.skillLayer.removeChild(sprite);
+            });
+          }
+        }
+
+        if (callback) {
+          callback(hitted);
+        }
+      };
+
       // 测试碰撞到墙
       let grid = Game.area.map.tile(sprite.x, sprite.y);
       if (Game.area.map.hitTest(grid.x, grid.y)) {
@@ -221,43 +253,11 @@ export default class Skill extends Sprite.Event {
 
     });
 
-    // 攻击结束时运行Stop函数
-    const Finish = () => {
-      Sprite.Ticker.off("tick", listener);
-
-      if (hitted.length > 0 && this.data.animations["hitted"]) {
-        let actor = hitted[0];
-        sprite.x = actor.sprite.x;
-        sprite.y = actor.sprite.y;
-        sprite.play("hitted");
-        if (sprite.paused == true) {
-          Game.layers.skillLayer.removeChild(sprite);
-        } else {
-          sprite.on("animationend", () => {
-            Game.layers.skillLayer.removeChild(sprite);
-          });
-        }
-      } else {
-        // 如果动画已经播完，则停止
-        if (sprite.paused == true) {
-          Game.layers.skillLayer.removeChild(sprite);
-        } else {
-          sprite.on("animationend", () => {
-            Game.layers.skillLayer.removeChild(sprite);
-          });
-        }
-      }
-
-      if (callback) {
-        callback(hitted);
-      }
-    }
-
     Game.layers.skillLayer.appendChild(sprite);
     sprite.play(animation);
 
-    if ( this.data.animations[animation].actor
-      && attacker.data.animations[this.data.animations[animation].actor] ) {
+    if ( this.data.animations[animation].actor &&
+      attacker.data.animations[this.data.animations[animation].actor] ) {
       attacker.play(this.data.animations[animation].actor, 3);
     } else {
       attacker.play("face" + direction, 0);

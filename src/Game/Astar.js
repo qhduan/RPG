@@ -66,8 +66,7 @@ export default class Astar {
      });
    }
 
-
-};
+}
 
 /*
 * reference from http://eloquentjavascript.net/1st_edition/appendix2.html
@@ -156,12 +155,12 @@ class BinaryHeap {
       if (child2N < len) {
         let child2 = this.content[child2N];
         child2score = this.scores.get(child2);
-        if (child2score < (swap == null ? score : child1score)) {
+        if (child2score < (swap === null ? score : child1score)) {
           swap = child2N;
         }
       }
 
-      if (swap == null) {
+      if (swap === null) {
         break;
       }
 
@@ -172,7 +171,7 @@ class BinaryHeap {
 
   }
 
-}; // BinaryHeap
+} // BinaryHeap
 
 // 计算点结构a和b之间的曼哈顿距离，即不带斜走的直线距离
 function manhattan (ax, ay, bx, by) {

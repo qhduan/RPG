@@ -86,7 +86,7 @@ export default class ActorNPC extends Actor {
     if (Game.hero.data.currentQuest.length) {
       completeQuest = [];
       for (let quest of Game.hero.data.currentQuest) {
-        console.log(Game.Quest.isComplete(quest), quest.to, this.id)
+        console.log(Game.Quest.isComplete(quest), quest.to, this.id);
         if (quest.to == this.id && Game.Quest.isComplete(quest)) {
           completeQuest.push(quest);
         }
@@ -164,7 +164,7 @@ export default class ActorNPC extends Actor {
                   Game.hero.data.exp += quest.reward.exp;
                 }
               }
-            };
+            }
           });
           break;
         default: // 其他选择都没选的情况下，就是对话选择，例如“闲谈”

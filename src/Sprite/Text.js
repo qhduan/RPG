@@ -164,7 +164,7 @@ export default class Text extends Display {
     context.textBaseline = "top";
     // draw each line
     lines.forEach((element, index) => {
-      context.fillText(element, canvas.width/2, index*lineHeight)
+      context.fillText(element, canvas.width/2, index*lineHeight);
     });
 
     privates.image = null;

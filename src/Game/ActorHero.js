@@ -87,7 +87,7 @@ export default class ActorHero extends Actor {
   }
 
   hasItem (id, count) {
-    if (Number.isFinite(count) == false || count <= 0) {
+    if (count <= 0 || !Number.isFinite(count)) {
       count = 1;
     }
     for (const key in this.data.items) {
@@ -136,7 +136,7 @@ export default class ActorHero extends Actor {
         }
       });
       // 如果英雄现在没面对任何一个邻接的怪物，面向它
-      if (faceAttacker == false) {
+      if ( !faceAttacker ) {
         this.goto(touchActor[0].x, touchActor[0].y);
       }
     }
@@ -169,7 +169,7 @@ export default class ActorHero extends Actor {
       let tickCount = event.data;
 
       // 每秒16个tick
-      if (tickCount % 16 == 0) {
+      if (tickCount % 16 === 0) {
         let barChanged = false;
 
         if (this.data.hp < this.data.$hp && this.beAttacking.size <= 0) {
@@ -356,14 +356,14 @@ export default class ActorHero extends Actor {
     if (!Game.area.touch) return;
 
     let heroFace = Game.hero.facePosition;
-    let touch = this.findUnder(Game.area.actors) // 找最近可“事件”人物 Game.area.actors
-              || this.findUnder(Game.area.bags) // 找最近尸体 Game.area.bags
-              || this.findUnder(Game.area.items) // 找最近物品 Game.area.items
-              || this.findUnder(Game.area.touch) // 其他物品（由地图文件定义）
-              || this.findFace(Game.area.actors)
-              || this.findFace(Game.area.bags)
-              || this.findFace(Game.area.items)
-              || this.findFace(Game.area.touch);
+    let touch = this.findUnder(Game.area.actors) || // 找最近可“事件”人物 Game.area.actors
+                this.findUnder(Game.area.bags) || // 找最近尸体 Game.area.bags
+                this.findUnder(Game.area.items) || // 找最近物品 Game.area.items
+                this.findUnder(Game.area.touch) || // 其他物品（由地图文件定义）
+                this.findFace(Game.area.actors) ||
+                this.findFace(Game.area.bags) ||
+                this.findFace(Game.area.items) ||
+                this.findFace(Game.area.touch);
 
     // 水源
     if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {

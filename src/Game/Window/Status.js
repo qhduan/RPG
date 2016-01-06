@@ -68,7 +68,7 @@ Object.keys(statusWindowEquipmentButton).forEach(key => {
 });
 
 let heroName = win.querySelector("#heroName");
-let heroHP = win.querySelector("#heroHP")
+let heroHP = win.querySelector("#heroHP");
 let heroSP = win.querySelector("#heroSP");
 let heroLevel = win.querySelector("#heroLevel");
 let heroEXP = win.querySelector("#heroEXP");
@@ -105,7 +105,7 @@ win.whenUp(["tab"], () => {
 win.whenUp(["esc"], (key) => {
   setTimeout( () => {
     win.hide();
-  }, 20)
+  }, 20);
 });
 
 win.assign("update", (select) => {

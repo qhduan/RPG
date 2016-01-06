@@ -115,7 +115,7 @@ win.assign("open", (items, filter, select) => {
   sellWindowBook.style.color = defaultColor;
   sellWindowMisc.style.color = defaultColor;
 
-  if (filter == null) {
+  if ( !filter ) {
     sellWindowAll.style.color = activeColor;
   } else if (filter.match(/sword/)) {
     sellWindowWeapon.style.color = activeColor;
@@ -212,7 +212,7 @@ win.whenUp(["esc"], () => {
 win.whenUp(["left", "right"], (key) => {
   if (key == "right") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "sword";
     } else if (filter.match(/sword/)) {
       filter = "head";
@@ -230,7 +230,7 @@ win.whenUp(["left", "right"], (key) => {
     win.open(lastItems, filter);
   } else if (key == "left") {
     let filter = lastFilter;
-    if (filter == null) {
+    if ( !filter ) {
       filter = "misc";
     } else if (filter.match(/sword/)) {
       filter = null;

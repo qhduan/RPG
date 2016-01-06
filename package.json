@@ -4,10 +4,9 @@
   "version": "0.2.0",
   "scripts": {
     "build": "webpack --config ./webpack.config.prod.js",
-    "dev": "NODE_ENV=development node app",
-    "development": "NODE_ENV=development node app",
-    "prod": "NODE_ENV=production node app",
-    "production": "NODE_ENV=production node app"
+    "hint": "jshint src/**",
+    "test": "NODE_ENV=development node app",
+    "start": "NODE_ENV=production node app"
   },
   "author": {
     "name": "QHDuan",

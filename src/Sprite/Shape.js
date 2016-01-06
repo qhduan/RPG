@@ -237,7 +237,7 @@ export default class Shape extends Display {
     // split points by comma or space
     config.points.split(/,| /).forEach((element, index) => {
       let number = parseInt(element);
-      if (index % 2 == 0) { // even
+      if (index % 2 === 0) { // even
         if (number > width)
           width = number;
       } else { // odds
@@ -270,16 +270,16 @@ export default class Shape extends Display {
     let image = new Image();
     image.src = url;
 
-    const Done = () => {
+    const gotResult = () => {
       privates.image = image;
       window.URL.revokeObjectURL(url);
       this.emit("change");
     };
 
     if (image.complete) {
-      Done();
+      gotResult();
     } else {
-      image.onload = Done;
+      image.onload = () => gotResult();
     }
 
   }

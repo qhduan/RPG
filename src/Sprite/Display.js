@@ -268,7 +268,7 @@ export default class Display extends Event {
       if (alpha <= 0.001) {
         return null;
       }
-      if (parent.visible == false) {
+      if ( !parent.visible ) {
         return null;
       }
       parent = parent.parent;
@@ -299,8 +299,8 @@ export default class Display extends Event {
    * @param {number} sheight
    */
   drawImage (renderer, image, sx, sy, swidth, sheight) {
-    if (this.visible != true || this.alpha < 0.01) {
-      return
+    if (this.alpha < 0.01 || !this.visible) {
+      return;
     }
 
     let d = this.drawPosition();

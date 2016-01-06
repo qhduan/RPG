@@ -72,7 +72,7 @@ function DialogueNext () {
     dialogueWindowNext.style.display = "none";
     dialogueWindowClose.style.display = "block";
   }
-};
+}
 
 win.whenUp(["enter", "space", "esc"], () => {
   if (Game.windows.dialogue.showing) {

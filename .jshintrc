@@ -1,0 +1,10 @@
+{
+  "strict": true,
+  "browser": true,
+  "es5": false,
+  "esnext": true,
+  "devel": true,
+  "globalstrict": true,
+  "evil": true,
+  "newcap": false
+}

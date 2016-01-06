@@ -51,7 +51,7 @@ export default class Sheet extends Display {
         !Number.isFinite(config.width) || config.width <= 0 || config.width > 4096 ||
         !Number.isFinite(config.height) || config.height <= 0 || config.height > 4096
       ) {
-      console.error(config)
+      console.error(config);
       throw new Error("SpriteSheet.constructor get invalid arguments");
     }
 
@@ -328,7 +328,7 @@ export default class Sheet extends Display {
    * @param {Object} renderer A renderer engine, eg. SpriteWebgl
    */
   draw (renderer) {
-    if (this.visible == false || this.alpha <= 0.01) {
+    if (this.alpha <= 0.01 || !this.visible) {
       return;
     }
 

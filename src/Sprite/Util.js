@@ -45,7 +45,7 @@ export default class Util {
     */
     let privates = new WeakMap();
     return (object) => {
-      if (privates.has(object) == false) {
+      if ( !privates.has(object) ) {
         privates.set(object, {});
       }
       return privates.get(object);
@@ -70,12 +70,12 @@ export default class Util {
 
   static btoa (str) {
     // convert str to base64
-    return window.btoa(unescape(encodeURIComponent(str)));
+    return window.btoa(window.unescape(window.encodeURIComponent(str)));
   }
 
   static atob (str) {
     // convert base64 str to original
-    return decodeURIComponent(escape(window.atob(str)));
+    return window.decodeURIComponent(window.escape(window.atob(str)));
   }
 
   /**
