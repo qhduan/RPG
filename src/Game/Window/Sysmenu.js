@@ -20,11 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import Game from "../Base.js";
+import Game   from "../Base.js";
 import Window from "../Window.js";
-
+import html   from "../HTML/Sysmenu.html";
 import "../CSS/Sysmenu.scss";
-import html from "../HTML/Sysmenu.html";
 
 let win = Window.create("sysmenuWindow", html);
 let WindowSysmenu = win;

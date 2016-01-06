@@ -21,9 +21,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "use strict";
 
 import Window from "../Window.js";
-
+import html   from "../HTML/Confirm.html";
 import "../CSS/Confirm.scss";
-import html from "../HTML/Confirm.html";
 
 export default function Confirm (message) {
   return new Promise((resolve, reject) => {

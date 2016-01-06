@@ -20,12 +20,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import Sprite from "../../Sprite/Sprite.js";
-import Game from "../Base.js";
+import Game   from "../Base.js";
 import Window from "../Window.js";
-
+import html   from "../HTML/Status.html";
 import "../CSS/Status.scss";
-import html from "../HTML/Status.html";
 
 let win = Window.create("statusWindow", html);
 let WindowStatus = win;

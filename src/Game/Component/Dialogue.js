@@ -18,18 +18,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-
 "use strict";
 
-import Game from "../Base.js";
 import Window from "../Window.js";
-
+import html   from "../HTML/Dialogue.html";
 import "../CSS/Dialogue.scss";
-import html from "../HTML/Dialogue.html";
 
 let win = Window.create("dialogueWindow", html);
-let WindowDialogue = win;
-export default WindowDialogue;
 
 let dialogueWindowSpeaker = win.querySelector("#dialogueWindowSpeaker");
 
@@ -45,13 +40,13 @@ dialogueWindowNext.addEventListener("click", () => {
 
 dialogueWindowClose.addEventListener("click", () => {
   setTimeout( () => {
-    Game.windows.dialogue.hide();
+    win.hide();
     dialogueContent = [];
     dialogueIndex = 0;
   }, 20);
 });
 
-Game.dialogue = (content, name) => {
+export default function Dialogue (content, name) {
   dialogueWindowNext.style.display = "block";
   dialogueWindowClose.style.display = "none";
   if (name && name.length) {
@@ -62,8 +57,8 @@ Game.dialogue = (content, name) => {
   dialogueContent = content;
   dialogueIndex = 0;
   DialogueNext();
-  Game.windows.dialogue.show();
-};
+  win.show();
+}
 
 function DialogueNext () {
   dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
@@ -75,7 +70,7 @@ function DialogueNext () {
 }
 
 win.whenUp(["enter", "space", "esc"], () => {
-  if (Game.windows.dialogue.showing) {
+  if (win.showing) {
     if (dialogueWindowNext.style.display != "none") {
       dialogueWindowNext.click();
     } else if (dialogueWindowClose.style.display != "none") {

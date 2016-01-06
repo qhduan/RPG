@@ -21,11 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import Game from "../Base.js";
+import Game   from "../Base.js";
 import Window from "../Window.js";
-
+import html   from "../HTML/Archive.html";
 import "../CSS/Archive.scss";
-import html from "../HTML/Archive.html";
 
 let win = Window.create("archiveWindow", html);
 let WindowArchive = win;

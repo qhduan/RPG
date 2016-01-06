@@ -22,9 +22,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 "use strict";
 
 import Sprite from "../Sprite/Sprite.js";
-import Game from "./Base.js";
-import Quest from "./Quest.js";
-import Popup from "./Component/Popup.js";
+import Game   from "./Base.js";
+import Quest  from "./Quest.js";
+import Popup  from "./Component/Popup.js";
 
 let internal = Sprite.Util.namespace();
 

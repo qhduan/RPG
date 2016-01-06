@@ -20,13 +20,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import Game from "../Base.js";
-import Window from "../Window.js";
-import Confirm from "../Component/Confirm.js";
-import Choice from  "../Component/Choice.js";
-
+import Game     from "../Base.js";
+import Window   from "../Window.js";
+import Confirm  from "../Component/Confirm.js";
+import Choice   from  "../Component/Choice.js";
+import Dialogue from  "../Component/Dialogue.js";
+import html     from "../HTML/Skill.html";
 import "../CSS/Skill.scss";
-import html from "../HTML/Skill.html";
 
 let win = Window.create("skillWindow", html);
 let WindowSkill = win;
@@ -183,7 +183,7 @@ Tbody.addEventListener("click", (event) => {
               cannot.push(`经验不足，需要经验${skill.data.next.exp}，当前您有经验${Game.hero.data.exp}`);
             }
             if (cannot.length) {
-              Game.dialogue(cannot);
+              Dialogue(cannot);
               return;
             }
             Confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`).then(() => {

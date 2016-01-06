@@ -21,11 +21,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import Sprite from "../Sprite/Sprite.js";
-import Game from "./Base.js";
-import Actor from "./Actor.js";
-import Confirm from "./Component/Confirm.js";
-import Choice from  "./Component/Choice.js";
+import Sprite   from "../Sprite/Sprite.js";
+import Game     from "./Base.js";
+import Actor    from "./Actor.js";
+import Confirm  from "./Component/Confirm.js";
+import Choice   from  "./Component/Choice.js";
+import Dialogue from "./Component/Dialogue.js";
 
 let internal = Sprite.Util.namespace();
 
@@ -155,7 +156,7 @@ export default class ActorNPC extends Actor {
               Game.hero.data.completeQuest.push(quest);
 
               this.heroUse();
-              Game.dialogue([quest.finish], data.name);
+              Dialogue([quest.finish], data.name);
               if (quest.reward) {
                 if (quest.reward.gold) {
                   Game.hero.data.gold += quest.reward.gold;
@@ -170,7 +171,7 @@ export default class ActorNPC extends Actor {
         default: // 其他选择都没选的情况下，就是对话选择，例如“闲谈”
           if (contact[choice]) {
             this.heroUse();
-            Game.dialogue(contact[choice].content, data.name);
+            Dialogue(contact[choice].content, data.name);
           }
       }
     });
