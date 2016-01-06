@@ -116,7 +116,7 @@ export default class Skill extends Sprite.Event {
       let dice = parseInt(m[2]);
       let sum = 0;
       for (let i = 0; i < times; i++) {
-        sum += Sprite.rand(0, dice) + 1;
+        sum += Sprite.Util.rand(0, dice) + 1;
       }
       return sum;
     } else {
@@ -166,7 +166,7 @@ export default class Skill extends Sprite.Event {
     let distance = 0;
     // 被命中的actor列表
     let hitted = [];
-    let CheckHit = () => {
+    const CheckHit = () => {
       // 技能所在当前方格
       let l1 = Game.area.map.tile(sprite.x, sprite.y);
       // 碰撞检测
@@ -222,7 +222,7 @@ export default class Skill extends Sprite.Event {
     });
 
     // 攻击结束时运行Stop函数
-    let Finish = () => {
+    const Finish = () => {
       Sprite.Ticker.off("tick", listener);
 
       if (hitted.length > 0 && this.data.animations["hitted"]) {

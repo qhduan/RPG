@@ -19,7 +19,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Define SpriteBitmap
+ * @fileoverview Define Sprite Base class
  * @author mail@qhduan.com (QH Duan)
 */
 

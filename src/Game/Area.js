@@ -35,7 +35,7 @@ function Preload () {
       hurt: "sound/effect/hurt.ogg" // 伤害效果音
     };
 
-    for (let key in preloadSoundEffects) {
+    for (const key in preloadSoundEffects) {
       promises.add(
         ((key, url) => {
           return new Promise( (resolve, reject) => {
@@ -99,7 +99,7 @@ export default class Area {
         if (area.map.data.actors) {
           area.map.data.actors.forEach( (element) => {
             promises.add( Game.Actor.load(element.id).then( (actorObj) => {
-              for (let key in element) {
+              for (const key in element) {
                 actorObj.data[key] = element[key];
               }
               area.actors.add(actorObj);
@@ -113,7 +113,7 @@ export default class Area {
           area.map.spawnMonster.list &&
           area.map.spawnMonster.count
         ) {
-          for (let monsterId in area.map.spawnMonster.list) {
+          for (const monsterId in area.map.spawnMonster.list) {
             promises.add( Game.Actor.load(monsterId) );
           }
         }
@@ -123,7 +123,7 @@ export default class Area {
           area.map.spawnItem.list &&
           area.map.spawnItem.count
         ) {
-          for (let itemId in area.map.spawnItem.list) {
+          for (const itemId in area.map.spawnItem.list) {
             promises.add( Game.Item.load(itemId) );
           }
         }
@@ -140,7 +140,8 @@ export default class Area {
           });
         }
 
-        Promise.all(promises).then( () => {
+        Promise.all(promises)
+        .then( () => {
           resolve(area);
         });
 

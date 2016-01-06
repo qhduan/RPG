@@ -1,0 +1,37 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/bin/nodejs', '/usr/bin/npm', 'run', 'dev' ]
+2 info using npm@2.14.12
+3 info using node@v4.2.4
+4 verbose run-script [ 'predev', 'dev', 'postdev' ]
+5 info predev Elliorwis@0.2.0
+6 info dev Elliorwis@0.2.0
+7 verbose unsafe-perm in lifecycle true
+8 info Elliorwis@0.2.0 Failed to exec dev script
+9 verbose stack Error: Elliorwis@0.2.0 dev: `NODE_ENV=development node app`
+9 verbose stack Exit status 1
+9 verbose stack     at EventEmitter.<anonymous> (/usr/lib/node_modules/npm/lib/utils/lifecycle.js:214:16)
+9 verbose stack     at emitTwo (events.js:87:13)
+9 verbose stack     at EventEmitter.emit (events.js:172:7)
+9 verbose stack     at ChildProcess.<anonymous> (/usr/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+9 verbose stack     at emitTwo (events.js:87:13)
+9 verbose stack     at ChildProcess.emit (events.js:172:7)
+9 verbose stack     at maybeClose (internal/child_process.js:818:16)
+9 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+10 verbose pkgid Elliorwis@0.2.0
+11 verbose cwd /home/qhduan/Work/RPG
+12 error Linux 4.2.0-23-generic
+13 error argv "/usr/bin/nodejs" "/usr/bin/npm" "run" "dev"
+14 error node v4.2.4
+15 error npm  v2.14.12
+16 error code ELIFECYCLE
+17 error Elliorwis@0.2.0 dev: `NODE_ENV=development node app`
+17 error Exit status 1
+18 error Failed at the Elliorwis@0.2.0 dev script 'NODE_ENV=development node app'.
+18 error This is most likely a problem with the Elliorwis package,
+18 error not with npm itself.
+18 error Tell the author that this fails on your system:
+18 error     NODE_ENV=development node app
+18 error You can get their info via:
+18 error     npm owner ls Elliorwis
+18 error There is likely additional logging output above.
+19 verbose exit [ 1, true ]

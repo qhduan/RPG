@@ -23,32 +23,30 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("mapWindow");
+import "../CSS/Map.scss";
+import html from "../HTML/Map.html";
 
+let win = Window.create("mapWindow", html);
 let WindowMap = win;
 export default WindowMap;
 
-import css from "../CSS/Map.scss";
-import html from "../HTML/Map.html";
+let Close = win.querySelector("button#Close");
+let MapImage = win.querySelector("div#MapImage");
+let MapName = win.querySelector("label#MapName");
 
-win.css = css;
-win.html = html;
-
-let mapWindowClose = win.querySelector("#mapWindowClose");
-let mapWindowMap = win.querySelector("#mapWindowMap");
-
-mapWindowClose.addEventListener("click", (event) => {
+Close.addEventListener("click", (event) => {
   Game.windows.map.hide();
 });
 
 win.whenUp(["esc"], (key) => {
   setTimeout( () => {
-    mapWindowClose.click();
+    Close.click();
   }, 20);
 });
 
 win.on("beforeShow", (event) => {
   if (Game.stage && Game.area && Game.area.map) {
+    MapName.textContent = Game.area.map.data.name;
     let stage = {
       x: Game.stage.x,
       y: Game.stage.y,
@@ -73,8 +71,8 @@ win.on("beforeShow", (event) => {
       0, 0, minimap.width, minimap.height);
     context = null;
     canvas = null;
-    mapWindowMap.innerHTML = "";
-    mapWindowMap.appendChild(minimap);
+    MapImage.innerHTML = "";
+    MapImage.appendChild(minimap);
     Game.stage.x = stage.x;
     Game.stage.y = stage.y;
     Game.stage.centerX = stage.centerX;

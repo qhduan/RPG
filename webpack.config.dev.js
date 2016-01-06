@@ -41,5 +41,6 @@ module.exports = {
     path: path.resolve(__dirname, "public"),
     publicPath: "/",
     filename: "app.js"
-  }
+  },
+  devtool: "inline-source-map"
 };

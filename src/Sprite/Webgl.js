@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
+ import Util from "./Util.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 function isPOT (value) {
   return value > 0 && ((value - 1) & value) === 0;
@@ -105,7 +105,7 @@ void main(void) {
  * Renderer using webgl
  * @class
 */
-export default class SpriteWebgl {
+export default class Webgl {
 
   /**
    * @static

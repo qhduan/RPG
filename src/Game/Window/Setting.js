@@ -25,46 +25,18 @@ import Window from "../Window.js";
 import Confirm from "../Component/Confirm.js";
 import Choice from  "../Component/Choice.js";
 
-let win = Window.create("settingWindow");
-
-let WindowSetting = win;
-export default WindowSetting;
-
-import css from "../CSS/Setting.scss";
+import "../CSS/Setting.scss";
 import html from "../HTML/Setting.html";
 
-win.css = css;
-win.html = html;
-
-let settingWindowShortcut = win.querySelector("#settingWindowShortcut");
-let settingWindowShortcutAll = win.querySelector("#settingWindowShortcutAll");
+let win = Window.create("settingWindow", html);
+let WindowSetting = win;
+export default WindowSetting;
 
 let settingWindowClose = win.querySelector("#settingWindowClose");
 let settingWindowScale = win.querySelector("#settingWindowScale");
 
 let settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
 let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
-
-settingWindowShortcut.addEventListener("click", (event) => {
-  Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
-    if (Number.isFinite(choice)) {
-      Game.hero.data.bar[choice] = null;
-      Game.windows.interface.refresh();
-    }
-  });
-});
-
-
-settingWindowShortcutAll.addEventListener("click", (event) => {
-  Confirm("确定要删除所有快捷栏图表吗？").then(() => {
-    for (let i = 0; i < 8; i++) {
-      Game.hero.data.bar[i] = null;
-    }
-    Game.windows.interface.refresh();
-  }).catch(() => {
-    // no
-  });
-});
 
 win.on("beforeShow", () => {
   settingWindowRendererType.textContent = Game.stage.rendererType;

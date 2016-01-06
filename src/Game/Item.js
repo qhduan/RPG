@@ -201,7 +201,7 @@ export default class Item extends Sprite.Event {
     }
 
     if (this.data.type == "potion") {
-      for (let attribute in this.data.potion) {
+      for (const attribute in this.data.potion) {
         let effect = this.data.potion[attribute];
         if (attribute == "hp") {
           Game.hero.data.hp = Math.min(

@@ -24,16 +24,12 @@ import Sprite from "../../Sprite/Sprite.js";
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("statusWindow");
-
-let WindowStatus = win;
-export default WindowStatus;
-
-import css from "../CSS/Status.scss";
+import "../CSS/Status.scss";
 import html from "../HTML/Status.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("statusWindow", html);
+let WindowStatus = win;
+export default WindowStatus;
 
 let statusWindowEquipment = {
   head: win.querySelector("#equipment-head"),

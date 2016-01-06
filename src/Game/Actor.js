@@ -157,7 +157,7 @@ export default class Actor extends Sprite.Event {
 
     // 加载人物装备（暂时只有玩家）
     if (data.equipment) {
-      for (let key in data.equipment) {
+      for (const key in data.equipment) {
         let itemId = data.equipment[key];
         if (itemId) {
           completeCount--;
@@ -170,7 +170,7 @@ export default class Actor extends Sprite.Event {
 
     // 加载人物物品
     if (data.items) {
-      for (let itemId in data.items) {
+      for (const itemId in data.items) {
         completeCount--;
         Game.Item.load(itemId).then(() => {
           Complete();
@@ -519,7 +519,7 @@ export default class Actor extends Sprite.Event {
         let items = this.data.items || { gold: 1 };
 
         Game.addBag(this.x ,this.y).then((bag) => {
-          for (let itemId in items) {
+          for (const itemId in items) {
             if (bag.inner.hasOwnProperty(itemId)) {
               bag.inner[itemId] += items[itemId];
             } else {
@@ -611,11 +611,11 @@ export default class Actor extends Sprite.Event {
     text.x = this.sprite.x;
     text.y = this.sprite.y;
 
-    text.x += Sprite.rand(-10, 10);
+    text.x += Sprite.Util.rand(-10, 10);
 
     Game.layers.actorLayer.appendChild(text);
 
-    let speed = Sprite.rand(1, 3);
+    let speed = Sprite.Util.rand(1, 3);
 
     Sprite.Ticker.whiles(100, (last) => {
       text.y -= speed;
@@ -807,7 +807,7 @@ export default class Actor extends Sprite.Event {
       let index = 0;
       let otherChoice = false;
 
-      let TestPosition = () => {
+      const TestPosition = () => {
         if (index < positionChoice.length) {
           let dest = positionChoice[index]; // 保存第一个选项
           index++;
@@ -903,7 +903,7 @@ export default class Actor extends Sprite.Event {
     return new Promise( (resolve, reject) => {
       this.going = true;
       let index = 1;
-      let Walk = () => {
+      const Walk = () => {
         if (Game.paused) {
           this.stop();
           this.going = false;

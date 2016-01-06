@@ -25,24 +25,42 @@ import Window from "../Window.js";
 import Confirm from "../Component/Confirm.js";
 import Choice from  "../Component/Choice.js";
 
-let win = Window.create("skillWindow");
+import "../CSS/Skill.scss";
+import html from "../HTML/Skill.html";
 
+let win = Window.create("skillWindow", html);
 let WindowSkill = win;
 export default WindowSkill;
 
-import css from "../CSS/Skill.scss";
-import html from "../HTML/Skill.html";
-
-win.css = css;
-win.html = html;
-
-let skillWindowClose = win.querySelector("button#skillWindowClose");
-let skillWindowTable = win.querySelector("#skillWindowTable");
+let Close = win.querySelector("button#Close");
+let Tbody = win.querySelector("tbody#Table");
+let ClearShortcut = win.querySelector("button#ClearShortcut");
+let ClearShortcutAll = win.querySelector("button#ClearShortcutAll");
 
 let lastSelect = -1;
 
-skillWindowClose.addEventListener("click", (event) => {
+Close.addEventListener("click", (event) => {
   win.hide();
+});
+
+ClearShortcut.addEventListener("click", (event) => {
+  Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
+    if (Number.isFinite(choice)) {
+      Game.hero.data.bar[choice] = null;
+      Game.windows.interface.refresh();
+    }
+  });
+});
+
+ClearShortcutAll.addEventListener("click", (event) => {
+  Confirm("确定要删除所有快捷栏图表吗？").then(() => {
+    for (let i = 0; i < 8; i++) {
+      Game.hero.data.bar[i] = null;
+    }
+    Game.windows.interface.refresh();
+  }).catch(() => {
+    // no
+  });
 });
 
 win.whenUp(["esc"], (key) => {
@@ -81,7 +99,7 @@ win.assign("open", (select) => {
     index++;
   });
 
-  skillWindowTable.innerHTML = table;
+  Tbody.innerHTML = table;
   Game.windows.skill.show();
 });
 
@@ -118,9 +136,9 @@ win.whenUp(["up", "down"], (key) => {
   }
 });
 
-skillWindowTable.addEventListener("click", (event) => {
-  let skillId = event.target.getAttribute("data-id");
-  let index = Game.hero.data.skills.indexOf(skillId);
+Tbody.addEventListener("click", (event) => {
+  const skillId = event.target.getAttribute("data-id");
+  const index = Game.hero.data.skills.indexOf(skillId);
   if (skillId && Game.skills.hasOwnProperty(skillId) && index != -1) {
 
     let skill = Game.skills[skillId];

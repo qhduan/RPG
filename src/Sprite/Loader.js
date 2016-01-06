@@ -25,9 +25,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
+ import Util from "./Util.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 /**
  * Cache all url and element
@@ -44,11 +44,11 @@ function Fetch (url, callback, timeout = 0) {
   let type = null;
   if (url.match(/js$/)) {
     type = "js";
-  } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+  } else if (url.match(/\.(jpe?g|png|bmp|gif)$/i)) {
     type = "image";
-  } else if (url.match(/wav$|mp3$|ogg$/i)) {
+  } else if (url.match(/\.(wav|mp3|ogg)$/i)) {
     type = "audio";
-  } else if (url.match(/json$/i)) {
+  } else if (url.match(/\.json$/i)) {
     type = "json";
   } else {
     console.error(url);
@@ -56,19 +56,22 @@ function Fetch (url, callback, timeout = 0) {
   }
 
   // finished
-  let Finish = (obj) => {
-    Cache.set(url, obj);
+  const Finish = (obj) => {
+
+    if ( !Cache.has(url) ) {
+      Cache.set(url, obj);
+    }
 
     if (type == "json") {
-      obj = SpriteUtil.copy(obj);
+      obj = Util.copy(obj);
     }
 
     if (callback) {
       callback(obj);
     }
     if (Downloading.has(url)) {
-      let callbacks = Downloading.get(url);
-      for (let callback of callbacks) {
+      const callbacks = Downloading.get(url);
+      for (const callback of callbacks) {
         if (callback) {
           callback(obj);
         }
@@ -165,9 +168,9 @@ function Fetch (url, callback, timeout = 0) {
           audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
         } else if (type == "json") {
           let json = req.response;
-          if (!json) {
+          if ( !json ) {
             console.error(url);
-            throw new Error("SpriteLoader invalid json");
+            throw new Error("Loader invalid json");
           }
           Finish(json);
         }
@@ -193,21 +196,21 @@ function Fetch (url, callback, timeout = 0) {
   req.send();
 }
 
-export default class SpriteLoader {
+export default class Loader {
 
   static load () {
-    let args = Array.prototype.slice.call(arguments);
+    const args = Array.prototype.slice.call(arguments);
 
     return new Promise( (resolve, reject) => {
 
       let urls = [];
 
-      for (let element of args) {
+      for (const element of args) {
         if (typeof element == "string") {
           urls.push(element);
         } else if (element instanceof Array) {
-          for (let url of element) {
-            urls.push(url);
+          for (const u of element) {
+            urls.push(u);
           }
         } else {
           console.error(element, args);
@@ -219,7 +222,7 @@ export default class SpriteLoader {
       let ret = [];
       ret.length = urls.length;
 
-      let Done = () => {
+      const Done = () => {
         done++;
 
         if (done >= ret.length) {

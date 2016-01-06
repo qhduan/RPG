@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-export default class SpriteUtil {
+export default class Util {
 
   static timeout (ms) {
     return new Promise ( (resolve, reject) => {
@@ -34,7 +34,7 @@ export default class SpriteUtil {
   }
 
   /**
-   * Function SpriteUtil.namespace, return an unique Private-Properties function
+   * Function Util.namespace, return an unique Private-Properties function
    * for javascript private properties need, for es6
    * @return {object} privates
   */
@@ -83,7 +83,7 @@ export default class SpriteUtil {
    * @param {number} M The max number
    * @return {number} A random integer N <= return < M, aka. [N, M)
   */
-  static randInt (N, M) {
+  static rand (N, M) {
     let r = M - N;
     r *= Math.random();
     return N + Math.floor(r);

@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("loadingWindow");
-
-let WindowLoading = win;
-export default WindowLoading;
-
-import css from "../CSS/Loading.scss";
+import "../CSS/Loading.scss";
 import html from "../HTML/Loading.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("loadingWindow", html);
+let WindowLoading = win;
+export default WindowLoading;
 
 let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
 let loadingWindowText = win.querySelector("#loadingWindowText");

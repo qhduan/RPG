@@ -3,27 +3,35 @@
   #archiveWindowTable {
     width: 100%;
     overflow-y: auto;
-    height: 320px;
+    height: 325px;
   }
 
   .archiveWindowItem {
     border: 1px solid gray;
     border-radius: 10px;
-    margin: 10px 10px;
+    margin: 10px;
+
+    img {
+      border-radius: 6px;
+      background-color: black;
+    }
+
+    button {
+       width: 90px;
+       height: 40px;
+       margin: 10px;
+       border-radius: 5px;
+     }
   }
 
-  .archiveWindowItem > button {
-    width: 100px;
-    height: 40px;
-    border-radius: 5px;
-  }
-
-  #archiveWindowItemBar button {
-    width: 100px;
-    height: 30px;
-    font-size: 16px;
-    display: block;
-    margin-bottom: 5px;
+  #archiveWindowItemBar {
+    button {
+      width: 100px;
+      height: 30px;
+      font-size: 16px;
+      display: block;
+      margin: 5px;
+    }
   }
 
   #archiveWindowClose {

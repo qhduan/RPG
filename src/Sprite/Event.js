@@ -26,15 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
+import Util from "./Util.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
 /**
  * Class SpriteEvent, hold all events emit, bubble
  * @class
 */
-export default class SpriteEvent {
+export default class Event {
   /**
    * construct SpriteEvent
    * @constructor
@@ -94,7 +94,7 @@ export default class SpriteEvent {
         privates.listeners.set(event, new Map());
       }
 
-      let id = SpriteUtil.uuid();
+      let id = Util.uuid();
       privates.listeners.get(event).set(id, listener);
       return id;
     }

@@ -24,16 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("mainWindow");
-
-let WindowMain = win;
-export default WindowMain;
-
-import css from "../CSS/Main.scss";
+import "../CSS/Main.scss";
 import html from "../HTML/Main.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("mainWindow", html);
+let WindowMain = win;
+export default WindowMain;
 
 let mainWindowContinue = win.querySelector("#mainWindowContinue");
 let mainWindowNew = win.querySelector("#mainWindowNew");

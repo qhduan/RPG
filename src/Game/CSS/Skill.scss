@@ -3,6 +3,7 @@
 
   table {
     width: 100%;
+    height: 300px;
   }
 
   tr:nth-child(odd) {
@@ -30,8 +31,14 @@
     margin-bottom: 5px;
   }
 
-  #skillWindowClose {
+  #Close {
     float: right;
+  }
+
+  #ClearShortcut, #ClearShortcutAll {
+    width: 100px;
+    float: right;
+    margin: 0 10px;
   }
 
 }

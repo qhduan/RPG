@@ -26,16 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteDisplay from "./Display.js";
+ import Util from "./Util.js";
+ import Display from "./Display.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 /**
  * Contain everything which inherit from SpriteDisplay
  * @class
 */
-export default class SpriteContainer extends SpriteDisplay {
+export default class Container extends Display {
 
   /**
    * Construct SpriteContainer
@@ -195,7 +195,7 @@ export default class SpriteContainer extends SpriteDisplay {
     }
 
     for (let element of args) {
-      if (element instanceof SpriteDisplay == false) {
+      if (element instanceof Display == false) {
         console.error(element);
         throw new Error("SpriteContainer.appendChild only accept SpriteDisplay or it's sub-class");
       }
@@ -221,7 +221,7 @@ export default class SpriteContainer extends SpriteDisplay {
 
     let index = args[0];
     for (let i = 1, len = args.length; i < len; i++) {
-      if (args[i] instanceof SpriteDisplay == false) {
+      if (args[i] instanceof Display == false) {
         console.error(args[i]);
         throw new Error("SpriteContainer.appendChildAt only can accept SpriteDisplay or it's sub-class");
       }

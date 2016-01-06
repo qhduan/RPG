@@ -90,7 +90,7 @@ export default class ActorHero extends Actor {
     if (Number.isFinite(count) == false || count <= 0) {
       count = 1;
     }
-    for (let key in this.data.items) {
+    for (const key in this.data.items) {
       if (key == id) {
         if (this.data.items[key] >= count) {
           return true;
@@ -196,7 +196,10 @@ export default class ActorHero extends Actor {
 
 
   gotoArea (dest, x, y) {
-    var privates = internal(this);
+    let privates = internal(this);
+    if (privates.isGoing) return;
+    privates.isGoing = true;
+
     privates.beAttacking = new Set();
 
     Sprite.Util.timeout(5).then( () => {
@@ -247,7 +250,11 @@ export default class ActorHero extends Actor {
       Game.stage.update();
       Game.windows.stage.show();
       Game.windows.interface.show();
+      privates.isGoing = false;
 
+    }).catch( err => {
+      console.error(err);
+      console.error("ActorHero.gotoArea failed");
     });
 
   }

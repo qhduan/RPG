@@ -3,14 +3,17 @@
 
   #settingWindowBox {
     width: 100%;
-    height: 360px;
-  }
+    height: 350px;
+    text-align: center;
 
-  #settingWindowBox button {
-    width: 120px;
-    height: 60px;
-    font-size: 16px;
-    display: block;
+    button {
+     width: 90px;
+     height: 60px;
+     font-size: 16px;
+     display: block;
+     margin: 20px auto;
+   }
+
   }
 
   #settingWindowClose {

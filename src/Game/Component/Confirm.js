@@ -22,16 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import Window from "../Window.js";
 
-
-import css from "../CSS/Confirm.scss";
+import "../CSS/Confirm.scss";
 import html from "../HTML/Confirm.html";
 
 export default function Confirm (message) {
   return new Promise((resolve, reject) => {
 
-    let win = Window.create("confirmWindow");
-    win.css = css;
-    win.html = html;
+    let win = Window.create("confirmWindow", html);
     win.show();
 
     let confirmWindowMessage = win.querySelector("#confirmWindowMessage");

@@ -26,15 +26,15 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
+import Util from "./Util.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
 /**
  * Class SpriteCanvas, an renderer using canvas.getContext("2d")
  * @class
 */
-export default class SpriteCanvas {
+export default class Canvas {
 
   /**
    * @static

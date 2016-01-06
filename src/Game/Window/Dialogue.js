@@ -24,16 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("dialogueWindow");
-
-let WindowDialogue = win;
-export default WindowDialogue;
-
-import css from "../CSS/Dialogue.scss";
+import "../CSS/Dialogue.scss";
 import html from "../HTML/Dialogue.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("dialogueWindow", html);
+let WindowDialogue = win;
+export default WindowDialogue;
 
 let dialogueWindowSpeaker = win.querySelector("#dialogueWindowSpeaker");
 

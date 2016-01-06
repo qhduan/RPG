@@ -26,10 +26,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteDisplay from "./Display.js";
+ import Util from "./Util.js";
+ import Display from "./Display.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 let textCanvas = document.createElement("canvas");
 textCanvas.width = 1;
@@ -41,7 +41,7 @@ let textContext = textCanvas.getContext("2d");
  * @class
  * @extends SpriteDisplay
 */
-export default class SpriteText extends SpriteDisplay {
+export default class Text extends Display {
   /**
    * construct SpriteText
    * @constructor

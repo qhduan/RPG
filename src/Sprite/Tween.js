@@ -55,15 +55,15 @@ SpriteTween.get(Game.hero)
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
-import SpriteEvent from "./Event.js";
+import Util from "./Util.js";
+import Event from "./Event.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
-export default class SpriteTween extends SpriteEvent {
+export default class Tween extends Event {
 
   static get (object) {
-    return new SpriteTween(object);
+    return new Tween(object);
   }
 
   constructor (object) {
@@ -108,7 +108,7 @@ export default class SpriteTween extends SpriteEvent {
     let t = time / splice;
     let step = {};
 
-    for (let key in attributes) {
+    for (const key in attributes) {
       if (Number.isFinite(attributes[key])) {
         step[key] = attributes[key] - privates.object[key];
         step[key] /= splice;
@@ -119,14 +119,14 @@ export default class SpriteTween extends SpriteEvent {
     let inter = setInterval(() => {
       count++;
       if (count >= splice) {
-        for (let key in attributes) {
+        for (const key in attributes) {
           privates.object[key] = attributes[key];
         }
         clearInterval(inter);
         privates.doing = false;
         this.nextAction();
       } else {
-        for (let key in step) {
+        for (const key in step) {
           privates.object[key] += step[key];
         }
       }

@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("interfaceWindow");
-
-let WindowInterface = win;
-export default WindowInterface;
-
-import css from "../CSS/Interface.scss";
+import "../CSS/Interface.scss";
 import html from "../HTML/Interface.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("interfaceWindow", html);
+let WindowInterface = win;
+export default WindowInterface;
 
 // 使用按钮
 let interfaceWindowUse = win.querySelector("button#interfaceWindowUse");

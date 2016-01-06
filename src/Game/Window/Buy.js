@@ -24,16 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("buyWindow");
-
-let WindowBuy = win;
-export default WindowBuy;
-
-import css from "../CSS/Buy.scss";
+import "../CSS/Buy.scss";
 import html from "../HTML/Buy.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("buyWindow", html);
+let WindowBuy = win;
+export default WindowBuy;
 
 let buyWindowClose = win.querySelector("button#buyWindowClose");
 let buyWindowSell = win.querySelector("button#buyWindowSell");
@@ -141,7 +137,7 @@ win.assign("open", (items, filter, select) => {
 
   Object.keys(items).forEach(itemId => {
     let itemCount = items[itemId];
-    
+
     let item = Game.items[itemId];
 
     if (filter && filter.indexOf(item.data.type) == -1)

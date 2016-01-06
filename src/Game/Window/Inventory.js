@@ -24,16 +24,12 @@ import Game from "../Base.js";
 import Window from "../Window.js";
 import Choice from  "../Component/Choice.js";
 
-let win = Window.create("inventoryWindow");
-
-let WindowInventory = win;
-export default WindowInventory;
-
-import css from "../CSS/Inventory.scss";
+import "../CSS/Inventory.scss";
 import html from "../HTML/Inventory.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("inventoryWindow", html);
+let WindowInventory = win;
+export default WindowInventory;
 
 let inventoryWindowClose = win.querySelector("button#inventoryWindowClose");
 let inventoryWindowStatus = win.querySelector("button#inventoryWindowStatus");

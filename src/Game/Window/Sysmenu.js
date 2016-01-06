@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("sysmenuWindow");
-
-let WindowSysmenu = win;
-export default WindowSysmenu;
-
-import css from "../CSS/Sysmenu.scss";
+import "../CSS/Sysmenu.scss";
 import html from "../HTML/Sysmenu.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("sysmenuWindow", html);
+let WindowSysmenu = win;
+export default WindowSysmenu;
 
 let sysmenuWindowInventory = win.querySelector("button#sysmenuWindowInventory");
 let sysmenuWindowStatus = win.querySelector("button#sysmenuWindowStatus");

@@ -25,18 +25,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteDisplay from "./Display.js";
- import SpriteFrame from "./Frame.js";
+ import Util from "./Util.js";
+ import Display from "./Display.js";
+ import Frame from "./Frame.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 /**
  * Class SpriteSheet, contain sprite's sheet and it's animation
  * @class
  * @extends SpriteDisplay
 */
-export default class SpriteSheet extends SpriteDisplay {
+export default class Sheet extends Display {
   /**
    * construct SpriteSheet
    * @param config
@@ -131,7 +131,7 @@ export default class SpriteSheet extends SpriteDisplay {
    */
   clone () {
     let privates = internal(this);
-    let sheet = new SpriteSheet({
+    let sheet = new Sheet({
       images: privates.images,
       width: privates.tilewidth,
       height: privates.tileheight,
@@ -302,7 +302,7 @@ export default class SpriteSheet extends SpriteDisplay {
         let j = Math.floor(index / col);
         // which column
         let i = index - col * j;
-        frame = new SpriteFrame (
+        frame = new Frame (
           image,
           i * privates.tilewidth, // x
           j * privates.tileheight, // y

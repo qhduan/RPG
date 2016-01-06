@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("sellWindow");
-
-let WindowSell = win;
-export default WindowSell;
-
-import css from "../CSS/Sell.scss";
+import "../CSS/Sell.scss";
 import html from "../HTML/Sell.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("sellWindow", html);
+let WindowSell = win;
+export default WindowSell;
 
 let sellWindowClose = win.querySelector("button#sellWindowClose");
 let sellWindowBuy = win.querySelector("button#sellWindowBuy");

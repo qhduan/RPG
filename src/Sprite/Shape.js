@@ -26,17 +26,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteDisplay from "./Display.js";
+ import Util from "./Util.js";
+ import Display from "./Display.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 /**
  * Class SpriteShape
  * @class
  * @extends SpriteDisplay
 */
-export default class SpriteShape extends SpriteDisplay {
+export default class Shape extends Display {
   /**
    * construct SpriteShape
    * @constructor
@@ -52,7 +52,7 @@ export default class SpriteShape extends SpriteDisplay {
 
   clone () {
     let privates = internal(this);
-    let shape = new SpriteShape();
+    let shape = new Shape();
     internal(shape).children = privates.children.slice();
     internal(shape).image = privates.image;
     shape.width = this.width;
@@ -75,12 +75,12 @@ export default class SpriteShape extends SpriteDisplay {
 
   makeConfig (defaultConfig, userConfig) {
     if (userConfig) {
-      for (let key in userConfig) {
+      for (const key in userConfig) {
         defaultConfig[key] = userConfig[key];
       }
     }
     let ret = [];
-    for (let key in defaultConfig) {
+    for (const key in defaultConfig) {
       ret.push(`${key}="${defaultConfig[key]}"`);
     }
     return ret.join(" ");
@@ -270,7 +270,7 @@ export default class SpriteShape extends SpriteDisplay {
     let image = new Image();
     image.src = url;
 
-    let Done = () => {
+    const Done = () => {
       privates.image = image;
       window.URL.revokeObjectURL(url);
       this.emit("change");

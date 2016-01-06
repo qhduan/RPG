@@ -19,18 +19,18 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Define SpriteBitmap
+ * @fileoverview Define Sprite Bitmap
  * @author mail@qhduan.com (QH Duan)
 */
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
-import SpriteDisplay from "./Display.js";
+import Util from "./Util.js";
+import Display from "./Display.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
-export default class SpriteBitmap extends SpriteDisplay {
+export default class Bitmap extends Display {
   /**
    * SpriteBitmap's constructor
    * @constructor
@@ -52,7 +52,7 @@ export default class SpriteBitmap extends SpriteDisplay {
   }
 
   clone () {
-    let bitmap = new SpriteBitmap(internal(this).image);
+    let bitmap = new Bitmap(internal(this).image);
     bitmap.x = this.x;
     bitmap.y = this.y;
     bitmap.centerX = this.centerX;

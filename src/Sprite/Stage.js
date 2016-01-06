@@ -26,19 +26,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteContainer from "./Container.js";
- import SpriteCanvas from "./Canvas.js";
- import SpriteWebgl from "./Webgl.js";
+ import Util from "./Util.js";
+ import Container from "./Container.js";
+ import Canvas from "./Canvas.js";
+ import Webgl from "./Webgl.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 /**
  * Main Stage, display object
  * @class
  * @extends SpriteContainer
 */
-export default class SpriteStage extends SpriteContainer {
+export default class Stage extends Container {
 
   /** @function SpriteStage.constructor
    * consturct a SpriteStage with width and height
@@ -50,14 +50,14 @@ export default class SpriteStage extends SpriteContainer {
     super();
     let privates = internal(this);
 
-    if (!privates.renderer && SpriteWebgl.support()) {
-      privates.renderer = new SpriteWebgl(width, height);
+    if (!privates.renderer && Webgl.support()) {
+      privates.renderer = new Webgl(width, height);
       privates.rendererType = "webgl";
     }
 
     // canvas 2d first
-    if (!privates.renderer && SpriteCanvas.support()) {
-      privates.renderer = new SpriteCanvas(width, height);
+    if (!privates.renderer && Canvas.support()) {
+      privates.renderer = new Canvas(width, height);
       privates.rendererType = "canvas";
     }
 

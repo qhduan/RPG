@@ -26,14 +26,14 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
-import SpriteEvent from "./Event.js";
+import Util from "./Util.js";
+import Event from "./Event.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
 let tickerCount = 0;
 
-class SpriteTickerObject extends SpriteEvent {
+class TickerObject extends Event {
   constructor () {
     super();
     this.tick();
@@ -89,5 +89,5 @@ class SpriteTickerObject extends SpriteEvent {
 
 }
 
-let SpriteTicker = new SpriteTickerObject();
-export default SpriteTicker;
+let Ticker = new TickerObject();
+export default Ticker;

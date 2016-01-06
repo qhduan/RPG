@@ -120,7 +120,7 @@ window.addEventListener("keyup", (event) => {
  * SpriteInput, only has static methods
  * @class
 */
-export default class SpriteInput {
+export default class Input {
 
   /**
    * @param {string} key Key-string ('A', 'a') or key-number (65, 97)

@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("pickupWindow");
-
-let WindowPickup = win;
-export default WindowPickup;
-
-import css from "../CSS/Pickup.scss";
+import "../CSS/Pickup.scss";
 import html from "../HTML/Pickup.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("pickupWindow", html);
+let WindowPickup = win;
+export default WindowPickup;
 
 let pickupWindowClose = win.querySelector("button#pickupWindowClose");
 let pickupWindowAll = win.querySelector("button#pickupWindowAll");

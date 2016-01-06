@@ -18,15 +18,15 @@
     background-repeat: no-repeat;
     background-size: cover;
 
-    :hover {
-      opacity: 0.5;
+    &:hover {
+      filter: brightness(1.2);
     }
 
-    :disabled {
+    &:disabled {
+      filter: brightness(0.8);
       cursor: default;
       pointer-events: none;
       background-color: gray;
-      opacity: 0.5;
     }
 
     img {

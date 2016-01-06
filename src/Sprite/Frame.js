@@ -26,16 +26,16 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 "use strict";
 
-import SpriteUtil from "./Util.js";
-import SpriteDisplay from "./Display.js";
+import Util from "./Util.js";
+import Display from "./Display.js";
 
-let internal = SpriteUtil.namespace();
+let internal = Util.namespace();
 
 /**
  * Class SpriteFrame, a frame of SpriteSheet
  * @class
 */
-export default class SpriteFrame extends SpriteDisplay {
+export default class Frame extends Display {
 
   constructor (image, sx, sy, width, height) {
     super();
@@ -90,7 +90,7 @@ export default class SpriteFrame extends SpriteDisplay {
    * @return {Object} Clone this SpriteFrame
    */
   clone () {
-    let frame = new SpriteFrame(
+    let frame = new Frame(
       this.image,
       this.sx, this.sy,
       this.width, this.height

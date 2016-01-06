@@ -30,16 +30,16 @@ let internal = Sprite.Util.namespace();
 export default class Map extends Sprite.Event {
 
   static load (id) {
+
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`map/${id}.json`, `map/${id}.js`).then( (data) => {
-        let [mapData, mapInfo] = data;
+      Sprite.Loader.load(`map/${id}.json`, `map/${id}.js`).then( ([mapData, mapInfo]) => {
         mapInfo = mapInfo(); // map/id.js文件会返回一个函数
         mapData.id = id;
 
-        for (let key in mapInfo) {
+        for (const key in mapInfo) {
           if (mapData.hasOwnProperty(key)) {
-            console.log(key, mapData[key], mapInfo[key], mapInfo, mapData);
-            throw new Error("Game.loadArea invalid data");
+            console.error(key, `map/${id}.json`, `map/${id}.js`, mapData, mapInfo);
+            throw new Error("Map.load Conflict key");
           }
           mapData[key] = mapInfo[key];
         }
@@ -47,7 +47,7 @@ export default class Map extends Sprite.Event {
         let mapObj = new Game.Map(mapData);
         mapObj.on("complete", () => {
           resolve(mapObj);
-        })
+        });
       });
     });
   }
@@ -79,18 +79,17 @@ export default class Map extends Sprite.Event {
     let privates = internal(this);
     privates.data = mapData;
 
-    let images = [];
-    for (let element of privates.data.tilesets) {
-      images.push(`map/${element.image}`);
-    };
+    let imageUrls = privates.data.tilesets.map(element => {
+      return `map/${element.image}`;
+    });
 
-    Sprite.Loader.load(images).then((data) => {
+    Sprite.Loader.load(imageUrls).then((images) => {
 
       // 释放空间
       privates.data.tilesets = null;
 
       privates.sheet = new Sprite.Sheet({
-        images: data,
+        images: images,
         width: privates.data.tilewidth,
         height: privates.data.tileheight,
       });
@@ -274,7 +273,7 @@ export default class Map extends Sprite.Event {
         let monsterId = null;
         let prob = 0;
         let r = Math.random();
-        for (let key in privates.data.spawnMonster.list) {
+        for (const key in privates.data.spawnMonster.list) {
           prob += privates.data.spawnMonster.list[key];
           if (r < prob) {
             monsterId = key;
@@ -287,8 +286,8 @@ export default class Map extends Sprite.Event {
         Game.Actor.load(monsterId).then((actorObj) => {
           let x, y;
           while (true) {
-            x = Sprite.rand(0, this.col);
-            y = Sprite.rand(0, this.row);
+            x = Sprite.Util.rand(0, this.col);
+            y = Sprite.Util.rand(0, this.row);
             if (!this.hitTest(x, y) && !block[x*10000+y]) {
               break;
             }
@@ -311,7 +310,7 @@ export default class Map extends Sprite.Event {
         let itemId = null;
         let prob = 0;
         let r = Math.random();
-        for (let key in privates.data.spawnItem.list) {
+        for (const key in privates.data.spawnItem.list) {
           prob += privates.data.spawnItem.list[key];
           if (r < prob) {
             itemId = key;
@@ -324,8 +323,8 @@ export default class Map extends Sprite.Event {
         Game.Item.load(itemId).then((itemObj) => {
           let x, y;
           while (true) {
-            x = Sprite.rand(0, this.col);
-            y = Sprite.rand(0, this.row);
+            x = Sprite.Util.rand(0, this.col);
+            y = Sprite.Util.rand(0, this.row);
             if (!this.hitTest(x, y) && !block[x*10000+y]) {
               break;
             }

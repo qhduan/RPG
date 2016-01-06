@@ -63,7 +63,7 @@ export default class ActorMonster extends Actor {
     let privates = internal(this);
     super.draw();
 
-    let dodo = Sprite.rand(30, 60);
+    let dodo = Sprite.Util.rand(30, 60);
 
     privates.ai = Sprite.Ticker.on("tick", (event) => {
 

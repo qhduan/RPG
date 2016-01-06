@@ -42,32 +42,28 @@ export default class Window extends Sprite.Event {
   /**
    *
    */
-  static create (id) {
-    let win = new Window(id)
+  static create (id, html) {
+    let win = new Window(id, html)
     return win;
   }
 
   /**
    * @constructor
    */
-  constructor (id) {
+  constructor (id, html) {
     super();
 
     let privates = internal(this);
     privates.id = id;
-    privates.css = document.createElement("style");
     privates.html = document.createElement("div");
     privates.index = -1;
-    privates.elements = {};
 
     // 随机一个字符串作为dom的id
-    privates.html.id = "GW" + Math.random().toString(16).substr(2);
     privates.html.classList.add(id);
     privates.html.classList.add("game-window");
     privates.html.style.display = "none";
-
+    privates.html.innerHTML = html;
     windowContainer.appendChild(privates.html);
-    document.head.appendChild(privates.css);
 
     privates.html.addEventListener("mousedown", (event) => {
       let x = event.clientX;
@@ -236,7 +232,7 @@ export default class Window extends Sprite.Event {
 
   set index (value) {
     console.error(this);
-    throw new Error("GameWindow.index readonly");
+    throw new Error("Window.index readonly");
   }
 
   get showing () {
@@ -248,7 +244,7 @@ export default class Window extends Sprite.Event {
   }
 
   set showing (value) {
-    throw new Error("GameWindow.showing readonly");
+    throw new Error("Window.showing readonly");
   }
 
   get atop () {
@@ -261,31 +257,7 @@ export default class Window extends Sprite.Event {
   }
 
   set atop (value) {
-    throw new Error("GameWindow.atop readonly");
-  }
-
-  get html () {
-    return internal(this).html.innerHTML;
-  }
-
-  set html (value) {
-    internal(this).html.innerHTML = value;
-  }
-
-  get css () {
-    return internal(this).css.innerHTML;
-  }
-
-  set css (value) {
-    internal(this).css.innerHTML = value;
-  }
-
-  get elements () {
-    return internal(this).elements;
-  }
-
-  set elements (value) {
-    throw new Error("GameWindow.elements readonly");
+    throw new Error("Window.atop readonly");
   }
 
   appendChild (domElement) {

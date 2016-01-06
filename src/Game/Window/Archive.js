@@ -24,16 +24,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("archiveWindow");
-
-let WindowArchive = win;
-export default WindowArchive;
-
-import css from "../CSS/Archive.scss";
+import "../CSS/Archive.scss";
 import html from "../HTML/Archive.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("archiveWindow", html);
+let WindowArchive = win;
+export default WindowArchive;
 
 let archiveWindowSave = win.querySelector("button#archiveWindowSave");
 let archiveWindowClose = win.querySelector("button#archiveWindowClose");

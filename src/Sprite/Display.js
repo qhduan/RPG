@@ -21,10 +21,10 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
  "use strict";
 
- import SpriteUtil from "./Util.js";
- import SpriteEvent from "./Event.js";
+ import Util from "./Util.js";
+ import Event from "./Event.js";
 
- let internal = SpriteUtil.namespace();
+ let internal = Util.namespace();
 
 let hitCanvas = document.createElement("canvas");
 hitCanvas.width = 1;
@@ -39,7 +39,7 @@ let hitData = hitContext.getImageData(0, 0, 1, 1).data;
  * @class
  * @extends SpriteEvent
 */
-export default class SpriteDisplay extends SpriteEvent {
+export default class Display extends Event {
 
   /**
    * construct SpriteDisplay

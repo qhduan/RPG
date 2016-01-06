@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("questWindow");
-
-let WindowQuest = win;
-export default WindowQuest;
-
-import css from "../CSS/Quest.scss";
+import "../CSS/Quest.scss";
 import html from "../HTML/Quest.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("questWindow", html);
+let WindowQuest = win;
+export default WindowQuest;
 
 let questWindowClose = win.querySelector("#questWindowClose");
 let questWindowCurrent = win.querySelector("#questWindowCurrent");

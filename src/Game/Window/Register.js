@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("registerWindow");
-
-let WindowRegister = win;
-export default WindowRegister;
-
-import css from "../CSS/Register.scss";
+import "../CSS/Register.scss";
 import html from "../HTML/Register.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("registerWindow", html);
+let WindowRegister = win;
+export default WindowRegister;
 
 let registerWindowSubmit = win.querySelector("#submit");
 let registerWindowBack = win.querySelector("#back");

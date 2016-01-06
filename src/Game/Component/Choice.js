@@ -24,15 +24,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Window from "../Window.js";
 
 
-import css from "../CSS/Choice.scss";
+import "../CSS/Choice.scss";
 import html from "../HTML/Choice.html";
 
 export default function Choice (options) {
   return new Promise( (resolve, reject) => {
 
-    let win = Window.create("choiceWindow");
-    win.css = css;
-    win.html = html;
+    let win = Window.create("choiceWindow", html);
     win.show();
 
     let choiceWindowButtonContainer = win.querySelector("#choiceWindowButtonContainer");
@@ -41,7 +39,7 @@ export default function Choice (options) {
 
     Object.keys(options).forEach(key => {
       let value = options[key];
-      
+
       let button = document.createElement("button");
       button.textContent = `${buttonArray.length+1}. ${key}`;
       button.classList.add("brownButton");

@@ -38,7 +38,7 @@ export default class Archive {
   // 返回所有存档，Object格式
   static list () {
     let keys = [];
-    for (let key in window.localStorage) {
+    for (const key in window.localStorage) {
       if (key.match(/^SAVE_(\d+)$/)) {
         keys.push(parseInt(key.match(/^SAVE_(\d+)$/)[1]));
       }
@@ -60,7 +60,7 @@ export default class Archive {
   }
 
   static clear () {
-    for (let key in window.localStorage) {
+    for (const key in window.localStorage) {
       if (key.match(/^SAVE_(\d+)$/)) {
         window.localStorage.removeItem(key);
       }
@@ -86,6 +86,7 @@ export default class Archive {
   }
 
   static load (id) {
+    console.log("archive loading");
     let data = Archive.get(id);
     if (!data) {
       data = Archive.last();

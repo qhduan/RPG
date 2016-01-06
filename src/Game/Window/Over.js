@@ -23,16 +23,12 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Game from "../Base.js";
 import Window from "../Window.js";
 
-let win = Window.create("overWindow");
-
-let WindowOver = win;
-export default WindowOver;
-
-import css from "../CSS/Over.scss";
+import "../CSS/Over.scss";
 import html from "../HTML/Over.html";
 
-win.css = css;
-win.html = html;
+let win = Window.create("overWindow", html);
+let WindowOver = win;
+export default WindowOver;
 
 let overWindowMessage = win.querySelector("#overWindowMessage");
 let overWindowReason = win.querySelector("#overWindowReason");
