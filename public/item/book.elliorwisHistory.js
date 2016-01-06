@@ -18,7 +18,7 @@ return {
   name: "艾利韦斯的历史",
   description: "讲述关于维加女神和维加大陆的历史",
   use: function () {
-    Game.dialogue(content, "《维加的历史》");
+    Game.Dialogue(content, "《维加的历史》");
   },
   value: 1,
   type: "book",

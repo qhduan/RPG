@@ -44,7 +44,7 @@ Close.addEventListener("click", (event) => {
 });
 
 ClearShortcut.addEventListener("click", (event) => {
-  Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
+  Game.Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
     if (Number.isFinite(choice)) {
       Game.hero.data.bar[choice] = null;
       Game.windows.interface.refresh();
@@ -53,7 +53,7 @@ ClearShortcut.addEventListener("click", (event) => {
 });
 
 ClearShortcutAll.addEventListener("click", (event) => {
-  Confirm("确定要删除所有快捷栏图表吗？").then(() => {
+  Game.Confirm("确定要删除所有快捷栏图表吗？").then(() => {
     for (let i = 0; i < 8; i++) {
       Game.hero.data.bar[i] = null;
     }
@@ -151,10 +151,10 @@ Tbody.addEventListener("click", (event) => {
       options["升级"] = "levelup";
     }
 
-    Choice(options).then((choice) => {
+    Game.Choice(options).then((choice) => {
       switch(choice) {
         case "shortcut":
-          Choice({
+          Game.Choice({
             1:0,
             2:1,
             3:2,
@@ -183,10 +183,10 @@ Tbody.addEventListener("click", (event) => {
               cannot.push(`经验不足，需要经验${skill.data.next.exp}，当前您有经验${Game.hero.data.exp}`);
             }
             if (cannot.length) {
-              Dialogue(cannot);
+              Game.Dialogue(cannot);
               return;
             }
-            Confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`).then(() => {
+            Game.Confirm(`确定要升级这个技能吗？共需要金币${skill.data.next.gold}，经验${skill.data.next.exp}`).then(() => {
               let nextId = skill.data.next.id;
               Game.hero.data.skills.splice(index, 1);
               Game.hero.data.skills.push(nextId);
@@ -203,7 +203,7 @@ Tbody.addEventListener("click", (event) => {
           }
           break;
         case "remove":
-          Confirm(`真的要遗忘 ${skill.data.name} 技能吗？`).then(() => {
+          Game.Confirm(`真的要遗忘 ${skill.data.name} 技能吗？`).then(() => {
             Game.hero.data.bar.forEach((element, index, array) => {
               if (element && element.id == skillId) {
                 array[index] = null;

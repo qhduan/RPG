@@ -24,7 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Sprite from "../Sprite/Sprite.js";
 import Game   from "./Base.js";
 import Actor  from "./Actor.js";
-import Choice from  "./Component/Choice.js";
 
 let internal = Sprite.Util.namespace();
 
@@ -370,7 +369,7 @@ export default class ActorHero extends Actor {
       touch = {
         type: "water",
         heroUse: () => {
-          Choice({
+          Game.Choice({
             "喝水": "drink",
             "钓鱼": "fish"
           }).then( (choice) => {

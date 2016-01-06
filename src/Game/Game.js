@@ -40,6 +40,12 @@ import Register     from "./Register.js";
 import Skill        from "./Skill.js";
 import Window       from "./Window.js";
 
+import Choice       from "./Component/Choice.js";
+import Confirm      from "./Component/Confirm.js";
+import Dialogue     from "./Component/Dialogue.js";
+import DrawHero     from "./Component/DrawHero.js";
+import Popup        from "./Component/Popup.js";
+
 Game.assign("Actor",        Actor);
 Game.assign("ActorAlly",    ActorAlly);
 Game.assign("ActorHero",    ActorHero);
@@ -56,6 +62,12 @@ Game.assign("Quest",        Quest);
 Game.assign("Register",     Register);
 Game.assign("Skill",        Skill);
 Game.assign("Window",       Window);
+
+Game.assign("Choice",       Choice);
+Game.assign("Confirm",      Confirm);
+Game.assign("Dialogue",     Dialogue);
+Game.assign("DrawHero",     DrawHero);
+Game.assign("Popup",        Popup);
 
 import WindowArchive   from "./Window/Archive.js";
 import WindowBuy       from "./Window/Buy.js";

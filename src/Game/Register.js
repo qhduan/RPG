@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import Sprite   from "../Sprite/Sprite.js";
 import Game     from "./Base.js";
-import DrawHero from "./Component/DrawHero.js";
 
 let internal = Sprite.Util.namespace();
 
@@ -372,7 +371,7 @@ function DisplayHero () {
   context.clearRect(0, 0, canvas.width, canvas.height);
 
   document.getElementById("loading").innerHTML = "Loading";
-  DrawHero(heroCustom).then( (images) => {
+  Game.DrawHero(heroCustom).then( (images) => {
     let img = images[0];
     context.drawImage(img, 0, 0, img.width, img.height);
     document.getElementById("loading").innerHTML = "";

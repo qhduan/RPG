@@ -24,9 +24,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import Sprite   from "../Sprite/Sprite.js";
 import Game     from "./Base.js";
 import Actor    from "./Actor.js";
-import Confirm  from "./Component/Confirm.js";
-import Choice   from  "./Component/Choice.js";
-import Dialogue from "./Component/Dialogue.js";
 
 let internal = Sprite.Util.namespace();
 
@@ -112,7 +109,7 @@ export default class ActorNPC extends Actor {
       是为了保证NPC对话框不会关闭，或者说玩家在执行完某个选项之后依然存在
       但是又不能简单的不关闭对话框，因为选项会有变化，所以要经常重新打开
     */
-    Choice(options).then((choice) => {
+    Game.Choice(options).then((choice) => {
       switch (choice) {
         case "trade": // 玩家交易的选择，默认是买
           this.heroUse();
@@ -123,10 +120,10 @@ export default class ActorNPC extends Actor {
           quest.forEach((quest, index) => {
             questOption[quest.name] = index;
           });
-          Choice(questOption).then((choice) => {
+          Game.Choice(questOption).then((choice) => {
             if (Number.isInteger(choice)) {
               let q = quest[choice];
-              Confirm({
+              Game.Confirm({
                 message: q.before,
                 yes: "接受任务",
                 no: "拒绝"
@@ -146,7 +143,7 @@ export default class ActorNPC extends Actor {
           completeQuest.forEach((quest, index) => {
             completeQuestOption[quest.name] = index;
           });
-          Choice(completeQuestOption).then((choice) => {
+          Game.Choice(completeQuestOption).then((choice) => {
             if (Number.isInteger(choice)) {
               let quest = completeQuest[choice];
 
@@ -156,7 +153,7 @@ export default class ActorNPC extends Actor {
               Game.hero.data.completeQuest.push(quest);
 
               this.heroUse();
-              Dialogue([quest.finish], data.name);
+              Game.Dialogue([quest.finish], data.name);
               if (quest.reward) {
                 if (quest.reward.gold) {
                   Game.hero.data.gold += quest.reward.gold;
@@ -171,7 +168,7 @@ export default class ActorNPC extends Actor {
         default: // 其他选择都没选的情况下，就是对话选择，例如“闲谈”
           if (contact[choice]) {
             this.heroUse();
-            Dialogue(contact[choice].content, data.name);
+            Game.Dialogue(contact[choice].content, data.name);
           }
       }
     });

@@ -35,7 +35,7 @@ map.touch.push({
   ],
   description: "床",
   heroUse: function () {
-    Game.confirm("要睡觉吗？").then(function () {
+    Game.Confirm("要睡觉吗？").then(function () {
       Game.windows.interface.hide();
       Game.windows.stage.hide();
       setTimeout(function () {

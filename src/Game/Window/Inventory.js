@@ -237,7 +237,7 @@ inventoryWindowTable.addEventListener("click", (event) => {
 
     options["丢弃"] = "drop";
 
-    Choice(options).then((choice) => {
+    Game.Choice(options).then((choice) => {
       switch (choice) {
         case "puton":
           let type = item.data.type;
@@ -286,7 +286,7 @@ inventoryWindowTable.addEventListener("click", (event) => {
           Game.windows.interface.refresh();
           return win.open(lastFilter);
         case "shortcut":
-          Choice({
+          Game.Choice({
             1:0,
             2:1,
             3:2,

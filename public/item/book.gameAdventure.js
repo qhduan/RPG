@@ -16,7 +16,7 @@ return {
   name: "冒险者指南",
   description: "一本冒险者的初阶指导手册",
   use: function () {
-    Game.dialogue(content, "《冒险者指南》");
+    Game.Dialogue(content, "《冒险者指南》");
   },
   value: 1,
   type: "book",

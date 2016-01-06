@@ -23,7 +23,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 import Sprite   from "../Sprite/Sprite.js";
 import Game     from "./Base.js";
-import DrawHero from "./Component/DrawHero.js";
 
 let internal = Sprite.Util.namespace();
 
@@ -104,7 +103,7 @@ export default class Archive {
       setTimeout( () => {
         let heroData = data.hero;
 
-        DrawHero(heroData.custom).then( (heroImage) => {
+        Game.DrawHero(heroData.custom).then( (heroImage) => {
           heroData.image = heroImage;
           Game.hero = new Game.ActorHero(heroData);
 
