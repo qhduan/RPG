@@ -32,8 +32,8 @@ export default class Map extends Sprite.Event {
   static load (id) {
 
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`map/${id}.json`, `map/${id}.js`).then( ([mapData, mapInfo]) => {
-        mapInfo = mapInfo(); // map/id.js文件会返回一个函数
+      Sprite.Loader.load(`map/${id}.json`, `map/${id}.js`).then( ([mapData, mapInfoFunc]) => {
+        let mapInfo = mapInfoFunc(Game); // map/id.js文件会返回一个函数
         mapData.id = id;
 
         for (const key in mapInfo) {
@@ -83,7 +83,7 @@ export default class Map extends Sprite.Event {
       return `map/${element.image}`;
     });
 
-    Sprite.Loader.load(imageUrls).then((images) => {
+    Sprite.Loader.load(imageUrls).then( images => {
 
       // 释放空间
       privates.data.tilesets = null;
@@ -283,7 +283,7 @@ export default class Map extends Sprite.Event {
         if (!monsterId) {
           monsterId = Object.keys(privates.data.spawnMonster.list)[0];
         }
-        Game.Actor.load(monsterId).then((actorObj) => {
+        Game.Actor.load(monsterId).then( actorObj => {
           let x, y;
           while (true) {
             x = Sprite.Util.rand(0, this.col);
@@ -320,7 +320,7 @@ export default class Map extends Sprite.Event {
         if (!itemId) {
           itemId = Object.keys(privates.data.spawnItem.list)[0];
         }
-        Game.Item.load(itemId).then((itemObj) => {
+        Game.Item.load(itemId).then( itemObj => {
           let x, y;
           while (true) {
             x = Sprite.Util.rand(0, this.col);

@@ -105,7 +105,7 @@ Game.windows.sysmenu =   WindowSysmenu;
 
 Game.init();
 
-let WindowStage = Window.create("stageWindow");
+let WindowStage = Window.create("stageWindow", "");
 WindowStage.appendChild(Game.stage.canvas);
 Game.windows.stage = WindowStage;
 WindowStage.show();

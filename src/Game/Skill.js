@@ -30,8 +30,8 @@ export default class Skill extends Sprite.Event {
 
   static load (id) {
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`skill/${id}.js`).then( (data) => {
-        let skillData = data[0]();
+      Sprite.Loader.load(`skill/${id}.js`).then( ([skillDataFunc]) => {
+        let skillData = skillDataFunc(Game);
         let skillObj = new Game.Skill(skillData);
         Game.skills[id] = skillObj;
         skillObj.on("complete", () => {
@@ -50,7 +50,7 @@ export default class Skill extends Sprite.Event {
       `skill/${this.data.image}`,
       `skill/${this.data.icon}`,
       `skill/${this.data.sound}`
-    ).then((data) => {
+    ).then( data => {
       let image = data[0];
       privates.icon = data[1];
       privates.sound = data[2];
@@ -166,7 +166,7 @@ export default class Skill extends Sprite.Event {
     let distance = 0;
     // 被命中的actor列表
     let hitted = [];
-    const CheckHit = () => {
+    const checkHit = () => {
       // 技能所在当前方格
       let l1 = Game.area.map.tile(sprite.x, sprite.y);
       // 碰撞检测
@@ -201,10 +201,10 @@ export default class Skill extends Sprite.Event {
           break;
       }
 
-      CheckHit();
+      checkHit();
 
       // 攻击结束时运行Stop函数
-      const Finish = () => {
+      const skillFinish = () => {
         Sprite.Ticker.off("tick", listener);
 
         if (hitted.length > 0 && this.data.animations.hitted) {
@@ -238,17 +238,17 @@ export default class Skill extends Sprite.Event {
       // 测试碰撞到墙
       let grid = Game.area.map.tile(sprite.x, sprite.y);
       if (Game.area.map.hitTest(grid.x, grid.y)) {
-        Finish();
+        skillFinish();
       }
 
       // 如果击中了一个敌人（单体伤害）
       if (hitted.length > 0) {
-        Finish();
+        skillFinish();
       }
 
       // 如果是远程攻击，并且攻击距离已经到了
       if (this.data.distance > 0 && distance >= this.data.distance) {
-        Finish();
+        skillFinish();
       }
 
     });

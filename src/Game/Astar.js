@@ -38,7 +38,7 @@ export default class Astar {
    static getPath (start, end) {
      return new Promise( (resolve, reject) => {
        let blocked = {};
-       for (let actor of Game.area.actors) {
+       for (const actor of Game.area.actors) {
          if (actor.x != start.x || actor.y != start.y) {
            blocked[actor.x * 10000 + actor.y] = true;
          }
@@ -202,7 +202,7 @@ function make (x, y, end, best, addition) {
 function path (collisionFunction, start, end) {
 
   // 开启列表和关闭列表
-  let open = new BinaryHeap((element) => {
+  let open = new BinaryHeap( element => {
     return element.f;
   });
   let openIndex = new Set();

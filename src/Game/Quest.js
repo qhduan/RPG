@@ -30,8 +30,8 @@ export default class Quest {
 
   static load (id) {
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`quest/${id}.js`).then( (data) => {
-        let questData = data[0]();
+      Sprite.Loader.load(`quest/${id}.js`).then( ([questDataFunc]) => {
+        let questData = questDataFunc(Game);
         questData.id = id;
         resolve(questData);
       });

@@ -1,10 +1,8 @@
 {
   "strict": true,
   "browser": true,
-  "es5": false,
-  "esnext": true,
+  "esversion": 6,
   "devel": true,
   "globalstrict": true,
-  "evil": true,
-  "newcap": false
+  "loopfunc": true
 }

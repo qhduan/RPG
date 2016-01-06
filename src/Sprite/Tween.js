@@ -22,13 +22,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 SpriteTween.get(Game.hero)
 .promise( () => {
-  return new Promise((resolve) => {
+  return new Promise( resolve => {
     Game.hero.goto(Game.hero.x, Game.hero.y + 5,"walk").then(resolve);
   })
 })
 .wait(2000)
 .promise( () => {
-  return new Promise((resolve) => {
+  return new Promise( resolve => {
     Game.hero.goto(Game.hero.x + 5, Game.hero.y, "walk").then(resolve);
   })
 })

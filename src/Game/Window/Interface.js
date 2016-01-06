@@ -66,7 +66,7 @@ win.whenUp(["esc"], (key) => {
   }
 });
 
-function InitInterfaceBar () {
+function initInterfaceBar () {
   let buttonCount = 8;
   let buttonHTML = "";
   for (let i = 0; i < buttonCount; i++) {
@@ -86,7 +86,7 @@ setInterval( () => {
   }
 }, 1000);
 
-InitInterfaceBar();
+initInterfaceBar();
 let buttons = win.querySelectorAll(".interfaceWindowButton");
 let buttonTexts = win.querySelectorAll(".interfaceWindowButtonText");
 

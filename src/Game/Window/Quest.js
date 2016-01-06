@@ -62,7 +62,7 @@ win.assign("current", () => {
 
   let table = "";
   let list = Game.hero.data.currentQuest;
-  list.forEach((quest) => {
+  list.forEach( quest => {
 
     let complete = Game.Quest.isComplete(quest);
 
@@ -108,7 +108,7 @@ win.assign("past", () => {
 
   let table = "";
   let list = Game.hero.data.completeQuest;
-  list.forEach((quest) => {
+  list.forEach( quest => {
 
     let line = `<div class="questWindowItem">\n`;
     line += `  <label style="font-size: 20px; margin: 10px;">${quest.name}[已完成]</label>\n`;

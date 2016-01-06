@@ -133,7 +133,7 @@ win.assign("open", (filter, select) => {
   let index = 0;
   let ids = Object.keys(Game.hero.data.items);
   ids.sort();
-  ids.forEach((itemId) => {
+  ids.forEach( itemId => {
     let itemCount = Game.hero.data.items[itemId];
     let item = Game.items[itemId];
     let equipment = null;
@@ -237,7 +237,7 @@ inventoryWindowTable.addEventListener("click", (event) => {
 
     options["丢弃"] = "drop";
 
-    Game.Choice(options).then((choice) => {
+    Game.Choice(options).then( choice => {
       switch (choice) {
         case "puton":
           let type = item.data.type;
@@ -267,7 +267,7 @@ inventoryWindowTable.addEventListener("click", (event) => {
             Game.hero.data.equipment[equipment] = null;
           }
 
-          Game.addBag(Game.hero.x ,Game.hero.y).then((bag) => {
+          Game.addBag(Game.hero.x ,Game.hero.y).then( bag => {
             if (bag.inner.hasOwnProperty(itemId)) {
               bag.inner[itemId] += itemCount;
             } else {

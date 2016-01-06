@@ -5,31 +5,32 @@
 
 
 */
-"use strict";
+document.currentScript["data-callback"](function (Game) {
+  "use strict";
+  var map = {
+    actors: [],
+    touch: [],
+    onto: []
+  };
 
+  map.name = "朗克家";
+  map.type = "indoor";
 
-var map = {
-  actors: [],
-  touch: [],
-  onto: []
-};
+  map.actors.push({
+    id: "fystone.ranc",
+    x: 7,
+    y: 7
+  });
 
-map.name = "朗克家";
-map.type = "indoor";
+  map.onto.push({
+    x: 7,
+    y: 13,
+    description: "通往法斯通镇",
+    execute: function () {
+      Game.hero.gotoArea("fystone", 9, 26);
+    }
+  });
 
-map.actors.push({
-  id: "fystone.ranc",
-  x: 7,
-  y: 7
+  return map;
+
 });
-
-map.onto.push({
-  x: 7,
-  y: 13,
-  description: "通往法斯通镇",
-  execute: function () {
-    Game.hero.gotoArea("fystone", 9, 26);
-  }
-});
-
-return map;

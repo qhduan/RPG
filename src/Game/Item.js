@@ -30,8 +30,8 @@ export default class Item extends Sprite.Event {
 
   static load (id) {
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`item/${id}.js`).then( (data) => {
-        let itemData = data[0]();
+      Sprite.Loader.load(`item/${id}.js`).then( ([itemDataFunc]) => {
+        let itemData = itemDataFunc(Game);
         itemData.id = id;
         let itemObj = new Game.Item(itemData);
         Game.items[id] = itemObj;
@@ -55,7 +55,7 @@ export default class Item extends Sprite.Event {
     }
 
     if (this.data.image) {
-      Sprite.Loader.load(`item/${this.data.image}`).then((data) => {
+      Sprite.Loader.load(`item/${this.data.image}`).then( data => {
         let image = data[0];
         privates.icon = image;
 

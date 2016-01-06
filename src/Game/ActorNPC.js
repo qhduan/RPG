@@ -45,7 +45,7 @@ export default class ActorNPC extends Actor {
     // npc对话，例如“闲谈”
     let contact = {};
     if (data.contact) {
-      for (let talk of data.contact) {
+      for (const talk of data.contact) {
         let result = true;
         // talk.condition 是对话条件，如果存在，它是一个函数
         if (typeof talk.condition == "function") {
@@ -68,7 +68,7 @@ export default class ActorNPC extends Actor {
     // 玩家接受任务
     let quest = null;
     if (this.quest) {
-      quest = this.quest.filter((quest) => {
+      quest = this.quest.filter( quest => {
         if (Game.hero.hasQuest(quest.id)) {
           return false;
         }
@@ -109,7 +109,7 @@ export default class ActorNPC extends Actor {
       是为了保证NPC对话框不会关闭，或者说玩家在执行完某个选项之后依然存在
       但是又不能简单的不关闭对话框，因为选项会有变化，所以要经常重新打开
     */
-    Game.Choice(options).then((choice) => {
+    Game.Choice(options).then( choice => {
       switch (choice) {
         case "trade": // 玩家交易的选择，默认是买
           this.heroUse();
@@ -120,7 +120,7 @@ export default class ActorNPC extends Actor {
           quest.forEach((quest, index) => {
             questOption[quest.name] = index;
           });
-          Game.Choice(questOption).then((choice) => {
+          Game.Choice(questOption).then( choice => {
             if (Number.isInteger(choice)) {
               let q = quest[choice];
               Game.Confirm({
@@ -143,7 +143,7 @@ export default class ActorNPC extends Actor {
           completeQuest.forEach((quest, index) => {
             completeQuestOption[quest.name] = index;
           });
-          Game.Choice(completeQuestOption).then((choice) => {
+          Game.Choice(completeQuestOption).then( choice => {
             if (Number.isInteger(choice)) {
               let quest = completeQuest[choice];
 

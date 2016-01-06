@@ -36,8 +36,8 @@ export default class Actor extends Sprite.Event {
 
   static load (id) {
     return new Promise( (resolve, reject) => {
-      Sprite.Loader.load(`actor/${id}.js`).then( (data) => {
-        let actorData = data[0]();
+      Sprite.Loader.load(`actor/${id}.js`).then( ([actorDataFunc]) => {
+        let actorData = actorDataFunc(Game);
         actorData.id = id;
 
         let actorObj = null;
@@ -53,9 +53,7 @@ export default class Actor extends Sprite.Event {
           console.error(actorData.type, actorData);
           throw new Error("Game.Actor.load invalid actor type");
         }
-        actorObj.on("complete", () => {
-          resolve(actorObj);
-        });
+        actorObj.on("complete", () => resolve(actorObj) );
       });
     });
   }
@@ -72,10 +70,7 @@ export default class Actor extends Sprite.Event {
     if (this.data.image instanceof Array) {
       this.init(this.data.image);
     } else if (typeof this.data.image == "string") {
-      Sprite.Loader.load("actor/" + this.data.image).then( (data) => {
-        // data is Array
-        this.init(data);
-      });
+      Sprite.Loader.load("actor/" + this.data.image).then( data => this.init(data) );
     } else {
       console.error(this.id, this.data, this.data.image, this);
       throw new Error("Invalid Actor Image");
@@ -120,7 +115,7 @@ export default class Actor extends Sprite.Event {
     });
 
     let completeCount = -1;
-    const Complete = () => {
+    const gotData = () => {
       completeCount++;
       if (completeCount >= 0) {
         this.calculate();
@@ -136,9 +131,9 @@ export default class Actor extends Sprite.Event {
       data.quest.forEach((questId, index) => {
         completeCount--;
 
-        Quest.load(questId).then((questData) => {
+        Quest.load(questId).then( questData => {
           privates.quest.push(questData);
-          Complete();
+          gotData();
         });
 
       });
@@ -146,23 +141,19 @@ export default class Actor extends Sprite.Event {
 
     // 加载人物技能
     if (data.skills) {
-      data.skills.forEach((skillId) => {
+      data.skills.forEach( skillId => {
         completeCount--;
-        Game.Skill.load(skillId).then(() => {
-          Complete();
-        });
+        Game.Skill.load(skillId).then( () => gotData() );
       });
     }
 
     // 加载人物装备（暂时只有玩家）
     if (data.equipment) {
       for (const key in data.equipment) {
-        let itemId = data.equipment[key];
+        const itemId = data.equipment[key];
         if (itemId) {
           completeCount--;
-          Game.Item.load(itemId).then(() => {
-            Complete();
-          });
+          Game.Item.load(itemId).then( () => gotData() );
         }
       }
     }
@@ -171,13 +162,11 @@ export default class Actor extends Sprite.Event {
     if (data.items) {
       for (const itemId in data.items) {
         completeCount--;
-        Game.Item.load(itemId).then(() => {
-          Complete();
-        });
+        Game.Item.load(itemId).then( () => gotData() );
       }
     }
 
-    Complete();
+    gotData();
   }
 
   get data () {
@@ -344,10 +333,10 @@ export default class Actor extends Sprite.Event {
       data.sp = data.$sp;
 
       if (data.buff && data.nerf) {
-        data.buff.forEach((element) => {
+        data.buff.forEach( element => {
 
         });
-        data.nerf.forEach((element) => {
+        data.nerf.forEach( element => {
 
         });
       }
@@ -517,7 +506,7 @@ export default class Actor extends Sprite.Event {
 
         let items = this.data.items || { gold: 1 };
 
-        Game.addBag(this.x ,this.y).then((bag) => {
+        Game.addBag(this.x ,this.y).then( bag => {
           for (const itemId in items) {
             if (bag.inner.hasOwnProperty(itemId)) {
               bag.inner[itemId] += items[itemId];
@@ -806,11 +795,11 @@ export default class Actor extends Sprite.Event {
       let index = 0;
       let otherChoice = false;
 
-      const TestPosition = () => {
+      const testPosition = () => {
         if (index < positionChoice.length) {
           let dest = positionChoice[index]; // 保存第一个选项
           index++;
-          Game.Astar.getPath({x: this.x, y: this.y}, dest).then((result) => {
+          Game.Astar.getPath({x: this.x, y: this.y}, dest).then( result => {
             this.gettingPath = false;
             if (this.goingNext) {
               let c = this.goingNext;
@@ -837,7 +826,7 @@ export default class Actor extends Sprite.Event {
               this.gotoPath(result, state, dest.after).then(resolve);
               return;
             } else {
-              return TestPosition();
+              return testPosition();
             }
           });
         } else {
@@ -883,13 +872,13 @@ export default class Actor extends Sprite.Event {
             if (otherPositionChoice.length) {
               index = 0;
               positionChoice = otherPositionChoice;
-              TestPosition();
+              testPosition();
             }
           }
         } // 再次尝试离地点最近的地点
       };
 
-      return TestPosition();
+      return testPosition();
 
     });
   }
@@ -902,7 +891,7 @@ export default class Actor extends Sprite.Event {
     return new Promise( (resolve, reject) => {
       this.going = true;
       let index = 1;
-      const Walk = () => {
+      const toWalk = () => {
         if (Game.paused) {
           this.stop();
           this.going = false;
@@ -947,7 +936,7 @@ export default class Actor extends Sprite.Event {
               this.face(direction);
             }
             this.go(state, direction).then(() => {
-              Walk();
+              toWalk();
             });
             index++;
           }
@@ -963,7 +952,7 @@ export default class Actor extends Sprite.Event {
           resolve();
         }
       };
-      Walk();
+      toWalk();
     });
   }
 
@@ -994,7 +983,7 @@ export default class Actor extends Sprite.Event {
 
     // 角色碰撞
     if (Game.area.actors) {
-      for (let actor of Game.area.actors) {
+      for (const actor of Game.area.actors) {
         if (actor != this && actor.hitTest(x, y)) {
           return true;
         }
@@ -1003,7 +992,7 @@ export default class Actor extends Sprite.Event {
 
     // 地图上的物品碰撞
     if (Game.area.items) {
-      for (let item of Game.area.items) {
+      for (const item of Game.area.items) {
         if (item.hitTest(x, y)) {
           return true;
         }
@@ -1018,7 +1007,7 @@ export default class Actor extends Sprite.Event {
    */
   hitTest (x, y) {
     if (this.data.hitArea && this.data.hitArea instanceof Array) {
-      for (let p of this.data.hitArea) {
+      for (const p of this.data.hitArea) {
         if (x == this.x + p[0] && y == this.y + p[1]) {
           return true;
         }

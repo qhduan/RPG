@@ -129,7 +129,7 @@ export default class ActorHero extends Actor {
     if (touchActor.length) {
       let faceAttacker = false;
       let facePosition = this.facePosition;
-      touchActor.forEach((actor) => {
+      touchActor.forEach( actor => {
         if (actor.hitTest(facePosition.x, facePosition.y)) {
           faceAttacker = true;
         }
@@ -277,7 +277,7 @@ export default class ActorHero extends Actor {
         if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
           return element;
         } else if (element.points) {
-          for (let p of element.points) {
+          for (const p of element.points) {
             if (p.x == heroPosition.x && p.y == heroPosition.y) {
               return element;
             }
@@ -315,7 +315,7 @@ export default class ActorHero extends Actor {
           if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
             return element;
           } else if (element.points) {
-            for (let p of element.points) {
+            for (const p of element.points) {
               if (p.x == heroFace.x && p.y == heroFace.y) {
                 return element;
               }

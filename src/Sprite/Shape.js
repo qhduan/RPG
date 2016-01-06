@@ -202,7 +202,7 @@ export default class Shape extends Display {
     privates.children.push(`<polyline ${this.makeConfig(config, userConfig)} />`);
 
     let max = -1;
-    config.points.split(/, /).forEach((element) => {
+    config.points.split(/, /).forEach( element => {
       let number = parseInt(element);
       if (!isNaN(number) && number > max) {
         max = number;

@@ -26,7 +26,7 @@ import Game   from "./Base.js";
 
 let internal = Sprite.Util.namespace();
 
-function CheckHeroAction () {
+function checkHeroAction () {
   if (Game.paused) return;
 
   let state = "run";
@@ -35,13 +35,13 @@ function CheckHeroAction () {
   }
 
   if (Sprite.Input.isPressed("left")) {
-    Game.hero.go(state, "left").then(CheckHeroAction);
+    Game.hero.go(state, "left").then(checkHeroAction);
   } else if (Sprite.Input.isPressed("up")) {
-    Game.hero.go(state, "up").then(CheckHeroAction);
+    Game.hero.go(state, "up").then(checkHeroAction);
   } else if (Sprite.Input.isPressed("right")) {
-    Game.hero.go(state, "right").then(CheckHeroAction);
+    Game.hero.go(state, "right").then(checkHeroAction);
   } else if (Sprite.Input.isPressed("down")) {
-    Game.hero.go(state, "down").then(CheckHeroAction);
+    Game.hero.go(state, "down").then(checkHeroAction);
   }
 }
 
@@ -110,7 +110,7 @@ export default class Input {
       if (!Game.area) return;
       if (!Game.area.map) return;
 
-      CheckHeroAction();
+      checkHeroAction();
       if (!Game.hero.walking) {
         Game.hero.stop();
       }

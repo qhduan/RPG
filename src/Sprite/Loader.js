@@ -42,7 +42,7 @@ let Downloading = new Map();
 function fetchData (url, callback, timeout = 0) {
 
   let type = null;
-  if (url.match(/js$/)) {
+  if (url.match(/\.js$/i)) {
     type = "js";
   } else if (url.match(/\.(jpe?g|png|bmp|gif)$/i)) {
     type = "image";
@@ -94,106 +94,107 @@ function fetchData (url, callback, timeout = 0) {
     Downloading.set(url, []);
   }
 
-  let req = new XMLHttpRequest();
-  req.open("GET", url, true);
-  req.timeout = 10000; // 10 seconds
+  if (type == "js") {
+    let tag = document.createElement("script");
+    tag.async = "async";
+    tag["data-callback"] = func => {
+      gotData(func);
+    };
+    tag.src = url;
+    document.body.appendChild(tag);
+  } else {
 
-  // looks like req.responseType=blob has some async problem, so I use arraybuffer
-  switch (type) {
-    case "js":
-      req.responseType = "text";
-      break;
-    case "image":
-      req.responseType = "arraybuffer";
-      break;
-    case "audio":
-      req.responseType = "arraybuffer";
-      break;
-    case "json":
-      req.responseType = "json";
-      break;
-    default:
-      console.error(type, url);
-      throw new Error("fetchData something wrong");
-  }
+    let req = new XMLHttpRequest();
+    req.open("GET", url, true);
+    req.timeout = 10000; // 10 seconds
 
-  if (typeof callback != "function")
-    callback = () => {};
-
-  req.ontimeout = () => {
-    if (timeout >= 2) {
-      console.error(url);
-      alert(`资源${url}超时没有加载成功！`);
-      throw new Error("SpriteLoader.fetchData timeout 3 times");
-    } else {
-      console.error("SpriteLoader.fetchData timeout try again, ", timeout + 1, " ", url);
-      setTimeout( () => {
-        fetchData(url, callback, timeout + 1);
-      }, 50);
+    // looks like req.responseType=blob has some async problem, so I use arraybuffer
+    switch (type) {
+      case "image":
+        req.responseType = "arraybuffer";
+        break;
+      case "audio":
+        req.responseType = "arraybuffer";
+        break;
+      case "json":
+        req.responseType = "json";
+        break;
+      default:
+        console.error(type, url);
+        throw new Error("fetchData something wrong");
     }
-  };
 
-  let done = false;
-  req.onreadystatechange = () => {
-    if (req.readyState == 4 && !done) {
-      done = true;
-      if (req.response) {
-        if (type == "js") {
-          let fun = null;
-          try {
-            fun = new Function(req.response);
-          } catch (e) {
-            console.error(req.response, url);
-            throw e;
-          }
-          gotData(fun);
-        } else if (type == "image") {
-          let arraybuffer = req.response;
-          let image = new Image();
-          image.onload = () => {
-            // window.URL.revokeObjectURL(image.src);
-            image.onload = null;
-            gotData(image);
-          };
-          image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
-        } else if (type == "audio") {
-          let arraybuffer = req.response;
-          let audio = new Audio();
-          audio.oncanplay = () => {
-            // 如果reoke掉audio，那么audio.load()方法则不能用了
-            // window.URL.revokeObjectURL(audio.src);
-            audio.oncanplay = null;
-            gotData(audio);
-          };
-          audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
-        } else if (type == "json") {
-          let json = req.response;
-          if ( !json ) {
-            console.error(url);
-            throw new Error("Loader invalid json");
-          }
-          gotData(json);
-        }
+    if (typeof callback != "function")
+      callback = () => {};
+
+    req.ontimeout = () => {
+      if (timeout >= 2) {
+        console.error(url);
+        alert(`资源${url}超时没有加载成功！`);
+        throw new Error("SpriteLoader.fetchData timeout 3 times");
       } else {
-        console.error("url: ", url);
-        console.error("response: ", req.response,
-        " readyState: ", req.readyState,
-        " status: ", req.status,
-        " statusText: ", req.statusText);
-        if (timeout >= 2) {
-          console.error(url);
-          alert(`资源${url}错误没有加载成功！`);
-          throw new Error("SpriteLoader.fetchData error 3 times");
+        console.error("SpriteLoader.fetchData timeout try again, ", timeout + 1, " ", url);
+        setTimeout( () => {
+          fetchData(url, callback, timeout + 1);
+        }, 50);
+      }
+    };
+
+    let done = false;
+    req.onreadystatechange = () => {
+      if (req.readyState == 4 && !done) {
+        done = true;
+        if (req.response) {
+          if (type == "image") {
+            let arraybuffer = req.response;
+            let image = new Image();
+            image.onload = () => {
+              // window.URL.revokeObjectURL(image.src);
+              image.onload = null;
+              gotData(image);
+            };
+            image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
+          } else if (type == "audio") {
+            let arraybuffer = req.response;
+            let audio = new Audio();
+            audio.oncanplay = () => {
+              // 如果reoke掉audio，那么audio.load()方法则不能用了
+              // window.URL.revokeObjectURL(audio.src);
+              audio.oncanplay = null;
+              gotData(audio);
+            };
+            audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
+          } else if (type == "json") {
+            let json = req.response;
+            if ( !json ) {
+              console.error(url);
+              throw new Error("Loader invalid json");
+            }
+            gotData(json);
+          }
         } else {
-          console.error("SpriteLoader.fetchData error try again, ", timeout + 1, " ", url);
-          setTimeout( () => {
-            fetchData(url, callback, timeout + 1);
-          }, 50);
+          console.error("url: ", url);
+          console.error("response: ", req.response,
+          " readyState: ", req.readyState,
+          " status: ", req.status,
+          " statusText: ", req.statusText);
+          if (timeout >= 2) {
+            console.error(url);
+            alert(`资源${url}错误没有加载成功！`);
+            throw new Error("SpriteLoader.fetchData error 3 times");
+          } else {
+            console.error("SpriteLoader.fetchData error try again, ", timeout + 1, " ", url);
+            setTimeout( () => {
+              fetchData(url, callback, timeout + 1);
+            }, 50);
+          }
         }
       }
-    }
-  };
-  req.send();
+    };
+    req.send();
+
+  }
+
 }
 
 export default class Loader {

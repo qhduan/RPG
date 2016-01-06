@@ -27,7 +27,7 @@ let internal = Sprite.Util.namespace();
 
 // 合并图片
 // 把images中的所有图片按顺序draw到一个canvas上面，然后用canvas.toDataURL返回一张叠好的图片
-function CombineHeroImage (images, width, height) {
+function combineHeroImage (images, width, height) {
   return new Promise( (resolve, reject) => {
     let canvas = document.createElement("canvas");
     canvas.height = height;
@@ -92,7 +92,7 @@ function CombineHeroImage (images, width, height) {
 }
 
 
-function Check (str) {
+function checkString (str) {
   if (typeof str == "string" && str.length > 0)
     return true;
   return false;
@@ -104,44 +104,44 @@ export default function DrawHero (heroCustom) {
     let BASE = "hero";
     let imageUrls = [];
 
-    if (Check(heroCustom.sex) && Check(heroCustom.body)) {
+    if (checkString(heroCustom.sex) && checkString(heroCustom.body)) {
       // 必须按顺序
       // 身体
       imageUrls.push(`${BASE}/body/${heroCustom.sex}/${heroCustom.body}.png`);
       // 眼睛
-      if (Check(heroCustom.eyes))
+      if (checkString(heroCustom.eyes))
         imageUrls.push(`${BASE}/body/${heroCustom.sex}/eyes/${heroCustom.eyes}.png`);
       // 衣服
-      if (Check(heroCustom.shirts))
+      if (checkString(heroCustom.shirts))
         imageUrls.push(`${BASE}/shirts/${heroCustom.sex}/${heroCustom.shirts}.png`);
-      if (Check(heroCustom.pants))
+      if (checkString(heroCustom.pants))
         imageUrls.push(`${BASE}/pants/${heroCustom.sex}/${heroCustom.pants}.png`);
-      if (Check(heroCustom.shoes))
+      if (checkString(heroCustom.shoes))
       // 盔甲
         imageUrls.push(`${BASE}/shoes/${heroCustom.sex}/${heroCustom.shoes}.png`);
-      if (Check(heroCustom.armorchest))
+      if (checkString(heroCustom.armorchest))
         imageUrls.push(`${BASE}/armor/chest/${heroCustom.sex}/${heroCustom.armorchest}.png`);
-      if (Check(heroCustom.armorarm))
+      if (checkString(heroCustom.armorarm))
         imageUrls.push(`${BASE}/armor/arm/${heroCustom.sex}/${heroCustom.armorarm}.png`);
-      if (Check(heroCustom.armorlegs))
+      if (checkString(heroCustom.armorlegs))
         imageUrls.push(`${BASE}/armor/legs/${heroCustom.sex}/${heroCustom.armorlegs}.png`);
-      if (Check(heroCustom.armorfeet))
+      if (checkString(heroCustom.armorfeet))
         imageUrls.push(`${BASE}/armor/feet/${heroCustom.sex}/${heroCustom.armorfeet}.png`);
       // 头发
-      if (Check(heroCustom.hair) && Check(heroCustom.haircolor))
+      if (checkString(heroCustom.hair) && checkString(heroCustom.haircolor))
         imageUrls.push(`${BASE}/hair/${heroCustom.sex}/${heroCustom.hair}/${heroCustom.haircolor}.png`);
       // 头
-      if (Check(heroCustom.head))
+      if (checkString(heroCustom.head))
         imageUrls.push(`${BASE}/head/${heroCustom.sex}/${heroCustom.head}.png`);
       // 头盔
-      if (Check(heroCustom.armorhelms))
+      if (checkString(heroCustom.armorhelms))
         imageUrls.push(`${BASE}/armor/helms/${heroCustom.sex}/${heroCustom.armorhelms}.png`);
       // 武器（包括所有武器）
       imageUrls.push(`${BASE}/weapons/${heroCustom.sex}/weapons.png`);
     }
 
     Sprite.Loader.load(imageUrls).then( (data) => {
-      CombineHeroImage(data, heroCustom.width, heroCustom.height).then( (data) => {
+      combineHeroImage(data, heroCustom.width, heroCustom.height).then( (data) => {
         resolve(data);
       });
     });

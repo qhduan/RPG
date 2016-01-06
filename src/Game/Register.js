@@ -241,28 +241,28 @@ export default class Register {
       inited = true;
       Array.from(
         Game.windows.register.querySelectorAll("#registerWindowDisplaySelect select")
-      ).forEach((element) => {
+      ).forEach( element => {
         element.addEventListener("change", () => {
-          ApplyHeroDisplay();
+          applyHeroDisplay();
         });
       });
 
       Array.from(
         Game.windows.register.querySelectorAll("#registerWindowPersonal select")
-      ).forEach((element) => {
+      ).forEach( element => {
         element.addEventListener("change", () => {
-          ApplyHeroPersonal();
+          applyHeroPersonal();
         });
       });
     }
 
     Array.from(
       Game.windows.register.querySelectorAll("select")
-    ).forEach((element) => {
+    ).forEach( element => {
       element.selectedIndex = 0;
     });
-    ApplyHeroDisplay();
-    ApplyHeroPersonal();
+    applyHeroDisplay();
+    applyHeroPersonal();
     document.querySelector("#registerHeroName").value = "";
     Game.windows.register.show();
   }
@@ -298,10 +298,10 @@ export default class Register {
 
 
 
-function ApplyHeroDisplay () {
+function applyHeroDisplay () {
   Array.from(
     document.querySelectorAll(".registerWindow #registerWindowDisplaySelect select")
-  ).forEach((element) => {
+  ).forEach( element => {
     let type = element.getAttribute("data-type");
     let value = element.value;
     if (type == "malehair" || type == "femalehair") {
@@ -321,7 +321,7 @@ function ApplyHeroDisplay () {
     document.getElementById("customMaleHair").style.display = "none";
     document.getElementById("customFemaleHair").style.display = "block";
   }
-  DisplayHero();
+  displayHero();
 }
 
 let beliefText = {
@@ -347,11 +347,11 @@ let classText = {
   business: "商人擅长交易和说服，帮助你更快的获得资金"
 };
 
-function ApplyHeroPersonal () {
+function applyHeroPersonal () {
 
   Array.from(
     document.querySelectorAll(".registerWindow #registerWindowPersonal select")
-  ).forEach((element) => {
+  ).forEach( element => {
     let value = element.value;
     let type = element.getAttribute("data-type");
     HeroDefault[type] = value;
@@ -364,7 +364,7 @@ function ApplyHeroPersonal () {
   registerWindowClass.textContent = classText[HeroDefault.class];
 }
 
-function DisplayHero () {
+function displayHero () {
 
   let canvas = document.querySelector(".registerWindow canvas");
   let context = canvas.getContext("2d");

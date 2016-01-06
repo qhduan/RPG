@@ -44,7 +44,7 @@ Close.addEventListener("click", (event) => {
 });
 
 ClearShortcut.addEventListener("click", (event) => {
-  Game.Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
+  Game.Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then( choice => {
     if (Number.isFinite(choice)) {
       Game.hero.data.bar[choice] = null;
       Game.windows.interface.refresh();
@@ -79,7 +79,7 @@ win.assign("open", (select) => {
 
   let index = 0;
   let table = "";
-  Game.hero.data.skills.forEach((skillId) => {
+  Game.hero.data.skills.forEach( skillId => {
     let skill = Game.skills[skillId];
 
     let line = "";
@@ -151,7 +151,7 @@ Tbody.addEventListener("click", (event) => {
       options["升级"] = "levelup";
     }
 
-    Game.Choice(options).then((choice) => {
+    Game.Choice(options).then( choice => {
       switch(choice) {
         case "shortcut":
           Game.Choice({
@@ -163,7 +163,7 @@ Tbody.addEventListener("click", (event) => {
             6:5,
             7:6,
             8:7
-          }).then((choice) => {
+          }).then( choice => {
             if (Number.isFinite(choice) && choice >= 0) {
               Game.hero.data.bar[choice] = {
                 id: skillId,

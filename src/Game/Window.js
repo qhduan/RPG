@@ -171,7 +171,7 @@ export default class Window extends Sprite.Event {
 
   show () {
     let privates = internal(this);
-    GameWindowResize();
+    gameWindowResize();
     if (privates.html && !this.showing) {
       this.emit("beforeShow");
 
@@ -272,7 +272,7 @@ export default class Window extends Sprite.Event {
 }
 
 // 当窗口大小改变时改变游戏窗口大小
-function GameWindowResize () {
+function gameWindowResize () {
   let width = window.innerWidth;
   let height = window.innerHeight;
   let scale = 1;
@@ -318,7 +318,7 @@ function GameWindowResize () {
   style.webkitFilter =          `blur(0px)`;
 }
 
-GameWindowResize();
+gameWindowResize();
 window.addEventListener("resize", () => {
-  GameWindowResize();
+  gameWindowResize();
 });

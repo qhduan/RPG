@@ -1,12 +1,12 @@
 .archiveWindow {
 
-  #archiveWindowTable {
+  #Table {
     overflow-y: auto;
     height: 325px;
     width: 100%;
   }
 
-  .archiveWindowItem {
+  .Item {
     border: 1px solid gray;
     border-radius: 10px;
     margin: 10px;
@@ -24,7 +24,7 @@
      }
   }
 
-  #archiveWindowItemBar {
+  #ItemBar {
     button {
       width: 100px;
       height: 30px;
@@ -34,7 +34,7 @@
     }
   }
 
-  #archiveWindowClose {
+  #Close {
     float: right;
   }
 

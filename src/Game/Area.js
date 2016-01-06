@@ -27,7 +27,7 @@ import Game   from "./Base.js";
 let internal = Sprite.Util.namespace();
 
 // 游戏无论什么时候都需要预加载的内容
-function Preload () {
+function getPreload () {
   return new Promise( (resolve, reject) => {
     let promises = new Set();
 
@@ -57,7 +57,7 @@ function Preload () {
       "gold" // 金币图标
     ];
 
-    preloadItems.forEach((id) => {
+    preloadItems.forEach( id => {
       promises.add(
         new Promise( (resolve, reject) => {
           if (Game.items && Game.items[id]) {
@@ -82,7 +82,7 @@ export default class Area {
 
       Promise.all([
         Game.Map.load(id),
-        Preload()
+        getPreload()
       ]).then( ([mapObj]) => {
         return {
           actors: new Set(), // 角色

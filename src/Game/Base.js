@@ -60,7 +60,7 @@ class Base {
         }
       }
       // 如果没有已经存在的bag合适，新建一个
-      Game.Item.load("bag").then((bag) => {
+      Game.Item.load("bag").then( bag => {
         bag.x = x;
         bag.y = y;
         bag.inner = {};

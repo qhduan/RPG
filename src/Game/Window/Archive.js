@@ -30,11 +30,11 @@ let win = Window.create("archiveWindow", html);
 let WindowArchive = win;
 export default WindowArchive;
 
-let archiveWindowSave = win.querySelector("button#archiveWindowSave");
-let archiveWindowClose = win.querySelector("button#archiveWindowClose");
-let archiveWindowTable = win.querySelector("#archiveWindowTable");
+let Save = win.querySelector("button#Save");
+let Close = win.querySelector("button#Close");
+let Table = win.querySelector("div#Table");
 
-archiveWindowSave.addEventListener("click", () => {
+Save.addEventListener("click", () => {
   let canvas = document.createElement("canvas");
   canvas.width = 80;
   canvas.height = 45;
@@ -49,7 +49,7 @@ archiveWindowSave.addEventListener("click", () => {
   win.open();
 });
 
-archiveWindowClose.addEventListener("click", () => {
+Close.addEventListener("click", () => {
   win.hide();
   if ( !Game.windows.interface.showing ) {
     Game.windows.main.show();
@@ -58,22 +58,22 @@ archiveWindowClose.addEventListener("click", () => {
 
 win.whenUp(["esc"], (key) => {
   setTimeout( () => {
-    archiveWindowClose.click();
+    Close.click();
   }, 20);
 });
 
 win.assign("open", () => {
 
   if ( Game.windows.interface.showing && Game.hero ) {
-    archiveWindowSave.style.visibility = "visible";
+    Save.style.visibility = "visible";
   } else {
-    archiveWindowSave.style.visibility = "hidden";
+    Save.style.visibility = "hidden";
   }
 
   let table = "";
   let list = Game.Archive.list();
-  list.forEach((element) => {
-    let line = `<div class="archiveWindowItem">\n`;
+  list.forEach( element => {
+    let line = `<div class="Item">\n`;
     let archive = Game.Archive.get(`SAVE_${element}`);
     line += `  <button data-type="remove" data-id="SAVE_${element}" class="brownButton" style="float: right;">删除</button>\n`;
     line += `  <button data-type="load" data-id="SAVE_${element}" class="brownButton" style="float: right;">读取</button>\n`;
@@ -84,11 +84,11 @@ win.assign("open", () => {
     table += line;
   });
 
-  archiveWindowTable.innerHTML = table;
+  Table.innerHTML = table;
   Game.windows.archive.show();
 });
 
-archiveWindowTable.addEventListener("click", (event) => {
+Table.addEventListener("click", (event) => {
   let type = event.target.getAttribute("data-type");
   let id = event.target.getAttribute("data-id");
   if (type && id) {

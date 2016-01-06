@@ -35,7 +35,7 @@ let dialogueWindowClose = document.getElementById("dialogueWindowClose");
 let dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
 dialogueWindowNext.addEventListener("click", () => {
-  DialogueNext();
+  dialogueNext();
 });
 
 dialogueWindowClose.addEventListener("click", () => {
@@ -56,11 +56,11 @@ export default function Dialogue (content, name) {
   }
   dialogueContent = content;
   dialogueIndex = 0;
-  DialogueNext();
+  dialogueNext();
   win.show();
 }
 
-function DialogueNext () {
+function dialogueNext () {
   dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
   dialogueIndex++;
   if (dialogueIndex >= dialogueContent.length) {
