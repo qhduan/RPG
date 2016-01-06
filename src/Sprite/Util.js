@@ -19,90 +19,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Define Sprite.Bitmap
+ * @fileoverview Define SpriteBitmap
  * @author mail@qhduan.com (QH Duan)
 */
 
-( () => {
-  "use strict";
+"use strict";
 
-  class SpriteUtil {
+export default class SpriteUtil {
 
-    static timeout (ms) {
-      return new Promise ( (resolve, reject) => {
-        setTimeout(resolve, ms);
-      });
-    }
-
-    /**
-     * Function Sprite.Util.namespace, return an unique Private-Properties function
-     * for javascript private properties need, for es6
-     * @return {object} privates
-    */
-    static namespace () {
-      /**
-       * Using closure variable store private properties
-       * and different file have different "privateProperties"
-      */
-      let privates = new WeakMap();
-      return (object) => {
-        if (privates.has(object) == false) {
-          privates.set(object, {});
-        }
-        return privates.get(object);
-      };
-    }
-
-    static uuid () {
-      // generate a UUID
-      return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, (c) => {
-        let r = Math.floor(Math.random() * 16);
-        if (c == "x") {
-          return r.toString(16);
-        } else {
-          return (r & 0x03 | 0x08).toString(16);
-        }
-      });
-    }
-
-    static copy (obj) {
-      return JSON.parse(JSON.stringify(obj));
-    }
-
-    static each (obj, callback) {
-      if (obj.forEach) {
-        obj.forEach(callback);
-      } else {
-        for (let key in obj) {
-          callback(obj[key], key, obj);
-        }
-      }
-    }
-
-    static btoa (str) {
-      // convert str to base64
-      return window.btoa(unescape(encodeURIComponent(str)));
-    }
-
-    static atob (str) {
-      // convert base64 str to original
-      return decodeURIComponent(escape(window.atob(str)));
-    }
-
-    /**
-     * @param {number} N The min number
-     * @param {number} M The max number
-     * @return {number} A random integer N <= return < M, aka. [N, M)
-    */
-    static randInt (N, M) {
-      let r = M - N;
-      r *= Math.random();
-      return N + Math.floor(r);
-    }
-
+  static timeout (ms) {
+    return new Promise ( (resolve, reject) => {
+      setTimeout(resolve, ms);
+    });
   }
 
-  Sprite.assign("Util", SpriteUtil);
+  /**
+   * Function SpriteUtil.namespace, return an unique Private-Properties function
+   * for javascript private properties need, for es6
+   * @return {object} privates
+  */
+  static namespace () {
+    /**
+     * Using closure variable store private properties
+     * and different file have different "privateProperties"
+    */
+    let privates = new WeakMap();
+    return (object) => {
+      if (privates.has(object) == false) {
+        privates.set(object, {});
+      }
+      return privates.get(object);
+    };
+  }
 
+  static uuid () {
+    // generate a UUID
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/x|y/g, (c) => {
+      let r = Math.floor(Math.random() * 16);
+      if (c == "x") {
+        return r.toString(16);
+      } else {
+        return (r & 0x03 | 0x08).toString(16);
+      }
+    });
+  }
 
-})();
+  static copy (obj) {
+    return JSON.parse(JSON.stringify(obj));
+  }
+
+  static btoa (str) {
+    // convert str to base64
+    return window.btoa(unescape(encodeURIComponent(str)));
+  }
+
+  static atob (str) {
+    // convert base64 str to original
+    return decodeURIComponent(escape(window.atob(str)));
+  }
+
+  /**
+   * @param {number} N The min number
+   * @param {number} M The max number
+   * @return {number} A random integer N <= return < M, aka. [N, M)
+  */
+  static randInt (N, M) {
+    let r = M - N;
+    r *= Math.random();
+    return N + Math.floor(r);
+  }
+
+}

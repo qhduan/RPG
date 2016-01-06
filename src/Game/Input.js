@@ -18,126 +18,104 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
+"use strict";
 
-  function CheckHeroAction () {
-    if (Game.paused) return;
+import Sprite from "../Sprite/Sprite.js";
+import Game from "./Base.js";
 
-    let state = "run";
-    if (Sprite.Input.isPressed("shift")) {
-      state = "walk";
-    }
+let internal = Sprite.Util.namespace();
 
-    if (Sprite.Input.isPressed("left")) {
-      Game.hero.go(state, "left").then(CheckHeroAction);
-    } else if (Sprite.Input.isPressed("up")) {
-      Game.hero.go(state, "up").then(CheckHeroAction);
-    } else if (Sprite.Input.isPressed("right")) {
-      Game.hero.go(state, "right").then(CheckHeroAction);
-    } else if (Sprite.Input.isPressed("down")) {
-      Game.hero.go(state, "down").then(CheckHeroAction);
-    }
+function CheckHeroAction () {
+  if (Game.paused) return;
+
+  let state = "run";
+  if (Sprite.Input.isPressed("shift")) {
+    state = "walk";
   }
 
-  let destIcon = null;
+  if (Sprite.Input.isPressed("left")) {
+    Game.hero.go(state, "left").then(CheckHeroAction);
+  } else if (Sprite.Input.isPressed("up")) {
+    Game.hero.go(state, "up").then(CheckHeroAction);
+  } else if (Sprite.Input.isPressed("right")) {
+    Game.hero.go(state, "right").then(CheckHeroAction);
+  } else if (Sprite.Input.isPressed("down")) {
+    Game.hero.go(state, "down").then(CheckHeroAction);
+  }
+}
 
-  Game.assign("Input", class GameInput {
+let destIcon = null;
 
-    static clearDest () {
-      destIcon.visible = false;
-    }
+export default class Input {
 
-    static setDest (x, y) {
-      destIcon.x = x * 32 + 16;
-      destIcon.y = y * 32 + 16;
-      destIcon.visible = true;
-    }
+  static clearDest () {
+    destIcon.visible = false;
+  }
 
-    static init () {
+  static setDest (x, y) {
+    destIcon.x = x * 32 + 16;
+    destIcon.y = y * 32 + 16;
+    destIcon.visible = true;
+  }
 
-      destIcon = new Sprite.Shape();
-      destIcon.circle({
-        cx: 5,
-        cy: 5,
-        r: 5,
-        stroke: "red",
-        fill: "green"
-      });
-      destIcon.visible = false;
-      destIcon.centerX = 5;
-      destIcon.centerY = 5;
+  static init () {
 
-      Game.windows.stage.on("mousedown", (event) => {
-        let data = event.data;
+    destIcon = new Sprite.Shape();
+    destIcon.circle({
+      cx: 5,
+      cy: 5,
+      r: 5,
+      stroke: "red",
+      fill: "green"
+    });
+    destIcon.visible = false;
+    destIcon.centerX = 5;
+    destIcon.centerY = 5;
 
-        data.x += Game.stage.centerX;
-        data.y += Game.stage.centerY;
+    Game.windows.stage.on("mousedown", (event) => {
+      let data = event.data;
 
-        data.x = Math.floor(data.x / 32);
-        data.y = Math.floor(data.y / 32);
+      data.x += Game.stage.centerX;
+      data.y += Game.stage.centerY;
 
-        if (!Game.layers.infoLayer.hasChild(destIcon)) {
-          Game.layers.infoLayer.appendChild(destIcon);
-        }
+      data.x = Math.floor(data.x / 32);
+      data.y = Math.floor(data.y / 32);
 
-        if (Game.hero.x != data.x || Game.hero.y != data.y) {
-          Game.hero.goto(data.x, data.y, "run").then(() => {
-            destIcon.visible = false;
-            if (Game.hintObject && Game.hintObject.heroUse) {
-              Game.hintObject.heroUse();
-            }
-          });
-          /*
-          if (destPosition) {
-            destIcon.x = data.x * 32 + 16;
-            destIcon.y = data.y * 32 + 16;
-            destIcon.visible = true;
+      if (!Game.layers.infoLayer.hasChild(destIcon)) {
+        Game.layers.infoLayer.appendChild(destIcon);
+      }
+
+      if (Game.hero.x != data.x || Game.hero.y != data.y) {
+        Game.hero.goto(data.x, data.y, "run").then(() => {
+          destIcon.visible = false;
+          if (Game.hintObject && Game.hintObject.heroUse) {
+            Game.hintObject.heroUse();
           }
-          */
+        });
+        /*
+        if (destPosition) {
+          destIcon.x = data.x * 32 + 16;
+          destIcon.y = data.y * 32 + 16;
+          destIcon.visible = true;
         }
-      });
-
-      Sprite.Ticker.on("tick", () => {
-
-        if (Game.paused) return;
-        if (!Game.hero) return;
-        if (!Game.area) return;
-        if (!Game.area.map) return;
-
-        CheckHeroAction();
-        if (!Game.hero.walking) {
-          Game.hero.stop();
-        }
-
-        Game.hero.focus();
-      });
-    }
-  });
-
-  Game.assign("initInput", () => {
-
-
-
-
-
-  /*
-    let mousePressed = false;
-
-    Game.stage.on("stagemousedown", (event) => {
-      mousePressed = true;
+        */
+      }
     });
 
-    Game.stage.on("stagemouseup", (event) => {
-      mousePressed = false;
+    Sprite.Ticker.on("tick", () => {
+
+      if (Game.paused) return;
+      if (!Game.hero) return;
+      if (!Game.area) return;
+      if (!Game.area.map) return;
+
+      CheckHeroAction();
+      if (!Game.hero.walking) {
+        Game.hero.stop();
+      }
+
+      Game.hero.focus();
     });
-
-    Game.stage.on("mouseleave", (event) => { // mouse leave canvas
-      mousePressed = false;
-    });
-    */
-  }); // Game.oninit
-
-
-})();
+  }
+}

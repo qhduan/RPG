@@ -23,21 +23,42 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @author mail@qhduan.com (QH Duan)
  */
 
-( () => {
-  "use strict";
+"use strict";
 
-  class Sprite {
-    assign (name, object) {
-      Object.defineProperty(this, name, {
-        enumerable: false,
-        configurable: false,
-        writable: false,
-        value: object
-      });
-      return this;
-    }
-  }
+import Sprite from "./Base.js";
 
-  window.Sprite = new Sprite();
+import SpriteBitmap from "./Bitmap.js";
+import SpriteCanvas from "./Canvas.js";
+import SpriteContainer from "./Container.js";
+import SpriteDisplay from "./Display.js";
+import SpriteEvent from "./Event.js";
+import SpriteFrame from "./Frame.js";
+import SpriteInput from "./Input.js";
+import SpriteLoader from "./Loader.js";
+import SpriteShape from "./Shape.js";
+import SpriteSheet from "./Sheet.js";
+import SpriteStage from "./Stage.js";
+import SpriteText from "./Text.js";
+import SpriteTicker from "./Ticker.js";
+import SpriteTween from "./Tween.js";
+import SpriteUtil from "./Util.js";
+import SpriteWebgl from "./Webgl.js";
 
-})();
+Sprite.assign("Bitmap", SpriteBitmap);
+Sprite.assign("Canvas", SpriteCanvas);
+Sprite.assign("Container", SpriteContainer);
+Sprite.assign("Display", SpriteDisplay);
+Sprite.assign("Event", SpriteEvent);
+Sprite.assign("Frame", SpriteFrame);
+Sprite.assign("Input", SpriteInput);
+Sprite.assign("Loader", SpriteLoader);
+Sprite.assign("Shape", SpriteShape);
+Sprite.assign("Sheet", SpriteSheet);
+Sprite.assign("Stage", SpriteStage);
+Sprite.assign("Text", SpriteText);
+Sprite.assign("Ticker", SpriteTicker);
+Sprite.assign("Tween", SpriteTween);
+Sprite.assign("Util", SpriteUtil);
+Sprite.assign("Webgl", SpriteWebgl);
+
+export default Sprite;

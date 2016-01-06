@@ -1,0 +1,26 @@
+
+.pickupWindow {
+
+  table {
+    width: 100%;
+  }
+
+  button {
+    width: 60px;
+    height: 40px;
+    font-size: 16;
+  }
+
+  #pickupWindowTable tr:nth-child(odd) {
+    background-color: rgba(192, 192, 192, 0.6);
+  }
+
+  #pickupWindowClose {
+
+  }
+
+  #pickupWindowAll {
+
+  }
+
+}

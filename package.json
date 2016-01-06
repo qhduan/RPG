@@ -1,51 +1,48 @@
 {
   "name": "Elliorwis",
-  "description": "Fantasy RPG Game",
-  "version": "0.1.1",
-  "homepage": "https://github.com/qhduan/RPG",
-  "author": {
-    "name": "qhduan",
-    "email": "mail@qhduan.com"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/qhduan/RPG.git"
-  },
-  "bugs": {
-    "url": "https://github.com/qhduan/RPG/issues",
-    "email": "mail@qhduan.com"
-  },
-  "license": "GPL-3.0",
-  "licenses": [
-    {
-      "type": "GPL",
-      "url": "https://github.com/qhduan/RPG/blob/master/GPLv3.txt"
-    }
-  ],
-  "main": "game.js",
-  "engines": {
-    "node": ">= 0.8.0"
-  },
+  "description": "RPG Game",
+  "version": "0.2.0",
   "scripts": {
-    "test": "node game"
+    "build": "webpack --config ./webpack.config.prod.js",
+    "dev": "NODE_ENV=development node app",
+    "development": "NODE_ENV=development node app",
+    "prod": "NODE_ENV=production node app",
+    "production": "NODE_ENV=production node app"
   },
-  "dependencies": {
-    "express": "latest",
-    "compression": "latest",
-    "grunt": "latest",
-    "grunt-contrib-watch": "latest",
-    "grunt-contrib-concat": "latest",
-    "grunt-babel": "latest",
-    "babel-core": "latest",
-    "babel-polyfill": "latest",
-    "babel-preset-es2015": "latest",
-    "babel-plugin-transform-es2015-modules-amd": "latest"
+  "author": {
+    "name": "QHDuan",
+    "email": "mail@qhduan.com"
   },
   "keywords": [
-    "RPG",
-    "Game",
-    "canvas",
-    "webgl",
-    "Elliorwis"
-  ]
+    "webpack"
+  ],
+  "dependencies": {
+    "compression": "^1.6.0",
+    "express": "^4.13.3"
+  },
+  "devDependencies": {
+    "babel-core": "^6.3.17",
+    "babel-loader": "^6.2.0",
+    "babel-preset-es2015": "^6.3.13",
+    "css-loader": "^0.23.0",
+    "file-loader": "^0.8.5",
+    "html-loader": "^0.4.0",
+    "node-sass": "^3.4.2",
+    "sass-loader": "^3.1.2",
+    "style-loader": "^0.13.0",
+    "url-loader": "^0.5.7",
+    "webpack": "^1.12.9",
+    "webpack-dev-middleware": "^1.4.0",
+    "webpack-hot-middleware": "^2.6.0"
+  },
+  "readme": "README.md",
+  "license": "GPL-3.0",
+  "engines": {
+    "node": ">=4.2.0"
+  },
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://qhduan.com"
+  }
 }

@@ -1,0 +1,84 @@
+
+
+.interfaceWindow {
+  /** 让interface窗口的主要窗口，不接受事件 */
+  pointer-events: none;
+
+  .interfaceWindowButton {
+    margin-left: 3px;
+    margin-right: 3px;
+    width: 60px;
+    height: 60px;
+    border: 4px solid gray;
+    border-radius: 10px;
+    background-color: rgba(100, 100, 100, 0.5);
+    display: inline-block;
+    /** 让interface窗口的按钮，接受事件 */
+    pointer-events: auto;
+    background-repeat: no-repeat;
+    background-size: cover;
+
+    :hover {
+      opacity: 0.5;
+    }
+
+    :disabled {
+      cursor: default;
+      pointer-events: none;
+      background-color: gray;
+      opacity: 0.5;
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
+  }
+
+  .interfaceWindowButtonText {
+    position: absolute;
+    background-color: white;
+    margin-left: -26px;
+    margin-top: 12px;
+  }
+
+  #interfaceWindowBar {
+    text-align: center;
+    position: absolute;
+    bottom: 10px;
+    width: 100%;
+    height: 60px;
+  }
+
+  #interfaceWindowMap {
+    position: absolute;
+    top: 35px;
+    left: 5px;
+    background-color: rgba(100, 100, 100, 0.7);
+    padding: 2px;
+  }
+
+  #interfaceWindowDatetime {
+    position: absolute;
+    top: 10px;
+    left: 5px;
+    background-color: rgba(100, 100, 100, 0.7);
+    padding: 2px;
+  }
+
+  #interfaceWindowUse {
+    position: absolute;
+    top: 5px;
+    right: 85px;
+    visibility: hidden;
+    background-image: url("../IMG/hint.png");
+  }
+
+  #interfaceWindowMenu {
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    background-image: url("../IMG/setting.png");
+  }
+
+}

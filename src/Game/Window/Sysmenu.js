@@ -18,154 +18,112 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
+"use strict";
 
-  let win = Game.windows.sysmenu = Game.Window.create("sysmenuWindow");
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  win.html = `
-    <div class="window-box">
-      <button id="sysmenuWindowClose" class="brownButton">关闭窗口</button>
+let win = Window.create("sysmenuWindow");
 
-      <table><tbody><tr><td>
-        <button id="sysmenuWindowInventory" class="brownButton">1、背包物品</button>
-        <button id="sysmenuWindowStatus" class="brownButton">2、状态装备</button>
-        <br>
-        <button id="sysmenuWindowSkill" class="brownButton">3、查看技能</button>
-        <button id="sysmenuWindowQuest" class="brownButton">4、任务列表</button>
-        <br>
-        <button id="sysmenuWindowMap" class="brownButton">5、迷你地图</button>
-        <button id="sysmenuWindowSetting" class="brownButton">6、游戏设置</button>
-        <br>
-        <button id="sysmenuWindowArchive" class="brownButton">7、存档管理</button>
-        <button id="sysmenuWindowExit" class="brownButton">8、退出游戏</button>
-        <br>
-      </td></tr></tbody></table>
-    </div>
-  `;
+let WindowSysmenu = win;
+export default WindowSysmenu;
 
-  win.css = `
-    .sysmenuWindow {
-      text-align: center;
-    }
+import css from "../CSS/Sysmenu.scss";
+import html from "../HTML/Sysmenu.html";
 
-    .sysmenuWindow table, .sysmenuWindow tbody, .sysmenuWindow tr, .sysmenuWindow td {
-      width: 100%;
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
+win.css = css;
+win.html = html;
 
-    .sysmenuWindow button {
-      width: 200px;
-      height: 60px;
-      margin: 2px;
-      font-size: 16px;
-    }
+let sysmenuWindowInventory = win.querySelector("button#sysmenuWindowInventory");
+let sysmenuWindowStatus = win.querySelector("button#sysmenuWindowStatus");
 
-    button#sysmenuWindowClose {
-      position: absolute;
-      right: 50px;
-      top: 50px;
-      width: 120px;
-      height: 60px;
-      font-size: 16px;
-    }
-  `;
+let sysmenuWindowSkill = win.querySelector("button#sysmenuWindowSkill");
+let sysmenuWindowQuest = win.querySelector("button#sysmenuWindowQuest");
 
-  let sysmenuWindowInventory = win.querySelector("button#sysmenuWindowInventory");
-  let sysmenuWindowStatus = win.querySelector("button#sysmenuWindowStatus");
+let sysmenuWindowMap = win.querySelector("button#sysmenuWindowMap");
+let sysmenuWindowSetting = win.querySelector("button#sysmenuWindowSetting");
 
-  let sysmenuWindowSkill = win.querySelector("button#sysmenuWindowSkill");
-  let sysmenuWindowQuest = win.querySelector("button#sysmenuWindowQuest");
+let sysmenuWindowArchive = win.querySelector("button#sysmenuWindowArchive");
+let sysmenuWindowExit = win.querySelector("button#sysmenuWindowExit");
 
-  let sysmenuWindowMap = win.querySelector("button#sysmenuWindowMap");
-  let sysmenuWindowSetting = win.querySelector("button#sysmenuWindowSetting");
+let sysmenuWindowClose = win.querySelector("button#sysmenuWindowClose");
 
-  let sysmenuWindowArchive = win.querySelector("button#sysmenuWindowArchive");
-  let sysmenuWindowExit = win.querySelector("button#sysmenuWindowExit");
+win.whenUp(["esc"], (key) => {
+  sysmenuWindowClose.click();
+});
 
-  let sysmenuWindowClose = win.querySelector("button#sysmenuWindowClose");
+win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], (key) => {
+  switch (key) {
+    case "1":
+      sysmenuWindowInventory.click();
+      break;
+    case "2":
+      sysmenuWindowStatus.click();
+      break;
+    case "3":
+      sysmenuWindowSkill.click();
+      break;
+    case "4":
+      sysmenuWindowQuest.click();
+      break;
+    case "5":
+      sysmenuWindowMap.click();
+      break;
+    case "6":
+      sysmenuWindowSetting.click();
+      break;
+    case "7":
+      sysmenuWindowArchive.click();
+      break;
+    case "8":
+      sysmenuWindowExit.click();
+      break;
+  }
+});
 
-  win.whenUp(["esc"], (key) => {
-    sysmenuWindowClose.click();
-  });
+sysmenuWindowInventory.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.inventory.open();
+});
 
-  win.whenUp(["1", "2", "3", "4", "5", "6", "7", "8"], (key) => {
-    switch (key) {
-      case "1":
-        sysmenuWindowInventory.click();
-        break;
-      case "2":
-        sysmenuWindowStatus.click();
-        break;
-      case "3":
-        sysmenuWindowSkill.click();
-        break;
-      case "4":
-        sysmenuWindowQuest.click();
-        break;
-      case "5":
-        sysmenuWindowMap.click();
-        break;
-      case "6":
-        sysmenuWindowSetting.click();
-        break;
-      case "7":
-        sysmenuWindowArchive.click();
-        break;
-      case "8":
-        sysmenuWindowExit.click();
-        break;
-    }
-  });
+sysmenuWindowStatus.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.status.open();
+});
 
-  sysmenuWindowInventory.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.inventory.open();
-  });
+sysmenuWindowSkill.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.skill.open();
+});
 
-  sysmenuWindowStatus.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.status.open();
-  });
+sysmenuWindowQuest.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.quest.current();
+});
 
-  sysmenuWindowSkill.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.skill.open();
-  });
+sysmenuWindowMap.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.map.show();
+});
 
-  sysmenuWindowQuest.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.quest.current();
-  });
+sysmenuWindowSetting.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.setting.show();
+});
 
-  sysmenuWindowMap.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.map.show();
-  });
+sysmenuWindowArchive.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.archive.open();
+});
 
-  sysmenuWindowSetting.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.setting.show();
-  });
+sysmenuWindowExit.addEventListener("click", (event) => {
+  Game.clearStage();
+  Game.windows.interface.hide();
+  Game.windows.stage.hide();
+  win.hide();
+  Game.windows.main.show();
+});
 
-  sysmenuWindowArchive.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.archive.open();
-  });
-
-  sysmenuWindowExit.addEventListener("click", (event) => {
-    Game.clearStage();
-    Game.windows.interface.hide();
-    Game.windows.stage.hide();
-    win.hide();
-    Game.windows.main.show();
-  });
-
-  sysmenuWindowClose.addEventListener("click", (event) => {
-    win.hide();
-  });
-
-
-})();
+sysmenuWindowClose.addEventListener("click", (event) => {
+  win.hide();
+});

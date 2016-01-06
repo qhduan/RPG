@@ -18,89 +18,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
-  let win = Game.windows.main = Game.Window.create("mainWindow");
+"use strict";
 
-  win.html = `
-    <div id="mainWindowBox">
-      <h1>Elliorwis</h1>
-      <h4>艾利韦斯</h4>
-      <br>
-      <button id="mainWindowContinue" class="brownButton">继续旅程</button>
-      <br>
-      <button id="mainWindowNew" class="brownButton">新的旅程</button>
-      <br>
-      <button id="mainWindowLoad" class="brownButton">读取进度</button>
-      <br>
-      <button id="mainWindowFullscreen" class="brownButton">全屏</button>
-    </div>
-  `;
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  win.css = `
-    #mainWindowBox {
-      text-align: center;
-      height: 412px;
-      background-color: rgba(240, 217, 194, 0.85);
-      border: 20px solid rgba(134, 93, 52, 0.85);
-    }
+let win = Window.create("mainWindow");
 
-    #mainWindowFullscreen {
-      position: absolute;
-      left: 640px;
-      top: 30px;
-    }
+let WindowMain = win;
+export default WindowMain;
 
-    .mainWindow h1 {
-      font-size: 60px;
-      margin-bottom: 0;
-    }
+import css from "../CSS/Main.scss";
+import html from "../HTML/Main.html";
 
-    .mainWindow h4 {
-      margin-bottom: 0;
-    }
+win.css = css;
+win.html = html;
 
-    .mainWindow button {
-      width: 120px;
-      height: 60px;
-      margin-top: 10px;
-    }
-  `;
+let mainWindowContinue = win.querySelector("#mainWindowContinue");
+let mainWindowNew = win.querySelector("#mainWindowNew");
+let mainWindowLoad = win.querySelector("#mainWindowLoad");
+let mainWindowFullscreen = win.querySelector("#mainWindowFullscreen");
 
-  let mainWindowContinue = win.querySelector("#mainWindowContinue");
-  let mainWindowNew = win.querySelector("#mainWindowNew");
-  let mainWindowLoad = win.querySelector("#mainWindowLoad");
-  let mainWindowFullscreen = win.querySelector("#mainWindowFullscreen");
+mainWindowFullscreen.addEventListener("click", (event) => {
+  Game.windows.setting.toggle();
+});
 
-  mainWindowFullscreen.addEventListener("click", (event) => {
-    Game.windows.setting.toggle();
-  });
+win.on("beforeShow", () => {
+  if ( !Game.Archive.last() ) {
+    mainWindowContinue.style.visibility = "hidden";
+  } else {
+    mainWindowContinue.style.visibility = "visible";
+  }
+});
 
-  win.on("beforeShow", () => {
-    if (!Game.Archive.last()) {
-      mainWindowContinue.style.visibility = "hidden";
-    } else {
-      mainWindowContinue.style.visibility = "visible";
-    }
-  });
+mainWindowContinue.addEventListener("click", (event) => {
+  win.hide();
+  setTimeout( () => {
+    Game.Archive.load();
+  }, 20);
+});
 
-  mainWindowContinue.addEventListener("click", (event) => {
-    win.hide();
-    setTimeout( () => {
-      Game.Archive.load();
-    }, 20);
-  });
+mainWindowNew.addEventListener("click", (event) => {
+  win.hide();
+  Game.Register.reg();
+});
 
-  mainWindowNew.addEventListener("click", (event) => {
-    win.hide();
-    Game.register.reg();
-  });
-
-  mainWindowLoad.addEventListener("click", (event) => {
-    win.hide();
-    Game.windows.archive.open();
-  });
-
-
-})();
+mainWindowLoad.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.archive.open();
+});

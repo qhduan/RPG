@@ -19,61 +19,65 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
-( () => {
-  "use strict";
+"use strict";
 
-  // 游戏无论什么时候都需要预加载的内容
-  function Preload () {
-    return new Promise( (resolve, reject) => {
-      let promises = new Set();
+import Sprite from "../Sprite/Sprite.js";
+import Game from "./Base.js";
 
-      let preloadSoundEffects = {
-        hurt: "sound/effect/hurt.ogg" // 伤害效果音
-      };
+let internal = Sprite.Util.namespace();
 
-      for (let key in preloadSoundEffects) {
-        promises.add(
-          ((key, url) => {
-            return new Promise( (resolve, reject) => {
-              if (Game.sounds && Game.sounds[key]) {
-                resolve();
-              } else {
-                Sprite.Loader.load(url).then( (data) => {
-                  Game.sounds[key] = data[0];
-                  resolve();
-                });
-              }
-            });
-          })(key, preloadSoundEffects[key])
-        );
-      }
+// 游戏无论什么时候都需要预加载的内容
+function Preload () {
+  return new Promise( (resolve, reject) => {
+    let promises = new Set();
 
-      let preloadItems = [
-        "bag", // 掉落物品用的小包
-        "gold" // 金币图标
-      ];
+    let preloadSoundEffects = {
+      hurt: "sound/effect/hurt.ogg" // 伤害效果音
+    };
 
-      preloadItems.forEach((id) => {
-        promises.add(
-          new Promise( (resolve, reject) => {
-            if (Game.items && Game.items[id]) {
+    for (let key in preloadSoundEffects) {
+      promises.add(
+        ((key, url) => {
+          return new Promise( (resolve, reject) => {
+            if (Game.sounds && Game.sounds[key]) {
               resolve();
             } else {
-              Game.Item.load(id).then( (itemObj) => {
+              Sprite.Loader.load(url).then( (data) => {
+                Game.sounds[key] = data[0];
                 resolve();
               });
             }
-          })
-        );
-      });
+          });
+        })(key, preloadSoundEffects[key])
+      );
+    }
 
-      Promise.all(promises).then(resolve, reject);
+    let preloadItems = [
+      "bag", // 掉落物品用的小包
+      "gold" // 金币图标
+    ];
+
+    preloadItems.forEach((id) => {
+      promises.add(
+        new Promise( (resolve, reject) => {
+          if (Game.items && Game.items[id]) {
+            resolve();
+          } else {
+            Game.Item.load(id).then( (itemObj) => {
+              resolve();
+            });
+          }
+        })
+      );
     });
-  }
 
+    Promise.all(promises).then(resolve, reject);
+  });
+}
 
-  // 加载区域，把括地图，角色，物品
-  Game.assign("loadArea", (id) => {
+export default class Area {
+
+  static load (id) {
     return new Promise( (resolve, reject) => {
 
       Promise.all([
@@ -143,6 +147,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
       });
 
     });
-  });
+  }
 
-})();
+}

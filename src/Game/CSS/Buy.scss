@@ -1,0 +1,43 @@
+.buyWindow {
+  
+  table {
+    width: 100%;
+  }
+
+  table button {
+    width: 60px;
+    height: 40px;
+    font-size: 16px;
+  }
+
+  #buyWindowTable tr:nth-child(odd) {
+    background-color: rgba(192, 192, 192, 0.6);
+  }
+
+  #buyWindowItemBar > button {
+    width: 60px;
+    height: 40px;
+    font-size: 16px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 0px;
+    margin-bottom: 5px;
+  }
+
+  #buyWindowClose {
+    float: right;
+  }
+
+  #buyWindowStatus {
+    float: right;
+  }
+
+  #buyWindowGold {
+    position: absolute;
+    right: 100px;
+    bottom: 30px;
+    font-size: 20px;
+    color: black;
+  }
+
+}

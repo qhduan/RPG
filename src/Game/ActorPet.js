@@ -18,23 +18,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
-  let internal = Sprite.Util.namespace();
+"use strict";
 
-  /**
-    英雄类
-    属性：
-      this.sprite 精灵
-  */
-  Game.assign("ActorPet", class GameActorPet extends Game.Actor {
-    constructor (actorData) {
-      super(actorData);
-    }
+import Sprite from "../Sprite/Sprite.js";
+import Game from "./Base.js";
+import Actor from "./Actor.js";
 
+let internal = Sprite.Util.namespace();
 
-  });
-
-
-})();
+/**
+  英雄类
+  属性：
+    this.sprite 精灵
+*/
+export default class ActorPet extends Actor {
+  constructor (actorData) {
+    super(actorData);
+  }
+}

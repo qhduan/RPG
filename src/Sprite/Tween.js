@@ -20,7 +20,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /*
 
-Sprite.Tween.get(Game.hero)
+SpriteTween.get(Game.hero)
 .promise( () => {
   return new Promise((resolve) => {
     Game.hero.goto(Game.hero.x, Game.hero.y + 5,"walk").then(resolve);
@@ -48,151 +48,149 @@ Sprite.Tween.get(Game.hero)
 
 
 /**
- * @fileoverview Sprite.Tween
+ * @fileoverview SpriteTween
  * @author mail@qhduan.com (QH Duan)
  */
 
-( () => {
- "use strict";
 
-  let internal = Sprite.Util.namespace();
+"use strict";
 
-  class SpriteTween extends Sprite.Event {
+import SpriteUtil from "./Util.js";
+import SpriteEvent from "./Event.js";
 
-    static get (object) {
-      return new Sprite.Tween(object);
-    }
+let internal = SpriteUtil.namespace();
 
-    constructor (object) {
-      super();
-      let privates = internal(this);
-      privates.object = object;
-      privates.callback = null;
-      privates.action = [];
-      privates.doing = false;
-    }
+export default class SpriteTween extends SpriteEvent {
 
-    nextAction () {
-      let privates = internal(this);
-      if (privates.doing == false && privates.action.length > 0) {
-        let action = privates.action[0];
-        privates.action.splice(0, 1);
-        switch (action.type) {
-          case "to":
-            this.toAction(action.attributes, action.time);
-            break;
-          case "wait":
-            this.waitAction(action.time);
-            break;
-          case "call":
-            this.callAction(action.callback);
-            break;
-          case "promise":
-            this.promiseAction(action.callback);
-            break;
-          default:
-            console.error(action);
-            throw new Error("Sprite.Tween got invalid action");
-        }
+  static get (object) {
+    return new SpriteTween(object);
+  }
+
+  constructor (object) {
+    super();
+    let privates = internal(this);
+    privates.object = object;
+    privates.callback = null;
+    privates.action = [];
+    privates.doing = false;
+  }
+
+  nextAction () {
+    let privates = internal(this);
+    if (privates.doing == false && privates.action.length > 0) {
+      let action = privates.action[0];
+      privates.action.splice(0, 1);
+      switch (action.type) {
+        case "to":
+          this.toAction(action.attributes, action.time);
+          break;
+        case "wait":
+          this.waitAction(action.time);
+          break;
+        case "call":
+          this.callAction(action.callback);
+          break;
+        case "promise":
+          this.promiseAction(action.callback);
+          break;
+        default:
+          console.error(action);
+          throw new Error("SpriteTween got invalid action");
       }
-    }
-
-    toAction (attributes, time) {
-      let privates = internal(this);
-      privates.doing = true;
-
-      let splice = Math.min(100, time);
-      let t = time / splice;
-      let step = {};
-
-      for (let key in attributes) {
-        if (Number.isFinite(attributes[key])) {
-          step[key] = attributes[key] - privates.object[key];
-          step[key] /= splice;
-        }
-      }
-
-      let count = 0;
-      let inter = setInterval(() => {
-        count++;
-        if (count >= splice) {
-          for (let key in attributes) {
-            privates.object[key] = attributes[key];
-          }
-          clearInterval(inter);
-          privates.doing = false;
-          this.nextAction();
-        } else {
-          for (let key in step) {
-            privates.object[key] += step[key];
-          }
-        }
-      }, t);
-    }
-
-    to (attributes, time) {
-      internal(this).action.push({
-        type: "to",
-        attributes: attributes,
-        time: time
-      });
-      this.nextAction();
-      return this;
-    }
-
-    promiseAction (callback) {
-      this.doing = true;
-      callback().then(() => {
-        this.doing = false;
-        this.nextAction();
-      });
-    }
-
-    promise (callback) {
-      internal(this).action.push({
-        type: "promise",
-        callback: callback
-      });
-      this.nextAction();
-      return this;
-    }
-
-    callAction (callback) {
-      this.doing = true;
-      callback();
-      this.doing = false;
-      this.nextAction();
-    }
-
-    call (callback) {
-      internal(this).action.push({
-        type: "call",
-        callback: callback
-      });
-      this.nextAction();
-      return this;
-    }
-
-    waitAction (time) {
-      let privates = internal(this);
-      privates.doing = true;
-      setTimeout(() => {
-        privates.doing = false;
-        this.nextAction();
-      }, time);
-    }
-
-    wait (time) {
-      internal(this).action.push({
-        type: "wait",
-        time: time
-      });
-      this.nextAction();
-      return this;
     }
   }
 
-  Sprite.assign("Tween", SpriteTween);
+  toAction (attributes, time) {
+    let privates = internal(this);
+    privates.doing = true;
 
+    let splice = Math.min(100, time);
+    let t = time / splice;
+    let step = {};
 
-})();
+    for (let key in attributes) {
+      if (Number.isFinite(attributes[key])) {
+        step[key] = attributes[key] - privates.object[key];
+        step[key] /= splice;
+      }
+    }
+
+    let count = 0;
+    let inter = setInterval(() => {
+      count++;
+      if (count >= splice) {
+        for (let key in attributes) {
+          privates.object[key] = attributes[key];
+        }
+        clearInterval(inter);
+        privates.doing = false;
+        this.nextAction();
+      } else {
+        for (let key in step) {
+          privates.object[key] += step[key];
+        }
+      }
+    }, t);
+  }
+
+  to (attributes, time) {
+    internal(this).action.push({
+      type: "to",
+      attributes: attributes,
+      time: time
+    });
+    this.nextAction();
+    return this;
+  }
+
+  promiseAction (callback) {
+    this.doing = true;
+    callback().then(() => {
+      this.doing = false;
+      this.nextAction();
+    });
+  }
+
+  promise (callback) {
+    internal(this).action.push({
+      type: "promise",
+      callback: callback
+    });
+    this.nextAction();
+    return this;
+  }
+
+  callAction (callback) {
+    this.doing = true;
+    callback();
+    this.doing = false;
+    this.nextAction();
+  }
+
+  call (callback) {
+    internal(this).action.push({
+      type: "call",
+      callback: callback
+    });
+    this.nextAction();
+    return this;
+  }
+
+  waitAction (time) {
+    let privates = internal(this);
+    privates.doing = true;
+    setTimeout(() => {
+      privates.doing = false;
+      this.nextAction();
+    }, time);
+  }
+
+  wait (time) {
+    internal(this).action.push({
+      type: "wait",
+      time: time
+    });
+    this.nextAction();
+    return this;
+  }
+}

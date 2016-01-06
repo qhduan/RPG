@@ -1,0 +1,33 @@
+
+.questWindow {
+
+  #questWindowTable {
+    width: 100%;
+    overflow-y: auto;
+    height: 320px;
+  }
+
+  .questWindowItem {
+    border: 1px solid gray;
+    border-radius: 10px;
+    margin: 10px 10px;
+  }
+
+  .questWindowItem > button {
+    width: 100px;
+    height: 40px;
+    border-radius: 5px;
+  }
+
+  #questWindowItemBar button {
+    width: 100px;
+    height: 30px;
+    font-size: 16px;
+    margin-bottom: 5px;
+  }
+
+  #questWindowClose {
+    float: right;
+  }
+
+}

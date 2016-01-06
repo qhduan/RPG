@@ -18,420 +18,349 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
+"use strict";
 
-  let win = Game.windows.inventory = Game.Window.create("inventoryWindow");
+import Game from "../Base.js";
+import Window from "../Window.js";
+import Choice from  "../Component/Choice.js";
 
-  win.html = `
-    <div class="window-box">
-      <div id="inventoryWindowItemBar">
+let win = Window.create("inventoryWindow");
 
-        <button id="inventoryWindowClose" class="brownButton">关闭</button>
-        <button id="inventoryWindowStatus" class="brownButton">状态</button>
+let WindowInventory = win;
+export default WindowInventory;
 
-        <button id="inventoryWindowAll" class="brownButton">全部</button>
-        <button id="inventoryWindowWeapon" class="brownButton">武器</button>
-        <button id="inventoryWindowArmor" class="brownButton">护甲</button>
-        <button id="inventoryWindowPotion" class="brownButton">药水</button>
-        <button id="inventoryWindowMaterial" class="brownButton">材料</button>
-        <button id="inventoryWindowBook" class="brownButton">书籍</button>
-        <button id="inventoryWindowMisc" class="brownButton">其他</button>
-      </div>
+import css from "../CSS/Inventory.scss";
+import html from "../HTML/Inventory.html";
 
-      <span id="inventoryWindowGold"></span>
+win.css = css;
+win.html = html;
 
-      <div style="overflow: auto; height: 310px;">
-        <table border="0">
-          <thead>
-            <tr>
-              <td style="width: 40px; text-align: center;"></td>
-              <td style="width: 120px;"></td>
-              <td style="width: 30px;"></td>
-              <td style="width: 30px;"></td>
-              <td></td>
-              <td style="width: 60px;"></td>
-            </tr>
-          </thead>
-          <tbody id="inventoryWindowTable"></tbody>
-        </table>
-      </div>
-    </div>
-  `;
+let inventoryWindowClose = win.querySelector("button#inventoryWindowClose");
+let inventoryWindowStatus = win.querySelector("button#inventoryWindowStatus");
 
-  win.css = `
+let inventoryWindowAll = win.querySelector("button#inventoryWindowAll");
+let inventoryWindowWeapon = win.querySelector("button#inventoryWindowWeapon");
+let inventoryWindowArmor = win.querySelector("button#inventoryWindowArmor");
+let inventoryWindowPotion = win.querySelector("button#inventoryWindowPotion");
+let inventoryWindowMaterial = win.querySelector("button#inventoryWindowMaterial");
+let inventoryWindowBook = win.querySelector("button#inventoryWindowBook");
+let inventoryWindowMisc = win.querySelector("button#inventoryWindowMisc");
 
-    #inventoryWindowItemBar {
-      height: 50px;
-    }
+let inventoryWindowGold = win.querySelector("span#inventoryWindowGold");
+let inventoryWindowTable = win.querySelector("#inventoryWindowTable");
 
-    #inventoryWindowItemBar > button {
-      width: 60px;
-      height: 40px;
-      font-size: 16px;
-      margin-left: 5px;
-      margin-right: 5px;
-      margin-top: 0px;
-      margin-bottom: 5px;
-    }
+inventoryWindowClose.addEventListener("click", (event) => {
+  win.hide();
+});
 
-    #inventoryWindowClose {
-      float: right;
-    }
+inventoryWindowStatus.addEventListener("click", (event) => {
+  win.hide();
+  Game.windows.status.open();
+});
 
-    #inventoryWindowStatus {
-      float: right;
-    }
-
-    .inventoryWindow table {
-      width: 100%;
-    }
-
-    .inventoryWindow table button {
-      width: 60px;
-      height: 40px;
-      font-size: 16px;
-    }
-
-    #inventoryWindowTable tr:nth-child(odd) {
-      background-color: rgba(192, 192, 192, 0.6);
-    }
-
-    #inventoryWindowGold {
-      position: absolute;
-      right: 100px;
-      bottom: 10px;
-      font-size: 20px;
-      color: black;
-      font-weight: bold;
-    }
-  `;
-
-  let inventoryWindowClose = win.querySelector("button#inventoryWindowClose");
-  let inventoryWindowStatus = win.querySelector("button#inventoryWindowStatus");
-
-  let inventoryWindowAll = win.querySelector("button#inventoryWindowAll");
-  let inventoryWindowWeapon = win.querySelector("button#inventoryWindowWeapon");
-  let inventoryWindowArmor = win.querySelector("button#inventoryWindowArmor");
-  let inventoryWindowPotion = win.querySelector("button#inventoryWindowPotion");
-  let inventoryWindowMaterial = win.querySelector("button#inventoryWindowMaterial");
-  let inventoryWindowBook = win.querySelector("button#inventoryWindowBook");
-  let inventoryWindowMisc = win.querySelector("button#inventoryWindowMisc");
-
-  let inventoryWindowGold = win.querySelector("span#inventoryWindowGold");
-  let inventoryWindowTable = win.querySelector("#inventoryWindowTable");
-
-  inventoryWindowClose.addEventListener("click", (event) => {
-    win.hide();
-  });
-
-  inventoryWindowStatus.addEventListener("click", (event) => {
+win.whenUp(["tab"], () => {
+  setTimeout( () => {
     win.hide();
     Game.windows.status.open();
-  });
+  }, 20);
+});
 
-  win.whenUp(["tab"], () => {
-    setTimeout( () => {
-      win.hide();
-      Game.windows.status.open();
-    }, 20);
-  });
+inventoryWindowAll.addEventListener("click", (event) => {
+  win.open();
+});
 
-  inventoryWindowAll.addEventListener("click", (event) => {
-    win.open();
-  });
+inventoryWindowWeapon.addEventListener("click", (event) => {
+  win.open("sword|spear|bow");
+});
 
-  inventoryWindowWeapon.addEventListener("click", (event) => {
-    win.open("sword|spear|bow");
-  });
+inventoryWindowArmor.addEventListener("click", (event) => {
+  win.open("head|body|feet");
+});
 
-  inventoryWindowArmor.addEventListener("click", (event) => {
-    win.open("head|body|feet");
-  });
+inventoryWindowPotion.addEventListener("click", (event) => {
+  win.open("potion");
+});
 
-  inventoryWindowPotion.addEventListener("click", (event) => {
-    win.open("potion");
-  });
+inventoryWindowMaterial.addEventListener("click", (event) => {
+  win.open("material");
+});
 
-  inventoryWindowMaterial.addEventListener("click", (event) => {
-    win.open("material");
-  });
+inventoryWindowBook.addEventListener("click", (event) => {
+  win.open("book|scroll|letter");
+});
 
-  inventoryWindowBook.addEventListener("click", (event) => {
-    win.open("book|scroll|letter");
-  });
+inventoryWindowMisc.addEventListener("click", (event) => {
+  win.open("misc");
+});
 
-  inventoryWindowMisc.addEventListener("click", (event) => {
-    win.open("misc");
-  });
+let lastFilter = null;
+let lastSelect = -1;
 
-  let lastFilter = null;
-  let lastSelect = -1;
+win.assign("open", (filter, select) => {
 
-  win.assign("open", (filter, select) => {
+  if (typeof select == "undefined") {
+    select = -1;
+  }
 
-    if (typeof select == "undefined") {
-      select = -1;
-    }
+  lastFilter = filter;
+  lastSelect = select;
 
-    lastFilter = filter;
-    lastSelect = select;
+  let defaultColor = "white";
+  let activeColor = "yellow";
 
-    let defaultColor = "white";
-    let activeColor = "yellow";
+  inventoryWindowAll.style.color = defaultColor;
+  inventoryWindowWeapon.style.color = defaultColor;
+  inventoryWindowArmor.style.color = defaultColor;
+  inventoryWindowPotion.style.color = defaultColor;
+  inventoryWindowMaterial.style.color = defaultColor;
+  inventoryWindowBook.style.color = defaultColor;
+  inventoryWindowMisc.style.color = defaultColor;
 
-    inventoryWindowAll.style.color = defaultColor;
-    inventoryWindowWeapon.style.color = defaultColor;
-    inventoryWindowArmor.style.color = defaultColor;
-    inventoryWindowPotion.style.color = defaultColor;
-    inventoryWindowMaterial.style.color = defaultColor;
-    inventoryWindowBook.style.color = defaultColor;
-    inventoryWindowMisc.style.color = defaultColor;
+  if (filter == null) {
+    inventoryWindowAll.style.color = activeColor;
+  } else if (filter.match(/sword/)) {
+    inventoryWindowWeapon.style.color = activeColor;
+  } else if (filter.match(/head/)) {
+    inventoryWindowArmor.style.color = activeColor;
+  } else if (filter.match(/potion/)) {
+    inventoryWindowPotion.style.color = activeColor;
+  } else if (filter.match(/material/)) {
+    inventoryWindowMaterial.style.color = activeColor;
+  } else if (filter.match(/book/)) {
+    inventoryWindowBook.style.color = activeColor;
+  } else if (filter.match(/misc/)) {
+    inventoryWindowMisc.style.color = activeColor;
+  }
 
-    if (filter == null) {
-      inventoryWindowAll.style.color = activeColor;
-    } else if (filter.match(/sword/)) {
-      inventoryWindowWeapon.style.color = activeColor;
-    } else if (filter.match(/head/)) {
-      inventoryWindowArmor.style.color = activeColor;
-    } else if (filter.match(/potion/)) {
-      inventoryWindowPotion.style.color = activeColor;
-    } else if (filter.match(/material/)) {
-      inventoryWindowMaterial.style.color = activeColor;
-    } else if (filter.match(/book/)) {
-      inventoryWindowBook.style.color = activeColor;
-    } else if (filter.match(/misc/)) {
-      inventoryWindowMisc.style.color = activeColor;
-    }
+  inventoryWindowGold.textContent = Game.hero.data.gold + "G";
 
-    inventoryWindowGold.textContent = Game.hero.data.gold + "G";
+  let table = "";
+  let index = 0;
+  let ids = Object.keys(Game.hero.data.items);
+  ids.sort();
+  ids.forEach((itemId) => {
+    let itemCount = Game.hero.data.items[itemId];
+    let item = Game.items[itemId];
+    let equipment = null;
 
-    let table = "";
-    let index = 0;
-    let ids = Object.keys(Game.hero.data.items);
-    ids.sort();
-    ids.forEach((itemId) => {
-      let itemCount = Game.hero.data.items[itemId];
-      let item = Game.items[itemId];
-      let equipment = null;
-
-      Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
-        if (element == item.id)
-          equipment = key;
-      });
-
-      if (filter && filter.indexOf(item.data.type) == -1)
-        return;
-
-      let line = "";
-
-      if (select == index) {
-        line += `<tr style="background-color: green;">\n`;
-      } else {
-        line += `<tr>\n`;
+    Object.keys(Game.hero.data.equipment).forEach(key => {
+      let value = Game.hero.data.equipment[key];
+      if (value == item.id) {
+        equipment = key;
       }
-
-      if (item.icon) {
-        line += `  <td style="text-align: center;"><img alt="" src="${item.icon.src}"></td>\n`;
-      } else {
-        line += `  <td> </td>\n`;
-      }
-      line += `  <td>${equipment?"*":""}${item.data.name}</td>\n`;
-      line += `  <td style="text-align: center;">${item.data.value}G</td>\n`;
-      line += `  <td style="text-align: center;">${itemCount}</td>\n`;
-      line += `  <td>${item.data.description}</td>\n`;
-      line += `  <td><button data-id="${itemId}" class="brownButton">操作</button></td>\n`;
-      line += "</tr>\n";
-      table += line;
-      index++;
     });
 
-    inventoryWindowTable.innerHTML = table;
-    win.show();
-  });
+    if (filter && filter.indexOf(item.data.type) == -1)
+      return;
 
-  win.whenUp(["enter"], () => {
-    let buttons = inventoryWindowTable.querySelectorAll("button");
-    if (lastSelect >= 0 && lastSelect < buttons.length) {
-      buttons[lastSelect].click();
-    }
-  });
+    let line = "";
 
-  win.whenUp(["up", "down"], (key) => {
-    let count = inventoryWindowTable.querySelectorAll("button").length;
-
-    if (lastSelect == -1) {
-      if (key == "down") {
-        win.open(lastFilter, 0);
-      } else if (key == "up") {
-        win.open(lastFilter, count - 1);
-      }
+    if (select == index) {
+      line += `<tr style="background-color: green;">\n`;
     } else {
-      if (key == "down") {
-        let select = lastSelect + 1;
-        if (select >= count) {
-          select = 0;
-        }
-        win.open(lastFilter, select);
-      } else if (key == "up") {
-        let select = lastSelect - 1;
-        if (select < 0) {
-          select = count - 1;
-        }
-        win.open(lastFilter, select);
-      }
+      line += `<tr>\n`;
     }
-  });
 
-  inventoryWindowTable.addEventListener("click", (event) => {
-    let itemId = event.target.getAttribute("data-id");
-    if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
-      let item = Game.items[itemId];
-      let itemCount = Game.hero.data.items[itemId];
-      let equipment = null;
-
-      Sprite.Util.each(Game.hero.data.equipment, (element, key) => {
-        if (element == item.id)
-          equipment = key;
-      });
-
-      let options = {};
-      if (item.data.type.match(/potion/)) {
-        options["使用"] = "use";
-        options["快捷键"] = "shortcut";
-      } else if (item.data.type.match(/sword|spear|bow|head|body|feet|neck|ring/)) {
-        if (equipment)
-          options["卸下"] = "takeoff";
-        else
-          options["装备"] = "puton";
-      } else if (item.data.type.match(/book/)) {
-        options["阅读"] = "read";
-      }
-
-      options["丢弃"] = "drop";
-
-      Game.choice(options).then((choice) => {
-        switch (choice) {
-          case "puton":
-            let type = item.data.type;
-            if (type.match(/sword|spear|bow/)) {
-              type = "weapon";
-            }
-            Game.hero.data.equipment[type] = item.id;
-            return win.open(lastFilter);
-            break;
-          case "takeoff":
-            if (item.data.type.match(/sword|spear|bow/))
-              Game.hero.data.equipment.weapon = null;
-            else
-              Game.hero.data.equipment[item.data.type] = null;
-            return win.open(lastFilter);
-            break;
-          case "use":
-            if (item.heroUse) {
-              item.heroUse();
-            }
-            break;
-          case "read":
-            if (item.heroUse) {
-              item.heroUse();
-            }
-            break;
-          case "drop":
-            if (equipment) {
-              Game.hero.data.equipment[equipment] = null;
-            }
-
-            Game.addBag(Game.hero.x ,Game.hero.y).then((bag) => {
-              if (bag.inner.hasOwnProperty(itemId)) {
-                bag.inner[itemId] += itemCount;
-              } else {
-                bag.inner[itemId] = itemCount;
-              }
-            });
-
-            delete Game.hero.data.items[itemId];
-
-            Game.hero.data.bar.forEach((element, index, array) => {
-              if (element && element.id == itemId) {
-                array[index] = null;
-              }
-            });
-
-            Game.windows.interface.refresh();
-            return win.open(lastFilter);
-            break;
-          case "shortcut":
-            Game.choice({
-              1:0,
-              2:1,
-              3:2,
-              4:3,
-              5:4,
-              6:5,
-              7:6,
-              8:7
-            }, (choice) => {
-              if (Number.isFinite(choice) && choice >= 0) {
-                Game.hero.data.bar[choice] = {
-                  id: item.id,
-                  type: "item"
-                };
-                Game.windows.interface.refresh();
-              }
-            });
-            break;
-        }
-      });
-
+    if (item.icon) {
+      line += `  <td style="text-align: center;"><img alt="" src="${item.icon.src}"></td>\n`;
+    } else {
+      line += `  <td> </td>\n`;
     }
+    line += `  <td>${equipment?"*":""}${item.data.name}</td>\n`;
+    line += `  <td style="text-align: center;">${item.data.value}G</td>\n`;
+    line += `  <td style="text-align: center;">${itemCount}</td>\n`;
+    line += `  <td>${item.data.description}</td>\n`;
+    line += `  <td><button data-id="${itemId}" class="brownButton">操作</button></td>\n`;
+    line += "</tr>\n";
+    table += line;
+    index++;
   });
 
-  win.whenUp(["esc"], () => {
-    setTimeout( () => {
-      win.hide();
-    }, 20);
-  });
+  inventoryWindowTable.innerHTML = table;
+  win.show();
+});
 
-  win.whenUp(["left", "right"], (key) => {
-    if (key == "right") {
-      let filter = lastFilter;
-      if (filter == null) {
-        filter = "sword|spear|bow";
-      } else if (filter.match(/sword/)) {
-        filter = "head|body|feet";
-      } else if (filter.match(/head/)) {
-        filter = "potion";
-      } else if (filter.match(/potion/)) {
-        filter = "material";
-      } else if (filter.match(/material/)) {
-        filter = "book|scroll|letter";
-      } else if (filter.match(/book/)) {
-        filter = "misc";
-      } else if (filter.match(/misc/)) {
-        filter = null;
-      }
-      win.open(filter, -1);
-    } else if (key == "left") {
-      let filter = lastFilter;
-      if (filter == null) {
-        filter = "misc";
-      } else if (filter.match(/sword/)) {
-        filter = null;
-      } else if (filter.match(/head/)) {
-        filter = "sword|spear|bow";
-      } else if (filter.match(/potion/)) {
-        filter = "head|body|feet";
-      } else if (filter.match(/material/)) {
-        filter = "potion";
-      } else if (filter.match(/book/)) {
-        filter = "material";
-      } else if (filter.match(/misc/)) {
-        filter = "book|scroll|letter";
-      }
-      win.open(filter, -1);
+win.whenUp(["enter"], () => {
+  let buttons = inventoryWindowTable.querySelectorAll("button");
+  if (lastSelect >= 0 && lastSelect < buttons.length) {
+    buttons[lastSelect].click();
+  }
+});
+
+win.whenUp(["up", "down"], (key) => {
+  let count = inventoryWindowTable.querySelectorAll("button").length;
+
+  if (lastSelect == -1) {
+    if (key == "down") {
+      win.open(lastFilter, 0);
+    } else if (key == "up") {
+      win.open(lastFilter, count - 1);
     }
-  });
+  } else {
+    if (key == "down") {
+      let select = lastSelect + 1;
+      if (select >= count) {
+        select = 0;
+      }
+      win.open(lastFilter, select);
+    } else if (key == "up") {
+      let select = lastSelect - 1;
+      if (select < 0) {
+        select = count - 1;
+      }
+      win.open(lastFilter, select);
+    }
+  }
+});
 
+inventoryWindowTable.addEventListener("click", (event) => {
+  let itemId = event.target.getAttribute("data-id");
+  if (itemId && Game.hero.data.items.hasOwnProperty(itemId)) {
+    let item = Game.items[itemId];
+    let itemCount = Game.hero.data.items[itemId];
+    let equipment = null;
 
-})();
+    Object.keys(Game.hero.data.equipment).forEach(key => {
+      let value = Game.hero.data.equipment[key];
+      if (value == item.id) {
+        equipment = key;
+      }
+    });
+
+    let options = {};
+    if (item.data.type.match(/potion/)) {
+      options["使用"] = "use";
+      options["快捷键"] = "shortcut";
+    } else if (item.data.type.match(/sword|spear|bow|head|body|feet|neck|ring/)) {
+      if (equipment)
+        options["卸下"] = "takeoff";
+      else
+        options["装备"] = "puton";
+    } else if (item.data.type.match(/book/)) {
+      options["阅读"] = "read";
+    }
+
+    options["丢弃"] = "drop";
+
+    Choice(options).then((choice) => {
+      switch (choice) {
+        case "puton":
+          let type = item.data.type;
+          if (type.match(/sword|spear|bow/)) {
+            type = "weapon";
+          }
+          Game.hero.data.equipment[type] = item.id;
+          return win.open(lastFilter);
+          break;
+        case "takeoff":
+          if (item.data.type.match(/sword|spear|bow/))
+            Game.hero.data.equipment.weapon = null;
+          else
+            Game.hero.data.equipment[item.data.type] = null;
+          return win.open(lastFilter);
+          break;
+        case "use":
+          if (item.heroUse) {
+            item.heroUse();
+          }
+          break;
+        case "read":
+          if (item.heroUse) {
+            item.heroUse();
+          }
+          break;
+        case "drop":
+          if (equipment) {
+            Game.hero.data.equipment[equipment] = null;
+          }
+
+          Game.addBag(Game.hero.x ,Game.hero.y).then((bag) => {
+            if (bag.inner.hasOwnProperty(itemId)) {
+              bag.inner[itemId] += itemCount;
+            } else {
+              bag.inner[itemId] = itemCount;
+            }
+          });
+
+          delete Game.hero.data.items[itemId];
+
+          Game.hero.data.bar.forEach((element, index, array) => {
+            if (element && element.id == itemId) {
+              array[index] = null;
+            }
+          });
+
+          Game.windows.interface.refresh();
+          return win.open(lastFilter);
+          break;
+        case "shortcut":
+          Choice({
+            1:0,
+            2:1,
+            3:2,
+            4:3,
+            5:4,
+            6:5,
+            7:6,
+            8:7
+          }, (choice) => {
+            if (Number.isFinite(choice) && choice >= 0) {
+              Game.hero.data.bar[choice] = {
+                id: item.id,
+                type: "item"
+              };
+              Game.windows.interface.refresh();
+            }
+          });
+          break;
+      }
+    });
+
+  }
+});
+
+win.whenUp(["esc"], () => {
+  setTimeout( () => {
+    win.hide();
+  }, 20);
+});
+
+win.whenUp(["left", "right"], (key) => {
+  if (key == "right") {
+    let filter = lastFilter;
+    if (filter == null) {
+      filter = "sword|spear|bow";
+    } else if (filter.match(/sword/)) {
+      filter = "head|body|feet";
+    } else if (filter.match(/head/)) {
+      filter = "potion";
+    } else if (filter.match(/potion/)) {
+      filter = "material";
+    } else if (filter.match(/material/)) {
+      filter = "book|scroll|letter";
+    } else if (filter.match(/book/)) {
+      filter = "misc";
+    } else if (filter.match(/misc/)) {
+      filter = null;
+    }
+    win.open(filter, -1);
+  } else if (key == "left") {
+    let filter = lastFilter;
+    if (filter == null) {
+      filter = "misc";
+    } else if (filter.match(/sword/)) {
+      filter = null;
+    } else if (filter.match(/head/)) {
+      filter = "sword|spear|bow";
+    } else if (filter.match(/potion/)) {
+      filter = "head|body|feet";
+    } else if (filter.match(/material/)) {
+      filter = "potion";
+    } else if (filter.match(/book/)) {
+      filter = "material";
+    } else if (filter.match(/misc/)) {
+      filter = "book|scroll|letter";
+    }
+    win.open(filter, -1);
+  }
+});

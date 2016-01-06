@@ -18,125 +18,91 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
+"use strict";
 
-  let win = Game.windows.archive = Game.Window.create("archiveWindow");
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  win.html = `
-    <div class="window-box">
-      <div id="archiveWindowItemBar">
-        <button id="archiveWindowClose" class="brownButton">关闭</button>
-        <button id="archiveWindowSave" class="brownButton">保存</button>
-      </div>
-      <div id="archiveWindowTable"></div>
-    </div>
-  `;
+let win = Window.create("archiveWindow");
 
-  win.css = `
-    #archiveWindowTable {
-      width: 100%;
-      overflow-y: auto;
-      height: 320px;
-    }
+let WindowArchive = win;
+export default WindowArchive;
 
-    .archiveWindowItem {
-      border: 1px solid gray;
-      border-radius: 10px;
-      margin: 10px 10px;
-    }
+import css from "../CSS/Archive.scss";
+import html from "../HTML/Archive.html";
 
-    .archiveWindowItem > button {
-      width: 100px;
-      height: 40px;
-      border-radius: 5px;
-    }
+win.css = css;
+win.html = html;
 
-    #archiveWindowItemBar button {
-      width: 100px;
-      height: 30px;
-      font-size: 16px;
-      display: block;
-      margin-bottom: 5px;
-    }
+let archiveWindowSave = win.querySelector("button#archiveWindowSave");
+let archiveWindowClose = win.querySelector("button#archiveWindowClose");
+let archiveWindowTable = win.querySelector("#archiveWindowTable");
 
-    #archiveWindowClose {
-      float: right;
-    }
-  `;
+archiveWindowSave.addEventListener("click", () => {
+  let canvas = document.createElement("canvas");
+  canvas.width = 80;
+  canvas.height = 45;
+  let context = canvas.getContext("2d");
+  context.drawImage(Game.stage.canvas, 0, 0, Game.stage.canvas.width, Game.stage.canvas.height, 0, 0, 80, 45);
 
-  let archiveWindowSave = win.querySelector("button#archiveWindowSave");
-  let archiveWindowClose = win.querySelector("button#archiveWindowClose");
-  let archiveWindowTable = win.querySelector("#archiveWindowTable");
-
-  archiveWindowSave.addEventListener("click", () => {
-    let canvas = document.createElement("canvas");
-    canvas.width = 80;
-    canvas.height = 45;
-    let context = canvas.getContext("2d");
-    context.drawImage(Game.stage.canvas, 0, 0, Game.stage.canvas.width, Game.stage.canvas.height, 0, 0, 80, 45);
-
-    Game.Archive.save({
-      hero: Game.hero.data,
-      screenshot: canvas.toDataURL("image/jpeg")
-    });
-
-    win.open();
+  Game.Archive.save({
+    hero: Game.hero.data,
+    screenshot: canvas.toDataURL("image/jpeg")
   });
 
-  archiveWindowClose.addEventListener("click", () => {
-    win.hide();
-    if ( !Game.windows.interface.showing ) {
-      Game.windows.main.show();
+  win.open();
+});
+
+archiveWindowClose.addEventListener("click", () => {
+  win.hide();
+  if ( !Game.windows.interface.showing ) {
+    Game.windows.main.show();
+  }
+});
+
+win.whenUp(["esc"], (key) => {
+  setTimeout( () => {
+    archiveWindowClose.click();
+  }, 20);
+});
+
+win.assign("open", () => {
+
+  if ( Game.windows.interface.showing && Game.hero ) {
+    archiveWindowSave.style.visibility = "visible";
+  } else {
+    archiveWindowSave.style.visibility = "hidden";
+  }
+
+  let table = "";
+  let list = Game.Archive.list();
+  list.forEach((element) => {
+    let line = `<div class="archiveWindowItem">\n`;
+    let archive = Game.Archive.get(`SAVE_${element}`);
+    line += `  <button data-type="remove" data-id="SAVE_${element}" class="brownButton" style="float: right;">删除</button>\n`;
+    line += `  <button data-type="load" data-id="SAVE_${element}" class="brownButton" style="float: right;">读取</button>\n`;
+    line += `  <img alt="" src="${archive.screenshot || ""}" width="80" height="45" style="display: inline-block; margin: 5px;">\n`;
+    line += `  <label style="font-size: 20px; margin: 10px;">${archive.name}</label>\n`;
+    line += `  <label style="margin: 10px;">${archive.date}</label>\n`;
+    line += "</div>\n"
+    table += line;
+  });
+
+  archiveWindowTable.innerHTML = table;
+  Game.windows.archive.show();
+});
+
+archiveWindowTable.addEventListener("click", (event) => {
+  let type = event.target.getAttribute("data-type");
+  let id = event.target.getAttribute("data-id");
+  if (type && id) {
+    if (type == "remove") {
+      Game.Archive.remove(id);
+      win.open();
+    } else if (type == "load") {
+      Game.Archive.load(id);
+      win.hide();
     }
-  });
-
-  win.whenUp(["esc"], (key) => {
-    setTimeout( () => {
-      archiveWindowClose.click();
-    }, 20);
-  });
-
-  win.assign("open", () => {
-
-    if ( Game.windows.interface.showing && Game.hero ) {
-      archiveWindowSave.style.visibility = "visible";
-    } else {
-      archiveWindowSave.style.visibility = "hidden";
-    }
-
-    let table = "";
-    let list = Game.Archive.list();
-    list.forEach((element) => {
-      let line = `<div class="archiveWindowItem">\n`;
-      let archive = Game.Archive.get(`SAVE_${element}`);
-      line += `  <button data-type="remove" data-id="SAVE_${element}" class="brownButton" style="float: right;">删除</button>\n`;
-      line += `  <button data-type="load" data-id="SAVE_${element}" class="brownButton" style="float: right;">读取</button>\n`;
-      line += `  <img alt="" src="${archive.screenshot || ""}" width="80" height="45" style="display: inline-block; margin: 5px;">\n`;
-      line += `  <label style="font-size: 20px; margin: 10px;">${archive.name}</label>\n`;
-      line += `  <label style="margin: 10px;">${archive.date}</label>\n`;
-      line += "</div>\n"
-      table += line;
-    });
-
-    archiveWindowTable.innerHTML = table;
-    Game.windows.archive.show();
-  });
-
-  archiveWindowTable.addEventListener("click", (event) => {
-    let type = event.target.getAttribute("data-type");
-    let id = event.target.getAttribute("data-id");
-    if (type && id) {
-      if (type == "remove") {
-        Game.Archive.remove(id);
-        win.open();
-      } else if (type == "load") {
-        Game.Archive.load(id);
-        win.hide();
-      }
-    }
-  });
-
-
-})();
+  }
+});

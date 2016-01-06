@@ -18,96 +18,46 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
+"use strict";
 
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  let loadingIconSrc = "data:image/svg+xml;base64," + window.btoa(`
-  <svg id="loadingIcon" width="100" height="100" xmlns="http://www.w3.org/2000/svg">
-    <circle cx="50" cy="50" r="50" fill="#808080" />
-    <path d="M50,50 h-40 a40,40 0 1,0 40,-40 z" fill="white" />
-    <path d="M49,49 h-30 a30,30 0 1,0 30,-30 z" fill="#808080" />
-  </svg>`);
+let win = Window.create("loadingWindow");
 
+let WindowLoading = win;
+export default WindowLoading;
 
-  let win = Game.windows.loading = Game.Window.create("loadingWindow");
+import css from "../CSS/Loading.scss";
+import html from "../HTML/Loading.html";
 
-  win.html = `
-    <div id="loadingWindowBox">
-      <img id="loadingWindowLoadingIcon" src="${loadingIconSrc}" alt="loading">
-      <br>
-      <label>请稍等...<small id="loadingWindowProgress"></small></label>
-      <br>
-      <h5 id="loadingWindowText"></h5>
-    </div>
-  `;
+win.css = css;
+win.html = html;
 
-  win.css = `
-    .loadingWindow {
-      text-align: center;
-    }
+let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
+let loadingWindowText = win.querySelector("#loadingWindowText");
 
-    #loadingWindowLoadingIcon {
-      width: 50px;
-      height: 50px;
-      margin-top: 15px;
-      margin-bottom: 10px;
-      animation: loadingAnimation 1s linear infinite;
-    }
+// 提示信息
+let text = [
+  "打开游戏菜单之后，游戏是暂停的，你可以在这时思考下战斗策略",
+  "记得出门带着矿工锄和采药铲，或许能从其中赚点小钱",
+  "职业、信仰、技能，都可以任意改变，但是必须付出代价",
+  "你的信仰决定了神对你的祝福，还有某些人或者组织对你的看法",
+  "信仰是可以改变的，不过艾利韦斯的居民并不喜欢总是改变自己信仰的人",
+  "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"
+];
 
-    @keyframes loadingAnimation
-    {
-      0%   { transform: rotate(0deg); }
-      100% { transform: rotate(360deg); }
-    }
+win.assign("begin", () => {
+  loadingWindowProgress.innerHTML = "";
+  // 随机一个提示
+  loadingWindowText.textContent = text[Math.floor(Math.random() * text.length)];
+  win.show();
+});
 
-    #loadingWindowBox {
-      width: 500px;
-      height: 300px;
-      border-radius: 25px;
-      position: fixed;
-      top: 75px;
-      left: 150px;
-      background-color: gray;
-    }
+win.assign("update", (value) => {
+  loadingWindowProgress.innerHTML = value;
+});
 
-    .loadingWindow label {
-      color: white;
-      font-size: 48px;
-    }
-
-    #loadingWindowText {
-      color: white;
-    }
-  `;
-
-  let loadingWindowProgress = win.querySelector("#loadingWindowProgress");
-  let loadingWindowText = win.querySelector("#loadingWindowText");
-
-  // 提示信息
-  let text = [
-    "打开游戏菜单之后，游戏是暂停的，你可以在这时思考下战斗策略",
-    "记得出门带着矿工锄和采药铲，或许能从其中赚点小钱",
-    "职业、信仰、技能，都可以任意改变，但是必须付出代价",
-    "你的信仰决定了神对你的祝福，还有某些人或者组织对你的看法",
-    "信仰是可以改变的，不过艾利韦斯的居民并不喜欢总是改变自己信仰的人",
-    "艾利韦斯信仰自由，没有信仰也是一种信仰，但是你享受不到任何神的祝福"
-  ];
-
-  win.assign("begin", () => {
-    loadingWindowProgress.innerHTML = "";
-    // 随机一个提示
-    loadingWindowText.textContent = text[Math.floor(Math.random() * text.length)];
-    win.show();
-  });
-
-  win.assign("update", (value) => {
-    loadingWindowProgress.innerHTML = value;
-  });
-
-  win.assign("end", () => {
-    win.hide();
-  });
-
-
-})();
+win.assign("end", () => {
+  win.hide();
+});

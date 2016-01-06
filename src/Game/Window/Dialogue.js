@@ -18,119 +18,72 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
-  let win = Game.windows.dialogue = Game.Window.create("dialogueWindow");
+"use strict";
 
-  win.html = `
-    <div class="window-box">
-      <div style="width: 100%; height: 100%;">
-        <span id="dialogueWindowSpeaker"></span>
-        <table><tbody><tr><td>
-          <div id="dialogueWindowContent"></div>
-        </td></tr></tbody></table>
-        <button id="dialogueWindowNext" style="display: block;" class="brownButton">继续</button>
-        <button id="dialogueWindowClose" style="display: none;" class="brownButton">结束</button>
-      </div>
-    </div>
-  `;
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  win.css = `
-    .dialogueWindow table, dialogueWindow.tbody, dialogueWindow tr, dialogueWindow td {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      text-align: center;
-    }
+let win = Window.create("dialogueWindow");
 
-    #dialogueWindowSpeaker {
-      position: absolute;
-      left: 50px;
-      top: 50px;
-      font-size: 30px;
-      font-weight: bold;
-    }
+let WindowDialogue = win;
+export default WindowDialogue;
 
-    .dialogueWindow button {
-      width: 120px;
-      height: 60px;
-      font-size: 16px;
-      position: absolute;
-    }
+import css from "../CSS/Dialogue.scss";
+import html from "../HTML/Dialogue.html";
 
-    #dialogueWindowNext {
-      bottom: 50px;
-      right: 100px;
-    }
+win.css = css;
+win.html = html;
 
-    #dialogueWindowClose {
-      bottom: 50px;
-      right: 100px;
-    }
+let dialogueWindowSpeaker = win.querySelector("#dialogueWindowSpeaker");
 
-    #dialogueWindowContent {
-      margin-left: 50px;
-      margin-right: 50px;
-      max-width: 600px;
-      font-size: 24px;
-      text-align: center;
-    }
-  `;
+let dialogueContent = [];
+let dialogueIndex = 0;
+let dialogueWindowNext = document.getElementById("dialogueWindowNext");
+let dialogueWindowClose = document.getElementById("dialogueWindowClose");
+let dialogueWindowContent = document.getElementById("dialogueWindowContent");
 
-  let dialogueWindowSpeaker = win.querySelector("#dialogueWindowSpeaker");
+dialogueWindowNext.addEventListener("click", () => {
+  DialogueNext();
+});
 
-  let dialogueContent = [];
-  let dialogueIndex = 0;
-  let dialogueWindowNext = document.getElementById("dialogueWindowNext");
-  let dialogueWindowClose = document.getElementById("dialogueWindowClose");
-  let dialogueWindowContent = document.getElementById("dialogueWindowContent");
-
-  dialogueWindowNext.addEventListener("click", () => {
-    DialogueNext();
-  });
-
-  dialogueWindowClose.addEventListener("click", () => {
-    setTimeout( () => {
-      Game.windows.dialogue.hide();
-      dialogueContent = [];
-      dialogueIndex = 0;
-    }, 20);
-  });
-
-  Game.dialogue = (content, name) => {
-    dialogueWindowNext.style.display = "block";
-    dialogueWindowClose.style.display = "none";
-    if (name && name.length) {
-      dialogueWindowSpeaker.textContent = `${name}：`;
-    } else {
-      dialogueWindowSpeaker.textContent = "";
-    }
-    dialogueContent = content;
+dialogueWindowClose.addEventListener("click", () => {
+  setTimeout( () => {
+    Game.windows.dialogue.hide();
+    dialogueContent = [];
     dialogueIndex = 0;
-    DialogueNext();
-    Game.windows.dialogue.show();
-  };
+  }, 20);
+});
 
-  function DialogueNext () {
-    dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
-    dialogueIndex++;
-    if (dialogueIndex >= dialogueContent.length) {
-      dialogueWindowNext.style.display = "none";
-      dialogueWindowClose.style.display = "block";
+Game.dialogue = (content, name) => {
+  dialogueWindowNext.style.display = "block";
+  dialogueWindowClose.style.display = "none";
+  if (name && name.length) {
+    dialogueWindowSpeaker.textContent = `${name}：`;
+  } else {
+    dialogueWindowSpeaker.textContent = "";
+  }
+  dialogueContent = content;
+  dialogueIndex = 0;
+  DialogueNext();
+  Game.windows.dialogue.show();
+};
+
+function DialogueNext () {
+  dialogueWindowContent.textContent = dialogueContent[dialogueIndex];
+  dialogueIndex++;
+  if (dialogueIndex >= dialogueContent.length) {
+    dialogueWindowNext.style.display = "none";
+    dialogueWindowClose.style.display = "block";
+  }
+};
+
+win.whenUp(["enter", "space", "esc"], () => {
+  if (Game.windows.dialogue.showing) {
+    if (dialogueWindowNext.style.display != "none") {
+      dialogueWindowNext.click();
+    } else if (dialogueWindowClose.style.display != "none") {
+      dialogueWindowClose.click();
     }
-  };
-
-  win.whenUp(["enter", "space", "esc"], () => {
-    if (Game.windows.dialogue.showing) {
-      if (dialogueWindowNext.style.display != "none") {
-        dialogueWindowNext.click();
-      } else if (dialogueWindowClose.style.display != "none") {
-        dialogueWindowClose.click();
-      }
-    }
-  });
-
-
-})();
+  }
+});

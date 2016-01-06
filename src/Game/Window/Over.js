@@ -18,84 +18,53 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
+"use strict";
 
-  let win = Game.windows.over = Game.Window.create("overWindow");
+import Game from "../Base.js";
+import Window from "../Window.js";
 
-  win.html = `
-    <div class="window-box">
-      <button id="overWindowClose" class="brownButton">返回主菜单</button>
-      <table><tbody><tr><td>
-        <div>
-          <h1 id="overWindowMessage"></h1>
-          <h2 id="overWindowReason"></h2>
-        </div>
-      </td></tr></tbody></table>
-    </div>
-  `;
+let win = Window.create("overWindow");
 
-  win.css = `
-    .overWindow table, .overWindow tbody, .overWindow tr, .overWindow td {
-      width: 100%;
-      height: 100%;
-      magrin: 0;
-      padding: 0;
-    }
+let WindowOver = win;
+export default WindowOver;
 
-    .overWindow {
-      text-align: center;
-    }
+import css from "../CSS/Over.scss";
+import html from "../HTML/Over.html";
 
-    #overWindowClose {
-      position: absolute;
-      right: 50px;
-      top: 50px;
-      width: 120px;
-      height: 60px;
-      font-size: 16px;
-    }
+win.css = css;
+win.html = html;
 
-    #overWindowMap img, #overWindowMap canvas {
-      max-width: 700px;
-      max-height: 320px;
-    }
-  `;
+let overWindowMessage = win.querySelector("#overWindowMessage");
+let overWindowReason = win.querySelector("#overWindowReason");
 
-  let overWindowMessage = win.querySelector("#overWindowMessage");
-  let overWindowReason = win.querySelector("#overWindowReason");
+let deadText = [
+  "不幸的事情终于发生了……即便你的内心曾对神灵祈祷",
+  "不幸的事情终于发生了……你就知道自己今天不应该穿白色的袜子",
+  "不幸的事情终于发生了……明明还没有体验过天伦之乐",
+  "不幸的事情终于发生了……你的墓碑上写着：“下次不能随便踢小动物”",
+  "不幸的事情终于发生了……你感觉自己的身体变轻了…轻了…轻了…",
+  "不幸的事情终于发生了……你摸了摸自己的脖子，似乎找不到脑袋了，于是你一赌气",
+  "不幸的事情终于发生了……你的墓碑上写着：“下次再也不把治疗药水借给别人了”",
+  "不幸的事情终于发生了……曾经有一瓶治疗药水摆在你面前，而你没有珍惜",
+  "不幸的事情终于发生了……你回想起曾经在广阔的原野上尽情的奔跑",
+  "不幸的事情终于发生了……不过好消息是你再也不用减肥了",
+  "不幸的事情终于发生了……下次在冒险前一定要吃饱饭"
+];
 
-  let deadText = [
-    "不幸的事情终于发生了……即便你的内心曾对神灵祈祷",
-    "不幸的事情终于发生了……你就知道自己今天不应该穿白色的袜子",
-    "不幸的事情终于发生了……明明还没有体验过天伦之乐",
-    "不幸的事情终于发生了……你的墓碑上写着：“下次不能随便踢小动物”",
-    "不幸的事情终于发生了……你感觉自己的身体变轻了…轻了…轻了…",
-    "不幸的事情终于发生了……你摸了摸自己的脖子，似乎找不到脑袋了，于是你一赌气",
-    "不幸的事情终于发生了……你的墓碑上写着：“下次再也不把治疗药水借给别人了”",
-    "不幸的事情终于发生了……曾经有一瓶治疗药水摆在你面前，而你没有珍惜",
-    "不幸的事情终于发生了……你回想起曾经在广阔的原野上尽情的奔跑",
-    "不幸的事情终于发生了……不过好消息是你再也不用减肥了",
-    "不幸的事情终于发生了……下次在冒险前一定要吃饱饭"
-  ];
+win.assign("open", (reason) => {
+  if (reason) {
+    overWindowReason.textContent = reason;
+  } else {
+    overWindowReason.innerHTML = "";
+  }
+  overWindowMessage.textContent = deadText[Math.floor(Math.random() * deadText.length)];
+  Game.windows.stage.hide();
+  Game.windows.interface.hide();
+  win.show();
+});
 
-  win.assign("open", (reason) => {
-    if (reason) {
-      overWindowReason.textContent = reason;
-    } else {
-      overWindowReason.innerHTML = "";
-    }
-    overWindowMessage.textContent = deadText[Math.floor(Math.random() * deadText.length)];
-    Game.windows.stage.hide();
-    Game.windows.interface.hide();
-    win.show();
-  });
-
-  overWindowClose.addEventListener("click", (event) => {
-    Game.clearStage();
-    win.hide();
-    Game.windows.main.show();
-  });
-
-
-})();
+overWindowClose.addEventListener("click", (event) => {
+  Game.clearStage();
+  win.hide();
+  Game.windows.main.show();
+});

@@ -18,255 +18,262 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
-  let internal = Sprite.Util.namespace();
+"use strict";
 
-  /**
-    英雄类
-    属性：
-      this.sprite 精灵
-  */
-  Game.assign("ActorHero", class GameActorHero extends Game.Actor {
-    constructor (actorData) {
-      super(actorData);
-      let privates = internal(this);
-      privates.ai = null;
-      privates.beAttacking = new Set();
+import Sprite from "../Sprite/Sprite.js";
+import Game from "./Base.js";
+import Actor from "./Actor.js";
+import Choice from  "./Component/Choice.js";
 
-      this.on("kill", (event) => {
-        let actor = event.data;
+let internal = Sprite.Util.namespace();
 
-        if (this.beAttacking.has(actor)) {
-          this.beAttacking.delete(actor);
-        }
+/**
+  英雄类
+  属性：
+    this.sprite 精灵
+*/
+export default class ActorHero extends Actor {
+  constructor (actorData) {
+    super(actorData);
+    let privates = internal(this);
+    privates.ai = null;
+    privates.beAttacking = new Set();
 
-        if (actor.data.exp) {
-          this.data.exp += actor.data.exp;
-        } else {
-          this.data.exp += 1;
-        }
+    this.on("kill", (event) => {
+      let actor = event.data;
 
-        for (let quest of this.data.currentQuest) {
-          if (quest.target && quest.target.kill) {
-            for (let k of quest.target.kill) {
-              if (actor.id == k.id && k.current < k.need) {
-                k.current++;
-              }
+      if (this.beAttacking.has(actor)) {
+        this.beAttacking.delete(actor);
+      }
+
+      if (actor.data.exp) {
+        this.data.exp += actor.data.exp;
+      } else {
+        this.data.exp += 1;
+      }
+
+      for (let quest of this.data.currentQuest) {
+        if (quest.target && quest.target.kill) {
+          for (let k of quest.target.kill) {
+            if (actor.id == k.id && k.current < k.need) {
+              k.current++;
             }
           }
         }
+      }
 
-      });
+    });
 
-      this.on("change", () => {
+    this.on("change", () => {
+      this.whenOnto();
+      this.whenTouch();
+    });
+
+    setInterval(() => {
+      if ( !Game.paused ) {
         this.whenOnto();
         this.whenTouch();
-      });
-
-      setInterval(() => {
-        if ( !Game.paused ) {
-          this.whenOnto();
-          this.whenTouch();
-        }
-      }, 500);
-    }
-
-    get beAttacking () {
-      return internal(this).beAttacking;
-    }
-
-    set beAttacking (value) {
-      throw new Error("Game.hero.beAttacking readonly");
-    }
-
-    hasItem (id, count) {
-      if (Number.isFinite(count) == false || count <= 0) {
-        count = 1;
       }
-      for (let key in this.data.items) {
-        if (key == id) {
-          if (this.data.items[key] >= count) {
-            return true;
-          } else {
-            return false;
-          }
-        }
-      }
-      return false;
-    }
+    }, 500);
+  }
 
-    hasQuest (id) {
-      for (let quest of this.data.currentQuest) {
-        if (id == quest.id) {
+  get beAttacking () {
+    return internal(this).beAttacking;
+  }
+
+  set beAttacking (value) {
+    throw new Error("Game.hero.beAttacking readonly");
+  }
+
+  hasItem (id, count) {
+    if (Number.isFinite(count) == false || count <= 0) {
+      count = 1;
+    }
+    for (let key in this.data.items) {
+      if (key == id) {
+        if (this.data.items[key] >= count) {
           return true;
-        }
-      }
-      for (let quest of this.data.completeQuest) {
-        if (id == quest.id) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    damage (attacker, skill) {
-      super.damage(attacker, skill);
-
-      // 如果英雄受到了伤害
-      let touchActor = [];
-      for (let actor of Game.area.actors) {
-        // 找到所有邻接英雄的怪物
-        if (actor != this && actor.data.type == "monster" && actor.distance(this) == 1) {
-          touchActor.push(actor);
-        }
-      }
-      if (touchActor.length) {
-        let faceAttacker = false;
-        let facePosition = this.facePosition;
-        touchActor.forEach((actor) => {
-          if (actor.hitTest(facePosition.x, facePosition.y)) {
-            faceAttacker = true;
-          }
-        });
-        // 如果英雄现在没面对任何一个邻接的怪物，面向它
-        if (faceAttacker == false) {
-          this.goto(touchActor[0].x, touchActor[0].y);
+        } else {
+          return false;
         }
       }
     }
+    return false;
+  }
 
-    erase () {
-      let privates = internal(this);
-      super.erase();
-
-      if (privates.ai) {
-        Sprite.Ticker.off("tick", privates.ai);
-        privates.ai = null;
+  hasQuest (id) {
+    for (let quest of this.data.currentQuest) {
+      if (id == quest.id) {
+        return true;
       }
     }
-
-    refreshBar () {
-      super.refreshBar();
-      Game.windows.interface.status(
-        this.data.hp / this.data.$hp, // 生命百分比
-        this.data.sp / this.data.$sp // 精神力百分比
-      );
+    for (let quest of this.data.completeQuest) {
+      if (id == quest.id) {
+        return true;
+      }
     }
+    return false;
+  }
 
-    draw () {
-      let privates = internal(this);
-      super.draw();
+  damage (attacker, skill) {
+    super.damage(attacker, skill);
 
-      privates.ai = Sprite.Ticker.on("tick", (event) => {
-
-        let tickCount = event.data;
-
-        // 每秒16个tick
-        if (tickCount % 16 == 0) {
-          let barChanged = false;
-
-          if (this.data.hp < this.data.$hp && this.beAttacking.size <= 0) {
-            this.data.hp++;
-            barChanged = true;
-          }
-
-          if (this.data.sp < this.data.$sp) {
-            this.data.sp++;
-            barChanged = true;
-          }
-
-          if (barChanged) {
-            this.refreshBar();
-            if (Game.windows.status.atop) {
-              Game.windows.status.update();
-            }
-          }
+    // 如果英雄受到了伤害
+    let touchActor = [];
+    for (let actor of Game.area.actors) {
+      // 找到所有邻接英雄的怪物
+      if (actor != this && actor.data.type == "monster" && actor.distance(this) == 1) {
+        touchActor.push(actor);
+      }
+    }
+    if (touchActor.length) {
+      let faceAttacker = false;
+      let facePosition = this.facePosition;
+      touchActor.forEach((actor) => {
+        if (actor.hitTest(facePosition.x, facePosition.y)) {
+          faceAttacker = true;
         }
-
       });
-
+      // 如果英雄现在没面对任何一个邻接的怪物，面向它
+      if (faceAttacker == false) {
+        this.goto(touchActor[0].x, touchActor[0].y);
+      }
     }
+  }
 
+  erase () {
+    let privates = internal(this);
+    super.erase();
 
-    gotoArea (dest, x, y) {
-      var privates = internal(this);
-
-      Sprite.Util.timeout(5).then( () => {
-
-        privates.beAttacking = new Set();
-        Game.pause();
-        Game.windows.interface.hide();
-        Game.windows.stage.hide();
-        Game.windows.loading.begin();
-        Game.windows.loading.update("30%");
-        Game.clearStage();
-        return Sprite.Util.timeout(5);
-
-      }).then( () => {
-
-        return Game.loadArea(dest);
-
-      }).then( (area) => {
-
-        Game.area = area;
-        Game.windows.loading.update("50%");
-        return Sprite.Util.timeout(5);
-
-      }).then( () => {
-
-        Game.hero.data.area = dest;
-        Game.hero.draw();
-        Game.hero.x = x;
-        Game.hero.y = y;
-        Game.area.actors.add(Game.hero);
-        Game.area.map.draw();
-        Game.windows.loading.update("80%");
-        return Sprite.Util.timeout(5);
-
-      }).then( () => {
-
-        Game.hero.x = x;
-        Game.hero.y = y;
-        Game.hero.data.time += 60; // 加一小时
-        Game.windows.loading.end();
-        Game.windows.interface.datetime();
-        Game.windows.interface.refresh();
-        Game.start();
-        Game.windows.loading.update("100%");
-        return Sprite.Util.timeout(5);
-
-      }).then( () => {
-
-        Game.stage.update();
-        Game.windows.stage.show();
-        Game.windows.interface.show();
-
-      });
-
+    if (privates.ai) {
+      Sprite.Ticker.off("tick", privates.ai);
+      privates.ai = null;
     }
+  }
 
-    // 当玩家站到某个点的时候执行的命令
-    whenOnto () {
-      if (!Game.area) return;
-      if (!Game.area.onto) return;
+  refreshBar () {
+    super.refreshBar();
+    Game.windows.interface.status(
+      this.data.hp / this.data.$hp, // 生命百分比
+      this.data.sp / this.data.$sp // 精神力百分比
+    );
+  }
 
-      let heroPosition = Game.hero.position;
-      let onto = null;
+  draw () {
+    let privates = internal(this);
+    super.draw();
 
-      let FindUnderHero = (element) => {
-        if (onto != null || element == Game.hero) {
-          return;
+    privates.ai = Sprite.Ticker.on("tick", (event) => {
+
+      let tickCount = event.data;
+
+      // 每秒16个tick
+      if (tickCount % 16 == 0) {
+        let barChanged = false;
+
+        if (this.data.hp < this.data.$hp && this.beAttacking.size <= 0) {
+          this.data.hp++;
+          barChanged = true;
         }
+
+        if (this.data.sp < this.data.$sp) {
+          this.data.sp++;
+          barChanged = true;
+        }
+
+        if (barChanged) {
+          this.refreshBar();
+          if (Game.windows.status.atop) {
+            Game.windows.status.update();
+          }
+        }
+      }
+
+    });
+
+  }
+
+
+  gotoArea (dest, x, y) {
+    var privates = internal(this);
+    privates.beAttacking = new Set();
+
+    Sprite.Util.timeout(5).then( () => {
+
+      Game.pause();
+      Game.windows.interface.hide();
+      Game.windows.stage.hide();
+      Game.windows.loading.begin();
+      Game.windows.loading.update("30%");
+      return Sprite.Util.timeout(5);
+
+    }).then( () => {
+
+      Game.clearStage();
+      return Game.Area.load(dest);
+
+    }).then( (area) => {
+
+      Game.area = area;
+      Game.windows.loading.update("50%");
+      return Sprite.Util.timeout(5);
+
+    }).then( () => {
+
+      Game.hero.data.area = dest;
+      Game.hero.draw();
+      Game.hero.x = x;
+      Game.hero.y = y;
+      Game.area.actors.add(Game.hero);
+      Game.area.map.draw();
+      Game.windows.loading.update("80%");
+      return Sprite.Util.timeout(5);
+
+    }).then( () => {
+
+      Game.hero.x = x;
+      Game.hero.y = y;
+      Game.hero.data.time += 60; // 加一小时
+      Game.windows.loading.end();
+      Game.windows.interface.datetime();
+      Game.windows.interface.refresh();
+      Game.start();
+      Game.windows.loading.update("100%");
+      return Sprite.Util.timeout(5);
+
+    }).then( () => {
+
+      Game.stage.update();
+      Game.windows.stage.show();
+      Game.windows.interface.show();
+
+    });
+
+  }
+
+  findUnder (obj) {
+    const heroPosition = this.position;
+    let arr = null;
+    if (obj instanceof Array || obj instanceof Set) {
+      arr = obj;
+    } else if (obj instanceof Map) {
+      arr = obj.values();
+    } else {
+      arr = [];
+      for (const key in obj) {
+        arr.push(obj[key]);
+      }
+    }
+
+    for (const element of arr) {
+      if (element != this) {
         if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
-          onto = element;
-          return;
+          return element;
         } else if (element.points) {
           for (let p of element.points) {
             if (p.x == heroPosition.x && p.y == heroPosition.y) {
-              onto = element;
-              return;
+              return element;
             }
           }
         } else if (
@@ -275,67 +282,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
           element.x == heroPosition.x &&
           element.y == heroPosition.y
         ) {
-          onto = element;
-          return;
+          return element;
         }
       }
-      // 找最近可“事件”人物 Game.area.actors
-      Sprite.Util.each(Game.area.onto, FindUnderHero);
-      if (onto) {
-        if (onto.execute) {
-          onto.execute();
-        }
-      } // touch
+    }
+    return null;
+  }
+
+  findFace (obj) {
+    const heroFace = this.facePosition;
+    let arr = null;
+    if (obj instanceof Array || obj instanceof Set) {
+      arr = obj;
+    } else if (obj instanceof Map) {
+      arr = obj.values();
+    } else {
+      arr = [];
+      for (const key in obj) {
+        arr.push(obj[key]);
+      }
     }
 
-    // 当玩家站到或者接触到某个点时执行的命令
-    whenTouch () {
-      if (!Game.area) return;
-      if (!Game.area.touch) return;
-
-      let heroPosition = Game.hero.position;
-      let heroFace = Game.hero.facePosition;
-      let touch = null;
-
-      let FindUnderHero = (element) => {
-        if (touch != null || element == Game.hero) {
-          return;
-        }
-        if (element.heroUse) {
-          if (element.hitTest && element.hitTest(heroPosition.x, heroPosition.y)) {
-            touch = element;
-            return;
-          } else if (element.points) {
-            for (let p of element.points) {
-              if (p.x == heroPosition.x && p.y == heroPosition.y) {
-                touch = element;
-                return;
-              }
-            }
-          } else if (
-            Number.isFinite(element.x) &&
-            Number.isFinite(element.y) &&
-            element.x == heroPosition.x &&
-            element.y == heroPosition.y
-          ) {
-            touch = element;
-            return;
-          }
-        }
-      }
-
-      let FindFaceHero = (element) => {
-        if (touch != null || element == Game.hero) {
-          return;
-        }
+    for (const element of arr) {
+      if (element != this) {
         if (element.heroUse) {
           if (element.hitTest && element.hitTest(heroFace.x, heroFace.y)) {
-            touch = element;
+            return element;
           } else if (element.points) {
             for (let p of element.points) {
               if (p.x == heroFace.x && p.y == heroFace.y) {
-                touch = element;
-                return;
+                return element;
               }
             }
           } else if (
@@ -344,66 +320,74 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
             element.x == heroFace.x &&
             element.y == heroFace.y
           ) {
-            touch = element;
-            return;
+            return element;
           }
         }
       }
+    }
+    return null;
+  }
 
-      // 用FindUnderHero函数寻找到玩家当前格子的地点
+  // 当玩家站到某个点的时候执行的命令
+  whenOnto () {
+    if (!Game.area) return;
+    if (!Game.area.onto) return;
 
-      // 找最近可“事件”人物 Game.area.actors
-      Sprite.Util.each(Game.area.actors, FindUnderHero);
-      // 找最近尸体 Game.area.bags
-      Sprite.Util.each(Game.area.bags, FindUnderHero);
-      // 找最近物品 Game.area.items
-      Sprite.Util.each(Game.area.items, FindUnderHero);
-      // 其他物品（由地图文件定义）
-      Game.area.touch.forEach(FindUnderHero);
+    let onto = this.findUnder(Game.area.onto);
 
-      // 用FindFaceHero寻找面对着玩家的格子地点
-
-      // 找最近可“事件”人物 Game.area.actors
-      Sprite.Util.each(Game.area.actors, FindFaceHero);
-      // 找最近尸体 Game.area.bags
-      Sprite.Util.each(Game.area.bags, FindFaceHero);
-      // 找最近尸体 Game.area.items
-      Sprite.Util.each(Game.area.items, FindFaceHero);
-      // 其他物品（由地图文件定义）
-      Game.area.touch.forEach(FindFaceHero);
-      // 水源
-      if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
-        touch = {
-          type: "water",
-          heroUse: () => {
-            Game.choice({
-              "喝水": "drink",
-              "钓鱼": "fish"
-            }).then( (choice) => {
-              switch (choice) {
-                case "drink":
-                  Game.hero.popup("drink");
-                break;
-                case "fish":
-                  Game.hero.popup("fish");
-                break;
-              }
-            });
-          }
-        };
+    // 找最近可“事件”人物 Game.area.actors
+    if (onto) {
+      if (onto.execute) {
+        onto.execute();
       }
+    } // touch
+  }
 
-      if (!touch) {
-        Game.hintObject = null;
-        Game.windows.interface.hideUse();
-      } else {
-        Game.hintObject = touch;
-        Game.windows.interface.showUse();
-      }
+  // 当玩家站到或者接触到某个点时执行的命令
+  whenTouch () {
+    if (!Game.area) return;
+    if (!Game.area.touch) return;
+
+    let heroFace = Game.hero.facePosition;
+    let touch = this.findUnder(Game.area.actors) // 找最近可“事件”人物 Game.area.actors
+              || this.findUnder(Game.area.bags) // 找最近尸体 Game.area.bags
+              || this.findUnder(Game.area.items) // 找最近物品 Game.area.items
+              || this.findUnder(Game.area.touch) // 其他物品（由地图文件定义）
+              || this.findFace(Game.area.actors)
+              || this.findFace(Game.area.bags)
+              || this.findFace(Game.area.items)
+              || this.findFace(Game.area.touch);
+
+    // 水源
+    if (!touch && Game.area.map.hitWater(heroFace.x, heroFace.y)) {
+      touch = {
+        type: "water",
+        heroUse: () => {
+          Choice({
+            "喝水": "drink",
+            "钓鱼": "fish"
+          }).then( (choice) => {
+            switch (choice) {
+              case "drink":
+                Game.hero.popup("drink");
+              break;
+              case "fish":
+                Game.hero.popup("fish");
+              break;
+            }
+          });
+        }
+      };
     }
 
+    if ( !touch ) {
+      Game.hintObject = null;
+      Game.windows.interface.hideUse();
+    } else {
+      Game.hintObject = touch;
+      Game.windows.interface.showUse();
+    }
+  }
 
-  });
 
-
-})();
+}

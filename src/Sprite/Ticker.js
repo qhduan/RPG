@@ -19,72 +19,75 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Sprite.Ticker
+ * @fileoverview SpriteTicker
  * @author mail@qhduan.com (QH Duan)
  */
 
-( () => {
- "use strict";
 
-  let tickerCount = 0;
+"use strict";
 
-  class SpriteTicker extends Sprite.Event {
-    constructor () {
-      super();
-      this.tick();
-    }
+import SpriteUtil from "./Util.js";
+import SpriteEvent from "./Event.js";
 
-    tick () {
-      tickerCount++;
-      this.emit("tick", false, tickerCount);
-      window.requestAnimationFrame(() => {
-        this.tick();
-      });
-    }
+let internal = SpriteUtil.namespace();
 
-    after (times, callback) {
-      let count = 0;
-      let id = this.on("tick", () => {
-        count++;
-        if (count >= times) {
-          this.off("tick", id);
-          if (callback) {
-            callback();
-          }
-        }
-      });
-      return id;
-    }
+let tickerCount = 0;
 
-    clearAfter (id) {
-      this.off("tick", id);
-    }
-
-    whiles (times, callback) {
-      let count = 0;
-      let id = this.on("tick", () => {
-        count++;
-        if (count >= times) {
-          if (callback) {
-            callback(true);
-          }
-          this.off("tick", id);
-        } else {
-          if (callback) {
-            callback(false);
-          }
-        }
-      });
-      return id;
-    }
-
-    clearWhiles (id) {
-      this.off("tick", id);
-    }
-
+class SpriteTickerObject extends SpriteEvent {
+  constructor () {
+    super();
+    this.tick();
   }
 
-  Sprite.assign("Ticker", new SpriteTicker());
+  tick () {
+    tickerCount++;
+    this.emit("tick", false, tickerCount);
+    window.requestAnimationFrame(() => {
+      this.tick();
+    });
+  }
 
+  after (times, callback) {
+    let count = 0;
+    let id = this.on("tick", () => {
+      count++;
+      if (count >= times) {
+        this.off("tick", id);
+        if (callback) {
+          callback();
+        }
+      }
+    });
+    return id;
+  }
 
-})();
+  clearAfter (id) {
+    this.off("tick", id);
+  }
+
+  whiles (times, callback) {
+    let count = 0;
+    let id = this.on("tick", () => {
+      count++;
+      if (count >= times) {
+        if (callback) {
+          callback(true);
+        }
+        this.off("tick", id);
+      } else {
+        if (callback) {
+          callback(false);
+        }
+      }
+    });
+    return id;
+  }
+
+  clearWhiles (id) {
+    this.off("tick", id);
+  }
+
+}
+
+let SpriteTicker = new SpriteTickerObject();
+export default SpriteTicker;

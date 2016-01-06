@@ -19,99 +19,97 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Class Sprite.Frame
+ * @fileoverview Class SpriteFrame
  * @author mail@qhduan.com (QH Duan)
  */
 
-( () => {
- "use strict";
 
-  let internal = Sprite.Util.namespace();
+"use strict";
 
+import SpriteUtil from "./Util.js";
+import SpriteDisplay from "./Display.js";
+
+let internal = SpriteUtil.namespace();
+
+/**
+ * Class SpriteFrame, a frame of SpriteSheet
+ * @class
+*/
+export default class SpriteFrame extends SpriteDisplay {
+
+  constructor (image, sx, sy, width, height) {
+    super();
+    let privates = internal(this);
+    privates.image = image;
+    privates.sx = sx;
+    privates.sy = sy;
+    this.width = width;
+    this.height = height;
+  }
   /**
-   * Class Sprite.Frame, a frame of Sprite.Sheet
-   * @class
-  */
-  class SpriteFrame extends Sprite.Display {
-
-    constructor (image, sx, sy, width, height) {
-      super();
-      let privates = internal(this);
-      privates.image = image;
-      privates.sx = sx;
-      privates.sy = sy;
-      this.width = width;
-      this.height = height;
-    }
-    /**
-     * @return {Image} Return the image this Sprite.Frame hold
-     */
-    get image () {
-      let privates = internal(this);
-      return privates.image;
-    }
-
-    set image (value) {
-      throw new Error("Sprite.Frame.image readonly");
-    }
-
-    /**
-     * @return {number} Return sx
-     */
-    get sx () {
-      let privates = internal(this);
-      return privates.sx;
-    }
-
-    set sx (value) {
-      throw new Error("Sprite.Frame.sx readonly");
-    }
-
-    /**
-     * @return {number} Return sy
-     */
-    get sy () {
-      let privates = internal(this);
-      return privates.sy;
-    }
-
-    set sy (value) {
-      throw new Error("Sprite.Frame.sy readonly");
-    }
-
-    print () {
-      console.log(internal(this));
-    }
-
-    /**
-     * @return {Object} Clone this Sprite.Frame
-     */
-    clone () {
-      let frame = new Sprite.Frame(
-        this.image,
-        this.sx, this.sy,
-        this.width, this.height
-      );
-      frame.x = this.x;
-      frame.y = this.y;
-      frame.parent = this.parent;
-      return frame;
-    }
-
-    /**
-     * @param {Object} renderer
-     */
-    draw (renderer) {
-      this.drawImage(
-        renderer, this.image,
-        this.sx, this.sy,
-        this.width, this.height
-      );
-    }
-
+   * @return {Image} Return the image this SpriteFrame hold
+   */
+  get image () {
+    let privates = internal(this);
+    return privates.image;
   }
 
-  Sprite.assign("Frame", SpriteFrame);
+  set image (value) {
+    throw new Error("SpriteFrame.image readonly");
+  }
 
+  /**
+   * @return {number} Return sx
+   */
+  get sx () {
+    let privates = internal(this);
+    return privates.sx;
+  }
 
-})();
+  set sx (value) {
+    throw new Error("SpriteFrame.sx readonly");
+  }
+
+  /**
+   * @return {number} Return sy
+   */
+  get sy () {
+    let privates = internal(this);
+    return privates.sy;
+  }
+
+  set sy (value) {
+    throw new Error("SpriteFrame.sy readonly");
+  }
+
+  print () {
+    console.log(internal(this));
+  }
+
+  /**
+   * @return {Object} Clone this SpriteFrame
+   */
+  clone () {
+    let frame = new SpriteFrame(
+      this.image,
+      this.sx, this.sy,
+      this.width, this.height
+    );
+    frame.x = this.x;
+    frame.y = this.y;
+    frame.parent = this.parent;
+    return frame;
+  }
+
+  /**
+   * @param {Object} renderer
+   */
+  draw (renderer) {
+    this.drawImage(
+      renderer, this.image,
+      this.sx, this.sy,
+      this.width, this.height
+    );
+  }
+
+}

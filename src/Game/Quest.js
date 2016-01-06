@@ -18,36 +18,38 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
 
-  Game.assign("Quest", class GameQuest {
+"use strict";
 
-    static load (id) {
-      return new Promise( (resolve, reject) => {
-        Sprite.Loader.load(`quest/${id}.js`).then( (data) => {
-          let questData = data[0]();
-          questData.id = id;
-          resolve(questData);
-        });
+import Sprite from "../Sprite/Sprite.js";
+import Game from "./Base.js";
+
+let internal = Sprite.Util.namespace();
+
+export default class Quest {
+
+  static load (id) {
+    return new Promise( (resolve, reject) => {
+      Sprite.Loader.load(`quest/${id}.js`).then( (data) => {
+        let questData = data[0]();
+        questData.id = id;
+        resolve(questData);
       });
-    }
+    });
+  }
 
-    static isComplete (quest) {
-      if (quest.target) {
-        if (quest.target.kill) {
-          for (let k of quest.target.kill) {
-            if (k.current < k.need) {
-              return false;
-            }
+  static isComplete (quest) {
+    if (quest.target) {
+      if (quest.target.kill) {
+        for (let k of quest.target.kill) {
+          if (k.current < k.need) {
+            return false;
           }
         }
       }
-
-      return true;
     }
 
-  });
+    return true;
+  }
 
-
-})();
+}

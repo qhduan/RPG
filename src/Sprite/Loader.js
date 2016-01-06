@@ -19,225 +19,222 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /**
- * @fileoverview Sprite.Loader, fetch resource
+ * @fileoverview SpriteLoader, fetch resource
  * @author mail@qhduan.com (QH Duan)
  */
 
-( () => {
  "use strict";
 
-  let internal = Sprite.Util.namespace();
+ import SpriteUtil from "./Util.js";
 
-  /**
-   * Cache all url and element
-   */
-  let Cache = new Map();
-  /**
-   * When some url in Downloading, the url is downloading,
-   * and other thread want it have to wait
-   */
-  let Downloading = new Map();
+ let internal = SpriteUtil.namespace();
 
-  function Fetch (url, callback, timeout = 0) {
+/**
+ * Cache all url and element
+ */
+let Cache = new Map();
+/**
+ * When some url in Downloading, the url is downloading,
+ * and other thread want it have to wait
+ */
+let Downloading = new Map();
 
-    let type = null;
-    if (url.match(/js$/)) {
-      type = "js";
-    } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
-      type = "image";
-    } else if (url.match(/wav$|mp3$|ogg$/i)) {
-      type = "audio";
-    } else if (url.match(/json$/i)) {
-      type = "json";
-    } else {
-      console.error(url);
-      throw new Error("Fetch got an invalid url");
+function Fetch (url, callback, timeout = 0) {
+
+  let type = null;
+  if (url.match(/js$/)) {
+    type = "js";
+  } else if (url.match(/jpg$|jpeg$|png$|bmp$|gif$/i)) {
+    type = "image";
+  } else if (url.match(/wav$|mp3$|ogg$/i)) {
+    type = "audio";
+  } else if (url.match(/json$/i)) {
+    type = "json";
+  } else {
+    console.error(url);
+    throw new Error("Fetch got an invalid url");
+  }
+
+  // finished
+  let Finish = (obj) => {
+    Cache.set(url, obj);
+
+    if (type == "json") {
+      obj = SpriteUtil.copy(obj);
     }
 
-    // finished
-    let Finish = (obj) => {
-      Cache.set(url, obj);
-
-      if (type == "json") {
-        obj = Sprite.Util.copy(obj);
-      }
-
-      if (callback) {
-        callback(obj);
-      }
-      if (Downloading.has(url)) {
-        let callbacks = Downloading.get(url);
-        for (let callback of callbacks) {
-          if (callback) {
-            callback(obj);
-          }
+    if (callback) {
+      callback(obj);
+    }
+    if (Downloading.has(url)) {
+      let callbacks = Downloading.get(url);
+      for (let callback of callbacks) {
+        if (callback) {
+          callback(obj);
         }
-        Downloading.delete(url);
       }
+      Downloading.delete(url);
     }
+  }
 
-    if (Cache.has(url)) {
-      Finish(Cache.get(url));
+  if (Cache.has(url)) {
+    Finish(Cache.get(url));
+    return;
+  }
+
+  if ( !timeout ) {
+    if (Downloading.has(url)) {
+      Downloading.get(url).push(callback);
       return;
     }
 
-    if ( !timeout ) {
-      if (Downloading.has(url)) {
-        Downloading.get(url).push(callback);
-        return;
-      }
+    Downloading.set(url, []);
+  }
 
-      Downloading.set(url, []);
+  let req = new XMLHttpRequest();
+  req.open("GET", url, true);
+  req.timeout = 10000; // 10 seconds
+
+  // looks like req.responseType=blob has some async problem, so I use arraybuffer
+  switch (type) {
+    case "js":
+      req.responseType = "text";
+      break;
+    case "image":
+      req.responseType = "arraybuffer";
+      break;
+    case "audio":
+      req.responseType = "arraybuffer";
+      break;
+    case "json":
+      req.responseType = "json";
+      break;
+    default:
+      console.error(type, url);
+      throw new Error("Fetch something wrong");
+  }
+
+  if (typeof callback != "function")
+    callback = () => {};
+
+  req.ontimeout = () => {
+    if (timeout >= 2) {
+      console.error(url);
+      alert(`资源${url}超时没有加载成功！`);
+      throw new Error("SpriteLoader.Fetch timeout 3 times");
+    } else {
+      console.error("SpriteLoader.Fetch timeout try again, ", timeout + 1, " ", url);
+      setTimeout( () => {
+        Fetch(url, callback, timeout + 1);
+      }, 50);
     }
+  };
 
-    let req = new XMLHttpRequest();
-    req.open("GET", url, true);
-    req.timeout = 10000; // 10 seconds
-
-    // looks like req.responseType=blob has some async problem, so I use arraybuffer
-    switch (type) {
-      case "js":
-        req.responseType = "text";
-        break;
-      case "image":
-        req.responseType = "arraybuffer";
-        break;
-      case "audio":
-        req.responseType = "arraybuffer";
-        break;
-      case "json":
-        req.responseType = "json";
-        break;
-      default:
-        console.error(type, url);
-        throw new Error("Fetch something wrong");
-    }
-
-    if (typeof callback != "function")
-      callback = () => {};
-
-    req.ontimeout = () => {
-      if (timeout >= 2) {
-        console.error(url);
-        alert(`资源${url}超时没有加载成功！`);
-        throw new Error("Sprite.Loader.Fetch timeout 3 times");
+  let done = false;
+  req.onreadystatechange = () => {
+    if (req.readyState == 4 && !done) {
+      done = true;
+      if (req.response) {
+        if (type == "js") {
+          let fun = null;
+          try {
+            fun = new Function(req.response);
+          } catch (e) {
+            console.error(req.response, url);
+            throw e;
+          }
+          Finish(fun);
+        } else if (type == "image") {
+          let arraybuffer = req.response;
+          let image = new Image();
+          image.onload = () => {
+            // window.URL.revokeObjectURL(image.src);
+            image.onload = null;
+            Finish(image);
+          };
+          image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
+        } else if (type == "audio") {
+          let arraybuffer = req.response;
+          let audio = new Audio();
+          audio.oncanplay = () => {
+            // 如果reoke掉audio，那么audio.load()方法则不能用了
+            // window.URL.revokeObjectURL(audio.src);
+            audio.oncanplay = null;
+            Finish(audio);
+          };
+          audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
+        } else if (type == "json") {
+          let json = req.response;
+          if (!json) {
+            console.error(url);
+            throw new Error("SpriteLoader invalid json");
+          }
+          Finish(json);
+        }
       } else {
-        console.error("Sprite.Loader.Fetch timeout try again, ", timeout + 1, " ", url);
-        setTimeout( () => {
-          Fetch(url, callback, timeout + 1);
-        }, 50);
+        console.error("url: ", url);
+        console.error("response: ", req.response,
+        " readyState: ", req.readyState,
+        " status: ", req.status,
+        " statusText: ", req.statusText);
+        if (timeout >= 2) {
+          console.error(url);
+          alert(`资源${url}错误没有加载成功！`);
+          throw new Error("SpriteLoader.Fetch error 3 times");
+        } else {
+          console.error("SpriteLoader.Fetch error try again, ", timeout + 1, " ", url);
+          setTimeout( () => {
+            Fetch(url, callback, timeout + 1);
+          }, 50);
+        }
       }
-    };
+    }
+  };
+  req.send();
+}
 
-    let done = false;
-    req.onreadystatechange = () => {
-      if (req.readyState == 4 && !done) {
-        done = true;
-        if (req.response) {
-          if (type == "js") {
-            let fun = null;
-            try {
-              fun = new Function(req.response);
-            } catch (e) {
-              console.error(req.response, url);
-              throw e;
-            }
-            Finish(fun);
-          } else if (type == "image") {
-            let arraybuffer = req.response;
-            let image = new Image();
-            image.onload = () => {
-              // window.URL.revokeObjectURL(image.src);
-              image.onload = null;
-              Finish(image);
-            };
-            image.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
-          } else if (type == "audio") {
-            let arraybuffer = req.response;
-            let audio = new Audio();
-            audio.oncanplay = () => {
-              // 如果reoke掉audio，那么audio.load()方法则不能用了
-              // window.URL.revokeObjectURL(audio.src);
-              audio.oncanplay = null;
-              Finish(audio);
-            };
-            audio.src = window.URL.createObjectURL(new window.Blob([arraybuffer]));
-          } else if (type == "json") {
-            let json = req.response;
-            if (!json) {
-              console.error(url);
-              throw new Error("Sprite.Loader invalid json");
-            }
-            Finish(json);
+export default class SpriteLoader {
+
+  static load () {
+    let args = Array.prototype.slice.call(arguments);
+
+    return new Promise( (resolve, reject) => {
+
+      let urls = [];
+
+      for (let element of args) {
+        if (typeof element == "string") {
+          urls.push(element);
+        } else if (element instanceof Array) {
+          for (let url of element) {
+            urls.push(url);
           }
         } else {
-          console.error("url: ", url);
-          console.error("response: ", req.response,
-          " readyState: ", req.readyState,
-          " status: ", req.status,
-          " statusText: ", req.statusText);
-          if (timeout >= 2) {
-            console.error(url);
-            alert(`资源${url}错误没有加载成功！`);
-            throw new Error("Sprite.Loader.Fetch error 3 times");
-          } else {
-            console.error("Sprite.Loader.Fetch error try again, ", timeout + 1, " ", url);
-            setTimeout( () => {
-              Fetch(url, callback, timeout + 1);
-            }, 50);
-          }
+          console.error(element, args);
+          throw new Error("SpriteLoader.load got invalid argument");
         }
       }
-    };
-    req.send();
-  }
 
-  class SpriteLoader {
+      let done = 0;
+      let ret = [];
+      ret.length = urls.length;
 
-    static load () {
-      let args = Array.prototype.slice.call(arguments);
+      let Done = () => {
+        done++;
 
-      return new Promise( (resolve, reject) => {
-
-        let urls = [];
-
-        for (let element of args) {
-          if (typeof element == "string") {
-            urls.push(element);
-          } else if (element instanceof Array) {
-            for (let url of element) {
-              urls.push(url);
-            }
-          } else {
-            console.error(element, args);
-            throw new Error("Sprite.Loader.load got invalid argument");
-          }
+        if (done >= ret.length) {
+          resolve(ret);
         }
+      }
 
-        let done = 0;
-        let ret = [];
-        ret.length = urls.length;
-
-        let Done = () => {
-          done++;
-
-          if (done >= ret.length) {
-            resolve(ret);
-          }
-        }
-
-        urls.forEach((element, index) => {
-          Fetch(element, (result) => {
-            ret[index] = result;
-            Done();
-          });
+      urls.forEach((element, index) => {
+        Fetch(element, (result) => {
+          ret[index] = result;
+          Done();
         });
-
       });
-    }
 
+    });
   }
 
-  Sprite.assign("Loader", SpriteLoader);
-
-})();
+}

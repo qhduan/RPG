@@ -1,0 +1,26 @@
+.choiceWindow {
+
+  text-align: center;
+
+  div {
+    text-align: center;
+  }
+
+  button#choiceWindowNo {
+    position: absolute;
+    right: 100px;
+    top: 50px;
+    width: 100px;
+    height: 60px;
+    font-size: 30px;
+  }
+
+  #choiceWindowTable button {
+    margin: 5px auto;
+    min-width: 300px;
+    min-height: 60px;
+    font-size: 30px;
+    display: block;
+  }
+
+}

@@ -1,0 +1,39 @@
+.loadingWindow {
+
+  text-align: center;
+  
+  label {
+    color: white;
+    font-size: 48px;
+  }
+
+  #loadingWindowLoadingIcon {
+    width: 50px;
+    height: 50px;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    animation: loadingAnimation 1s linear infinite;
+  }
+
+  @keyframes loadingAnimation
+  {
+    0%   { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  #loadingWindowBox {
+    width: 500px;
+    height: 300px;
+    border-radius: 25px;
+    position: fixed;
+    top: 75px;
+    left: 150px;
+    background-color: gray;
+  }
+
+  #loadingWindowText {
+    color: white;
+  }
+
+
+}

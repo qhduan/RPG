@@ -18,126 +18,100 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 */
 
-( () => {
-  "use strict";
+"use strict";
 
-  let win = Game.windows.setting = Game.Window.create("settingWindow");
+import Game from "../Base.js";
+import Window from "../Window.js";
+import Confirm from "../Component/Confirm.js";
+import Choice from  "../Component/Choice.js";
 
-  win.html = `
-    <div class="window-box">
-      <button id="settingWindowClose" class="brownButton">关闭</button>
+let win = Window.create("settingWindow");
 
-      <div id="settingWindowRendererType"></div>
+let WindowSetting = win;
+export default WindowSetting;
 
-      <div id="settingWindowBox">
-        <button id="settingWindowFullscreen" class="brownButton">全屏</button>
-        <button id="settingWindowScale" class="brownButton">缩放</button>
-        <button id="settingWindowShortcut" class="brownButton">清除快捷栏</button>
-        <button id="settingWindowShortcutAll" class="brownButton">清除全部快捷栏</button>
-      </div>
-    </div>
-  `;
+import css from "../CSS/Setting.scss";
+import html from "../HTML/Setting.html";
 
-  win.css = `
-    #settingWindowBox {
-      width: 100%;
-      height: 360px;
-    }
+win.css = css;
+win.html = html;
 
-    #settingWindowBox button {
-      width: 120px;
-      height: 60px;
-      font-size: 16px;
-      display: block;
-    }
+let settingWindowShortcut = win.querySelector("#settingWindowShortcut");
+let settingWindowShortcutAll = win.querySelector("#settingWindowShortcutAll");
 
-    #settingWindowClose {
-      width: 60px;
-      height: 40px;
-      font-size: 16px;
-      float: right;
-    }
-  `;
+let settingWindowClose = win.querySelector("#settingWindowClose");
+let settingWindowScale = win.querySelector("#settingWindowScale");
 
-  let settingWindowShortcut = win.querySelector("#settingWindowShortcut");
-  let settingWindowShortcutAll = win.querySelector("#settingWindowShortcutAll");
+let settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
+let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
 
-  let settingWindowClose = win.querySelector("#settingWindowClose");
-  let settingWindowScale = win.querySelector("#settingWindowScale");
-
-  let settingWindowFullscreen = win.querySelector("#settingWindowFullscreen");
-  let settingWindowRendererType = win.querySelector("#settingWindowRendererType");
-
-  settingWindowShortcut.addEventListener("click", (event) => {
-    Game.choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
-      if (Number.isFinite(choice)) {
-        Game.hero.data.bar[choice] = null;
-        Game.windows.interface.refresh();
-      }
-    });
-  });
-
-
-  settingWindowShortcutAll.addEventListener("click", (event) => {
-    Game.confirm("确定要删除所有快捷栏图表吗？").then(() => {
-      for (let i = 0; i < 8; i++) {
-        Game.hero.data.bar[i] = null;
-      }
+settingWindowShortcut.addEventListener("click", (event) => {
+  Choice({1:0, 2:1, 3:2, 4:3, 5:4, 6:5, 7:6, 8:7}).then((choice) => {
+    if (Number.isFinite(choice)) {
+      Game.hero.data.bar[choice] = null;
       Game.windows.interface.refresh();
-    }).catch(() => {
-      // no
-    });
-  });
-
-  win.on("beforeShow", () => {
-    settingWindowRendererType.textContent = Game.stage.rendererType;
-  });
-
-  settingWindowClose.addEventListener("click", (event) => {
-    win.hide();
-  });
-
-  settingWindowScale.addEventListener("click", (event) => {
-    Game.config.scale = !Game.config.scale;
-    win.show();
-  });
-
-
-  win.whenUp(["esc"], (key) => {
-    settingWindowClose.click();
-  });
-
-  win.assign("toggle", () => {
-    if (!document.fullscreenElement &&    // alternative standard method
-        !document.mozFullScreenElement &&
-        !document.webkitFullscreenElement &&
-        !document.msFullscreenElement
-    ) {  // current working methods
-      if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen();
-      } else if (document.documentElement.msRequestFullscreen) {
-        document.documentElement.msRequestFullscreen();
-      } else if (document.documentElement.mozRequestFullScreen) {
-        document.documentElement.mozRequestFullScreen();
-      } else if (document.documentElement.webkitRequestFullscreen) {
-        document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
-      }
-    } else {
-      if (document.exitFullscreen) {
-        document.exitFullscreen();
-      } else if (document.msExitFullscreen) {
-        document.msExitFullscreen();
-      } else if (document.mozCancelFullScreen) {
-        document.mozCancelFullScreen();
-      } else if (document.webkitExitFullscreen) {
-        document.webkitExitFullscreen();
-      }
     }
   });
+});
 
-  settingWindowFullscreen.addEventListener("click", (event) => {
-    win.toggle();
+
+settingWindowShortcutAll.addEventListener("click", (event) => {
+  Confirm("确定要删除所有快捷栏图表吗？").then(() => {
+    for (let i = 0; i < 8; i++) {
+      Game.hero.data.bar[i] = null;
+    }
+    Game.windows.interface.refresh();
+  }).catch(() => {
+    // no
   });
+});
+
+win.on("beforeShow", () => {
+  settingWindowRendererType.textContent = Game.stage.rendererType;
+});
+
+settingWindowClose.addEventListener("click", (event) => {
+  win.hide();
+});
+
+settingWindowScale.addEventListener("click", (event) => {
+  Game.config.scale = !Game.config.scale;
+  win.show();
+});
 
 
-})();
+win.whenUp(["esc"], (key) => {
+  settingWindowClose.click();
+});
+
+win.assign("toggle", () => {
+  if (!document.fullscreenElement &&    // alternative standard method
+      !document.mozFullScreenElement &&
+      !document.webkitFullscreenElement &&
+      !document.msFullscreenElement
+  ) {  // current working methods
+    if (document.documentElement.requestFullscreen) {
+      document.documentElement.requestFullscreen();
+    } else if (document.documentElement.msRequestFullscreen) {
+      document.documentElement.msRequestFullscreen();
+    } else if (document.documentElement.mozRequestFullScreen) {
+      document.documentElement.mozRequestFullScreen();
+    } else if (document.documentElement.webkitRequestFullscreen) {
+      document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+    }
+  } else {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    } else if (document.mozCancelFullScreen) {
+      document.mozCancelFullScreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    }
+  }
+});
+
+settingWindowFullscreen.addEventListener("click", (event) => {
+  win.toggle();
+});

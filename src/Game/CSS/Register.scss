@@ -1,0 +1,76 @@
+.registerWindow {
+
+  text-align: center;
+  height: 412px;
+  background-color: rgba(240, 217, 194, 0.85);
+  border: 20px solid rgba(134, 93, 52, 0.85);
+
+  hr {
+    width: 90%;
+  }
+
+  input {
+    width: 240px;
+    height: 40px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #d5ab63;
+    margin: 10px;
+  }
+
+  label {
+    font-size: 20px;
+    color: white;
+  }
+
+  select {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 200px;
+    height: 40px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 16px;
+    background-color: #d5ab63;
+    margin: 10px;
+  }
+
+  #registerWindowDisplay {
+    position: fixed;
+    height: 250px;
+    width: 64px;
+    left: 80px;
+    top: 25px;
+    transform: scale(1.4);
+    -webkit-transform: scale(1.4);
+    transform-origin: left top 0;
+    -webkit-transform-origin: left top 0;
+  }
+
+  #registerWindowContainer {
+     overflow-x: hidden;
+     overflow-y: scroll;
+     left: 200px;
+     top: 20px;
+     width: 620px;
+     height: 410px;
+     position: fixed;
+  }
+
+  #registerWindowBelief, #registerWindowClass {
+    text-align: center;
+    width: 100%;
+  }
+
+  #submit, #back {
+    width: 100px;
+    height: 60px;
+  }
+
+}
